@@ -138,7 +138,7 @@ spec:
         resources:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
-          - name: tyk-mgmt-gateway-conf
+          - name: tyk-gateway-conf
             mountPath: /etc/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
@@ -183,11 +183,11 @@ spec:
       volumes:
         - name: tyk-scratch
           emptyDir: {}
-        - name: tyk-mgmt-gateway-conf
+        - name: tyk-gateway-conf
           configMap:
-            name: mgmt-gateway-conf-{{ include "tyk-gateway.fullname" . }}
+            name: gateway-conf-{{ include "tyk-gateway.fullname" . }}
             items:
-              - key: tyk_mgmt.conf
+              - key: tyk.conf
                 path: tyk.conf
         - name: {{ .Release.Name }}-default-cert
           secret:
