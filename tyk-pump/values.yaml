@@ -99,7 +99,7 @@ postgres:
 # https://github.com/TykTechnologies/tyk-pump#configuration
 pump:
   # Determines whether or not the pump component should be installed.
-  enabled: false
+  enabled: true
 
   replicaCount: 1
   image:
