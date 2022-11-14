@@ -30,8 +30,8 @@ Redis should already be installed or accessible by the gateway.
 
 5. **Install helm chart**
 
-```bash
-helm install tyk-gateway tyk-gateway -n tyk -f values.yaml
-```
+    ```bash
+    helm install tyk-gateway tyk-gateway -n tyk -f values.yaml
+    ```
 
-> **_NOTE_**: By default, Gateway runs as DaemonSet. If you are using more than a Node, please update Gateway kind to `Deployment` because multiple instances of gateways won't sync API Definition.
+    > **_NOTE_**: By default, Gateway runs as DaemonSet. If you are using more than a Node, please update Gateway kind to `Deployment` because multiple instances of gateways won't sync API Definition.
