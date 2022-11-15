@@ -187,7 +187,7 @@ gateway:
 
   # extraEnvs is used to set gateway env variables
   # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
-  #    value: "true"
+  #   value: "true"
   extraEnvs: []
 
   # used to mount files to the gateway containers
