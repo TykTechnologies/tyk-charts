@@ -5,19 +5,22 @@
 ## https://tyk.io/docs/tyk-oss/ce-helm-chart/
 ## Registry for all Tyk images - https://hub.docker.com/u/tykio
 
-# Chart name override. Truncates to 63 characters.
+# Overrides chart name. It is truncated to 63 characters.
 # Default value: tyk-pump.name
 nameOverride: ""
 
-# App name override. Truncates to 63 characters.
+# Overrides app name. IT is truncated to 63 characters.
 # Default value: tyk-pump.fullname
 fullnameOverride: ""
 
-# These are your Tyk stack secrets will directly map to the following Tyk stack
-# configuration:
 secrets:
-  # If you don't want to store plaintext secrets in the Helm value file and would
-  # rather provide the k8s Secret externally please populate the value below
+  # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
+  # rather provide the k8s Secret externally.
+  # Can set following fields in the secret:
+  # - redisPass: Sets redis password
+  # - redisSentinelPass: Set if you  are using Redis Sentinel. Used to set Redis password
+  # - mongoURL: Sets mongo connection url
+  # - pgConnectionString: Sets postgres connection details
   useSecretName: ""
 
 redis:
@@ -72,7 +75,9 @@ redis:
     database: 0
 
 # Choose the pumps backend for Tyk. [ "", "mongo", "postgres" ]
+# It defines the pumps to be created by default
 backend: ""
+
 mongo:
   # The mongoURL value will allow you to set your MongoDB address.
   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
@@ -101,29 +106,56 @@ pump:
   # Determines whether or not the pump component should be installed.
   enabled: true
 
+  # number for replicas for pump deployment
   replicaCount: 1
+
   image:
+    # image repository for Tyk pump
     repository: docker.tyk.io/tyk-pump/tyk-pump
+
+    # tag for Tyk pump
     tag: v1.5.1
+
+    # image pull policy
     pullPolicy: IfNotPresent
+
+  # annotations for pump deployment  
   annotations: {}
+
+  # We usually recommend not to specify default resources and to leave this
+  # as a conscious choice for the user. This also increases chances charts
+  # run on environments with little resources, such as Minikube. If you do
+  # want to specify resources, uncomment the following lines, adjust them
+  # as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
   resources: {}
-    # We usually recommend not to specify default resources and to leave this
-    # as a conscious choice for the user. This also increases chances charts
-    # run on environments with little resources, such as Minikube. If you do
-    # want to specify resources, uncomment the following lines, adjust them
-    # as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
+    
+  # securityContext values for pump pod 
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
+
+  # node labels for pump pod assignment
   nodeSelector: {}
+
+  # tolerations for pump pod assignment
   tolerations: []
+
+  # affinity for pump pod assignment
   affinity: {}
+
+  # extraEnvs is used to set environment variables in pump container
+  # - name: TYK_PMP_PURGEDELAY
+  #   value: 30
   extraEnvs: []
+
+  # mounts can be used to mount files on pump container
+  # - name: test
+  #   filename: test.csv
+  #   mountPath: /opt/test
   mounts: []
