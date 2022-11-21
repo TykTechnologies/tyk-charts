@@ -21,6 +21,8 @@ dependencies:
   - name: tyk-gateway
     version: v0.1.0
     repository: file://../tyk-gateway
+
   - name: tyk-pump
     version: v0.1.0
     repository: file://../tyk-pump
+    condition: tyk-pump.pump.enabled

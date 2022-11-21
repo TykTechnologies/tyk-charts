@@ -103,9 +103,6 @@ postgres:
 # possible pump configs can be found here:
 # https://github.com/TykTechnologies/tyk-pump#configuration
 pump:
-  # Determines whether or not the pump component should be installed.
-  enabled: true
-
   # number for replicas for pump deployment
   replicaCount: 1
 

@@ -1,4 +1,3 @@
-{{- if .Values.pump.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -185,4 +184,3 @@ spec:
             secretName: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
         {{- end }}
         {{- end }}
-{{- end }}
