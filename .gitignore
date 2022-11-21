@@ -1,4 +1,7 @@
 !tyk-pump/mounts/.gitkeep
 tyk-pump/mounts/*
+
 !tyk-gateway/mounts/.gitkeep
 tyk-gateway/mounts/*
+
+tyk-oss/charts/*

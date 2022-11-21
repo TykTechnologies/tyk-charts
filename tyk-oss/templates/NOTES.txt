@@ -1,0 +1,1 @@
+Tyk OSS is installed successfully
