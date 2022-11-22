@@ -23,7 +23,7 @@ Redis should already be installed or accessible by the gateway.
 
 4. **Set redis connection details in values.yaml file:**
 
-    In values.yaml file, set `redis.addr` and `redis.pass` with redis connection string and password respectively.
+    In values.yaml file, set `global.redis.addr` and `global.redis.pass` with redis connection string and password respectively.
 
     Alternatively, you can set connection details during installation using `--set` flag.
 
@@ -33,5 +33,3 @@ Redis should already be installed or accessible by the gateway.
     ```bash
     helm install tyk-gateway tyk-gateway -n tyk -f values.yaml
     ```
-
-    > **_NOTE_**: By default, Gateway runs as DaemonSet. If you are using more than a Node, please update Gateway kind to `Deployment` because multiple instances of gateways won't sync API Definition.
