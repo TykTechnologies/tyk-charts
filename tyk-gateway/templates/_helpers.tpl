@@ -36,11 +36,11 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{- define "tyk-gateway.redis_url" -}}
-{{- if .Values.redis.addrs -}}
-{{ join "," .Values.redis.addrs }}
+{{- if .Values.global.redis.addrs -}}
+{{ join "," .Values.global.redis.addrs }}
 {{- /* Adds support for older charts with the host and port options */}}
-{{- else if and .Values.redis.host .Values.redis.port -}}
-{{ .Values.redis.host }}:{{ .Values.redis.port }}
+{{- else if and .Values.global.redis.host .Values.global.redis.port -}}
+{{ .Values.global.redis.host }}:{{ .Values.global.redis.port }}
 {{- else -}}
 redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
