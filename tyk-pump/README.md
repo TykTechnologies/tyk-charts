@@ -18,8 +18,7 @@ For typical usage, we recommend using following umbrella charts:
 ## Prerequisites
 * Kuberentes 1.19+
 * Helm 3+
-* Redis 
-* Mongo/Postgres 
+* [Redis](https://tyk.io/docs/planning-for-production/redis/)
 
 ## Installing the Chart
 <!--
@@ -60,7 +59,7 @@ See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_h
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
 
 ### Set Redis conenction details (Required)
-Redis is Tyk Pump's primary database where it scrapes Tyk Gateway analytics from. You may set `redis.addr` and `redis.pass` with redis connection string and password respectively.
+Redis is Tyk Pump's primary database where it scrapes Tyk Gateway analytics from. You may set `redis.addr` and `redis.pass` with redis connection string and password for Tyk Gateway respectively.
 
 ### Default Pump Configurations
 
