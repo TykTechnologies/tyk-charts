@@ -26,7 +26,7 @@ For typical usage, we recommend using following umbrella charts:
 ## Prerequisites
 * Kuberentes 1.19+
 * Helm 3+
-* [Redis](https://github.com/redis/redis) should already be installed or accessible by the gateway 
+* [Redis](https://tyk.io/docs/planning-for-production/redis/) should already be installed or accessible by the gateway 
 
 ## Installing the Chart
 <!--
