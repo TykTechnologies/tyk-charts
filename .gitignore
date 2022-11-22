@@ -5,3 +5,4 @@ tyk-pump/mounts/*
 tyk-gateway/mounts/*
 
 tyk-oss/charts/*
+tyk-oss/Chart.lock
