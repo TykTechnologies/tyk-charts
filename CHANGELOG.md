@@ -5,3 +5,6 @@
 **Added**
 - Added pump component chart
 - Added gateway component chart
+
+**Updated**
+- Remove config files and set default configuration using environment variables
