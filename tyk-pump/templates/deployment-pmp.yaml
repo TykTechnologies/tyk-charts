@@ -51,6 +51,7 @@ spec:
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
+
           {{- if eq "postgres" (include "tyk-pump.backend" .) }}
           # SQL Pump
           - name: TYK_PMP_PUMPS_SQL_TYPE
@@ -85,6 +86,7 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end }}
                 key: pgConnectionString
           {{ else }}
+
           # Mongo Pump
           - name: TYK_PMP_PUMPS_MONGO_META_COLLECTIONNAME
             value: "tyk_analytics_pump"
@@ -125,6 +127,7 @@ spec:
             {{- else }}
             value: "{{ join "," .Values.redis.addrs }}"
             {{- end }}
+
           {{ if .Values.redis.enableSentinel }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SENTINELPASSWORD
             valueFrom:
@@ -142,6 +145,7 @@ spec:
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
             value: "false"
           {{ end }}
+
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
             valueFrom:
               secretKeyRef:
@@ -149,12 +153,27 @@ spec:
                 key: redisPass
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
             value: "{{ default "false" .Values.redis.useSSL }}"
+
+          - name: TYK_PMP_OMITCONFIGFILE
+            value: "true"
+          - name: TYK_PMP_ANALYTICSSTORAGETYPE
+            value: "redis"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXIDLE
+            value: "2000"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXACTIVE
+            value: "4000"
+          - name: TYK_PMP_PURGEDELAY
+            value: "2"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME
+            value: "tyk_uptime_analytics"
+
         {{- if .Values.pump.extraEnvs }}
         {{- range $env := .Values.pump.extraEnvs }}
           - name: {{ $env.name }}
             value: {{ $env.value | quote }}
         {{- end }}
         {{- end }}
+        
         command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
         volumeMounts:
           - name: tyk-pump-conf
