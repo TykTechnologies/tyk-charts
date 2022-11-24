@@ -37,8 +37,6 @@ spec:
       labels:
         app: gateway-{{ include "tyk-gateway.fullname" . }}
         release: {{ .Release.Name }}
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap-gateway.yaml") . | sha256sum }}
     spec:
 {{- if .Values.gateway.nodeSelector }}
       nodeSelector:
@@ -188,7 +186,7 @@ spec:
             value: {{ $env.value | quote }}
         {{- end }}
         {{- end }}
-        command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
+        command: ["/opt/tyk-gateway/tyk"]
         workingDir: /opt/tyk-gateway
         ports:
         - containerPort: {{ .Values.gateway.containerPort }}
@@ -198,8 +196,6 @@ spec:
         resources:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
-          - name: tyk-gateway-conf
-            mountPath: /etc/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
           - name: tyk-scratch
@@ -243,12 +239,6 @@ spec:
       volumes:
         - name: tyk-scratch
           emptyDir: {}
-        - name: tyk-gateway-conf
-          configMap:
-            name: gateway-conf-{{ include "tyk-gateway.fullname" . }}
-            items:
-              - key: tyk.conf
-                path: tyk.conf
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert
