@@ -124,6 +124,7 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
                 key: APISecret
+                
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
           - name: TYK_GW_TEMPLATEPATH
@@ -132,20 +133,10 @@ spec:
             value: "/opt/tyk-gateway/js/tyk.js"
           - name: TYK_GW_MIDDLEWAREPATH
             value: "/mnt/tyk-gateway/middleware"
-          # - name: TYK_GW_USEDBAPPCONFIGS
-          # value: false
           - name: TYK_GW_APPPATH
             value: "/mnt/tyk-gateway/apps"
           - name: TYK_GW_STORAGE_MAXIDLE
             value: "1000"
-          #- name: TYK_GW_ENABLEANALYTICS
-          #  value: false
-          #- name: TYK_GW_ANALYTICSCONFIG_TYPE
-          #  value: "mongo"
-          #- name: TYK_GW_HEALTHCHECK_ENABLEHEALTHCHECKS
-          #  value: false
-          #- name: TYK_GW_HEALTHCHECK_HEALTHCHECKVALUETIMEOUT
-          #  value: 60
           - name: TYK_GW_OPTIMISATIONSUSEASYNCSESSIONWRITE
             value: "true"
           - name: TYK_GW_ENABLENONTRANSACTIONALRATELIMITER
