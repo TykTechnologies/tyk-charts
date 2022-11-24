@@ -156,7 +156,7 @@ spec:
           - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
             value: "771"
           - name: TYK_GW_HTTPSERVEROPTIONS_SSLCERTIFICATES
-            value: "/etc/certs/combo.pem"
+            value: "/etc/certs/cert.pem"
           - name: TYK_GW_ALLOWINSECURECONFIGS
             value: "true"
           - name: TYK_GW_COPROCESSOPTIONS_ENABLECOPROCESS
