@@ -19,8 +19,6 @@ spec:
       labels:
         app: pump-{{ include "tyk-pump.fullname" . }}
         release: {{ .Release.Name }}
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap-pump.yaml") . | sha256sum }}
     spec:
 {{- if .Values.pump.nodeSelector }}
       nodeSelector:
@@ -173,11 +171,9 @@ spec:
             value: {{ $env.value | quote }}
         {{- end }}
         {{- end }}
-        
-        command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
+
+        command: ["/opt/tyk-pump/tyk-pump"]
         volumeMounts:
-          - name: tyk-pump-conf
-            mountPath: /etc/tyk-pump
           {{- if .Values.pump.mounts }}
           {{- range $secret := .Values.pump.mounts }}
           - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
@@ -191,12 +187,6 @@ spec:
       {{- toYaml .Values.pump.securityContext | nindent 10 }}
       {{- end }}
       volumes:
-        - name: tyk-pump-conf
-          configMap:
-            name: pump-conf-{{ include "tyk-pump.fullname" . }}
-            items:
-              - key: pump.conf
-                path: pump.conf
         {{- if .Values.pump.mounts }}
         {{- range $secret := .Values.pump.mounts }}
         - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
