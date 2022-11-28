@@ -5,3 +5,6 @@
 **Added**
 - Added pump component chart
 - Added gateway component chart
+
+**Updated**
+- Enabled TLS certificate configuration via secret 
