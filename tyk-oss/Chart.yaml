@@ -25,4 +25,4 @@ dependencies:
   - name: tyk-pump
     version: v0.1.0
     repository: file://../tyk-pump
-    condition: tyk-pump.pump.enabled
+    condition: global.components.pump

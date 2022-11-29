@@ -1,4 +1,8 @@
 global:
+  components:
+    # Determines whether or not the pump component should be installed.
+    pump: false
+
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME
@@ -243,8 +247,7 @@ tyk-pump:
   # possible pump configs can be found here:
   # https://github.com/TykTechnologies/tyk-pump#configuration
   pump:
-    # Determines whether or not the pump component should be installed.
-    enabled: false
+
 
     # number for replicas for pump deployment
     replicaCount: 1
