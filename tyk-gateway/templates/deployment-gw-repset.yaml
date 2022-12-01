@@ -86,16 +86,15 @@ spec:
             value: "redis"
           - name: TYK_GW_STORAGE_ADDRS
             value: {{ include "tyk-gateway.redis_url" . | quote }}
-
-          {{ if .Values.redis.enableSentinel }}
+          {{ if .Values.global.redis.enableSentinel }}
           - name: TYK_GW_STORAGE_SENTINELPASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end }}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end }}
                 key: redisSentinelPass
           - name: TYK_GW_STORAGE_MASTERNAME
-            value: "{{- .Values.redis.masterName -}}"
-         {{ else if .Values.redis.enableCluster }}
+            value: "{{- .Values.global.redis.masterName -}}"
+         {{ else if .Values.global.redis.enableCluster }}
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "true"
          {{ else }}
@@ -106,23 +105,23 @@ spec:
          {{ end }}
 
           - name: TYK_GW_STORAGE_DATABASE
-            value: "{{ default "0" .Values.redis.storage.database }}"
+            value: "{{ default "0" .Values.global.redis.storage.database }}"
           - name: TYK_GW_STORAGE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
                 key: redisPass
           - name: TYK_GW_STORAGE_USESSL
-            value: "{{ default "false" .Values.redis.useSSL }}"
+            value: "{{ default "false" .Values.global.redis.useSSL }}"
           - name: TYK_GW_SECRET
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
                 key: APISecret
           - name: TYK_GW_NODESECRET
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
                 key: APISecret
                 
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
@@ -170,6 +169,13 @@ spec:
           - name: TYK_GW_PIDFILELOCATION
             value: "/mnt/tyk-gateway/tyk.pid"
 
+
+        {{- if .Values.global.components }}
+        {{- if .Values.global.components.pump }}
+          - name: TYK_GW_ENABLEANALYTICS
+            value: "true"
+        {{- end }}
+        {{- end }}
 
         {{- if .Values.gateway.extraEnvs }}
         {{- range $env := .Values.gateway.extraEnvs }}
