@@ -5,3 +5,4 @@
 **Added**
 - Added pump component chart
 - Added gateway component chart
+- Added umbrella chart for Tyk Open Source

@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "tyk-gateway.name" -}}
+{{- define "tyk-oss.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "tyk-gateway.fullname" -}}
+{{- define "tyk-oss.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,22 +26,37 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "tyk-gateway.chart" -}}
+{{- define "tyk-oss.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{- /* Create Semantic Version of gateway without prefix v */}}
-{{- define "tyk-gateway.gateway-version" -}}
-{{- printf "%s" .Values.gateway.image.tag | replace "v" "" -}}
-{{- end -}}
+{{/*
+Common labels
+*/}}
+{{- define "tyk-oss.labels" -}}
+helm.sh/chart: {{ include "tyk-oss.chart" . }}
+{{ include "tyk-oss.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
 
-{{- define "tyk-gateway.redis_url" -}}
-{{- if .Values.global.redis.addrs -}}
-{{ join "," .Values.global.redis.addrs }}
-{{- /* Adds support for older charts with the host and port options */}}
-{{- else if and .Values.global.redis.host .Values.global.redis.port -}}
-{{ .Values.global.redis.host }}:{{ .Values.global.redis.port }}
-{{- else -}}
-redis.{{ .Release.Namespace }}.svc.cluster.local:6379
-{{- end -}}
-{{- end -}}
+{{/*
+Selector labels
+*/}}
+{{- define "tyk-oss.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "tyk-oss.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "tyk-oss.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "tyk-oss.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
