@@ -89,6 +89,7 @@ data in a datastore for your use.
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `tyk-pump.pump.extraEnvs`
 
+<!--
 e.g. Prometheus Pump
 
 ```
@@ -98,3 +99,4 @@ TYK_PMP_PUMPS_PROMETHEUS_META_PATH=/metrics
 TYK_PMP_PUMPS_PROMETHEUS_META_CUSTOMMETRICS='[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name"]}]'
 TYK_PMP_PUMPS_PROMETHEUS_META_DISABLED_METRICS=[]
 ```
+-->
