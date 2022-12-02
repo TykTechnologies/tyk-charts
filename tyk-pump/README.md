@@ -33,10 +33,11 @@ To install the chart from Git repository in namespace `tyk` with the release nam
 
     git clone https://github.com/TykTechnologies/tyk-charts.git
     cd tyk-charts
-    helm show values tyk-pump > values-pump.yaml
-    helm install tyk-pump tyk-pump -n tyk --create-namespace -f values-pump.yaml
+    helm show values tyk-pump > values.yaml
 
 Note: Set redis connection details first. See [Configuration](#configuration) below.
+
+    helm install tyk-pump tyk-pump -n tyk --create-namespace -f values.yaml
 
 ## Uninstalling the Chart
 
@@ -49,25 +50,30 @@ This removes all the Kubernetes components associated with the chart and deletes
     helm upgrade tyk-pump tyk-pump -n tyk
 
 ### Upgrading from tyk-headless chart
-Please see Migration notes in tyk-oss chart
+Please see Migration notes in [tyk-oss](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss) chart
 
 ## Configuration
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To get all configurable options with detailed comments:
 
-    helm show values tyk-gateway > values.yaml
+    helm show values tyk-pump > values.yaml
     
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
 
 ### Set Redis conenction details (Required)
-Redis is Tyk Pump's primary database where it scrapes Tyk Gateway analytics from. You may set `redis.addr` and `redis.pass` with redis connection string and password for Tyk Gateway respectively.
+Redis is Tyk Pump's primary database where it scrapes Tyk Gateway analytics from. You may set `global.redis.addr` and `global.redis.pass` with redis connection string and password for Tyk Gateway respectively.
 
-### Default Pump Configurations
+### Pump Configurations
 
+#### No Pump
+Set `global.backend=''` if you do not want to persist analytics data to backend.
 
-### Set environment variables
+#### Mongo Pump
+To view analytics data on Dashboard if your backend is Mongo:
+Set `global.backend='mongo'`, and add connection details for mongo (same as Dashboard configurations) under `global.mongo`.
 
-Tyk can be configured using environment variables. You can provide a list of environment variables at `gateway.extraEnvs`. See [Tyk Docs](https://tyk.io/docs/tyk-oss-gateway/configuration/) for a list of options available.
+#### Postgres Pump
+To view analytics data on Dashboard if your backend is Postgres:
+Set `global.backend='postgres'`, and add connection details for postgres (same as Dashboard configurations) under `global.postgres`.
 
-### Set values via secrets
-
-You can specify some of the values via secrets.
+#### Other Pumps
+To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
