@@ -84,7 +84,7 @@ global:
     user: postgres
     password:
     database: tyk_analytics
-    sslmode:
+    sslmode: disable
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
