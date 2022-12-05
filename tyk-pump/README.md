@@ -63,7 +63,7 @@ You can update any value in your local values.yaml file and use `-f [filename]` 
 Redis is Tyk Pump's primary database where it scrapes Tyk Gateway analytics from. You may set `global.redis.addr` and `global.redis.pass` with redis connection string and password for Tyk Gateway respectively.
 
 ### Pump Configurations
-
+ 
 #### No Pump
 Set `pump.backend=''` if you do not want to persist analytics data to backend.
 
