@@ -126,7 +126,7 @@ tyk-gateway:
       repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v4.0.0
+      tag: v4.0.9
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -248,7 +248,6 @@ tyk-pump:
   # https://github.com/TykTechnologies/tyk-pump#configuration
   pump:
 
-
     # number for replicas for pump deployment
     replicaCount: 1
 
@@ -257,7 +256,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.5.1
+      tag: v1.6.0
 
       # image pull policy
       pullPolicy: IfNotPresent
