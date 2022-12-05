@@ -81,7 +81,7 @@ data in a datastore for your use.
 
 | Pump       | Configuration      |
 | ---------- | ------------------ | 
-| No Pump (Default)   | Set `global.backend=''` if you do not want to persist analytics data to backend.  |
+| No Pump (Default)   | Set `tyk-pump.pump.backend=''` if you do not want to persist analytics data to backend.  |
 | Mongo Pump | Set `global.backend='mongo'`, and add connection details for mongo under `global.mongo`. |
 | SQL Pump   | Set `global.backend='postgres'`, and add connection details for postgres under `global.postgres`. |
 
