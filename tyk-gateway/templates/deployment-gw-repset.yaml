@@ -123,7 +123,9 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
                 key: APISecret
-                
+
+          - name: TYK_GW_POLICIES_ALLOWEXPLICITPOLICYID
+            value: "true" 
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
           - name: TYK_GW_TEMPLATEPATH
