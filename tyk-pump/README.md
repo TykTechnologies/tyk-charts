@@ -69,7 +69,7 @@ Set `pump.backend=''` if you do not want to persist analytics data to backend.
 
 #### Mongo Pump
 To view analytics data on Dashboard if your backend is Mongo:
-Set `global.backend='mongo'`, and add connection details for mongo (same as Dashboard configurations) under `global.mongo`.
+Set `pump.backend='mongo'`, and add connection details for mongo (same as Dashboard configurations) under `global.mongo`.
 
 #### Postgres Pump
 To view analytics data on Dashboard if your backend is Postgres:
