@@ -5,3 +5,7 @@
 **Added**
 - Added pump component chart
 - Added gateway component chart
+- Added umbrella chart for Tyk Open Source
+
+**Updated**
+- Remove config files and set default configuration using environment variables

@@ -31,30 +31,30 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{- define "tyk-pump.redis_url" -}}
-{{- if .Values.redis.addrs -}}
-{{ join "," .Values.redis.addrs }}
+{{- if .Values.global.redis.addrs -}}
+{{ join "," .Values.global.redis.addrs }}
 {{- /* Adds support for older charts with the host and port options */}}
-{{- else if and .Values.redis.host .Values.redis.port -}}
-{{ .Values.redis.host }}:{{ .Values.redis.port }}
+{{- else if and .Values.global.redis.host .Values.global.redis.port -}}
+{{ .Values.global.redis.host }}:{{ .Values.global.redis.port }}
 {{- else -}}
 redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 {{- end -}}
 
 {{- define "tyk-pump.mongo_url" -}}
-{{- if .Values.mongo.mongoURL -}}
-{{ .Values.mongo.mongoURL }}
+{{- if .Values.global.mongo.mongoURL -}}
+{{ .Values.global.mongo.mongoURL }}
 {{- /* Adds support for older charts with the host and port options */}}
-{{- else if and .Values.mongo.host .Values.mongo.port -}}
-mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}/tyk_analytics
+{{- else if and .Values.global.mongo.host .Values.global.mongo.port -}}
+mongodb://{{ .Values.global.mongo.host }}:{{ .Values.global.mongo.port }}/tyk_analytics
 {{- else -}}
 mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 
 {{- define "tyk-pump.pg_connection_string" -}}
-{{- if .Values.postgres -}}
-{{- range $key, $value := .Values.postgres }}{{ print $key "=" $value " " }}{{- end }}
+{{- if .Values.global.postgres -}}
+{{- range $key, $value := .Values.global.postgres }}{{ print $key "=" $value " " }}{{- end }}
 {{- end -}}
 {{- end -}}
 
@@ -65,7 +65,7 @@ postgres
 {{- else if eq "mongo" .Values.backend -}}
 mongo
 {{- end -}}
-{{- else if .Values.mongo.enabled -}}
+{{- else if .Values.global.mongo.enabled -}}
 mongo
 {{- else -}}
 none
