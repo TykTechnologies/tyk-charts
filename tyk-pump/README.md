@@ -65,7 +65,7 @@ Redis is Tyk Pump's primary database where it scrapes Tyk Gateway analytics from
 ### Pump Configurations
 
 #### No Pump
-Set `global.backend=''` if you do not want to persist analytics data to backend.
+Set `pump.backend=''` if you do not want to persist analytics data to backend.
 
 #### Mongo Pump
 To view analytics data on Dashboard if your backend is Mongo:
