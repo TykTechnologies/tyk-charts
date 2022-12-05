@@ -73,7 +73,7 @@ Set `pump.backend='mongo'`, and add connection details for mongo (same as Dashbo
 
 #### Postgres Pump
 To view analytics data on Dashboard if your backend is Postgres:
-Set `global.backend='postgres'`, and add connection details for postgres (same as Dashboard configurations) under `global.postgres`.
+Set `pump.backend='postgres'`, and add connection details for postgres (same as Dashboard configurations) under `global.postgres`.
 
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
