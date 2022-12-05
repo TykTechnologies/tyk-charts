@@ -65,9 +65,6 @@ global:
     storage:
       database: 0
 
-  # Choose the pumps backend for Tyk. [ "", "mongo", "postgres" ]
-  # It defines the pumps to be created by default
-  backend: ""
 
   mongo:
     # The mongoURL value will allow you to set your MongoDB address.
@@ -260,6 +257,11 @@ tyk-pump:
 
       # image pull policy
       pullPolicy: IfNotPresent
+
+    # Choose the pumps backend for Tyk. [ "", "mongo", "postgres" ]
+    # It defines the pumps to be created by default
+    backend: "postgres"
+
 
     # annotations for pump deployment  
     annotations: {}

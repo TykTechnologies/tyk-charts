@@ -82,7 +82,8 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end }}
                 key: pgConnectionString
-          {{ else }}
+                
+          {{ else if eq "mongo" (include "tyk-pump.backend" .) }}
 
           # Mongo Pump
           - name: TYK_PMP_PUMPS_MONGO_META_COLLECTIONNAME

@@ -59,10 +59,10 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 
 {{- define "tyk-pump.backend" -}}
-{{- if .Values.backend -}}
-{{- if eq "postgres" .Values.backend -}}
+{{- if .Values.pump.backend -}}
+{{- if eq "postgres" .Values.pump.backend -}}
 postgres
-{{- else if eq "mongo" .Values.backend -}}
+{{- else if eq "mongo" .Values.pump.backend -}}
 mongo
 {{- end -}}
 {{- else if .Values.global.mongo.enabled -}}

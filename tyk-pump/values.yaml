@@ -75,10 +75,6 @@ global:
     storage:
       database: 0
 
-  # Choose the pumps backend for Tyk. [ "", "mongo", "postgres" ]
-  # It defines the pumps to be created by default
-  backend: ""
-
   mongo:
     # The mongoURL value will allow you to set your MongoDB address.
     # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
@@ -116,6 +112,10 @@ pump:
 
     # image pull policy
     pullPolicy: IfNotPresent
+
+  # Choose the pumps backend for Tyk. [ "", "mongo", "postgres" ]
+  # It defines the pumps to be created by default
+  backend: "postgres"
 
   # annotations for pump deployment  
   annotations: {}

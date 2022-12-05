@@ -30,7 +30,7 @@ This chart deploys the open source Tyk Pump.
 
 5. **Set mongo/postgres connection details in values.yaml file:**
 
-    In values.yaml file, set `global.backend` to `postgres` or `mongo`. If not set, `mongo` will be used by default. 
+    In values.yaml file, set `pump.backend` to `postgres` or `mongo`. If not set, `mongo` will be used by default. 
 
     The connection details for mongo/postgres can be set under `global.mongo` and `global.postgres` section respectively in values.yaml file. 
 
