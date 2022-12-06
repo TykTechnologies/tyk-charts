@@ -5,6 +5,11 @@
 **Added**
 - Added pump component chart
 - Added gateway component chart
+- Added umbrella chart for Tyk Open Source
 
 **Updated**
+- Remove config files and set default configuration using environment variables
+- Create postgres pump by default
+- Change default image tags of pump(v1.6.0) and gateway(v4.0.9)
+- Set `TYK_GW_POLICIES_ALLOWEXPLICITPOLICYID` to true
 - Enabled TLS certificate configuration via secret 

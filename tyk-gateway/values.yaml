@@ -13,67 +13,68 @@ nameOverride: ""
 # Default value: tyk-gateway.fullname
 fullnameOverride: ""
 
-secrets:
-  # APISecret sets node_secret and secret in tyk.conf
-  APISecret: CHANGEME
-  # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
-  # rather provide the k8s Secret externally.
-  # You can set following fields in the secret
-  # - APISecret - Sets node_secret and secret in tyk.conf
-  # - redisPass - Sets Redis password
-  # - redisSentinelPass - Sets Redis Password. Set it only if you are using Redis Sentinel
-  useSecretName: ""
+global:
+  secrets:
+    # APISecret sets node_secret and secret in tyk.conf
+    APISecret: CHANGEME
+    # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
+    # rather provide the k8s Secret externally.
+    # You can set following fields in the secret
+    # - APISecret - Sets node_secret and secret in tyk.conf
+    # - redisPass - Sets Redis password
+    # - redisSentinelPass - Sets Redis Password. Set it only if you are using Redis Sentinel
+    useSecretName: ""
 
-redis:
-  # The addrs value will allow you to set your Redis addresses.
-  #
-  # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
-  # endpoint. If using sentinel connection mode for Redis, please update the port number (typically 26379).
-  #
-  # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
-  # the endpoints of the redis instances or use the cluster configuration endpoint.
-  #
-  # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
-  # addrs:
-  #   Example using tyk simple redis chart
-  #   - redis.tyk.svc.cluster.local:6379
-  #   Example using bitnami/redis
-  #   - tyk-redis-master.tyk.svc.cluster.local:6379
-  #   Example using bitnami/redis with sentinel
-  #   - tyk-redis.tyk.svc.cluster.local:26379
-  #   Example using bitnami/redis-cluster
-  #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
+  redis:
+    # The addrs value will allow you to set your Redis addresses.
+    #
+    # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
+    # endpoint. If using sentinel connection mode for Redis, please update the port number (typically 26379).
+    #
+    # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
+    # the endpoints of the redis instances or use the cluster configuration endpoint.
+    #
+    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+    # addrs:
+    #   Example using tyk simple redis chart
+    #   - redis.tyk.svc.cluster.local:6379
+    #   Example using bitnami/redis
+    #   - tyk-redis-master.tyk.svc.cluster.local:6379
+    #   Example using bitnami/redis with sentinel
+    #   - tyk-redis.tyk.svc.cluster.local:26379
+    #   Example using bitnami/redis-cluster
+    #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
 
-  # Redis password
-  # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
-  # your password in the field below
-  # pass: ""
+    # Redis password
+    # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
+    # your password in the field below
+    # pass: ""
 
-  # Enables SSL for Redis connection. Redis instance will have to support that.
-  # Default value: false
-  # useSSL: true
+    # Enables SSL for Redis connection. Redis instance will have to support that.
+    # Default value: false
+    # useSSL: true
 
-  # If using "Redis Cluster" set enableCluster to true
-  # (e.g. if using bitnami/redis-cluster)
-  # enableCluster: true
+    # If using "Redis Cluster" set enableCluster to true
+    # (e.g. if using bitnami/redis-cluster)
+    # enableCluster: true
 
-  # Enables sentinel connection mode for Redis. If enabled, provide both
-  # mandatory values for sentinelPass and masterName.
-  # enableSentinel: false
+    # Enables sentinel connection mode for Redis. If enabled, provide both
+    # mandatory values for sentinelPass and masterName.
+    # enableSentinel: false
 
-  # Redis sentinel password, only required while enableSentinel is true.
-  # For bitnami/redis the same password as Redis above
-  # sentinelPass: ""
+    # Redis sentinel password, only required while enableSentinel is true.
+    # For bitnami/redis the same password as Redis above
+    # sentinelPass: ""
 
-  # Redis sentinel master name, only required while enableSentinel is true.
-  # For bitnami/redis typically redis-master
-  # masterName: ""
+    # Redis sentinel master name, only required while enableSentinel is true.
+    # For bitnami/redis typically redis-master
+    # masterName: ""
 
-  # By default the database index is 0. Setting the database index is not
-  # supported with redis cluster. As such, if you have enableCluster: true,
-  # then this value should be omitted or explicitly set to 0.
-  storage:
-    database: 0
+    # By default the database index is 0. Setting the database index is not
+    # supported with redis cluster. As such, if you have enableCluster: true,
+    # then this value should be omitted or explicitly set to 0.
+    storage:
+      database: 0
 
 gateway:
   # The hostname to bind the Gateway to.
@@ -98,7 +99,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v4.0.0
+    tag: v4.0.9
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
