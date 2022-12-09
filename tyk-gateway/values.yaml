@@ -80,9 +80,10 @@ gateway:
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
 
-  # When true, sets the gateway protocol to HTTPS.
   tls:
+    # When true, sets the gateway protocol to HTTPS.
     enabled: false
+    # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
     secretName: tyk-default-tls-secret
 
   # kind is type of k8s object to be created for gateway. 
