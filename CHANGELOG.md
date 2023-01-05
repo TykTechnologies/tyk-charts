@@ -12,3 +12,4 @@
 - Create postgres pump by default
 - Change default image tags of pump(v1.6.0) and gateway(v4.0.9)
 - Set `TYK_GW_POLICIES_ALLOWEXPLICITPOLICYID` to true
+- Change default image tags of pump(v1.7.0) and gateway(v4.3.1)
