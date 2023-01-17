@@ -77,5 +77,5 @@ steps:
 
 1. Set .Values.gateway.tls.enabled  to true.
 2. Set .Values.gateway.tls.useDefaultTykCertificate to false.
-3. Create an opaque secret with the structure described in tyk-gateway/templates/secrets.yaml.
+3. Create an opaque secret with the structure described in tyk-gateway/templates/secrets-mounts.yaml.
 4. Set .Values.gateway.tls.secretName to the name of the newly created secret.
