@@ -1,0 +1,18 @@
+{{ if eq "prometheus" .Values.pump.backend }}
+{{ if .Values.pump.prometheusPump.prometheusOperator.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: tyk-pump-podmonitor-{{ include "tyk-pump.fullname" . }}
+  labels:
+    {{- range $key, $value := .Values.pump.prometheusPump.prometheusOperator.podMonitorSelector }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: pump-{{ include "tyk-pump.fullname" . }}
+  podMetricsEndpoints:
+    - port: web
+{{ end }}
+{{ end }}
