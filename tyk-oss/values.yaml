@@ -262,7 +262,7 @@ tyk-pump:
     # It defines the pumps to be created by default.
     # If you would like to use other backends such as ElasticSearch, please set this field to "" and configure
     # your Tyk Pump via environment variables.
-    backend: ""
+    backend: "prometheus"
 
     # uptimePumpBackend configures uptime Tyk Pump. ["", "mongo", "postgres"].
     # Set it to "" for disabling uptime Tyk Pump.
@@ -290,7 +290,7 @@ tyk-pump:
         # Tyk Pump can be monitored with PodMonitor Custom Resource of Prometheus Operator.
         # If enabled, PodMonitor resource is created based on .Values.pump.prometheusPump.prometheusOperator.podMonitorSelector
         # for Tyk Pump.
-        enabled: true
+        enabled: false
         # podMonitorSelector represents a podMonitorSelector of your Prometheus resource. So that
         # your Prometheus resource can select PodMonitor objects based on selector defined here.
         # Please set this field to the podMonitorSelector field of your monitoring.coreos.com/v1
