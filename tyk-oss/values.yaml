@@ -282,7 +282,7 @@ tyk-pump:
       #
       # customMetrics: '[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name"]}]'
       customMetrics: ""
-      # By default, Pump creates a PodMonitor Custom Resource on your cluster if you use Prometheus Pump. Set .prometheusOperator.enabled to false
+      # By default, Pump creates a PodMonitor Custom Resource on your cluster if you are using Prometheus Pump. Set .prometheusOperator.enabled to false
       # for disabling installation of PodMonitor resource.
       prometheusOperator:
         # enabled determines whether the Prometheus Operator is in use or not. By default,
