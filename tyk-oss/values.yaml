@@ -275,7 +275,7 @@ tyk-pump:
       host: ""
       # port represents the port where Tyk Pump serve the metrics for Prometheus.
       port: 9090
-      # path represents the path to the Prometheus collection. For example /metrics.
+      # path represents the path to the Prometheus metrics endpoint. For example /metrics.
       path: /metrics
       # customMetrics allows defining custom Prometheus metrics for Tyk Pump.
       # It accepts a string that represents a JSON object. For instance,
