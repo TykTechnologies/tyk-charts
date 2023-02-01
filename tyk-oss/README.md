@@ -86,6 +86,11 @@ data in a datastore of your use.
 | SQL Pump   | Set `tyk-pump.pump.backend='postgres'`, and add connection details for postgres under `global.postgres`. |
 | No Pump    | Set `tyk-pump.pump.backend=''` if you do not want to persist analytics data or don't want to configure any of the above mentioned pump types  |
 
+#### Uptime Pump
+Uptime Pump can be configured by setting `tyk-pump.pump.uptimePumpBackend` in values.yaml file. It support following values
+1. mongo: Used to set mongo pump for uptime analytics.
+2. postgres: Used to set postgres pump for uptime analytics.
+3. empty: Used to disable uptime analytics.
 
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `tyk-pump.pump.extraEnvs`
@@ -108,10 +113,10 @@ TYK_PMP_PUMPS_ELASTICSEARCH_META_BULKCONFIG_FLUSHINTERVAL=60
 -->
 
 ## Enabling TLS
-We have provided an easy way of enabling TLS via the `.Values.tyk-gateway.gateway.tls.enabled` flag. Setting this value to true will automatically enable TLS using the default certificate provided by tyk-gateway component chart. 
+We have provided an easy way of enabling TLS via the `tyk-gateway.gateway.tls.enabled` flag. Setting this value to true will automatically enable TLS using the default certificate provided by tyk-gateway component chart. 
 
 If you want to use your own key/cert pair, you must follow the following steps:
 1. Create a tls secret using your cert and key pair.
-2. Set `.Values.gateway.tls.enabled`  to true.
-3. Set `.Values.gateway.tls.useDefaultTykCertificate` to false.
-4. Set `.Values.gateway.tls.secretName` to the name of the newly created secret.
+2. Set `tyk-gateway.gateway.tls.enabled`  to true.
+3. Set `tyk-gateway.gateway.tls.useDefaultTykCertificate` to false.
+4. Set `tyk-gateway.gateway.tls.secretName` to the name of the newly created secret.

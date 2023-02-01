@@ -65,7 +65,7 @@ Redis is Tyk Pump's primary database where it scrapes Tyk Gateway analytics from
 ### Pump Configurations
  
 #### No Pump
-Set `pump.backend=''` if you do not want to persist analytics data to backend.
+Set `pump.backend=''` if you do not want to persist analytics data or you don't want to send analytics to mongo, postgres or prometheus.
 
 #### Mongo Pump
 To view analytics data on Dashboard if your backend is Mongo:
@@ -83,5 +83,13 @@ To configure prometheus connection settings, set connection details in `pump.pro
 We also support monitoring using Prometheus Operator. All you have to do is set `pump.prometheusPump.prometheusOperator.enabled` to true.
 This will create a PodMonitor resource for your Pump instance.
 
+#### Uptime Pump
+Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It support following values
+1. mongo: Used to set mongo pump for uptime analytics.
+2. postgres: Used to set postgres pump for uptime analytics.
+3. empty: Used to disable uptime analytics.
+
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
+
+
