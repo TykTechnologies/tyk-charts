@@ -258,10 +258,47 @@ tyk-pump:
       # image pull policy
       pullPolicy: IfNotPresent
 
-    # Choose the pumps backend for Tyk. [ "", "mongo", "postgres" ]
-    # It defines the pumps to be created by default
-    backend: "postgres"
+    # Choose the pump backend for Tyk Pump. ["", "mongo", "postgres", "prometheus"]
+    # It defines the pumps to be created by default.
+    # If you would like to use other backends such as ElasticSearch, please set this field to "" and configure
+    # your Tyk Pump via environment variables.
+    backend: "prometheus"
 
+    # uptimePumpBackend configures uptime Tyk Pump. ["", "mongo", "postgres"].
+    # Set it to "" for disabling uptime Tyk Pump.
+    uptimePumpBackend: ""
+
+    # prometheusPump configures Tyk Pump to expose Prometheus metrics. Please set .Values.tyk-pump.pump.backend to "prometheus"
+    # in order to enable Prometheus Pump.
+    prometheusPump:
+      # host represents the host without port, where Tyk Pump serve the metrics for Prometheus.
+      host: ""
+      # port represents the port where Tyk Pump serve the metrics for Prometheus.
+      port: 9090
+      # path represents the path to the Prometheus metrics endpoint. For example /metrics.
+      path: /metrics
+      # customMetrics allows defining custom Prometheus metrics for Tyk Pump.
+      # It accepts a string that represents a JSON object. For instance,
+      #
+      # customMetrics: '[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name"]}]'
+      customMetrics: ""
+      # If you are using prometheus Operator, set the fields in the section below.
+      prometheusOperator:
+        # enabled determines whether the Prometheus Operator is in use or not. By default,
+        # it is disabled.
+        # Tyk Pump can be monitored with PodMonitor Custom Resource of Prometheus Operator.
+        # If enabled, PodMonitor resource is created based on .Values.pump.prometheusPump.prometheusOperator.podMonitorSelector
+        # for Tyk Pump.
+        enabled: false
+        # podMonitorSelector represents a podMonitorSelector of your Prometheus resource. So that
+        # your Prometheus resource can select PodMonitor objects based on selector defined here.
+        # Please set this field to the podMonitorSelector field of your monitoring.coreos.com/v1
+        # Prometheus resource's spec.
+        #
+        # You can check the podMonitorSelector via:
+        #   kubectl describe prometheuses.monitoring.coreos.com <PROMETHEUS_POD>
+        podMonitorSelector:
+          release: prometheus-stack
 
     # annotations for pump deployment  
     annotations: {}
