@@ -38,7 +38,7 @@ spec:
         workingDir: "/opt/tyk-pump"
         {{- if eq "prometheus" (include "tyk-pump.pumpType" .) }}
         ports:
-          - name: prometheusMetricsPort
+          - name: prom-metrics
             containerPort: {{ .Values.pump.prometheusPump.port }}
         {{ end }}
         securityContext:
