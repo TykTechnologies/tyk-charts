@@ -100,3 +100,12 @@ TYK_PMP_PUMPS_PROMETHEUS_META_CUSTOMMETRICS='[{"name":"tyk_http_requests_total",
 TYK_PMP_PUMPS_PROMETHEUS_META_DISABLED_METRICS=[]
 ```
 -->
+
+## Enabling TLS
+We have provided an easy way of enabling TLS via the `.Values.tyk-gateway.gateway.tls.enabled` flag. Setting this value to true will automatically enable TLS using the default certificate provided by tyk-gateway component chart. 
+
+If you want to use your own key/cert pair, you must follow the following steps:
+1. Create a tls secret using your cert and key pair.
+2. Set `.Values.gateway.tls.enabled`  to true.
+3. Set `.Values.gateway.tls.useDefaultTykCertificate` to false.
+4. Set `.Values.gateway.tls.secretName` to the name of the newly created secret.
