@@ -81,7 +81,7 @@ data in a datastore of your use.
 
 | Pump       | Configuration      |
 | ---------- | ------------------ | 
-| Prometheus Pump (Default)  | Set `tyk-pump.pump.backend='prometheus'`, and add connection details for postgres under `tyk-pump.pump.prometheusPump`. |
+| Prometheus Pump (Default)  | Set `tyk-pump.pump.backend='prometheus'`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. |
 | Mongo Pump | Set `tyk-pump.pump.backend='mongo'`, and add connection details for mongo under `global.mongo`. |
 | SQL Pump   | Set `tyk-pump.pump.backend='postgres'`, and add connection details for postgres under `global.postgres`. |
 | No Pump    | Set `tyk-pump.pump.backend=''` if you do not want to persist analytics data or don't want to configure any of the above mentioned pump types  |
