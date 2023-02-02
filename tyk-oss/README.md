@@ -58,7 +58,7 @@ To get all configurable options with detailed comments:
 You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation. 
 Alternatively, you can use `--set` flag to set it in Tyk installation.
 
-### Set Redis conenction details (Required)
+### Set Redis connection details (Required)
 
 Tyk uses Redis for distributed rate-limiting and token storage. You may set `global.redis.addr` and `global.redis.pass` with redis connection 
 string and password respectively.
@@ -77,26 +77,46 @@ To enable Pump, set `global.components.pump` to true
 
 #### Send analytics data to backend
 It is usually used with Dashboard (in licensed edition) to view analytics data. However, for OSS installation, you can also persist analytics 
-data in a datastore for your use.
+data in a datastore of your use.
 
 | Pump       | Configuration      |
 | ---------- | ------------------ | 
-| No Pump    | Set `tyk-pump.pump.backend=''` if you do not want to persist analytics data to backend.  |
+| Prometheus Pump (Default)  | Set `tyk-pump.pump.backend='prometheus'`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. |
 | Mongo Pump | Set `tyk-pump.pump.backend='mongo'`, and add connection details for mongo under `global.mongo`. |
-| SQL Pump (Default)  | Set `tyk-pump.pump.backend='postgres'`, and add connection details for postgres under `global.postgres`. |
+| SQL Pump   | Set `tyk-pump.pump.backend='postgres'`, and add connection details for postgres under `global.postgres`. |
+| No Pump    | Set `tyk-pump.pump.backend=''` if you do not want to persist analytics data or don't want to configure any of the above mentioned pump types  |
 
+#### Uptime Pump
+Uptime Pump can be configured by setting `tyk-pump.pump.uptimePumpBackend` in values.yaml file. It support following values
+1. mongo: Used to set mongo pump for uptime analytics.
+2. postgres: Used to set postgres pump for uptime analytics.
+3. empty: Used to disable uptime analytics.
 
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `tyk-pump.pump.extraEnvs`
 
 <!--
-e.g. Prometheus Pump
+e.g. Elastic Search Pump
 
 ```
-TYK_PMP_PUMPS_PROMETHEUS_TYPE=prometheus
-TYK_PMP_PUMPS_PROMETHEUS_META_ADDR=localhost:9090
-TYK_PMP_PUMPS_PROMETHEUS_META_PATH=/metrics
-TYK_PMP_PUMPS_PROMETHEUS_META_CUSTOMMETRICS='[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name"]}]'
-TYK_PMP_PUMPS_PROMETHEUS_META_DISABLED_METRICS=[]
+TYK_PMP_PUMPS_ELASTICSEARCH_TYPE=elasticsearch
+TYK_PMP_PUMPS_ELASTICSEARCH_META_INDEXNAME=tyk_analytics
+TYK_PMP_PUMPS_ELASTICSEARCH_META_ELASTICSEARCHURL=http://localhost:9200
+TYK_PMP_PUMPS_ELASTICSEARCH_META_ENABLESNIFFING=false
+TYK_PMP_PUMPS_ELASTICSEARCH_META_DOCUMENTTYPE=tyk_analytics
+TYK_PMP_PUMPS_ELASTICSEARCH_META_ROLLINGINDEX=false
+TYK_PMP_PUMPS_ELASTICSEARCH_META_EXTENDEDSTATISTICS=false
+TYK_PMP_PUMPS_ELASTICSEARCH_META_VERSION=5
+TYK_PMP_PUMPS_ELASTICSEARCH_META_BULKCONFIG_WORKERS=2
+TYK_PMP_PUMPS_ELASTICSEARCH_META_BULKCONFIG_FLUSHINTERVAL=60
 ```
 -->
+
+## Enabling TLS
+We have provided an easy way of enabling TLS via the `tyk-gateway.gateway.tls.enabled` flag. Setting this value to true will automatically enable TLS using the default certificate provided by tyk-gateway component chart. 
+
+If you want to use your own key/cert pair, you must follow the following steps:
+1. Create a tls secret using your cert and key pair.
+2. Set `tyk-gateway.gateway.tls.enabled`  to true.
+3. Set `tyk-gateway.gateway.tls.useDefaultTykCertificate` to false.
+4. Set `tyk-gateway.gateway.tls.secretName` to the name of the newly created secret.
