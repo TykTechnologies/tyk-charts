@@ -65,8 +65,8 @@ global:
     storage:
       database: 0
 
-
-  mongo:
+ # Set mongo connection details if you want to configure mongo pump.
+ # mongo:
     # The mongoURL value will allow you to set your MongoDB address.
     # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
     # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
@@ -75,16 +75,17 @@ global:
 
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
-    useSSL: false
+   # useSSL: false
 
-  # Postgres connection string parameters.
-  postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
-    port: 5432
-    user: postgres
-    password:
-    database: tyk_analytics
-    sslmode: disable
+ # Set postgres connection details if you want to configure postgres pump.
+ # Postgres connection string parameters.
+ # postgres:
+   # host: tyk-postgres-postgresql.tyk.svc.cluster.local
+   # port: 5432
+   # user: postgres
+   # password:
+   # database: tyk_analytics
+   # sslmode: disable
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
