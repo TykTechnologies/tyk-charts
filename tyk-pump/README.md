@@ -59,13 +59,13 @@ See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_h
     
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
 
-### Set Redis conenction details (Required)
+### Set Redis connection details (Required)
 Redis is Tyk Pump's primary database where it scrapes Tyk Gateway analytics from. You may set `global.redis.addr` and `global.redis.pass` with redis connection string and password for Tyk Gateway respectively.
 
 ### Pump Configurations
  
 #### No Pump
-Set `pump.backend=''` if you do not want to persist analytics data to backend.
+Set `pump.backend=''` if you do not want to persist analytics data or you don't want to send analytics to mongo, postgres or prometheus.
 
 #### Mongo Pump
 To view analytics data on Dashboard if your backend is Mongo:
@@ -75,5 +75,21 @@ Set `pump.backend='mongo'`, and add connection details for mongo (same as Dashbo
 To view analytics data on Dashboard if your backend is Postgres:
 Set `pump.backend='postgres'`, and add connection details for postgres (same as Dashboard configurations) under `global.postgres`.
 
+#### Prometheus Pump
+You can easily enable prometheus pump by setting the `pump.backend` field to `prometheus` in your values.yaml file.
+
+To configure prometheus connection settings, set connection details in `pump.prometheusPump` section.
+
+We also support monitoring using Prometheus Operator. All you have to do is set `pump.prometheusPump.prometheusOperator.enabled` to true.
+This will create a PodMonitor resource for your Pump instance.
+
+#### Uptime Pump
+Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It support following values
+1. mongo: Used to set mongo pump for uptime analytics.
+2. postgres: Used to set postgres pump for uptime analytics.
+3. empty: Used to disable uptime analytics.
+
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
+
+
