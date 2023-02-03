@@ -1,7 +1,10 @@
-Install Tyk Operator
+Thank you for installing Tyk OSS Chart {{ .Chart.Name }}. Your release is named {{ .Release.Name }}. At this point, Tyk Gateway is fully installed and should be accessible.
 
-At this point, Tyk Gateway is fully installed and should be accessible.
+To access your gateway, you can port-forward gateway pod to 8080 on your machine:
+    kubectl port-forward service/gateway-svc-{{ include "tyk-gateway.fullname" . }} 8080:{{ .Values.gateway.service.port }}
+    
+Run `curl localhost:8080/hello` to see some data back.
 
+Manage Ingress reousrces and APIs
 You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
-
 [Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)
