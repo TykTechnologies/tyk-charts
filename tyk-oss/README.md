@@ -13,11 +13,13 @@ By default, this chart installs following components as subcharts on a [Kubernet
 
 To enable or disable each component, change the corresponding enabled flag.
 
+Also, you can set the version of software at `image.tag` for each component. You could find the list of version tags available from Docker hub.
+
 ## Prerequisites
 
 * Kuberentes 1.19+
 * Helm 3+
-* [Redis](https://tyk.io/docs/planning-for-production/redis/) should already be installed or accessible by the gateway
+* Redis should already be installed or accessible by the gateway. For Redis installation instruction, please see https://tyk.io/docs/tyk-oss/ce-helm-chart/#recommended-via-bitnami-chart.
 
 ## Installing the Chart
 
@@ -28,7 +30,7 @@ To install the chart from Git repository in namespace `tyk` with the release nam
     helm dependency update tyk-oss
     helm show values tyk-oss > values-oss.yaml
 
-Note: Set redis connection details first. See [Configuration](#Configuration) below.
+If you use the bitnami chart for Redis installation, the DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379` You can update them in your local `values-oss.yaml` file under `global.redis.addr` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
     helm install tyk-oss tyk-oss -n tyk --create-namespace -f values-oss.yaml
 
@@ -75,42 +77,74 @@ Follow the notes from the installation output to get connection details and pass
 
 To enable Pump, set `global.components.pump` to true
 
-#### Send analytics data to backend
-It is usually used with Dashboard (in licensed edition) to view analytics data. However, for OSS installation, you can also persist analytics 
-data in a datastore of your use.
-
 | Pump       | Configuration      |
 | ---------- | ------------------ | 
 | Prometheus Pump (Default)  | Set `tyk-pump.pump.backend='prometheus'`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. |
 | Mongo Pump | Set `tyk-pump.pump.backend='mongo'`, and add connection details for mongo under `global.mongo`. |
 | SQL Pump   | Set `tyk-pump.pump.backend='postgres'`, and add connection details for postgres under `global.postgres`. |
-| No Pump    | Set `tyk-pump.pump.backend=''` if you do not want to persist analytics data or don't want to configure any of the above mentioned pump types  |
+| Uptime Pump | Set `tyk-pump.pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''` |
+| Other Pumps    | Set `tyk-pump.pump.backend=''` if you want to configure other pump types  |
+
+#### Prometheus Pump
+Set `tyk-pump.pump.backend='prometheus'`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. 
+
+#### Mongo pump
+If you are using the MongoDB pumps in the tyk-oss installation you will require MongoDB installed for that as well.
+
+To install Mongo you can use these rather excellent charts provided by Bitnami:
+
+    helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
+
+(follow notes from the installation output to get connection details and update them in `values.yaml` file)
+
+NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) list of supported MongoDB versions. Please make sure you are installing mongo helm chart that matches these version.
+
+*Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1. If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1. Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
+
+Add following under the `global` section in `values.yaml`:
+
+     # Set mongo connection details if you want to configure mongo pump.     
+     mongo:
+        # The mongoURL value will allow you to set your MongoDB address.
+        # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+        # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+        # If your MongoDB has a password you can add the username and password to the url
+        # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+        mongoURL: <MongoDB address>
+
+        # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+        # Default value: false
+        # useSSL: false
+
+#### SQL pump
+If you are using the SQL pumps in the tyk-oss installation you will require PostgreSQL installed for that as well.
+
+To install PostgreSQL you can use these rather excellent charts provided by Bitnami:
+
+    helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics" -n tyk
+
+(follow notes from the installation output to get connection details and update them in `values.yaml` file)
+
+Add following under the `global` section in `values.yaml`:
+
+     # Set postgres connection details if you want to configure postgres pump.
+     # Postgres connection string parameters.
+     postgres:
+       host: tyk-postgres-postgresql.tyk.svc.cluster.local
+       port: 5432
+       user: postgres
+       password:
+       database: tyk_analytics
+       sslmode: disable
 
 #### Uptime Pump
 Uptime Pump can be configured by setting `tyk-pump.pump.uptimePumpBackend` in values.yaml file. It support following values
-1. mongo: Used to set mongo pump for uptime analytics.
-2. postgres: Used to set postgres pump for uptime analytics.
+1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
+2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
 3. empty: Used to disable uptime analytics.
 
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `tyk-pump.pump.extraEnvs`
-
-<!--
-e.g. Elastic Search Pump
-
-```
-TYK_PMP_PUMPS_ELASTICSEARCH_TYPE=elasticsearch
-TYK_PMP_PUMPS_ELASTICSEARCH_META_INDEXNAME=tyk_analytics
-TYK_PMP_PUMPS_ELASTICSEARCH_META_ELASTICSEARCHURL=http://localhost:9200
-TYK_PMP_PUMPS_ELASTICSEARCH_META_ENABLESNIFFING=false
-TYK_PMP_PUMPS_ELASTICSEARCH_META_DOCUMENTTYPE=tyk_analytics
-TYK_PMP_PUMPS_ELASTICSEARCH_META_ROLLINGINDEX=false
-TYK_PMP_PUMPS_ELASTICSEARCH_META_EXTENDEDSTATISTICS=false
-TYK_PMP_PUMPS_ELASTICSEARCH_META_VERSION=5
-TYK_PMP_PUMPS_ELASTICSEARCH_META_BULKCONFIG_WORKERS=2
-TYK_PMP_PUMPS_ELASTICSEARCH_META_BULKCONFIG_FLUSHINTERVAL=60
-```
--->
 
 ## Enabling TLS
 We have provided an easy way of enabling TLS via the `tyk-gateway.gateway.tls.enabled` flag. Setting this value to true will automatically enable TLS using the default certificate provided by tyk-gateway component chart. 
