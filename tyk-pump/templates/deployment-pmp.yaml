@@ -64,7 +64,7 @@ spec:
             value: "{{ .Values.pump.prometheusPump.path }}"
             {{ if .Values.pump.prometheusPump.customMetrics }}
           - name: TYK_PMP_PUMPS_PROMETHEUS_META_CUSTOMMETRICS
-            value: "{{ .Values.pump.prometheusPump.customMetrics }}"
+            value: {{ toYaml .Values.pump.prometheusPump.customMetrics }}
             {{ end }}
           {{ else if eq "postgres" (include "tyk-pump.pumpType" .) }}
           # SQL Pump
