@@ -13,7 +13,7 @@ By default, this chart installs following components as subcharts on a [Kubernet
 
 To enable or disable each component, change the corresponding enabled flag.
 
-Also, you can set the version of software at `image.tag` for each component. You could find the list of version tags available from Docker hub.
+Also, you can set the version of each component through `image.tag`. You could find the list of version tags available from [Docker hub](https://hub.docker.com/u/tykio).
 
 ## Prerequisites
 
