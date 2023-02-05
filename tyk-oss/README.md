@@ -121,9 +121,9 @@ If you are using the SQL pumps in the tyk-oss installation you will require Post
 
 To install PostgreSQL you can use these rather excellent charts provided by Bitnami:
 
-```bash    
-helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics" -n tyk
 ```bash
+helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics" -n tyk
+```
 
 (follow notes from the installation output to get connection details and update them in `values.yaml` file)
 
@@ -139,6 +139,7 @@ postgres:
     password:
     database: tyk_analytics
     sslmode: disable
+```
 
 #### Uptime Pump
 Uptime Pump can be configured by setting `tyk-pump.pump.uptimePumpBackend` in values.yaml file. It support following values
