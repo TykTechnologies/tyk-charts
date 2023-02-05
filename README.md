@@ -16,3 +16,11 @@ Helm umbrella chart (chart of charts) is an easy and really flexible way of inst
 * tyk-self-managed (Coming soon!)
 * tyk-control-plane (Coming soon!)
 * tyk-data-plane (Coming soon!)
+
+## External Dependencies - Redis and MongoDB/PostgreSQL
+- Redis is required for all of the Tyk installations it must be installed in the cluster or reachable from inside K8s.
+- MongoDB or PostgreSQL are only required for the `tyk-self-managed` or `tyk-control-plane` installation and must be installed in the cluster, or reachable from inside K8s. If you are using the MongoDB or SQL pumps in the `tyk-oss` installation you will require MongoDB or PostgreSQL installed for that as well.
+- (Coming soon!) There is an easy option for you to spawn a Redis/MongDB/PostgreSQL instance using Bitnami's chart as a sub-chart. This is handy if you want to quickly spin up the whole stack without installing Redis and the Database separately. This is NOT recommended for production use.
+
+## Kubernetes Ingress
+For further detail on how to configure Tyk as an Ingress Gateway, or how to manage APIs in Tyk using the Kubernetes API, please refer to our [Tyk Operator documentation](https://tyk.io/docs/tyk-operator/). The Tyk Operator can be installed along this chart and works with all installation types.
