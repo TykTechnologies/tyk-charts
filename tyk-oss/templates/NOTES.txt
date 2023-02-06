@@ -1,7 +1,24 @@
-Install Tyk Operator
+Thank you for installing Tyk OSS Chart {{ .Chart.Name }}. Your release is named {{ .Release.Name }}. At this point, Tyk Gateway is fully installed and should be accessible.
 
-At this point, Tyk Gateway is fully installed and should be accessible.
+{{ $gwDependency := "tyk-gateway" }}
+{{- range $i, $dep := .Chart.Dependencies }}
+{{ if contains "gateway" ($dep.Name | quote) }}
+{{ $gwDependency = $dep.Name }}
+{{ end }}
+{{- end }}
 
+{{- if index .Values "tyk-gateway" "gateway" "control" "enabled" }}
+To quickly test everything is ok, you can port-forward gateway pod to 9696 on your machine:
+    kubectl port-forward service/gateway-control-svc-{{ include "tyk-gateway.fullname" . }}-{{ $gwDependency }} 9696:{{ index .Values "tyk-gateway" "gateway" "control" "port" }} 
+
+and run `curl localhost:9696/hello` to see some data back.
+{{- else }}
+To quickly test everything is ok, you can port-forward gateway pod to 8080 on your machine:
+    kubectl port-forward service/gateway-svc-{{ include "tyk-gateway.fullname" . }}-{{ $gwDependency }} 8080:{{ index .Values "tyk-gateway" "gateway" "service" "port" }} 
+
+and run `curl localhost:8080/hello` to see some data back.
+{{- end }}
+
+Manage Ingress reousrces and APIs
 You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
-
 [Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)
