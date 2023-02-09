@@ -1,6 +1,9 @@
 # New Tyk Helm Charts (WIP)
 This is a WIP repository for new Tyk helm charts. We will roll out new component charts and umbrella charts here as they are ready. Please visit the respective pages for each chart to learn how to install the chart and find out all the information relevant to that chart.
 
+> **Note**
+> Breaking changes may be introduced before stable release.
+
 ## Component Charts
 * [tyk-gateway](./tyk-gateway)
 * [tyk-pump](./tyk-pump)
