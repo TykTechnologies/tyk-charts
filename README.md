@@ -13,7 +13,6 @@ This is a WIP repository for new Tyk helm charts. We will roll out new component
 ## Umbrella Charts
 Helm umbrella chart (chart of charts) is an easy and really flexible way of installing multiple components as a single one. We have following umbrella charts that help you to install group of related tyk components based on your deployment need.
 * [tyk-oss](./tyk-oss)
-* tyk-self-managed (Coming soon!)
 * tyk-control-plane (Coming soon!)
 * tyk-data-plane (Coming soon!)
 
