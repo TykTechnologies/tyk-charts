@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-charts/tree/HEAD)
 
+## [v1.0.0-rc2](https://github.com/TykTechnologies/tyk-charts/tree/HEAD)
+
 **Added**
 - Added support of prometheus pump
 - Enabled TLS certificate configuration via secret 
