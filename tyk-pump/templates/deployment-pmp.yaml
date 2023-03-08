@@ -36,7 +36,7 @@ spec:
         image: "{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
         imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
         workingDir: "/opt/tyk-pump"
-        {{- if eq "prometheus" (include "tyk-pump.pumpType" .) }}
+        {{- if has "prometheus" .Values.pump.backend }}
         ports:
           - name: prom-metrics
             containerPort: {{ .Values.pump.prometheusPump.port }}
@@ -54,7 +54,7 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
 
-         {{ if eq "prometheus" (include "tyk-pump.pumpType" .) }}
+         {{ if has "prometheus" .Values.pump.backend }}
           # Configure Prometheus Pump for Tyk Pump
           - name: TYK_PMP_PUMPS_PROMETHEUS_TYPE
             value: prometheus
@@ -66,7 +66,8 @@ spec:
           - name: TYK_PMP_PUMPS_PROMETHEUS_META_CUSTOMMETRICS
             value: {{ toYaml .Values.pump.prometheusPump.customMetrics }}
             {{ end }}
-          {{ else if eq "postgres" (include "tyk-pump.pumpType" .) }}
+          {{ end }}
+          {{ if has "postgres" .Values.pump.backend }}
           # SQL Pump
           - name: TYK_PMP_PUMPS_SQL_TYPE
             value: "sql"
@@ -88,7 +89,8 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end }}
                 key: pgConnectionString
-          {{ else if eq "mongo" (include "tyk-pump.pumpType" .) }}
+          {{ end }}
+          {{ if has "mongo" .Values.pump.backend }}
           # Mongo Pump
           - name: TYK_PMP_PUMPS_MONGO_META_COLLECTIONNAME
             value: "tyk_analytics_pump"
@@ -115,6 +117,8 @@ spec:
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
             value: "true"
           {{ end }}
+
+          # Uptime Pump configurations
           {{ if eq "disabled" (include "tyk-pump.uptimePump" .) }}
           - name: TYK_PMP_DONTPURGEUPTIMEDATA
             value: "true"
