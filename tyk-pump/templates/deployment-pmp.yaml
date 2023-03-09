@@ -123,6 +123,8 @@ spec:
           - name: TYK_PMP_DONTPURGEUPTIMEDATA
             value: "true"
           {{ else }}
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME
+            value: "tyk_uptime_analytics"
           {{ if eq "postgres" (include "tyk-pump.uptimePump" .) }}
           # SQL Uptime Pump
           - name: TYK_PMP_UPTIMEPUMPCONFIG_UPTIMETYPE
@@ -185,10 +187,7 @@ spec:
             value: "4000"
           - name: TYK_PMP_PURGEDELAY
             value: "2"
-          - name: TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME
-            value: "tyk_uptime_analytics"
 
-            
         {{- if .Values.pump.extraEnvs }}
         {{- range $env := .Values.pump.extraEnvs }}
           - name: {{ $env.name }}
