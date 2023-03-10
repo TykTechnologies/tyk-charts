@@ -20,9 +20,9 @@ version: 0.1.0
 dependencies:
   - name: tyk-gateway
     version: v0.1.0
-    repository: file://../tyk-gateway
+    repository: file://../components/tyk-gateway
 
   - name: tyk-pump
     version: v0.1.0
-    repository: file://../tyk-pump
+    repository: file://../components/tyk-pump
     condition: global.components.pump

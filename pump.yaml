@@ -113,18 +113,21 @@ pump:
     # image pull policy
     pullPolicy: IfNotPresent
 
-  # Choose the pump backend for Tyk Pump. ["", "mongo", "postgres", "prometheus"]
-  # It defines the pumps to be created by default.
-  # If you would like to use other backends such as ElasticSearch, please set this field to "" and configure
-  # your Tyk Pump via environment variables.
-  backend: "prometheus"
+  # backend defines the pumps to be created by default, as an array of string.
+  # Supported backends are ["mongo", "postgres", "prometheus"]
+  # If you would like to use other backends such as ElasticSearch, please
+  # configure the backend via environment variables.
+  # By default, Tyk Pump uses Prometheus.
+  backend:
+    - "prometheus"
+    - "mongo"
 
   # uptimePumpBackend configures uptime Tyk Pump. ["", "mongo", "postgres"].
-  # Set it to "" for disabling uptime Tyk Pump.
+  # Set it to "" for disabling uptime Tyk Pump. By default, uptime pump is disabled.
   uptimePumpBackend: ""
 
-  # prometheusPump configures Tyk Pump to expose Prometheus metrics. Please set .Values.pump.backend to "prometheus"
-  # in order to enable Prometheus Pump.
+  # prometheusPump configures Tyk Pump to expose Prometheus metrics.
+  # Please add "prometheus" to .Values.pump.backend in order to enable Prometheus Pump.
   prometheusPump:
     # host represents the host without port, where Tyk Pump serve the metrics for Prometheus.
     host: ""

@@ -42,19 +42,19 @@ redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 
 {{- define "tyk-pump.mongo_url" -}}
-{{- if .Values.global.mongo.mongoURL -}}
-{{ .Values.global.mongo.mongoURL }}
+{{- if .Values.mongo.mongoURL -}}
+{{ .Values.mongo.mongoURL }}
 {{- /* Adds support for older charts with the host and port options */}}
-{{- else if and .Values.global.mongo.host .Values.global.mongo.port -}}
-mongodb://{{ .Values.global.mongo.host }}:{{ .Values.global.mongo.port }}/tyk_analytics
+{{- else if and .Values.mongo.host .Values.mongo.port -}}
+mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}/tyk_analytics
 {{- else -}}
 mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 
 {{- define "tyk-pump.pg_connection_string" -}}
-{{- if .Values.global.postgres -}}
-{{- range $key, $value := .Values.global.postgres }}{{ print $key "=" $value " " }}{{- end }}
+{{- if .Values.postgres -}}
+{{- range $key, $value := .Values.postgres }}{{ print $key "=" $value " " }}{{- end }}
 {{- end -}}
 {{- end -}}
 

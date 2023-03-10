@@ -1,7 +1,7 @@
 global:
   components:
     # Determines whether or not the pump component should be installed.
-    pump: false
+    pump: true
 
   secrets:
     # APISecret sets secret in tyk.conf
