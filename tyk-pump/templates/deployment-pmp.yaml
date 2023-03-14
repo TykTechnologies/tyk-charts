@@ -184,14 +184,9 @@ spec:
           - name: TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME
             value: "tyk_uptime_analytics"
 
-            
-        {{- if .Values.pump.extraEnvs }}
-        {{- range $env := .Values.pump.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
+        {{- with .Values.pump.extraEnvs }}
+        {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- end }}
-
         command: ["/opt/tyk-pump/tyk-pump"]
         volumeMounts:
           {{- if .Values.pump.mounts }}

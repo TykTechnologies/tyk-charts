@@ -179,11 +179,8 @@ spec:
         {{- end }}
         {{- end }}
 
-        {{- if .Values.gateway.extraEnvs }}
-        {{- range $env := .Values.gateway.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
+        {{- with .Values.gateway.extraEnvs }}
+        {{- toYaml . | nindent 10 }}
         {{- end }}
         command: ["/opt/tyk-gateway/tyk"]
         workingDir: /opt/tyk-gateway
