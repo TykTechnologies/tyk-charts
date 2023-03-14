@@ -184,13 +184,6 @@ spec:
           - name: TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME
             value: "tyk_uptime_analytics"
 
-          - name: DEBUGG
-          {{ if .Values.mongo.mongoURL }}
-            value: "{{ .Values.mongo.mongoURL }}"
-          {{ else }}
-            value: "NOT"
-          {{ end }}
-
         {{- if .Values.pump.extraEnvs }}
         {{- range $env := .Values.pump.extraEnvs }}
           - name: {{ $env.name }}
