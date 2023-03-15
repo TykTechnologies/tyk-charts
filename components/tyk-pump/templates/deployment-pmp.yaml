@@ -184,7 +184,6 @@ spec:
           - name: TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME
             value: "tyk_uptime_analytics"
 
-            
         {{- if .Values.pump.extraEnvs }}
         {{- range $env := .Values.pump.extraEnvs }}
           - name: {{ $env.name }}
