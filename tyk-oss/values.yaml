@@ -4,7 +4,7 @@ global:
     pump: false
 
   secrets:
-    # APISecret sets node_secret and secret in tyk.conf
+    # APISecret sets secret in tyk.conf
     APISecret: CHANGEME
     # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
     # rather provide the k8s Secret externally.
@@ -64,28 +64,6 @@ global:
     # then this value should be omitted or explicitly set to 0.
     storage:
       database: 0
-
- # Set mongo connection details if you want to configure mongo pump.
- # mongo:
-    # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-    # If your MongoDB has a password you can add the username and password to the url
-    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
-
-    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-    # Default value: false
-   # useSSL: false
-
- # Set postgres connection details if you want to configure postgres pump.
- # Postgres connection string parameters.
- # postgres:
-   # host: tyk-postgres-postgresql.tyk.svc.cluster.local
-   # port: 5432
-   # user: postgres
-   # password:
-   # database: tyk_analytics
-   # sslmode: disable
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
@@ -246,12 +224,33 @@ tyk-pump:
   # Default value: tyk-pump.fullname
   fullnameOverride: ""
 
+
+  # If Mongo pump is in use, please set the connection details of MongoDB in the below field.
+  mongo:
+    # The mongoURL value will allow you to set your MongoDB address.
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # If your MongoDB has a password you can add the username and password to the url
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+
+    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+    # Default value: false
+    useSSL: false
+
+  # If postgres pump is in use, please set the connection details of Postgres in the below field.
+  postgres:
+    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    port: 5432
+    user: postgres
+    password:
+    database: tyk_analytics
+    sslmode: disable
+
   # If pump is enabled the Gateway will create and collect analytics data to send
   # to a data store of your choice. These can be set up in the pump config. The
   # possible pump configs can be found here:
   # https://github.com/TykTechnologies/tyk-pump#configuration
   pump:
-
     # number for replicas for pump deployment
     replicaCount: 1
 
