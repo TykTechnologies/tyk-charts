@@ -1,19 +1,28 @@
+# Default values for tyk-data-plane.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
 global:
-  isDataplane: false
+  isDataplane: true
   components:
     # Determines whether or not the pump component should be installed.
     pump: false
+  rpc:
+    # connection string used to connect to an MDCB deployment
+    connectionString: ""
+    # orgID of your dashboard user
+    key: ""
+    # API key of your dashboard user
+    apiKey: ""
+    # needed in case you want to have multiple data-planes connected to the same redis instance
+    groupID: ""
+    # enable/disable ssl
+    useSSL: true
+    sslInsecureSkipVerify: true
 
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME
-    # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
-    # rather provide the k8s Secret externally.
-    # You can set following fields in the secret
-    # - APISecret - Sets node_secret and secret in tyk.conf
-    # - redisPass - Sets Redis password
-    # - redisSentinelPass - Sets Redis Password. Set it only if you are using Redis Sentinel
-    useSecretName: ""
 
   redis:
     # The addrs value will allow you to set your Redis addresses.
@@ -26,6 +35,7 @@ global:
     #
     # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
     # addrs:
+    #   - tyk-redis-master.tyk.svc.cluster.local:6379
     #   Example using tyk simple redis chart
     #   - redis.tyk.svc.cluster.local:6379
     #   Example using bitnami/redis
@@ -38,7 +48,7 @@ global:
     # Redis password
     # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
     # your password in the field below
-    # pass: ""
+    pass: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -66,27 +76,7 @@ global:
     storage:
       database: 0
 
- # Set mongo connection details if you want to configure mongo pump.
- # mongo:
-    # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-    # If your MongoDB has a password you can add the username and password to the url
-    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
 
-    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-    # Default value: false
-   # useSSL: false
-
- # Set postgres connection details if you want to configure postgres pump.
- # Postgres connection string parameters.
- # postgres:
-   # host: tyk-postgres-postgresql.tyk.svc.cluster.local
-   # port: 5432
-   # user: postgres
-   # password:
-   # database: tyk_analytics
-   # sslmode: disable
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
@@ -117,7 +107,7 @@ tyk-gateway:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
       secretName: tyk-default-tls-secret
 
-    # kind is type of k8s object to be created for gateway. 
+    # kind is type of k8s object to be created for gateway.
     kind: Deployment
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.
@@ -189,7 +179,7 @@ tyk-gateway:
       #    hosts:
       #      - chart-example.local
       tls: []
-    
+
 
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -223,13 +213,55 @@ tyk-gateway:
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
-    extraEnvs: []
+    extraEnvsFromSecret:
+      - name: TYK_GW_SLAVEOPTIONS_RPCKEY
+        valueFrom:
+          secretKeyRef:
+            name: secrets-tyk-data-plane
+            key: rpcKey
+      - name: TYK_GW_SLAVEOPTIONS_APIKEY
+        valueFrom:
+          secretKeyRef:
+            name: secrets-tyk-data-plane
+            key: apiKey
+      - name: TYK_GW_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: secrets-tyk-data-plane
+            key: APISecret
+      - name: TYK_GW_SLAVEOPTIONS_GROUPID
+        valueFrom:
+          secretKeyRef:
+            name: secrets-tyk-data-plane
+            key: groupID
+    extraEnvsFromConfigMap:
+      - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
+        valueFrom:
+          configMapKeyRef:
+            name: config-tyk-data-plane
+            key: rpcConnString
+      - name: TYK_GW_SLAVEOPTIONS_USESSL
+        valueFrom:
+          configMapKeyRef:
+            name: config-tyk-data-plane
+            key: rpcUseSSL
+      - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
+        valueFrom:
+          configMapKeyRef:
+            name: config-tyk-data-plane
+            key: rpcSslInsecureSkipVerify
+
+
+
+
 
     # used to mount files to the gateway containers
     #  - name: test
     #    filename: test.txt
     #    mountPath: /opt/test
     mounts: []
+
+
 
 tyk-pump:
   ## Default values for tyk-pump chart.
@@ -308,7 +340,7 @@ tyk-pump:
         podMonitorSelector:
           release: prometheus-stack
 
-    # annotations for pump deployment  
+    # annotations for pump deployment
     annotations: {}
 
     # We usually recommend not to specify default resources and to leave this
@@ -323,8 +355,8 @@ tyk-pump:
     #  cpu: 100m
     #  memory: 128Mi
     resources: {}
-      
-    # securityContext values for pump pod 
+
+    # securityContext values for pump pod
     securityContext:
       runAsUser: 1000
       fsGroup: 2000

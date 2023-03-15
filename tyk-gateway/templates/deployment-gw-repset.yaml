@@ -143,9 +143,27 @@ spec:
           - name: TYK_GW_ENABLENONTRANSACTIONALRATELIMITER
             value: "true"
           - name: TYK_GW_POLICIES_POLICYSOURCE
+        {{- if .Values.global.isDataplane }}
+            value: "rpc"
+        {{- else}}
             value: "file"
+        {{- end}}
+        {{- if .Values.global.isDataplane }}
+          - name: TYK_GW_ANALYTICSCONFIG_TYPE
+            value: "rpc"
+          - name: TYK_GW_SLAVEOPTIONS_USERPC
+            value: "true"
+          - name: TYK_GW_AUTHOVERRIDE_FORCEAUTHPROVIDER
+            value: "true"
+          - name: TYK_GW_AUTHOVERRIDE_AUTHPROVIDER_STORAGEENGINE
+            value: "rpc"
+        {{- end}}
           - name: TYK_GW_POLICIES_POLICYRECORDNAME
+        {{- if .Values.global.isDataplane }}
+            value: "tyk_policies"
+        {{- else}}
             value: "/mnt/tyk-gateway/policies/policies.json"
+        {{- end}}
           - name: TYK_GW_HASHKEYS
             value: "true"
           - name: TYK_GW_HASHKEYFUNCTION
@@ -183,6 +201,24 @@ spec:
         {{- range $env := .Values.gateway.extraEnvs }}
           - name: {{ $env.name }}
             value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.gateway.extraEnvsFromSecret }}
+        {{- range $env := .Values.gateway.extraEnvsFromSecret }}
+          - name: {{ $env.name }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ $env.valueFrom.secretKeyRef.name | quote }}
+                key: {{ $env.valueFrom.secretKeyRef.key | quote }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.gateway.extraEnvsFromConfigMap }}
+        {{- range $env := .Values.gateway.extraEnvsFromConfigMap }}
+          - name: {{ $env.name }}
+            valueFrom:
+              configMapKeyRef:
+                name: {{ $env.valueFrom.configMapKeyRef.name | quote }}
+                key: {{ $env.valueFrom.configMapKeyRef.key | quote }}
         {{- end }}
         {{- end }}
         command: ["/opt/tyk-gateway/tyk"]
