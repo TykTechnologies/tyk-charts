@@ -16,38 +16,34 @@ For typical usage, we recommend using following umbrella charts:
 [Learn more about different deployment options](https://tyk.io/docs/apim/)
 
 ## Prerequisites
-* Kuberentes 1.19+
+* Kubernetes 1.19+
 * Helm 3+
 * [Redis](https://tyk.io/docs/planning-for-production/redis/)
 
 ## Installing the Chart
-<!--
-To install the chart from the Helm repository in namespace `tyk` with the release name `tyk-pump`:
-    helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-    helm show values tyk-helm/tyk-pump > values-pump.yaml
-    helm install tyk-pump tyk-helm/tyk-pump -n tyk --create-namespace -f values-pump.yaml
--->
-
-<!-- To be removed after the chart is published -->
 To install the chart from Git repository in namespace `tyk` with the release name `tyk-pump`:
 
-    git clone https://github.com/TykTechnologies/tyk-charts.git
-    cd tyk-charts
-    helm show values tyk-pump > values.yaml
+```bash
+git clone https://github.com/TykTechnologies/tyk-charts.git
+cd tyk-charts
+helm show values tyk-pump > values.yaml
+helm install tyk-pump tyk-pump -n tyk --create-namespace -f values.yaml
+```
 
 Note: Set redis connection details first. See [Configuration](#configuration) below.
 
-    helm install tyk-pump tyk-pump -n tyk --create-namespace -f values.yaml
-
 ## Uninstalling the Chart
 
-    helm uninstall tyk-pump -n tyk
-
+```bash
+helm uninstall tyk-pump -n tyk
+```
 This removes all the Kubernetes components associated with the chart and deletes the release.
 
 ## Upgrading Chart
 
-    helm upgrade tyk-pump tyk-pump -n tyk
+```bash
+helm upgrade tyk-pump tyk-pump -n tyk
+```
 
 ### Upgrading from tyk-headless chart
 Please see Migration notes in [tyk-oss](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss) chart
@@ -55,25 +51,27 @@ Please see Migration notes in [tyk-oss](https://github.com/TykTechnologies/tyk-c
 ## Configuration
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To get all configurable options with detailed comments:
 
-    helm show values tyk-pump > values.yaml
-    
+```bash
+helm show values tyk-pump > values.yaml
+```
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
 
 ### Set Redis connection details (Required)
-Redis is Tyk Pump's primary database where it scrapes Tyk Gateway analytics from. You may set `global.redis.addr` and `global.redis.pass` with redis connection string and password for Tyk Gateway respectively.
+Redis is Tyk Pump's primary database where it scrapes Tyk Gateway analytics from. 
+You may set `global.redis.addr` and `global.redis.pass` with redis connection string and password for Tyk Gateway respectively.
 
 ### Pump Configurations
 
-| Pump       | Configuration      |
-| ---------- | ------------------ | 
-| Prometheus Pump (Default)  | Set `pump.backend='prometheus'`, and add connection details for prometheus under `pump.prometheusPump`. |
-| Mongo Pump | Set `pump.backend='mongo'`, and add connection details for mongo under `global.mongo`. |
-| SQL Pump   | Set `pump.backend='postgres'`, and add connection details for postgres under `global.postgres`. |
-| Uptime Pump | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''` |
-| Other Pumps    | Set `pump.backend=''` if you want to configure other pump types  |
+| Pump                      | Configuration                                                                                              |
+|---------------------------|------------------------------------------------------------------------------------------------------------| 
+| Prometheus Pump (Default) | Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. |
+| Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.mongo`.                        |
+| SQL Pump                  | Add `postgres` to `pump.backend=`, and add connection details for postgres under `.postgres`.              |
+| Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                          |
+| Other Pumps               | Set `pump.backend=''` if you want to configure other pump types                                            |
  
 #### Prometheus Pump
-Set `pump.backend='prometheus'`, and add connection details for prometheus under `pump.prometheusPump`. 
+Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. 
 
 We also support monitoring using Prometheus Operator. All you have to do is set `pump.prometheusPump.prometheusOperator.enabled` to true.
 This will create a PodMonitor resource for your Pump instance.
@@ -83,7 +81,9 @@ If you are using the MongoDB pumps in the tyk-oss installation you will require 
 
 To install Mongo you can use these rather excellent charts provided by Bitnami:
 
-    helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
+```bash
+helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
+```
 
 (follow notes from the installation output to get connection details and update them in `values.yaml` file)
 
@@ -91,20 +91,20 @@ NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) 
 
 *Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1. If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1. Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
 
-Add following under the `global` section in `values.yaml`:
+```yaml
+ # Set mongo connection details if you want to configure mongo pump.     
+ mongo:
+    # The mongoURL value will allow you to set your MongoDB address.
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # If your MongoDB has a password you can add the username and password to the url
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+    mongoURL: <MongoDB address>
 
-     # Set mongo connection details if you want to configure mongo pump.     
-     mongo:
-        # The mongoURL value will allow you to set your MongoDB address.
-        # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-        # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-        # If your MongoDB has a password you can add the username and password to the url
-        # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
-        mongoURL: <MongoDB address>
-
-        # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-        # Default value: false
-        # useSSL: false
+    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+    # Default value: false
+    # useSSL: false
+```
 
 #### SQL pump
 If you are using the SQL pumps in the tyk-oss installation you will require PostgreSQL installed for that as well.
@@ -116,8 +116,6 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 ```
 
 (follow notes from the installation output to get connection details and update them in `values.yaml` file)
-
-Add following under the `global` section in `values.yaml`:
 
 ```yaml
 # Set postgres connection details if you want to configure postgres pump.
