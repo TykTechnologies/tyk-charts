@@ -95,7 +95,7 @@ spec:
           - name: TYK_PMP_PUMPS_MONGO_META_COLLECTIONNAME
             value: "tyk_analytics_pump"
           - name: TYK_PMP_PUMPS_MONGO_META_MONGOUSESSL
-            value: "{{ default "false" .Values.global.mongo.useSSL }}"
+            value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_PMP_PUMPS_MONGO_META_MONGOURL
             valueFrom:
               secretKeyRef:
@@ -106,7 +106,7 @@ spec:
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_TYPE
             value: "mongo-pump-aggregate"
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOUSESSL
-            value:  "{{ default "false" .Values.global.mongo.useSSL }}"
+            value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOURL
             valueFrom:
               secretKeyRef:
