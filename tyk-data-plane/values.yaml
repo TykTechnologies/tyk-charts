@@ -18,6 +18,7 @@ global:
     groupID: ""
     # enable/disable ssl
     useSSL: true
+    # Disables SSL certificate verification
     sslInsecureSkipVerify: true
 
   secrets:
@@ -118,7 +119,7 @@ tyk-gateway:
 
     image:
       # image repository for Tyk Gateway
-      repository: docker.tyk.io/tyk-gateway/tyk-gateway
+      repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
       tag: v4.3.1
