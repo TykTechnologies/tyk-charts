@@ -189,10 +189,7 @@ spec:
             value: "2"
 
         {{- if .Values.pump.extraEnvs }}
-        {{- range $env := .Values.pump.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
+        {{- include "tyk-pump.tplvalues.render" ( dict "value" .Values.pump.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
 
         command: ["/opt/tyk-pump/tyk-pump"]
@@ -202,6 +199,9 @@ spec:
           - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.pump.extraVolumeMounts }}
+          {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
@@ -216,4 +216,7 @@ spec:
           secret:
             secretName: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
         {{- end }}
+        {{- end }}
+        {{- if .Values.pump.extraVolumes }}
+        {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
