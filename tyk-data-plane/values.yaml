@@ -214,7 +214,7 @@ tyk-gateway:
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
-    extraEnvsFromSecret:
+    extraEnvs:
       - name: TYK_GW_SLAVEOPTIONS_RPCKEY
         valueFrom:
           secretKeyRef:
@@ -235,7 +235,6 @@ tyk-gateway:
           secretKeyRef:
             name: secrets-tyk-data-plane
             key: groupID
-    extraEnvsFromConfigMap:
       - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
         valueFrom:
           configMapKeyRef:
@@ -251,11 +250,6 @@ tyk-gateway:
           configMapKeyRef:
             name: config-tyk-data-plane
             key: rpcSslInsecureSkipVerify
-
-
-
-
-
     # used to mount files to the gateway containers
     #  - name: test
     #    filename: test.txt

@@ -79,7 +79,7 @@ spec:
             value: "{{ .Values.gateway.control.containerPort }}"
           {{- end }}
 
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           - name: TYK_GW_STORAGE_TYPE
@@ -198,27 +198,7 @@ spec:
         {{- end }}
 
         {{- if .Values.gateway.extraEnvs }}
-        {{- if .Values.gateway.extraEnvs }}
         {{- include "tyk-gateway.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
-        {{- end }}
-        {{- end }}
-        {{- if .Values.gateway.extraEnvsFromSecret }}
-        {{- range $env := .Values.gateway.extraEnvsFromSecret }}
-          - name: {{ $env.name }}
-            valueFrom:
-              secretKeyRef:
-                name: {{ $env.valueFrom.secretKeyRef.name | quote }}
-                key: {{ $env.valueFrom.secretKeyRef.key | quote }}
-        {{- end }}
-        {{- end }}
-        {{- if .Values.gateway.extraEnvsFromConfigMap }}
-        {{- range $env := .Values.gateway.extraEnvsFromConfigMap }}
-          - name: {{ $env.name }}
-            valueFrom:
-              configMapKeyRef:
-                name: {{ $env.valueFrom.configMapKeyRef.name | quote }}
-                key: {{ $env.valueFrom.configMapKeyRef.key | quote }}
-        {{- end }}
         {{- end }}
         command: ["/opt/tyk-gateway/tyk"]
         workingDir: /opt/tyk-gateway
