@@ -1,4 +1,4 @@
-{{ if eq "prometheus" .Values.pump.backend }}
+{{ if has "prometheus" .Values.pump.backend }}
 {{ if .Values.pump.prometheusPump.prometheusOperator.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor

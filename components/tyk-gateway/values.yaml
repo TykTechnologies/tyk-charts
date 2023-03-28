@@ -200,6 +200,21 @@ gateway:
   extraEnvsFromSecret: []
   extraEnvsFromConfigMap: []
 
+  ## extraVolumes is a list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: []
+
+  ## extraVolumeMounts is a list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: []
+
   # used to mount files to the gateway containers
   #  - name: test
   #    filename: test.txt
