@@ -33,7 +33,7 @@ To install the chart from Git repository in namespace `tyk` with the release nam
 
 
 Inside the values-data-plane.yaml you need to provide the following fields with their appropriate values:
-*If you use the bitnami chart for Redis installation, the DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379` You can update them in your local `values-oss.yaml` file under `global.redis.addr` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
+*If you use the bitnami chart for Redis installation, the DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379` You can update them in your local `values-data-plane.yaml` file under `global.redis.addr` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 ```yaml 
 # connection string used to connect to an MDCB deployment 
 global.rpc.connectionString: loose-tram-hyb.aws-euc1.cloud-ara.tyk.io:443
