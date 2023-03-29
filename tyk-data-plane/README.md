@@ -20,7 +20,7 @@ Also, you can set the version of each component through `image.tag`. You could f
 
 * Kuberentes 1.19+
 * Helm 3+
-* Redis should already be installed or accessible by the gateway. For Redis installation instruction, please see https://tyk.io/docs/tyk-data-plane/ce-helm-chart/#recommended-via-bitnami-chart.
+* Redis should already be installed or accessible by the gateway. For Redis installation instruction, please see https://tyk.io/docs/tyk-oss/ce-helm-chart/#recommended-via-bitnami-chart.
 
 ## Installing the Chart
 
