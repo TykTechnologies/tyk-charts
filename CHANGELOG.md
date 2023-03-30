@@ -2,7 +2,7 @@
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-charts/tree/HEAD)
 
-## [v1.0.0-rc2](https://github.com/TykTechnologies/tyk-charts/tree/HEAD)
+## [v1.0.0-rc2](https://github.com/TykTechnologies/tyk-charts/tree/v1.0.0-rc2)
 
 **Added**
 - Added support of prometheus pump
