@@ -180,9 +180,8 @@ spec:
         {{- end }}
 
         {{- if .Values.gateway.extraEnvs }}
-        {{- range $env := .Values.gateway.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
+        {{- if .Values.gateway.extraEnvs }}
+        {{- include "tyk-gateway.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
         {{- end }}
         command: ["/opt/tyk-gateway/tyk"]
@@ -206,6 +205,9 @@ spec:
           - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.gateway.extraVolumeMounts }}
+          {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         livenessProbe:
           httpGet:
@@ -251,4 +253,7 @@ spec:
           secret:
             secretName: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
         {{- end }}
+        {{- end }}
+        {{- if .Values.gateway.extraVolumes }}
+        {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

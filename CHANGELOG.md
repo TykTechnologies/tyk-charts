@@ -1,12 +1,10 @@
 # Changelog
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-charts/tree/HEAD)
-[Full Changelog](https://github.com/TykTechnologies/tyk-charts/compare/v1.0.0-rc2...HEAD)
-
+[Full Changelog](https://github.com/TykTechnologies/tyk-charts/compare/v1.0.0-rc3...HEAD)
 
 ## [v1.0.0-rc3](https://github.com/TykTechnologies/tyk-charts/tree/v1.0.0-rc3) 
 [Full Changelog](https://github.com/TykTechnologies/tyk-charts/compare/v1.0.0-rc2...v1.0.0-rc3)
-
 
 **Added:**
 - Enable setting multiple backends for Tyk Pump.
@@ -25,6 +23,7 @@
 - Enabled TLS certificate configuration via secret 
 
 ## [v1.0.0-rc1](https://github.com/TykTechnologies/tyk-charts/tree/v1.0.0-rc1)
+[Full Changelog](https://github.com/TykTechnologies/tyk-charts/compare/4fd006efe39daa60b6808986d569fcb525cae808...v1.0.0-rc1)
 
 **Added**
 - Added pump component chart
