@@ -197,8 +197,6 @@ gateway:
   # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
   #   value: "true"
   extraEnvs: []
-  extraEnvsFromSecret: []
-  extraEnvsFromConfigMap: []
 
   ## extraVolumes is a list of volumes to be added to the pod
   ## extraVolumes:
