@@ -1,19 +1,29 @@
+# Default values for tyk-data-plane.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
 global:
-  isDataplane: false
+  isDataplane: true
   components:
-    # Determines whether the pump component should be installed.
+    # Determines whether or not the pump component should be installed.
     pump: false
+  rpc:
+    # connection string used to connect to an MDCB deployment
+    connectionString: ""
+    # orgID of your dashboard user
+    key: ""
+    # API key of your dashboard user
+    apiKey: ""
+    # needed in case you want to have multiple data-planes connected to the same redis instance
+    groupID: ""
+    # enable/disable ssl
+    useSSL: true
+    # Disables SSL certificate verification
+    sslInsecureSkipVerify: true
 
   secrets:
-    # APISecret sets secret in tyk.conf
+    # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME
-    # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
-    # rather provide the k8s Secret externally.
-    # You can set following fields in the secret
-    # - APISecret - Sets node_secret and secret in tyk.conf
-    # - redisPass - Sets Redis password
-    # - redisSentinelPass - Sets Redis Password. Set it only if you are using Redis Sentinel
-    useSecretName: ""
 
   redis:
     # The addrs value will allow you to set your Redis addresses.
@@ -26,6 +36,7 @@ global:
     #
     # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
     # addrs:
+    #   - tyk-redis-master.tyk.svc.cluster.local:6379
     #   Example using tyk simple redis chart
     #   - redis.tyk.svc.cluster.local:6379
     #   Example using bitnami/redis
@@ -38,7 +49,7 @@ global:
     # Redis password
     # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
     # your password in the field below
-    # pass: ""
+    pass: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -65,6 +76,8 @@ global:
     # then this value should be omitted or explicitly set to 0.
     storage:
       database: 0
+
+
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
@@ -95,7 +108,7 @@ tyk-gateway:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
       secretName: tyk-default-tls-secret
 
-    # kind is type of k8s object to be created for gateway. 
+    # kind is type of k8s object to be created for gateway.
     kind: Deployment
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.
@@ -106,7 +119,7 @@ tyk-gateway:
 
     image:
       # image repository for Tyk Gateway
-      repository: docker.tyk.io/tyk-gateway/tyk-gateway
+      repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
       tag: v4.3.1
@@ -167,7 +180,7 @@ tyk-gateway:
       #    hosts:
       #      - chart-example.local
       tls: []
-    
+
 
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -201,28 +214,49 @@ tyk-gateway:
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
-    extraEnvs: []
-
-    ## extraVolumes is a list of volumes to be added to the pod
-    ## extraVolumes:
-    ##   - name: ca-certs
-    ##     secret:
-    ##       defaultMode: 420
-    ##       secretName: ca-certs
-    extraVolumes: []
-
-    ## extraVolumeMounts is a list of volume mounts to be added to the pod
-    ## extraVolumeMounts:
-    ##   - name: ca-certs
-    ##     mountPath: /etc/ssl/certs/ca-certs.crt
-    ##     readOnly: true
-    extraVolumeMounts: []
-
+    extraEnvs:
+      - name: TYK_GW_SLAVEOPTIONS_RPCKEY
+        valueFrom:
+          secretKeyRef:
+            name: secrets-tyk-data-plane
+            key: rpcKey
+      - name: TYK_GW_SLAVEOPTIONS_APIKEY
+        valueFrom:
+          secretKeyRef:
+            name: secrets-tyk-data-plane
+            key: apiKey
+      - name: TYK_GW_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: secrets-tyk-data-plane
+            key: APISecret
+      - name: TYK_GW_SLAVEOPTIONS_GROUPID
+        valueFrom:
+          secretKeyRef:
+            name: secrets-tyk-data-plane
+            key: groupID
+      - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
+        valueFrom:
+          configMapKeyRef:
+            name: config-tyk-data-plane
+            key: rpcConnString
+      - name: TYK_GW_SLAVEOPTIONS_USESSL
+        valueFrom:
+          configMapKeyRef:
+            name: config-tyk-data-plane
+            key: rpcUseSSL
+      - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
+        valueFrom:
+          configMapKeyRef:
+            name: config-tyk-data-plane
+            key: rpcSslInsecureSkipVerify
     # used to mount files to the gateway containers
     #  - name: test
     #    filename: test.txt
     #    mountPath: /opt/test
     mounts: []
+
+
 
 tyk-pump:
   ## Default values for tyk-pump chart.
@@ -239,6 +273,68 @@ tyk-pump:
   # Overrides app name. IT is truncated to 63 characters.
   # Default value: tyk-pump.fullname
   fullnameOverride: ""
+
+  global:
+    secrets:
+      # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
+      # rather provide the k8s Secret externally.
+      # Can set following fields in the secret:
+      # - redisPass: Sets redis password
+      # - redisSentinelPass: Set if you  are using Redis Sentinel. Used to set Redis password
+      # - mongoURL: Sets mongo connection url
+      # - pgConnectionString: Sets postgres connection details
+      useSecretName: ""
+
+    redis:
+      # The addrs value will allow you to set your Redis addresses.
+      #
+      # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
+      # endpoint. If using sentinel connection mode for Redis, please update the port number (typically 26379).
+      #
+      # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
+      # the endpoints of the redis instances or use the cluster configuration endpoint.
+      #
+      # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+      # addrs:
+      #   Example using tyk simple redis chart
+      #   - redis.tyk.svc.cluster.local:6379
+      #   Example using bitnami/redis
+      #   - tyk-redis-master.tyk.svc.cluster.local:6379
+      #   Example using bitnami/redis with sentinel
+      #   - tyk-redis.tyk.svc.cluster.local:26379
+      #   Example using bitnami/redis-cluster
+      #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
+
+      # Redis password
+      # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
+      # your password in the field below
+      # pass: ""
+
+      # Enables SSL for Redis connection. Redis instance will have to support that.
+      # Default value: false
+      # useSSL: true
+
+      # If using "Redis Cluster" set enableCluster to true
+      # (e.g. if using bitnami/redis-cluster)
+      # enableCluster: true
+
+      # Enables sentinel connection mode for Redis. If enabled, provide both
+      # mandatory values for sentinelPass and masterName.
+      # enableSentinel: false
+
+      # Redis sentinel password, only required while enableSentinel is true.
+      # For bitnami/redis the same password as Redis above
+      # sentinelPass: ""
+
+      # Redis sentinel master name, only required while enableSentinel is true.
+      # For bitnami/redis typically redis-master
+      # masterName: ""
+
+      # By default the database index is 0. Setting the database index is not
+      # supported with redis cluster. As such, if you have enableCluster: true,
+      # then this value should be omitted or explicitly set to 0.
+      storage:
+        database: 0
 
 
   # If Mongo pump is in use, please set the connection details of MongoDB in the below field.
@@ -299,7 +395,7 @@ tyk-pump:
       host: ""
       # port represents the port where Tyk Pump serve the metrics for Prometheus.
       port: 9090
-      # path represents the path to the Prometheus metrics endpoint. For example /metrics.
+      # path represents the path to the Prometheus collection. For example /metrics.
       path: /metrics
       # customMetrics allows defining custom Prometheus metrics for Tyk Pump.
       # It accepts a string that represents a JSON object. For instance,
@@ -339,7 +435,7 @@ tyk-pump:
     #  cpu: 100m
     #  memory: 128Mi
     resources: {}
-      
+
     # securityContext values for pump pod 
     securityContext:
       runAsUser: 1000
@@ -379,3 +475,4 @@ tyk-pump:
     #   filename: test.csv
     #   mountPath: /opt/test
     mounts: []
+  
