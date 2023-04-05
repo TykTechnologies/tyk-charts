@@ -76,9 +76,6 @@ global:
     storage:
       database: 0
 
-  remoteControlPlane:
-    enabled: false
-
 
 gateway:
   # The hostname to bind the Gateway to.
