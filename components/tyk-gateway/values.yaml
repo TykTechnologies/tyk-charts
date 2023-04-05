@@ -14,7 +14,6 @@ nameOverride: ""
 fullnameOverride: ""
 
 global:
-  isDataplane: false
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME
@@ -76,6 +75,10 @@ global:
     # then this value should be omitted or explicitly set to 0.
     storage:
       database: 0
+
+  remoteControlPlane:
+    enabled: false
+
 
 gateway:
   # The hostname to bind the Gateway to.

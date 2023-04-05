@@ -3,17 +3,18 @@
 # Declare variables to be passed into your templates.
 
 global:
-  isDataplane: true
   components:
     # Determines whether or not the pump component should be installed.
     pump: false
-  rpc:
+
+  remoteControlPlane:
+    enabled: true
     # connection string used to connect to an MDCB deployment
     connectionString: ""
     # orgID of your dashboard user
-    key: ""
+    orgId: ""
     # API key of your dashboard user
-    apiKey: ""
+    userApiKey: ""
     # needed in case you want to have multiple data-planes connected to the same redis instance
     groupID: ""
     # enable/disable ssl
