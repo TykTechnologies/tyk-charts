@@ -14,6 +14,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 global:
+  isDataplane: false
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME
@@ -196,6 +197,21 @@ gateway:
   # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
   #   value: "true"
   extraEnvs: []
+
+  ## extraVolumes is a list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: []
+
+  ## extraVolumeMounts is a list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: []
 
   # used to mount files to the gateway containers
   #  - name: test
