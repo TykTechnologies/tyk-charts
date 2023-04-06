@@ -75,25 +75,32 @@ Follow the notes from the installation output to get connection details and pass
 
 ### Pump Configurations
 
-To enable Pump, set `global.components.pump` to true
+To enable Pump, set `global.components.pump` to true, and configure below inside `tyk-pump` section.
 
-| Pump       | Configuration      |
-| ---------- | ------------------ | 
-| Prometheus Pump (Default)  | Set `tyk-pump.pump.backend='prometheus'`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. |
-| Mongo Pump | Set `tyk-pump.pump.backend='mongo'`, and add connection details for mongo under `global.mongo`. |
-| SQL Pump   | Set `tyk-pump.pump.backend='postgres'`, and add connection details for postgres under `global.postgres`. |
-| Uptime Pump | Set `tyk-pump.pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''` |
-| Other Pumps    | Set `tyk-pump.pump.backend=''` if you want to configure other pump types  |
+<!-- BEGIN import from pump doc -->
+
+| Pump                      | Configuration                                                                                              |
+|---------------------------|------------------------------------------------------------------------------------------------------------| 
+| Prometheus Pump (Default) | Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. |
+| Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.mongo`.                        |
+| SQL Pump                  | Add `postgres` to `pump.backend`, and add connection details for postgres under `.postgres`.               |
+| Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                          |
+| Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                 |
 
 #### Prometheus Pump
-Set `tyk-pump.pump.backend='prometheus'`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. 
+Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. 
+
+We also support monitoring using Prometheus Operator. All you have to do is set `pump.prometheusPump.prometheusOperator.enabled` to true.
+This will create a PodMonitor resource for your Pump instance.
 
 #### Mongo pump
 If you are using the MongoDB pumps in the tyk-oss installation you will require MongoDB installed for that as well.
 
 To install Mongo you can use these rather excellent charts provided by Bitnami:
 
-    helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
+```bash
+helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
+```
 
 (follow notes from the installation output to get connection details and update them in `values.yaml` file)
 
@@ -101,20 +108,20 @@ NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) 
 
 *Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1. If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1. Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
 
-Add following under the `global` section in `values.yaml`:
+```yaml
+ # Set mongo connection details if you want to configure mongo pump.     
+ mongo:
+    # The mongoURL value will allow you to set your MongoDB address.
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # If your MongoDB has a password you can add the username and password to the url
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+    mongoURL: <MongoDB address>
 
-     # Set mongo connection details if you want to configure mongo pump.     
-     mongo:
-        # The mongoURL value will allow you to set your MongoDB address.
-        # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-        # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-        # If your MongoDB has a password you can add the username and password to the url
-        # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
-        mongoURL: <MongoDB address>
-
-        # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-        # Default value: false
-        # useSSL: false
+    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+    # Default value: false
+    # useSSL: false
+```
 
 #### SQL pump
 If you are using the SQL pumps in the tyk-oss installation you will require PostgreSQL installed for that as well.
@@ -126,8 +133,6 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 ```
 
 (follow notes from the installation output to get connection details and update them in `values.yaml` file)
-
-Add following under the `global` section in `values.yaml`:
 
 ```yaml
 # Set postgres connection details if you want to configure postgres pump.
@@ -142,13 +147,15 @@ postgres:
 ```
 
 #### Uptime Pump
-Uptime Pump can be configured by setting `tyk-pump.pump.uptimePumpBackend` in values.yaml file. It support following values
+Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It support following values
 1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
 2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
 3. empty: Used to disable uptime analytics.
 
 #### Other Pumps
-To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `tyk-pump.pump.extraEnvs`
+To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
+
+<!-- END import from pump doc -->
 
 ## Enabling TLS
 We have provided an easy way of enabling TLS via the `tyk-gateway.gateway.tls.enabled` flag. Setting this value to true will automatically enable TLS using the default certificate provided by tyk-gateway component chart. 
