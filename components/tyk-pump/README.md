@@ -66,10 +66,10 @@ You may set `global.redis.addr` and `global.redis.pass` with redis connection st
 |---------------------------|------------------------------------------------------------------------------------------------------------| 
 | Prometheus Pump (Default) | Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. |
 | Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.mongo`.                        |
-| SQL Pump                  | Add `postgres` to `pump.backend=`, and add connection details for postgres under `.postgres`.              |
+| SQL Pump                  | Add `postgres` to `pump.backend`, and add connection details for postgres under `.postgres`.               |
 | Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                          |
-| Other Pumps               | Set `pump.backend=''` if you want to configure other pump types                                            |
- 
+| Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                 |
+
 #### Prometheus Pump
 Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. 
 
