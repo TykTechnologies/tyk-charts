@@ -5,7 +5,7 @@
 global:
   components:
     # Determines whether or not the pump component should be installed.
-    pump: false
+    pump: true
 
   remoteControlPlane:
     enabled: true
