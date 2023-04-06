@@ -70,12 +70,12 @@ If you do not already have redis installed, you can use these charts provided by
 
 Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379` (Tyk needs the name including the port) You can update them in your local values.yaml file under `global.redis.addrs` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
-## Enabling TLS
-We have provided an easy way of enabling TLS via the `.Values.gateway.tls.enabled` flag. Setting this value to true will
+### Enabling TLS
+We have provided an easy way of enabling TLS via the `gateway.tls.enabled` flag. Setting this value to true will
 automatically enable TLS using the certificate provided under tyk-gateway/certs/cert.pem.
 
 If you want to use your own key/cert pair, you must follow the following steps:
 1. Create a tls secret using your cert and key pair.
-2. Set `.Values.gateway.tls.enabled`  to true.
-3. Set `.Values.gateway.tls.useDefaultTykCertificate` to false.
-4. Set `.Values.gateway.tls.secretName` to the name of the newly created secret.
+2. Set `gateway.tls.enabled`  to true.
+3. Set `gateway.tls.useDefaultTykCertificate` to false.
+4. Set `gateway.tls.secretName` to the name of the newly created secret.
