@@ -128,6 +128,8 @@ NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) 
 
 *Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1. If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1. Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
 
+Add following under the `global` section in `values.yaml`:
+
 ```yaml
  # Set mongo connection details if you want to configure mongo pump.     
  mongo:
@@ -154,16 +156,18 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 
 (follow notes from the installation output to get connection details and update them in `values.yaml` file)
 
+Add following under the `global` section in `values.yaml`:
+
 ```yaml
-# Set postgres connection details if you want to configure postgres pump.
-# Postgres connection string parameters.
-postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
-    port: 5432
-    user: postgres
-    password:
-    database: tyk_analytics
-    sslmode: disable
+    # Set postgres connection details if you want to configure postgres pump.
+    # Postgres connection string parameters.
+    postgres:
+        host: tyk-postgres-postgresql.tyk.svc.cluster.local
+        port: 5432
+        user: postgres
+        password:
+        database: tyk_analytics
+        sslmode: disable
 ```
 
 #### Uptime Pump
