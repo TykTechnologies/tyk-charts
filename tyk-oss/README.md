@@ -73,6 +73,26 @@ If you do not already have redis installed, you may use these charts provided by
 Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is 
 `tyk-redis-master.tyk.svc.cluster.local:6379` (Tyk needs the name including the port) 
 
+
+### Gateway Configurations
+
+Configure below inside `tyk-gateway` section.
+
+<!-- BEGIN import from gateway doc -->
+
+#### Enabling TLS
+We have provided an easy way of enabling TLS via the `gateway.tls.enabled` flag. Setting this value to true will
+automatically enable TLS using the certificate provided under tyk-gateway/certs/cert.pem.
+
+If you want to use your own key/cert pair, you must follow the following steps:
+1. Create a tls secret using your cert and key pair.
+2. Set `gateway.tls.enabled`  to true.
+3. Set `gateway.tls.useDefaultTykCertificate` to false.
+4. Set `gateway.tls.secretName` to the name of the newly created secret.
+
+<!-- END import from gateway doc -->
+
+
 ### Pump Configurations
 
 To enable Pump, set `global.components.pump` to true, and configure below inside `tyk-pump` section.
@@ -157,11 +177,3 @@ To setup other backends for pump, refer to this [document](https://github.com/Ty
 
 <!-- END import from pump doc -->
 
-## Enabling TLS
-We have provided an easy way of enabling TLS via the `tyk-gateway.gateway.tls.enabled` flag. Setting this value to true will automatically enable TLS using the default certificate provided by tyk-gateway component chart. 
-
-If you want to use your own key/cert pair, you must follow the following steps:
-1. Create a tls secret using your cert and key pair.
-2. Set `tyk-gateway.gateway.tls.enabled`  to true.
-3. Set `tyk-gateway.gateway.tls.useDefaultTykCertificate` to false.
-4. Set `tyk-gateway.gateway.tls.secretName` to the name of the newly created secret.
