@@ -1,19 +1,20 @@
-# Default values for tyk-data-plane.
+# Default values for tyk-mdcb-data-plane.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 global:
-  isDataplane: true
   components:
     # Determines whether or not the pump component should be installed.
-    pump: false
-  rpc:
-    # connection string used to connect to an MDCB deployment
+    pump: true
+
+  remoteControlPlane:
+    enabled: true
+    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
     connectionString: ""
     # orgID of your dashboard user
-    key: ""
+    orgId: ""
     # API key of your dashboard user
-    apiKey: ""
+    userApiKey: ""
     # needed in case you want to have multiple data-planes connected to the same redis instance
     groupID: ""
     # enable/disable ssl
@@ -219,7 +220,7 @@ tyk-gateway:
         valueFrom:
           secretKeyRef:
             name: secrets-tyk-data-plane
-            key: rpcKey
+            key: orgID
       - name: TYK_GW_SLAVEOPTIONS_APIKEY
         valueFrom:
           secretKeyRef:
