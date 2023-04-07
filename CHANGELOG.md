@@ -7,12 +7,12 @@
 [Full Changelog](https://github.com/TykTechnologies/tyk-charts/compare/v1.0.0-rc2...v1.0.0-rc3)
 
 **Added:**
+- New `tyk-mdcb-data-plane` chart.
 - Enable setting multiple backends for Tyk Pump.
 - Add new fields to values.yaml files to allow defining extra `volume` and `volumeMounts`.
 
 **Updated:**
 - Moved all subcharts to `/components` folder.
-- Moved MongoDB and PostgreSQL configurations from `.global` to `tyk-pump` field of tyk-oss's values.yaml file.
 - Updated Tyk Pump backend configuration. So that multiple backends can be set.
 
 ## [v1.0.0-rc2](https://github.com/TykTechnologies/tyk-charts/tree/v1.0.0-rc2) 
