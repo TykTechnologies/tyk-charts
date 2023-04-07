@@ -143,12 +143,12 @@ spec:
           - name: TYK_GW_ENABLENONTRANSACTIONALRATELIMITER
             value: "true"
           - name: TYK_GW_POLICIES_POLICYSOURCE
-        {{- if .Values.global.isDataplane }}
+        {{- if .Values.global.remoteControlPlane.enabled }}
             value: "rpc"
         {{- else}}
             value: "file"
         {{- end}}
-        {{- if .Values.global.isDataplane }}
+        {{- if .Values.global.remoteControlPlane.enabled }}
           - name: TYK_GW_ANALYTICSCONFIG_TYPE
             value: "rpc"
           - name: TYK_GW_SLAVEOPTIONS_USERPC
@@ -159,7 +159,7 @@ spec:
             value: "rpc"
         {{- end}}
           - name: TYK_GW_POLICIES_POLICYRECORDNAME
-        {{- if .Values.global.isDataplane }}
+        {{- if .Values.global.remoteControlPlane.enabled }}
             value: "tyk_policies"
         {{- else}}
             value: "/mnt/tyk-gateway/policies/policies.json"
