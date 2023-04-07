@@ -75,27 +75,26 @@ global:
     storage:
       database: 0
 
+  # If Mongo pump is in use, please set the connection details of MongoDB in the below field.
+  mongo:
+    # The mongoURL value will allow you to set your MongoDB address.
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # If your MongoDB has a password you can add the username and password to the url
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
 
-# If Mongo pump is in use, please set the connection details of MongoDB in the below field.
-mongo:
-  # The mongoURL value will allow you to set your MongoDB address.
-  # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-  # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-  # If your MongoDB has a password you can add the username and password to the url
-  # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+    # Default value: false
+    useSSL: false
 
-  # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-  # Default value: false
-  useSSL: false
-
-# If postgres pump is in use, please set the connection details of Postgres in the below field.
-postgres:
-  host: tyk-postgres-postgresql.tyk.svc.cluster.local
-  port: 5432
-  user: postgres
-  password:
-  database: tyk_analytics
-  sslmode: disable
+  # If postgres pump is in use, please set the connection details of Postgres in the below field.
+  postgres:
+    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    port: 5432
+    user: postgres
+    password:
+    database: tyk_analytics
+    sslmode: disable
 
 # If pump is enabled the Gateway will create and collect analytics data to send
 # to a data store of your choice. These can be set up in the pump config. The
