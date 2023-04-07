@@ -220,7 +220,7 @@ tyk-gateway:
         valueFrom:
           secretKeyRef:
             name: secrets-tyk-data-plane
-            key: rpcKey
+            key: orgID
       - name: TYK_GW_SLAVEOPTIONS_APIKEY
         valueFrom:
           secretKeyRef:
