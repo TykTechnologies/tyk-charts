@@ -16,9 +16,9 @@ This is a WIP repository for new Tyk helm charts. We will roll out new component
 ## Umbrella Charts
 Helm umbrella chart (chart of charts) is an easy and really flexible way of installing multiple components as a single one. We have following umbrella charts that help you to install group of related tyk components based on your deployment need.
 * [tyk-oss](./tyk-oss)
+* [tyk-mdcb-data-plane](./tyk-mdcb-data-plane)
 * tyk-self-managed-single-dc (Coming Soon!)
 * tyk-mdcb-control-plane (Coming soon!)
-* tyk-mdcb-data-plane (Coming soon!)
 
 ## External Dependencies - Redis and MongoDB/PostgreSQL
 - Redis is required for all of the Tyk installations it must be installed in the cluster or reachable from inside K8s.

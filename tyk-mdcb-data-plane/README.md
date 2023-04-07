@@ -1,4 +1,4 @@
-## Tyk Data Plane
+## Tyk MDCB Data Plane
 
 `tyk-mdcb-data-plane` provides the default deployment of a Tyk data plane for Tyk Self-managed MDCB or Tyk Cloud users. It will deploy the data plane components that remotely connect to a MDCB control plane.
 
