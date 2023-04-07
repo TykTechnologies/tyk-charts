@@ -5,8 +5,8 @@ This is a WIP repository for new Tyk helm charts. We will roll out new component
 > Breaking changes may be introduced before stable release.
 
 ## Component Charts
-* [tyk-gateway](./tyk-gateway)
-* [tyk-pump](./tyk-pump)
+* [tyk-gateway](./components/tyk-gateway)
+* [tyk-pump](./components/tyk-pump)
 * tyk-dashboard (Coming soon!)
 * tyk-mdcb (Coming soon!)
 * tyk-portal (Coming soon!)
@@ -16,12 +16,13 @@ This is a WIP repository for new Tyk helm charts. We will roll out new component
 ## Umbrella Charts
 Helm umbrella chart (chart of charts) is an easy and really flexible way of installing multiple components as a single one. We have following umbrella charts that help you to install group of related tyk components based on your deployment need.
 * [tyk-oss](./tyk-oss)
-* tyk-control-plane (Coming soon!)
-* tyk-data-plane (Coming soon!)
+* [tyk-mdcb-data-plane](./tyk-mdcb-data-plane)
+* tyk-self-managed-single-dc (Coming Soon!)
+* tyk-mdcb-control-plane (Coming soon!)
 
 ## External Dependencies - Redis and MongoDB/PostgreSQL
 - Redis is required for all of the Tyk installations it must be installed in the cluster or reachable from inside K8s.
-- MongoDB or PostgreSQL are only required for the `tyk-self-managed` or `tyk-control-plane` installation and must be installed in the cluster, or reachable from inside K8s. If you are using the MongoDB or SQL pumps in the `tyk-oss` installation you will require MongoDB or PostgreSQL installed for that as well.
+- MongoDB or PostgreSQL are only required for the Tyk Self-managed installation and must be installed in the cluster, or reachable from inside K8s. If you are using the MongoDB or SQL pumps in the `tyk-oss` installation you will require MongoDB or PostgreSQL installed for that as well.
 - (Coming soon!) There is an easy option for you to spawn a Redis/MongDB/PostgreSQL instance using Bitnami's chart as a sub-chart. This is handy if you want to quickly spin up the whole stack without installing Redis and the Database separately. This is NOT recommended for production use.
 
 ## Kubernetes Ingress
