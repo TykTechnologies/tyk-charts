@@ -1,5 +1,4 @@
 global:
-  isDataplane: false
   components:
     # Determines whether the pump component should be installed.
     pump: false
@@ -65,6 +64,9 @@ global:
     # then this value should be omitted or explicitly set to 0.
     storage:
       database: 0
+
+  remoteControlPlane:
+    enabled: false
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
