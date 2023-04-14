@@ -4,15 +4,22 @@ TYK_GW_ADDR="${TYK_GW_PROTO}://${TYK_GW_SVC}.${TYK_POD_NAMESPACE}.svc.cluster.lo
 TYK_GW_SECRET=${TYK_GW_SECRET}
 
 checkGateway() {
-  healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello)"
-  result=$(echo "${healthCheck}" | jq -r '.details.redis.status')
+  count=0
+  while [ $count -le 10 ]
+  do
+    healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello)"
+    result=$(echo "${healthCheck}" | jq -r '.details.redis.status')
 
-  if [[ "${result}" != "pass" ]]
-  then
-    echo "All components required for the Tyk Gateway to work are not available"
-    echo "${healthCheck}"
-    exit 1
-  fi
+    if [[ "${result}" != "pass" ]]
+    then
+      echo "All components required for the Tyk Gateway to work are not available"
+      echo "${healthCheck}"
+    fi
+
+    count=$((count+1))
+
+    sleep 2
+  done
 
   echo "All components required for the Tyk Gateway to work are available"
 }
@@ -45,9 +52,8 @@ createKeylessAPI() {
       exit 1
     fi
 
-    echo "API is created successfully"
-
     reloadGateway
+    echo "API is created successfully"
 }
 
 createPolicy() {
@@ -97,12 +103,20 @@ reloadGateway() {
 }
 
 clean() {
-  curl --fail-with-body -X DELETE -H "x-tyk-authorization: ${TYK_GW_SECRET}" -s ${TYK_GW_ADDR}/tyk/apis/random
+  count=0
+  while [ $count -le 10 ]
+  do
+    echo "Cleaning system, attempt: $count"
+    curl --fail-with-body -X DELETE -H "x-tyk-authorization: ${TYK_GW_SECRET}" -s ${TYK_GW_ADDR}/tyk/apis/random
 
-  if [[ $? -ne 0 ]]; then
-    echo "failed to delete API"
-    exit 1
-  fi
+    if [[ $? -ne 0 ]]; then
+      echo "failed to delete API"
+    fi
+
+    count=$((count+1))
+
+    sleep 2
+  done
 
   echo "API deleted successfully"
 }
