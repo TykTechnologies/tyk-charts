@@ -29,7 +29,7 @@ jobs:
           version: v3.3.0
 
       - name: Run chart-testing (lint)
-        run: ct lint --config ct.yaml
+        run: ct lint --config ct.yaml --all
 
   integration-tests:
     runs-on: ubuntu-latest
@@ -66,6 +66,8 @@ jobs:
           # Do not change the name
           helm install mongo simple-mongodb --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-oss --timeout ${{ env.TIMEOUT }}
           helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-oss --timeout ${{ env.TIMEOUT }}
+          
+          helm dependency update ./tyk-oss
           
           helm install tyk-oss ./tyk-oss -n tyk-oss --timeout ${{ env.TIMEOUT }} --wait
 
