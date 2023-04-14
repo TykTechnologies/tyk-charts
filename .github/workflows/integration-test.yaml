@@ -66,7 +66,7 @@ jobs:
           kubectl create namespace ${{ env.TYK_OSS_NS }}
           
           # Do not change the name
-          helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
+          helm install redis simple-redis --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
           
           helm dependency update ./tyk-oss
 
