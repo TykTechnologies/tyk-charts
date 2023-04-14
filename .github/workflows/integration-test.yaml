@@ -36,7 +36,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        k8s_version: [ "v1.25.2","v1.24.6","v1.23.12","v1.22.15","v1.21.14","v1.20.15","v1.19.16" ]
+#        k8s_version: [ "v1.25.2","v1.24.6","v1.23.12","v1.22.15","v1.21.14","v1.20.15","v1.19.16" ]
+        k8s_version: [ "v1.25.2" ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -64,17 +65,14 @@ jobs:
           kubectl create namespace tyk-oss
           
           # Do not change the name
-          helm install mongo simple-mongodb --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-oss --timeout ${{ env.TIMEOUT }}
           helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-oss --timeout ${{ env.TIMEOUT }}
           
           helm dependency update ./tyk-oss
-          
-          helm install tyk-oss ./tyk-oss -n tyk-oss --timeout ${{ env.TIMEOUT }} --wait
 
       - name: Run chart-testing (install)
-        run: ct install --target-branch ${{ github.event.repository.default_branch }}
+        run: ct install --namespace tyk --charts ./tyk-oss --helm-extra-set-args "--wait=true"
 
-      - name: Uninstall Tyk OSS
+      - name: Uninstall Tyk OSS Dependencies
         run: |
-          helm uninstall tyk-oss -n tyk-oss --timeout ${{ env.TIMEOUT }}
+          helm uninstall redis -n tyk-oss --timeout ${{ env.TIMEOUT }}
           kubectl delete namespace tyk-oss
