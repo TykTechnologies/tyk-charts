@@ -157,8 +157,7 @@ jobs:
 
       - name: Upgrade Tyk MDCB Data Plane
         run: |
-          helm upgrade -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane \ 
-          --set tyk-gateway.gateway.kind=DaemonSet
+          helm upgrade -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane --set tyk-gateway.gateway.kind=DaemonSet
 
       - name: Uninstall Tyk MDCB Data Plane
         run: |
