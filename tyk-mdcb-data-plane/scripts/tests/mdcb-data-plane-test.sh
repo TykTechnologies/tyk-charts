@@ -4,26 +4,40 @@ TYK_GW_ADDR="${TYK_GW_PROTO}://${TYK_GW_SVC}.${TYK_POD_NAMESPACE}.svc.cluster.lo
 TYK_GW_SECRET=${TYK_GW_SECRET}
 
 checkGateway() {
-  healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello)"
+  count=0
+  while [ $count -le 10 ]
+  do
+    healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello)"
 
-  redisStatus=$(echo "${healthCheck}" | jq -r '.details.redis.status')
-  if [[ "${redisStatus}" != "pass" ]]
+    redisStatus=$(echo "${healthCheck}" | jq -r '.details.redis.status')
+    if [[ "${redisStatus}" != "pass" ]]
+    then
+      echo "Redis is not ready"
+      echo "${healthCheck}"
+      count=$((count+1))
+      sleep 2
+      continue
+    fi
+
+    rpcStatus=$(echo "${healthCheck}" | jq -r '.details.rpc.status')
+    if [[ "${rpcStatus}" != "pass" ]]
+    then
+      echo "RPC is not ready"
+      echo "${healthCheck}"
+      count=$((count+1))
+      sleep 2
+      continue
+    fi
+
+    break
+  done
+
+  if [[ $count -ge 10 ]]
   then
-    echo "Redis is not ready"
-    echo "${healthCheck}"
-    exit 1
+    echo "All components required for the Tyk MDCB Data Plane to work are NOT available"
+  else
+    echo "All components required for the Tyk MDCB Data Plane to work are available"
   fi
-
-  rpcStatus=$(echo "${healthCheck}" | jq -r '.details.rpc.status')
-  if [[ "${rpcStatus}" != "pass" ]]
-  then
-    echo "RPC is not ready"
-    echo "${healthCheck}"
-    exit 1
-  fi
-
-
-  echo "All components required for the Tyk MDCB Data Plane to work are available"
 }
 
 main() {
