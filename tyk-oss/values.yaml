@@ -97,7 +97,7 @@ tyk-gateway:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
       secretName: tyk-default-tls-secret
 
-    # kind is type of k8s object to be created for gateway. 
+    # kind is type of k8s object to be created for gateway.
     kind: Deployment
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.
@@ -169,7 +169,6 @@ tyk-gateway:
       #    hosts:
       #      - chart-example.local
       tls: []
-    
 
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -304,7 +303,7 @@ tyk-pump:
         podMonitorSelector:
           release: prometheus-stack
 
-    # annotations for pump deployment  
+    # annotations for pump deployment
     annotations: {}
 
     # We usually recommend not to specify default resources and to leave this
@@ -319,8 +318,8 @@ tyk-pump:
     #  cpu: 100m
     #  memory: 128Mi
     resources: {}
-      
-    # securityContext values for pump pod 
+
+    # securityContext values for pump pod
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
