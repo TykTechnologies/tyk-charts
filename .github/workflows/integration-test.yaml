@@ -8,6 +8,7 @@ on:
 
 env:
   TIMEOUT: 5m
+  TYK_OSS_NS: tyk-oss
 
 jobs:
   lint-test:
@@ -62,17 +63,17 @@ jobs:
 
       - name: Deploy Tyk OSS and Dependencies
         run: |
-          kubectl create namespace tyk-oss
+          kubectl create namespace ${{ env.TYK_OSS_NS }}
           
           # Do not change the name
-          helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-oss --timeout ${{ env.TIMEOUT }}
+          helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
           
           helm dependency update ./tyk-oss
 
       - name: Run chart-testing (install)
-        run: ct install --namespace tyk --charts ./tyk-oss --helm-extra-set-args "--wait=true"
+        run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true"
 
       - name: Uninstall Tyk OSS Dependencies
         run: |
-          helm uninstall redis -n tyk-oss --timeout ${{ env.TIMEOUT }}
-          kubectl delete namespace tyk-oss
+          helm uninstall redis -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace ${{ env.TYK_OSS_NS }}
