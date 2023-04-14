@@ -2,5 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: test-tyk-mdcb-data-plane-map
+  annotations:
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
 data:
 {{ (.Files.Glob "scripts/tests/mdcb-data-plane-test.sh").AsConfig | indent 2 }}
