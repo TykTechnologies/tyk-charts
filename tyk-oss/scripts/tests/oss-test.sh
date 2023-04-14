@@ -12,16 +12,22 @@ checkGateway() {
 
     if [[ "${result}" != "pass" ]]
     then
-      echo "All components required for the Tyk Gateway to work are not available"
+      echo "Redis is not ready."
       echo "${healthCheck}"
+      count=$((count+1))
+      sleep 2
+      continue
     fi
 
-    count=$((count+1))
-
-    sleep 2
+    break
   done
 
-  echo "All components required for the Tyk Gateway to work are available"
+  if [[ $count -ge 10 ]]
+  then
+    echo "All components required for the Tyk Gateway to work are NOT available"
+  else
+    echo "All components required for the Tyk Gateway to work are available"
+  fi
 }
 
 createKeylessAPI() {
