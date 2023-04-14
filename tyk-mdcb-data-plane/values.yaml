@@ -36,12 +36,12 @@ global:
     # the endpoints of the redis instances or use the cluster configuration endpoint.
     #
     # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
-    addrs:
-#      - tyk-redis-master.tyk.svc.cluster.local:6379
+    # addrs:
+    #   - tyk-redis-master.tyk.svc.cluster.local:6379
     #   Example using tyk simple redis chart
     #   - redis.tyk.svc.cluster.local:6379
     #   Example using bitnami/redis
-       - tyk-redis-master.tyk.svc.cluster.local:6379
+    #   - tyk-redis-master.tyk.svc.cluster.local:6379
     #   Example using bitnami/redis with sentinel
     #   - tyk-redis.tyk.svc.cluster.local:26379
     #   Example using bitnami/redis-cluster
@@ -50,7 +50,7 @@ global:
     # Redis password
     # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
     # your password in the field below
-    pass: "xKZudxf0l5"
+    pass: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
