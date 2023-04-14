@@ -4,7 +4,7 @@ TYK_GW_ADDR="${TYK_GW_PROTO}://${TYK_GW_SVC}.${TYK_POD_NAMESPACE}.svc.cluster.lo
 TYK_GW_SECRET=${TYK_GW_SECRET}
 
 checkGateway() {
-  healthCheck="$(curl -sS ${TYK_GW_ADDR}/hello)"
+  healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello)"
   result=$(echo "${healthCheck}" | jq -r '.details.redis.status')
 
   if [[ "${result}" != "pass" ]]
@@ -18,7 +18,7 @@ checkGateway() {
 }
 
 createKeylessAPI() {
-    curl -sS -H "x-tyk-authorization: ${TYK_GW_SECRET}" -H "Content-Type: application/json" -X POST \
+    curl --fail-with-body -sS -H "x-tyk-authorization: ${TYK_GW_SECRET}" -H "Content-Type: application/json" -X POST \
       -d '{
         "name": "Hello-World",
         "use_keyless": true,
@@ -51,7 +51,7 @@ createKeylessAPI() {
 }
 
 createPolicy() {
-    curl -X POST -H "x-tyk-authorization: ${TYK_GW_SECRET}" \
+    curl --fail-with-body -X POST -H "x-tyk-authorization: ${TYK_GW_SECRET}" \
       -s \
       -H "Content-Type: application/json" \
       -X POST \
@@ -86,7 +86,7 @@ createPolicy() {
 }
 
 reloadGateway() {
-  curl -H "x-tyk-authorization: ${TYK_GW_SECRET}" -s ${TYK_GW_ADDR}/tyk/reload/group
+  curl --fail-with-body -H "x-tyk-authorization: ${TYK_GW_SECRET}" -s ${TYK_GW_ADDR}/tyk/reload/group
 
   if [[ $? -ne 0 ]]; then
     echo "failed to reload Gateway"
@@ -97,7 +97,7 @@ reloadGateway() {
 }
 
 clean() {
-  curl -X DELETE -H "x-tyk-authorization: ${TYK_GW_SECRET}" -s ${TYK_GW_ADDR}/tyk/apis/random
+  curl --fail-with-body -X DELETE -H "x-tyk-authorization: ${TYK_GW_SECRET}" -s ${TYK_GW_ADDR}/tyk/apis/random
 
   if [[ $? -ne 0 ]]; then
     echo "failed to delete API"
