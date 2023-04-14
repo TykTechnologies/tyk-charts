@@ -411,6 +411,14 @@ tyk-pump:
           secretKeyRef:
             name: secrets-tyk-data-plane
             key: apiKey
+      # needed in case you want to have multiple data-planes connected to the same redis instance
+      # TODO: this is a pump bug
+      groupID: ""
+#        valueFrom:
+#          secretKeyRef:
+#            name: secrets-tyk-data-plane
+#            key: groupID
+
       # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
       enableAggregateAnalytics: true
       # Use SSL to connect to Tyk Control Plane.

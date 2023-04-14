@@ -81,9 +81,12 @@ spec:
             value: "{{ .Values.pump.hybridPump.useSSL }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_SSLINSECURESKIPVERIFY
             value: "{{ .Values.pump.hybridPump.skipSSLVerification }}"
-          # TODO: Verify the groupId bug
           - name: TYK_PMP_PUMPS_HYBRID_META_GROUPID
-            value: ""
+            {{ if typeIs "string" .Values.pump.hybridPump.userApiKey }}
+            value: "{{ .Values.pump.hybridPump.userApiKey }}"
+            {{ else }}
+{{ .Values.pump.hybridPump.userApiKey | toYaml | indent 12 }}
+            {{ end }}
           - name: TYK_PMP_PUMPS_HYBRID_META_CALLTIMEOUT
             value: "{{ .Values.pump.hybridPump.callTimeout }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCPOOLSIZE
