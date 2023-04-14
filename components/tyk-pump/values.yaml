@@ -126,6 +126,26 @@ pump:
   # Set it to "" for disabling uptime Tyk Pump. By default, uptime pump is disabled.
   uptimePumpBackend: ""
 
+  # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
+  # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
+  hybridPump:
+    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+    connectionString: ""
+    # orgID of your dashboard user
+    orgId: ""
+    # API key of your dashboard user
+    userApiKey: ""
+    # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
+    enableAggregateAnalytics: true
+    # Use SSL to connect to Tyk Control Plane.
+    useSSL: true
+    # Skip SSL verification.
+    skipSSLVerification: true
+    # Hybrid pump RPC calls timeout in seconds.
+    callTimeout: 30
+    # Hybrid pump connection pool size.
+    poolSize: 30
+
   # prometheusPump configures Tyk Pump to expose Prometheus metrics.
   # Please add "prometheus" to .Values.pump.backend in order to enable Prometheus Pump.
   prometheusPump:

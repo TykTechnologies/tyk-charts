@@ -53,8 +53,43 @@ spec:
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
-
-         {{ if has "prometheus" .Values.pump.backend }}
+         {{ if has "hybrid" .Values.pump.backend }}
+          # Configure Hybrid Pump for Tyk Pump
+          - name: TYK_PMP_PUMPS_PROMETHEUS_TYPE
+            value: hybrid
+          - name: TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING
+            {{ if typeIs "string" .Values.pump.hybridPump.connectionString }}
+            value: "{{ .Values.pump.hybridPump.connectionString }}"
+            {{ else }}
+{{ .Values.pump.hybridPump.connectionString | toYaml | indent 12 }}
+            {{ end }}
+          - name: TYK_PMP_PUMPS_HYBRID_META_RPCKEY
+            {{ if typeIs "string" .Values.pump.hybridPump.userApiKey }}
+            value: "{{ .Values.pump.hybridPump.userApiKey }}"
+            {{ else }}
+{{ .Values.pump.hybridPump.userApiKey | toYaml | indent 12 }}
+            {{ end }}
+          - name: TYK_PMP_PUMPS_HYBRID_META_APIKEY
+            {{ if typeIs "string" .Values.pump.hybridPump.userApiKey }}
+            value: "{{ .Values.pump.hybridPump.userApiKey }}"
+            {{ else }}
+{{ .Values.pump.hybridPump.userApiKey | toYaml | indent 12 }}
+            {{ end }}
+          - name: TYK_PMP_PUMPS_HYBRID_META_AGGREGATED
+            value: "{{ .Values.pump.hybridPump.enableAggregateAnalytics }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_USESSL
+            value: "{{ .Values.pump.hybridPump.useSSL }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_SSLINSECURESKIPVERIFY
+            value: "{{ .Values.pump.hybridPump.skipSSLVerification }}"
+          # TODO: Verify the groupId bug
+          - name: TYK_PMP_PUMPS_HYBRID_META_GROUPID
+            value: ""
+          - name: TYK_PMP_PUMPS_HYBRID_META_CALLTIMEOUT
+            value: "{{ .Values.pump.hybridPump.callTimeout }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_RPCPOOLSIZE
+            value: "{{ .Values.pump.hybridPump.poolSize }}"
+          {{ end }}
+          {{ if has "prometheus" .Values.pump.backend }}
           # Configure Prometheus Pump for Tyk Pump
           - name: TYK_PMP_PUMPS_PROMETHEUS_TYPE
             value: prometheus
