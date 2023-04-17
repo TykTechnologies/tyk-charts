@@ -383,6 +383,7 @@ tyk-pump:
     # configure the backend via environment variables.
     # By default, Tyk Pump uses Prometheus.
     backend:
+      - "prometheus"
       - "hybrid"
 
     # uptimePumpBackend configures uptime Tyk Pump. ["", "mongo", "postgres"].
