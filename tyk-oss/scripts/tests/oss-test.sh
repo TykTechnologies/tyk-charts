@@ -62,7 +62,7 @@ createKeylessAPI() {
     echo "API is created successfully"
 }
 
-createPolicy() {
+createKey() {
     curl --fail-with-body -X POST -H "x-tyk-authorization: ${TYK_GW_SECRET}" \
       -s \
       -H "Content-Type: application/json" \
@@ -130,7 +130,7 @@ clean() {
 main() {
   checkGateway
   createKeylessAPI
-  createPolicy
+  createKey
   clean
   echo "Tests passed"
 }
