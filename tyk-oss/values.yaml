@@ -111,7 +111,7 @@ tyk-gateway:
       repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v4.3.1
+      tag: v5.0.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
