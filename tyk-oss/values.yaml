@@ -302,7 +302,7 @@ tyk-pump:
         # You can check the podMonitorSelector via:
         #   kubectl describe prometheuses.monitoring.coreos.com <PROMETHEUS_POD>
         podMonitorSelector:
-          release: prometheus
+          release: prometheus-stack
 
     # annotations for pump deployment  
     annotations: {}
