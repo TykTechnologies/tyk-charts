@@ -78,8 +78,6 @@ global:
     storage:
       database: 0
 
-
-
 tyk-gateway:
   ## Default values for tyk-gateway chart.
   ## This is a YAML-formatted file.
@@ -257,8 +255,6 @@ tyk-gateway:
     #    mountPath: /opt/test
     mounts: []
 
-
-
 tyk-pump:
   ## Default values for tyk-pump chart.
   ## This is a YAML-formatted file.
@@ -421,7 +417,7 @@ tyk-pump:
         podMonitorSelector:
           release: prometheus-stack
 
-    # annotations for pump deployment  
+    # annotations for pump deployment
     annotations: {}
 
     # We usually recommend not to specify default resources and to leave this
@@ -437,7 +433,7 @@ tyk-pump:
     #  memory: 128Mi
     resources: {}
 
-    # securityContext values for pump pod 
+    # securityContext values for pump pod
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
@@ -476,4 +472,3 @@ tyk-pump:
     #   filename: test.csv
     #   mountPath: /opt/test
     mounts: []
-  
