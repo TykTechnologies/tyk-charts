@@ -64,9 +64,9 @@ jobs:
         id: chart-version
         run: echo "version=$(awk '/^version:/ {print $2}' ${{ matrix.chart }}/Chart.yaml)" >> "$GITHUB_OUTPUT"
 
+      - name: Update dependencies
+        run: helm dependency update ${{ matrix.chart }}
+
       - name: Package Helm Chart
         run: helm package ${{ matrix.chart }} --version ${{ steps.chart-version.outputs.version }}
-
-        
-
           
