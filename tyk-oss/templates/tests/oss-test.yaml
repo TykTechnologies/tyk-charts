@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "tyk-oss.fullname" . }}-test-tyk-oss"
+  labels:
+    chart: {{ include "tyk-oss.chart" . }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: health-check-container
+      image: alpine:3.17
+      command:
+        - /bin/sh
+        - -c
+        - /tests/oss-test.sh
+      volumeMounts:
+        - mountPath: "/tests"
+          name: test-tyk-oss
+      env:
+        - name: TYK_GW_PROTO
+          value: {{ include "tyk-oss.gwproto" . }}
+        - name: TYK_GW_SVC
+          value: gateway-svc-{{ include "tyk-oss.fullname" . }}-tyk-gateway
+        - name: TYK_GW_LISTENPORT
+          value: "{{ index .Values "tyk-gateway" "gateway" "service" "port" }}"
+        - name: TYK_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: TYK_GW_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: secrets-{{ include "tyk-oss.fullname" . }}-tyk-gateway
+              key: APISecret
+  volumes:
+    - name: test-tyk-oss
+      configMap:
+        name: test-tyk-oss-map
+        defaultMode: 0777
