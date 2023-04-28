@@ -39,7 +39,7 @@ jobs:
             echo "No charts to be released"
             echo "charts=none" >> "$GITHUB_OUTPUT"
           else
-          echo "charts=$(jq 'split(",")' -Rc <(echo ${charts[@]}))" >> "$GITHUB_OUTPUT"
+          echo "charts=$(jq 'split(" ")' -Rc <(echo ${charts[@]}))" >> "$GITHUB_OUTPUT"
           fi
       - name: Release charts
         if: steps.get-charts.outputs.charts != ''
