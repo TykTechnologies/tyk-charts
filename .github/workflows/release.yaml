@@ -1,4 +1,4 @@
-name: New Release process
+name: Release Helm charts
 
 on:
   push:
@@ -9,9 +9,11 @@ on:
       - '**/Chart.yaml'
 
 jobs:
- release:
+ get-list-of-charts:
     runs-on: ubuntu-latest
-    name: 'Get list of changed to be released'
+    name: 'Get list of charts to be released'
+    outputs:
+      charts: ${{ steps.get-charts.outputs.charts }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -38,11 +40,21 @@ jobs:
           fi
 
           echo "charts=${charts[@]}" >> "$GITHUB_OUTPUT"
-      - name: Print out names
-        run: echo "List of modified charts ${{ steps.get-charts.outputs.charts}}"
-
       - name: Release charts
         if: steps.get-charts.outputs.charts != ''
         run: echo "Release charts ${{ steps.get-charts.outputs.charts}}"
+
+ release-charts:
+    runs-on: ubuntu-latest
+    needs: get-list-of-charts
+    if: needs.get-list-of-charts.outputs.charts != ''
+    
+    strategy:
+      matrix:
+        chart: ${{ fromJson(needs.get-list-of-charts.outputs.charts) }}
+
+    steps:
+      - run: echo "Release chart ${{ matrix.chart }}"
+        
 
           
