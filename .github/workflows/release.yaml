@@ -24,7 +24,7 @@ jobs:
 
           charts=()
           for file in $files_changed; do
-            count=$(git show "$file" | grep -c "+version")
+            count=$(git show "$file" | grep -c "+version" || true)
             if [ $count -eq 0 ]; then
               echo "No version change in $file"
               continue
@@ -40,7 +40,7 @@ jobs:
           echo "charts=${charts[@]}" >> "$GITHUB_OUTPUT"
       - name: Print out names
         run: echo "List of modified charts ${{ steps.get-charts.outputs.charts}}"
-        
+
       - name: Release charts
         if: steps.get-charts.outputs.charts != 'none'
         run: echo "Release charts ${{ steps.get-charts.outputs.charts}}"
