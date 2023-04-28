@@ -35,8 +35,8 @@ jobs:
 
           if [ ${#charts[@]} -eq 0 ]; then
             echo "No charts to be released"
-            echo "charts=none" >> "$GITHUB_OUTPUT"
           fi
+
           echo "charts=${charts[@]}" >> "$GITHUB_OUTPUT"
       - name: Print out names
         run: echo "List of modified charts ${{ steps.get-charts.outputs.charts}}"
