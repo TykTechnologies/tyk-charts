@@ -51,7 +51,7 @@ jobs:
     
     strategy:
       matrix:
-        chart: ${{ fromJson(needs.get-list-of-charts.outputs.charts) }}
+        chart: ${{ needs.get-list-of-charts.outputs.charts }}
 
     steps:
       - run: echo "Release chart ${{ matrix.chart }}"
