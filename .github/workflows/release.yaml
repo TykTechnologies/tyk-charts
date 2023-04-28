@@ -37,9 +37,10 @@ jobs:
 
           if [ ${#charts[@]} -eq 0 ]; then
             echo "No charts to be released"
+            echo "charts=none" >> "$GITHUB_OUTPUT"
+          else
+          echo "charts=$(jq 'split(",")' -Rc <(echo ${charts[@]}))" >> "$GITHUB_OUTPUT"
           fi
-
-          echo "charts=${charts[@]}" >> "$GITHUB_OUTPUT"
       - name: Release charts
         if: steps.get-charts.outputs.charts != ''
         run: echo "Release charts ${{ steps.get-charts.outputs.charts}}"
@@ -47,11 +48,11 @@ jobs:
  release-charts:
     runs-on: ubuntu-latest
     needs: get-list-of-charts
-    if: needs.get-list-of-charts.outputs.charts != ''
+    if: needs.get-list-of-charts.outputs.charts != 'none'
     
     strategy:
       matrix:
-        chart: ${{ needs.get-list-of-charts.outputs.charts }}
+        chart: ${{ fromJson(needs.get-list-of-charts.outputs.charts) }}
 
     steps:
       - run: echo "Release chart ${{ matrix.chart }}"
