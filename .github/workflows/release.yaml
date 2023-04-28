@@ -33,8 +33,16 @@ jobs:
             charts+=("$(echo "$file" | xargs dirname)")
           done
 
+          if [ ${#charts[@]} -eq 0 ]; then
+            echo "No charts to be released"
+            echo "charts=none" >> "$GITHUB_OUTPUT"
+          fi
           echo "charts=${charts[@]}" >> "$GITHUB_OUTPUT"
       - name: Print out names
         run: echo "List of modified charts ${{ steps.get-charts.outputs.charts}}"
+        
+      - name: Release charts
+        if: steps.get-charts.outputs.charts != 'none'
+        run: echo "Release charts ${{ steps.get-charts.outputs.charts}}"
 
           
