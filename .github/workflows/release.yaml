@@ -42,7 +42,7 @@ jobs:
         run: echo "List of modified charts ${{ steps.get-charts.outputs.charts}}"
 
       - name: Release charts
-        if: steps.get-charts.outputs.charts != 'none'
+        if: steps.get-charts.outputs.charts != ''
         run: echo "Release charts ${{ steps.get-charts.outputs.charts}}"
 
           
