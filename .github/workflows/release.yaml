@@ -1,0 +1,40 @@
+name: New Release process
+
+on:
+  push:
+    branches:
+      - main
+      - feat/TT-8408/release_workflow
+    paths: 
+      - '**/Chart.yaml'
+
+jobs:
+ release:
+    runs-on: ubuntu-latest
+    name: 'Get list of changed to be released'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - id: get-charts
+        name: Get list of charts to be released
+        run: |
+          # Get list of Chart.yaml files changed in the last commit
+          files_changed="$(git show --pretty="" --name-only | grep Chart.yaml)"
+
+          charts=()
+          for file in $files_changed; do
+            count=$(git show "$file" | grep -c "+version")
+            if [ $count -eq 0 ]; then
+              echo "No version change in $file"
+              continue
+            fi
+
+            charts+=("$(echo "$file" | xargs dirname)")
+          done
+
+          echo "charts=${charts[@]}" >> "$GITHUB_OUTPUT"
+      - name: Print out names
+        run: echo "List of modified charts ${{ steps.get-charts.outputs.charts}}"
+
+          
