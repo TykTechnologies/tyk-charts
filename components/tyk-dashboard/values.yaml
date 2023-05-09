@@ -1,0 +1,151 @@
+# Determines whether or not the dashboard component should be installed.
+enabled: true
+# Dashboard will only bootstrap if the master bootstrap option is set to true.
+bootstrap: true
+
+
+# The hostname to bind the Dashboard to.
+hostName: tyk-dashboard.local
+# If set to true the Dashboard will use SSL connection.
+# You will also need to set the:
+# - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+# - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+# variables in extraEnvs object array to define your SSL cert and key files.
+tls: false
+# Dashboard license.
+license: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGxvd2VkX25vZGVzIjoiOWE5NTQ0NjMtNDM4MS00MzMzLTQxOGMtZmI1NGIwNmU2ODdjLGZiYjIzOWFjLWNhODYtNDljMC01ZGY3LWYyNDBiZWJhNjYwZixmMDZlYWQwYS1hYWI5LTQ5NzItNmUzMS0yODM0YmQ5ZjI3MDUsYTMxZWI3N2UtNTBlOC00OWUzLTRmYzctYTAwZWQ3MGZiOWI0LDI4ZmM1NDA4LTA0MGQtNDliNy00Mjk2LWI0ZmE0M2YzMmRlZCxiNWExZTY3ZC1hYzNkLTRiNmItNmU1OC0wNTAzZGQ4MDdjODgsNjEwY2ZiZTYtY2M5Yy00NzcwLTZhZjgtNmFiZjVlMWE5NTliLGIzMzczNTg1LWNjNGMtNGUwMy02MDk4LTcxNzExNzJjYzdiNiw0MDdiOTU4OC1lNTkzLTQ1YWQtNTE4Mi04MGM2YzEzZjUwYWMsZDU5MzgzNzMtZjk4OC00OTk5LTVlYWEtNzIzZWFkYThkNGFjIiwiZXhwIjoxNjg2MTc1MTQ4LCJpYXQiOjE2ODM1ODMxNDgsIm93bmVyIjoiNjFjY2U2MmMxMjFjYTEwMDAxOGJiMTkwIiwic2NvcGUiOiJtdWx0aV90ZWFtLHJiYWMsZ3JhcGgsZmVkZXJhdGlvbiIsInYiOiIyIn0.We2PMTIuLHfoHyy0qBRwOX3NpalkOyvMnUMBgIuBY4JzkvEdv1rMJdlkPQC63OBMNuPHxHnL7ENFMYK5tPBA20zaYyMu3NZpGPdOS2L1wcxXsEYOHuI9Yzyi428708QUXiVqlxhcZYzBcJ6SbT8ZSejrqxlDe70CJhHC817B27GRwHcFB9Sq6dAcJbb5x7jREb6lDuBUFIIRyk43X_kiTREdHFfdeEJNWLlW7B0081Rc9SGDOkIZEJelF4G5OvnwMT4ij-mjHaXa2b6Ng6_QCk0i-E4nzBt8ytsnscJCDZqAWm48fnkhu-NBw5_RiBOgZPWGU2RJCah-MClrmInbtA"
+# Dashboard admin information.
+adminUser:
+  firstName: admin
+  lastName: user
+  email: default@example.com
+  # Set a password or a random one will be assigned.
+  password: "123456"
+# Dashboard Organisation information.
+org:
+  name: Default Org
+  # The hostname to bind the Portal to.
+  cname: tyk-portal.local
+
+replicaCount: 1
+containerPort: 3000
+image:
+  repository: tykio/tyk-dashboard
+  tag: v5.0.0
+  pullPolicy: Always
+service:
+  type: NodePort
+  port: 3000
+  externalTrafficPolicy: Local
+  annotations: {}
+
+#  - secretName: chart-example-tls
+#    hosts:
+#      - chart-example.local
+resources: {}
+  # We usually recommend not to specify default resources and to leave this
+  # as a conscious choice for the user. This also increases chances charts
+  # run on environments with little resources, such as Minikube. If you do
+  # want to specify resources, uncomment the following lines, adjust them
+  # as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+#  memory: 128Mi
+securityContext:
+  runAsUser: 1000
+  fsGroup: 2000
+nodeSelector: {}
+tolerations: []
+affinity: {}
+extraEnvs: []
+## extraVolumes A list of volumes to be added to the pod
+## extraVolumes:
+##   - name: ca-certs
+##     secret:
+##       defaultMode: 420
+##       secretName: ca-certs
+extraVolumes: []
+## extraVolumeMounts A list of volume mounts to be added to the pod
+## extraVolumeMounts:
+##   - name: ca-certs
+##     mountPath: /etc/ssl/certs/ca-certs.crt
+##     readOnly: true
+extraVolumeMounts: []
+mounts: []
+
+secrets:
+  # tyk_analytics.conf tyk_api_config.secret
+  # tyk_analytics.conf shared_node_secret
+  # tyk.conf node_secret
+  # tyk.conf secret
+  APISecret: CHANGEME
+  # tyk_analytics.conf admin_secret
+  # tib.conf TykAPISettings.GatewayConfig.AdminSecret
+  # tib.conf TykAPISettings.DashboardConfig.AdminSecret
+  AdminSecret: "12345"
+  # If you don't want to store plaintext secrets in the Helm value file and would
+  # rather provide the k8s Secret externally please populate the value below
+  useSecretName: ""
+
+enableIstioIngress: false
+
+gateway:
+  hostName: "hname"
+  port: 8080
+  host: "host"
+
+backend: mongo
+
+postgres:
+  host: tyk-postgres-postgresql.tyk.svc.cluster.local
+  port: 5432
+  user: postgres
+  password:
+  database: tyk_analytics
+  sslmode:
+
+
+redis:
+  enableCluster: false
+  useSSL: false
+  port: 6379
+  pass: ""
+  addrs:
+  #  If using bitnami-redis charts:
+  #  - "tyk-redis-master.tyk.svc.cluster.local:6379"
+
+mongo:
+  useSSL: false
+  # For tyk-syimple-mongo (no auth)
+  #  mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+  mongoURL: ""
+
+config:
+  enableOwnership: true
+  defaultPageSize: 10
+  notifyOnChange: true
+  hashKeys: true
+  enableDuplicateSlugs: true
+  showOrgId: true
+  hostConfig:
+    enableHostNames: true
+    disableOrgSlugPrefix: true
+    overrideHostname: "dashboard-svc-tyk-pro.tyk.svc.cluster.local"
+  homeDir: "/opt/tyk-dashboard"
+  useShardedAnalytics: false
+  enableAggregateLookups: true
+  enableAnalyticsCache: true
+  allowExplicitPolicyId: true
+  oauthRedirectUriSeparator: ";"
+  keyRequestFields: "appName;appType"
+  dashboardSessionLifetime: 43200
+  ssoEnableUserLookup: true
+  notificationsListenPort: 5000
+  enableDeleteKeyByHash: true
+  enableUpdateKeyByHash: true
+  enableHashedKeysListing: true
+  enableMultiOrgUsers: true
+
