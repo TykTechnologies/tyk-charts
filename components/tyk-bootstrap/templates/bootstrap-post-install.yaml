@@ -32,6 +32,8 @@ spec:
           command: [ './app/bin/bootstrap-app-post' ]
           imagePullPolicy: IfNotPresent
           env:
+            - name: TYK_DB_OMITCONFIGFILE
+              value: "true"
             - name: TYK_ADMIN_FIRST_NAME
               value: {{ .Values.adminUser.firstName | quote }}
             - name: TYK_ADMIN_LAST_NAME

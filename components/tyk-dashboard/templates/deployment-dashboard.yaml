@@ -1,4 +1,3 @@
-{{- if .Values.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -9,7 +8,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.dashboard.replicaCount }}
   minReadySeconds: 5
   strategy:
     # indicate which strategy we want for rolling update
@@ -27,9 +26,8 @@ spec:
         app: dashboard-{{ include "tyk-dashboard.fullname" . }}
         release: {{ .Release.Name }}
       annotations:
-      # Enable backward compatibility to chart 0.8.1.
-      {{- if .Values.enableIstioIngress }}
-        traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.containerPort }}"
+      {{- if .Values.dashboard.enableIstioIngress }}
+        traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.dashboard.containerPort }}"
         traffic.sidecar.istio.io/includeInboundPorts: ""
       {{- end }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
@@ -39,21 +37,21 @@ spec:
         {{- end }}
         {{- end }}
     spec:
-{{- if .Values.nodeSelector }}
+{{- if .Values.dashboard.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.nodeSelector | indent 8 }}
+{{ toYaml .Values.dashboard.nodeSelector | indent 8 }}
 {{- end }}
-{{- if .Values.tolerations }}
+{{- if .Values.dashboard.tolerations }}
       tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
+{{ toYaml .Values.dashboard.tolerations | indent 8 }}
 {{- end }}
-{{- if .Values.affinity }}
+{{- if .Values.dashboard.affinity }}
       affinity:
-{{ toYaml .Values.affinity | indent 8 }}
+{{ toYaml .Values.dashboard.affinity | indent 8 }}
 {{- end }}
       containers:
-      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+      - image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
+        imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
         securityContext:
           runAsUser: 999
@@ -62,108 +60,108 @@ spec:
         env:
           ## DEFAULT TYK DASHBOARD CONFIGURATION
           - name: "TYK_DB_ENABLEOWNERSHIP"
-            value: "{{ .Values.config.enableOwnership }}"
+            value: "{{ .Values.dashboard.enableOwnership }}"
           - name: "TYK_DB_PAGESIZE"
-            value: "{{ .Values.config.defaultPageSize }}"
+            value: "{{ .Values.dashboard.defaultPageSize }}"
           - name: "TYK_DB_REDISPORT"
-            value: "{{ .Values.redis.port }}"
+            value: "{{ .Values.global.redis.port }}"
           - name: "TYK_DB_REDISHOST"
-            value: "{{ .Values.redis.host }}"
+            value: "{{ .Values.global.redis.host }}"
           - name: "TYK_DB_NOTIFYONCHANGE"
-            value: "{{ .Values.config.notifyOnChange }}"
+            value: "{{ .Values.dashboard.notifyOnChange }}"
           - name: "TYK_DB_HASHKEYS"
-            value: "{{ .Values.config.hashKeys }}"
+            value: "{{ .Values.dashboard.hashKeys }}"
           - name: "TYK_DB_ENABLEDUPLICATESLUGS"
-            value: "{{ .Values.config.enableDuplicateSlugs }}"
+            value: "{{ .Values.dashboard.enableDuplicateSlugs }}"
           - name: "TYK_DB_SHOWORGID"
-            value: "{{ .Values.config.showOrgId }}"
-          - name: "TYK_DB_ENABLEHOSTNAMES"
-            value: "{{ .Values.config.hostConfig.enableHostNames }}"
-          - name: "TYK_DB_DISABLEORIGSLUGPREFIX"
-            value: "{{ .Values.config.hostConfig.disableOrgSlugPrefix }}"
-          - name: "TYK_DB_OVERRIDEHOSTNAME"
-            value: "{{ .Values.config.hostConfig.overrideHostname }}"
+            value: "{{ .Values.dashboard.showOrgId }}"
+          - name: "TYK_DB_HOSTCONFIG_ENABLEHOSTNAMES"
+            value: "{{ .Values.dashboard.hostConfig.enableHostNames }}"
+          - name: "TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX"
+            value: "{{ .Values.dashboard.hostConfig.disableOrgSlugPrefix }}"
+          - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
+            value: "{{ .Values.dashboard.hostConfig.overrideHostname }}"
           - name: "TYK_DB_HOMEDIR"
-            value: "{{ .Values.config.homeDir }}"
+            value: "{{ .Values.dashboard.homeDir }}"
           - name: "TYK_DB_USESHARDEDANALYTICS"
-            value: "{{ .Values.config.useShardedAnalytics }}"
+            value: "{{ .Values.dashboard.useShardedAnalytics }}"
           - name: "TYK_DB_ENABLEAGGREGATELOOKUPS"
-            value: "{{ .Values.config.enableAggregateLookups }}"
+            value: "{{ .Values.dashboard.enableAggregateLookups }}"
           - name: "TYK_DB_ENABLEANALYTICSCACHE"
-            value: "{{ .Values.config.enableAnalyticsCache }}"
+            value: "{{ .Values.dashboard.enableAnalyticsCache }}"
           - name: "TYK_DB_ALLOWEXPLICITPOLICYID"
-            value: "{{ .Values.config.allowExplicitPolicyId }}"
+            value: "{{ .Values.dashboard.allowExplicitPolicyId }}"
           - name: "TYK_DB_OAUTHREDIRECTURISEPARATOR"
-            value: "{{ .Values.config.oauthRedirectUriSeparator }}"
+            value: "{{ .Values.dashboard.oauthRedirectUriSeparator }}"
           - name: "TYK_DB_KEYREQUESTFIELDS"
-            value: "{{ .Values.config.keyRequestFields }}"
+            value: "{{ .Values.dashboard.keyRequestFields }}"
           - name: "TYK_DB_DASHBOARDSESSIONLIFETIME"
-            value: "{{ .Values.config.dashboardSessionLifetime }}"
+            value: "{{ .Values.dashboard.dashboardSessionLifetime }}"
           - name: "TYK_DB_SSOENABLEUSERLOOKUP"
-            value: "{{ .Values.config.ssoEnableUserLookup }}"
+            value: "{{ .Values.dashboard.ssoEnableUserLookup }}"
           - name: "TYK_DB_NOTIFICATIONSLISTENPORT"
-            value: "{{ .Values.config.notificationsListenPort }}"
+            value: "{{ .Values.dashboard.notificationsListenPort }}"
           - name: "TYK_DB_ENABLEDELETEKEYBYHASH"
-            value: "{{ .Values.config.enableDeleteKeyByHash }}"
+            value: "{{ .Values.dashboard.enableDeleteKeyByHash }}"
           - name: "TYK_DB_ENABLEUPDATEKEYBYHASH"
-            value: "{{ .Values.config.enableUpdateKeyByHash }}"
+            value: "{{ .Values.dashboard.enableUpdateKeyByHash }}"
           - name: "TYK_DB_ENABLEHASHEDKEYSLISTING"
-            value: "{{ .Values.config.enableHashedKeysListing }}"
+            value: "{{ .Values.dashboard.enableHashedKeysListing }}"
           - name: "TYK_DB_ENABLEMULTIORGUSERS"
-            value: "{{ .Values.config.enableMultiOrgUsers }}"
+            value: "{{ .Values.dashboard.enableMultiOrgUsers }}"
           ## DEFAULT TYK CONFIGURATION END
           - name: TYK_DB_LISTENPORT
-            value: "{{ .Values.containerPort }}"
+            value: "{{ .Values.dashboard.containerPort }}"
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           - name: TYK_DB_TYKAPI_HOST
             # this needs to be setup from values
-            value: {{.Values.gateway.host}}
+            value: {{.Values.dashboard.gateway.host}}
           - name: TYK_DB_TYKAPI_PORT
-            value: "{{ .Values.gateway.port }}"
+            value: "{{ .Values.dashboard.gateway.port }}"
           - name: TYK_DB_TYKAPI_SECRET
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
                 key: APISecret
           - name: TYK_DB_ADMINSECRET
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
                 key: AdminSecret
           - name: TYK_DB_NODESECRET
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
                 key: APISecret
           - name: TYK_DB_LICENSEKEY
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
                 key: DashLicense
             
           - name: TYK_DB_REDISADDRS
             value: {{ include "tyk-dashboard.redis_url" . | quote }}
           - name: TYK_DB_ENABLECLUSTER
-            value: "{{ default "false" .Values.redis.enableCluster }}"
+            value: "{{ default "false" .Values.global.redis.enableCluster }}"
           - name: TYK_DB_REDISPASSWORD
             valueFrom:
               secretKeyRef:
-                name:{{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
+                name:{{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
                 key: redisPass
           - name: TYK_DB_REDISUSESSL
-            value: "{{ default "false" .Values.redis.useSSL }}"
+            value: "{{ default "false" .Values.global.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
             value: "true"
             
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
-            value: "{{ .Values.tls }}"
+            value: "{{ .Values.dashboard.tls }}"
 
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
-            value: "{{ .Values.hostName }}"
+            value: "{{ .Values.dashboard.hostName }}"
           - name: TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
-            value: "{{ .Values.gateway.hostName }}"
+            value: "{{ .Values.dashboard.hostName }}"
           {{ if eq "postgres" (include "tyk-dashboard.backend" .) }}
           - name: TYK_DB_ENABLEAGGREGATELOOKUPS
             value: "false"
@@ -172,7 +170,7 @@ spec:
           - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end }}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end }}
                 key: pgConnectionString
 
           - name: TYK_DB_STORAGE_ANALYTICS_TYPE
@@ -180,7 +178,7 @@ spec:
           - name: TYK_DB_STORAGE_ANALYTICS_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end }}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end }}
                 key: pgConnectionString
 
           - name: TYK_DB_STORAGE_UPTIME_TYPE
@@ -188,7 +186,7 @@ spec:
           - name: TYK_DB_STORAGE_UPTIME_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end }}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end }}
                 key: pgConnectionString
           {{ else }}
           - name: TYK_DB_STORAGE_MAIN_TYPE
@@ -196,60 +194,59 @@ spec:
           - name: TYK_DB_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
                 key: mongoURL
           - name: TYK_DB_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
+            value: "{{ default "false" .Values.global.mongo.useSSL }}"
           {{ end }}
-          {{- if .Values.extraEnvs }}
-          {{- include "tyk-dashboard.tplvalues.render" ( dict "value" .Values.extraEnvs "context" $ ) | nindent 10 }}
+          {{- if .Values.dashboard.extraEnvs }}
+          {{- include "tyk-dashboard.tplvalues.render" ( dict "value" .Values.dashboard.extraEnvs "context" $ ) | nindent 10 }}
           {{- end }}
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.dashboard.resources | indent 12 }}
         command: ["/opt/tyk-dashboard/tyk-analytics"]
         ports:
-        - containerPort: {{ .Values.containerPort }}
+        - containerPort: {{ .Values.dashboard.containerPort }}
         volumeMounts:
-          {{- if .Values.mounts }}
-          {{- range $secret := .Values.mounts }}
+          {{- if .Values.dashboard.mounts }}
+          {{- range $secret := .Values.dashboard.mounts }}
           - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
           {{- end }}
-          {{- if .Values.extraVolumeMounts }}
-          {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 10 }}
+          {{- if .Values.dashboard.extraVolumeMounts }}
+          {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.tls }}S{{ end }}"
             path: /
-            port: {{ .Values.containerPort }}
+            port: {{ .Values.dashboard.containerPort }}
           initialDelaySeconds: 10
           periodSeconds: 2
           timeoutSeconds: 3
           failureThreshold: 2
         readinessProbe:
           httpGet:
-            scheme: "HTTP{{ if .Values.tls }}S{{ end }}"
+            scheme: "HTTP{{ if .Values.dashboard.tls }}S{{ end }}"
             path: /
-            port: {{ .Values.containerPort }}
+            port: {{ .Values.dashboard.containerPort }}
           initialDelaySeconds: 10
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
-      {{- if .Values.securityContext }}
+      {{- if .Values.dashboard.securityContext }}
       securityContext:
-      {{- toYaml .Values.securityContext | nindent 10 }}
+      {{- toYaml .Values.dashboard.securityContext | nindent 10 }}
       {{- end }}
       volumes:
-        {{- if .Values.mounts }}
-        {{- range $secret := .Values.mounts }}
+        {{- if .Values.dashboard.mounts }}
+        {{- range $secret := .Values.dashboard.mounts }}
         - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
           secret:
             secretName: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
         {{- end }}
         {{- end }}
-        {{- if .Values.extraVolumes }}
-        {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
+        {{- if .Values.dashboard.extraVolumes }}
+        {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
-{{- end }}

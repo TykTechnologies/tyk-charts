@@ -1,4 +1,3 @@
-{{- /* vim: set filetype=mustache: */}}
 {{- /*
 Expand the name of the chart.
 */}}
@@ -33,7 +32,7 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{- define "tyk-dashboard.gwproto" -}}
-{{- if .Values.gwTls -}}
+{{- if .Values.dashboard.gateway.tls -}}
 https
 {{- else -}}
 http
@@ -41,7 +40,7 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.dash_proto" -}}
-{{- if .Values.tls -}}
+{{- if .Values.dashboard.tls -}}
 https
 {{- else -}}
 http
@@ -49,40 +48,40 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.dash_url" -}}
-{{ include "tyk-dashboard.dash_proto" . }}://dashboard-svc-{{ include "tyk-dashboard.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+{{ include "tyk-dashboard.dash_proto" . }}://dashboard-svc-{{ include "tyk-dashboard.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dashboard.containerPort }}
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_url" -}}
-{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{ include "tyk-dashboard.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.gateway.service.port }}
+{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{ include "tyk-dashboard.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dashboard.gateway.port }}
 {{- end -}}
 
 {{- define "tyk-dashboard.redis_url" -}}
-{{- if .Values.redis.addrs -}}
-{{ join "," .Values.redis.addrs }}
+{{- if .Values.global.redis.addrs -}}
+{{ join "," .Values.global.redis.addrs }}
 {{- else -}}
 redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 {{- end -}}
 
 {{- define "tyk-dashboard.mongo_url" -}}
-{{- if .Values.mongo.mongoURL -}}
-{{ .Values.mongo.mongoURL }}
+{{- if .Values.global.mongo.mongoURL -}}
+{{ .Values.global.mongo.mongoURL }}
 {{- else -}}
 mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 
 {{- define "tyk-dashboard.pg_connection_string" -}}
-{{- if .Values.postgres -}}
-{{- range $key, $value := .Values.postgres }}{{ print $key "=" $value " " }}{{- end }}
+{{- if .Values.global.postgres -}}
+{{- range $key, $value := .Values.global.postgres }}{{ print $key "=" $value " " }}{{- end }}
 {{- end -}}
 {{- end -}}
 
 {{- define "tyk-dashboard.backend" -}}
-{{- if .Values.backend -}}
-{{- if eq "postgres" .Values.backend -}}
+{{- if .Values.global.backend -}}
+{{- if eq "postgres" .Values.global.backend -}}
 postgres
-{{- else if eq "mongo" .Values.backend -}}
+{{- else if eq "mongo" .Values.global.backend -}}
 mongo
 {{- end -}}
 {{- else -}}
