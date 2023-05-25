@@ -236,7 +236,7 @@ tyk-gateway:
             key: groupID
       - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
         valueFrom:
-           secretKeyRef:
+          secretKeyRef:
             name: secrets-tyk-data-plane
             key: rpcConnString
       - name: TYK_GW_SLAVEOPTIONS_USESSL
