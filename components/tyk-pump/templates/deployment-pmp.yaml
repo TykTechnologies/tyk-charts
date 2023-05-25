@@ -85,7 +85,7 @@ spec:
             {{ if typeIs "string" .Values.pump.hybridPump.groupID }}
             value: "{{ .Values.pump.hybridPump.groupID }}"
             {{ else }}
-{{ .Values.pump.hybridPump.userApiKey | toYaml | indent 12 }}
+{{ .Values.pump.hybridPump.groupID | toYaml | indent 12 }}
             {{ end }}
           - name: TYK_PMP_PUMPS_HYBRID_META_CALLTIMEOUT
             value: "{{ .Values.pump.hybridPump.callTimeout }}"
