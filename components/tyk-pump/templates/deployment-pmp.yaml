@@ -55,7 +55,7 @@ spec:
             value: "128"
          {{ if has "hybrid" .Values.pump.backend }}
           # Configure Hybrid Pump for Tyk Pump
-          - name: TYK_PMP_PUMPS_PROMETHEUS_TYPE
+          - name: TYK_PMP_PUMPS_HYBRID_TYPE
             value: hybrid
           - name: TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING
             {{ if typeIs "string" .Values.pump.hybridPump.connectionString }}
