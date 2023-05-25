@@ -57,36 +57,54 @@ spec:
           # Configure Hybrid Pump for Tyk Pump
           - name: TYK_PMP_PUMPS_HYBRID_TYPE
             value: hybrid
+
           - name: TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING
-            {{ if typeIs "string" .Values.pump.hybridPump.connectionString }}
-            value: "{{ .Values.pump.hybridPump.connectionString }}"
+            {{ if .Values.pump.hybridPump.connectionDetails.secretName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pump.hybridPump.connectionDetails.secretName }}
+                key: "rpcConnString"
             {{ else }}
-{{ .Values.pump.hybridPump.connectionString | toYaml | indent 12 }}
+            value: "{{ .Values.pump.hybridPump.connectionDetails.connectionString }}"
             {{ end }}
+
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCKEY
-            {{ if typeIs "string" .Values.pump.hybridPump.userApiKey }}
-            value: "{{ .Values.pump.hybridPump.userApiKey }}"
+            {{ if .Values.pump.hybridPump.connectionDetails.secretName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pump.hybridPump.connectionDetails.secretName }}
+                key: "orgId"
             {{ else }}
-{{ .Values.pump.hybridPump.userApiKey | toYaml | indent 12 }}
+            value: "{{ .Values.pump.hybridPump.connectionDetails.orgId }}"
             {{ end }}
+
           - name: TYK_PMP_PUMPS_HYBRID_META_APIKEY
-            {{ if typeIs "string" .Values.pump.hybridPump.userApiKey }}
-            value: "{{ .Values.pump.hybridPump.userApiKey }}"
+            {{ if .Values.pump.hybridPump.connectionDetails.secretName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pump.hybridPump.connectionDetails.secretName }}
+                key: "userApiKey"
             {{ else }}
-{{ .Values.pump.hybridPump.userApiKey | toYaml | indent 12 }}
+            value: "{{ .Values.pump.hybridPump.connectionDetails.userApiKey }}"
             {{ end }}
+
+          - name: TYK_PMP_PUMPS_HYBRID_META_GROUPID
+            {{ if .Values.pump.hybridPump.connectionDetails.secretName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pump.hybridPump.connectionDetails.secretName }}
+                key: "groupID"
+            {{ else }}
+            value: "{{ .Values.pump.hybridPump.connectionDetails.groupID }}"
+            {{ end }}
+
+
           - name: TYK_PMP_PUMPS_HYBRID_META_AGGREGATED
             value: "{{ .Values.pump.hybridPump.enableAggregateAnalytics }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_USESSL
             value: "{{ .Values.pump.hybridPump.useSSL }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_SSLINSECURESKIPVERIFY
             value: "{{ .Values.pump.hybridPump.skipSSLVerification }}"
-          - name: TYK_PMP_PUMPS_HYBRID_META_GROUPID
-            {{ if typeIs "string" .Values.pump.hybridPump.groupID }}
-            value: "{{ .Values.pump.hybridPump.groupID }}"
-            {{ else }}
-{{ .Values.pump.hybridPump.groupID | toYaml | indent 12 }}
-            {{ end }}
           - name: TYK_PMP_PUMPS_HYBRID_META_CALLTIMEOUT
             value: "{{ .Values.pump.hybridPump.callTimeout }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCPOOLSIZE

@@ -129,14 +129,20 @@ pump:
   # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
   # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
   hybridPump:
-    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
-    connectionString: ""
-    # orgID of your dashboard user
-    orgId: ""
-    # API key of your dashboard user
-    userApiKey: ""
-    # needed in case you want to have multiple data-planes connected to the same redis instance
-    groupID: ""
+    # connectionDetails configures the connection to the MDCB
+    connectionDetails:
+      # Get connection details from the secret
+      secretName: ""
+      # connection string used to connect to an MDCB deployment. 
+      # For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+      connectionString: ""
+      # orgID of your dashboard user
+      orgId: ""
+      # API key of your dashboard user
+      userApiKey: ""
+      # needed in case you want to have multiple data-planes connected to the same redis instance
+      groupID: ""
+      
     # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
     enableAggregateAnalytics: true
     # Use SSL to connect to Tyk Control Plane.
