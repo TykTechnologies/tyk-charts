@@ -78,8 +78,6 @@ global:
     storage:
       database: 0
 
-
-
 tyk-gateway:
   ## Default values for tyk-gateway chart.
   ## This is a YAML-formatted file.
@@ -220,12 +218,12 @@ tyk-gateway:
         valueFrom:
           secretKeyRef:
             name: secrets-tyk-data-plane
-            key: orgID
+            key: orgId
       - name: TYK_GW_SLAVEOPTIONS_APIKEY
         valueFrom:
           secretKeyRef:
             name: secrets-tyk-data-plane
-            key: apiKey
+            key: userApiKey
       - name: TYK_GW_SECRET
         valueFrom:
           secretKeyRef:
@@ -238,8 +236,8 @@ tyk-gateway:
             key: groupID
       - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
         valueFrom:
-          configMapKeyRef:
-            name: config-tyk-data-plane
+           secretKeyRef:
+            name: secrets-tyk-data-plane
             key: rpcConnString
       - name: TYK_GW_SLAVEOPTIONS_USESSL
         valueFrom:
@@ -256,8 +254,6 @@ tyk-gateway:
     #    filename: test.txt
     #    mountPath: /opt/test
     mounts: []
-
-
 
 tyk-pump:
   ## Default values for tyk-pump chart.
@@ -393,31 +389,19 @@ tyk-pump:
     # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
     # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
     hybridPump:
-      # Connection string used to connect to an MDCB deployment.
-      # For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
-      connectionString:
-        valueFrom:
-          configMapKeyRef:
-            name: config-tyk-data-plane
-            key: rpcConnString
-      # orgID of your dashboard user
-      orgId:
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: orgID
-      # API key of your dashboard user
-      userApiKey:
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: apiKey
-      # needed in case you want to have multiple data-planes connected to the same redis instance
-      groupID: 
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: groupID
+      # connectionDetails configures the connection to the MDCB
+      connectionDetails:
+        # Get connection details from secret
+        secretName: "secrets-tyk-data-plane"
+        # connection string used to connect to an MDCB deployment.
+        # For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+        connectionString: ""
+        # orgID of your dashboard user
+        orgId: ""
+        # API key of your dashboard user
+        userApiKey: ""
+        # needed in case you want to have multiple data-planes connected to the same redis instance
+        groupID: ""
 
       # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
       enableAggregateAnalytics: true
