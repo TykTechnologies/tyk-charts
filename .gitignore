@@ -8,3 +8,6 @@ tyk-oss/charts/*
 tyk-oss/Chart.lock
 
 /.idea
+
+tyk-mdcb-data-plane/charts/*
+tyk-mdcb-data-plane/Chart.lock
