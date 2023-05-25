@@ -83,7 +83,7 @@ spec:
             value: "{{ .Values.pump.hybridPump.skipSSLVerification }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_GROUPID
             {{ if typeIs "string" .Values.pump.hybridPump.groupID }}
-            value: "{{ .Values.pump.hybridPump.userApiKey }}"
+            value: "{{ .Values.pump.hybridPump.groupID }}"
             {{ else }}
 {{ .Values.pump.hybridPump.userApiKey | toYaml | indent 12 }}
             {{ end }}
