@@ -57,54 +57,20 @@ spec:
           # Configure Hybrid Pump for Tyk Pump
           - name: TYK_PMP_PUMPS_HYBRID_TYPE
             value: hybrid
-
           - name: TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING
-            {{ if .Values.pump.hybridPump.connectionDetails.secretName }}
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.pump.hybridPump.connectionDetails.secretName }}
-                key: "rpcConnString"
-            {{ else }}
-            value: "{{ .Values.pump.hybridPump.connectionDetails.connectionString }}"
-            {{ end }}
-
+            value: "{{ .Values.global.remoteControlPlane.connectionString }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCKEY
-            {{ if .Values.pump.hybridPump.connectionDetails.secretName }}
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.pump.hybridPump.connectionDetails.secretName }}
-                key: "orgId"
-            {{ else }}
-            value: "{{ .Values.pump.hybridPump.connectionDetails.orgId }}"
-            {{ end }}
-
+            value: "{{ .Values.global.remoteControlPlane.orgId }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_APIKEY
-            {{ if .Values.pump.hybridPump.connectionDetails.secretName }}
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.pump.hybridPump.connectionDetails.secretName }}
-                key: "userApiKey"
-            {{ else }}
-            value: "{{ .Values.pump.hybridPump.connectionDetails.userApiKey }}"
-            {{ end }}
-
+            value: "{{ .Values.global.remoteControlPlane.userApiKey }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_GROUPID
-            {{ if .Values.pump.hybridPump.connectionDetails.secretName }}
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.pump.hybridPump.connectionDetails.secretName }}
-                key: "groupID"
-            {{ else }}
-            value: "{{ .Values.pump.hybridPump.connectionDetails.groupID }}"
-            {{ end }}
-
-
+            value: "{{ .Values.global.remoteControlPlane.groupID }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_USESSL
+            value: "{{ .Values.global.remoteControlPlane.useSSL }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_SSLINSECURESKIPVERIFY
+            value: "{{ .Values.global.remoteControlPlane.sslInsecureSkipVerify }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_AGGREGATED
             value: "{{ .Values.pump.hybridPump.enableAggregateAnalytics }}"
-          - name: TYK_PMP_PUMPS_HYBRID_META_USESSL
-            value: "{{ .Values.pump.hybridPump.useSSL }}"
-          - name: TYK_PMP_PUMPS_HYBRID_META_SSLINSECURESKIPVERIFY
-            value: "{{ .Values.pump.hybridPump.skipSSLVerification }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_CALLTIMEOUT
             value: "{{ .Values.pump.hybridPump.callTimeout }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCPOOLSIZE
