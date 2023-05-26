@@ -290,7 +290,7 @@ tyk-pump:
       pullPolicy: IfNotPresent
 
     # backend defines the pumps to be created by default, as an array of string.
-    # Supported backends are ["mongo", "postgres", "prometheus","hbyrid"]
+    # Supported backends are ["mongo", "postgres", "prometheus","hybrid"]
     # If you would like to use other backends such as ElasticSearch, please
     # configure the backend via environment variables.
     # By default, Tyk Pump uses Prometheus.
