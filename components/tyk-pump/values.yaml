@@ -132,7 +132,6 @@ pump:
   # Supported backends are ["mongo", "postgres", "prometheus","hybrid"]
   # If you would like to use other backends such as ElasticSearch, please
   # configure the backend via environment variables.
-  # By default, Tyk Pump uses Prometheus.
   backend:
     - "prometheus"
 
