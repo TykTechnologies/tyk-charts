@@ -7,7 +7,7 @@ on:
       - master
 
 env:
-  TIMEOUT: 5m
+  TIMEOUT: 10m
   TYK_OSS_NS: tyk-oss
   TYK_MDCB_DATAPLANE_NS: tyk-mdcb-dataplane
 
