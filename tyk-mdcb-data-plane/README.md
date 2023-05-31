@@ -24,12 +24,14 @@ Also, you can set the version of each component through `image.tag`. You could f
 
 ## Installing the Chart
 
-To install the chart from Git repository in namespace `tyk` with the release name `tyk-data-plane`:
+<!--
+To install the chart from the Helm repository in namespace `tyk` with the release name `tyk-mdcb-data-plane`:
 
-    git clone https://github.com/TykTechnologies/tyk-charts.git
-    cd tyk-charts
-    helm dependency update tyk-mdcb-data-plane
-    helm show values tyk-mdcb-data-plane > values-data-plane.yaml
+    helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+    helm repo update
+    helm show values tyk-helm/tyk-mdcb-data-plane > values-mdcb-data-plane.yaml
+    helm install tyk-mdcb-data-plane tyk-helm/tyk-mdcb-data-plane -n tyk --create-namespace -f values-mdcb-data-plane.yaml
+-->
 
 
 Inside the values-data-plane.yaml you need to provide the following fields with their appropriate values:
