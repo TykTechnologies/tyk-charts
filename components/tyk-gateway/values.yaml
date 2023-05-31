@@ -76,6 +76,21 @@ global:
     storage:
       database: 0
 
+  remoteControlPlane:
+    enabled: true
+    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+    connectionString: ""
+    # orgID of your dashboard user
+    orgId: ""
+    # API key of your dashboard user
+    userApiKey: ""
+    # needed in case you want to have multiple data-planes connected to the same redis instance
+    groupID: ""
+    # enable/disable ssl
+    useSSL: true
+    # Disables SSL certificate verification
+    sslInsecureSkipVerify: true
+
 
 gateway:
   # The hostname to bind the Gateway to.

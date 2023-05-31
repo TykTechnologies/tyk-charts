@@ -7,6 +7,5 @@ metadata:
     app: secrets-tyk-data-plane
     release: {{ .Release.Name }}
 data:
-  rpcConnString: "{{ .Values.global.remoteControlPlane.connectionString }}"
   rpcUseSSL: "{{ .Values.global.remoteControlPlane.useSSL}}"
   rpcSslInsecureSkipVerify: "{{ .Values.global.remoteControlPlane.sslInsecureSkipVerify}}"

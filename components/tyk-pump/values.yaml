@@ -96,6 +96,20 @@ global:
     database: tyk_analytics
     sslmode: disable
 
+  remoteControlPlane:
+    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+    connectionString: ""
+    # orgID of your dashboard user
+    orgId: ""
+    # API key of your dashboard user
+    userApiKey: ""
+    # needed in case you want to have multiple data-planes connected to the same redis instance
+    groupID: ""
+    # enable/disable ssl
+    useSSL: true
+    # Disables SSL certificate verification
+    sslInsecureSkipVerify: true
+
 # If pump is enabled the Gateway will create and collect analytics data to send
 # to a data store of your choice. These can be set up in the pump config. The
 # possible pump configs can be found here:
@@ -109,22 +123,31 @@ pump:
     repository: docker.tyk.io/tyk-pump/tyk-pump
 
     # tag for Tyk pump
-    tag: v1.7.0
+    tag: v1.8.0
 
     # image pull policy
     pullPolicy: IfNotPresent
 
   # backend defines the pumps to be created by default, as an array of string.
-  # Supported backends are ["mongo", "postgres", "prometheus"]
+  # Supported backends are ["mongo", "postgres", "prometheus","hybrid"]
   # If you would like to use other backends such as ElasticSearch, please
   # configure the backend via environment variables.
-  # By default, Tyk Pump uses Prometheus.
   backend:
     - "prometheus"
 
   # uptimePumpBackend configures uptime Tyk Pump. ["", "mongo", "postgres"].
   # Set it to "" for disabling uptime Tyk Pump. By default, uptime pump is disabled.
   uptimePumpBackend: ""
+
+  # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
+  # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
+  hybridPump: 
+    # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
+    enableAggregateAnalytics: true
+    # Hybrid pump RPC calls timeout in seconds.
+    callTimeout: 30
+    # Hybrid pump connection pool size.
+    poolSize: 30
 
   # prometheusPump configures Tyk Pump to expose Prometheus metrics.
   # Please add "prometheus" to .Values.pump.backend in order to enable Prometheus Pump.
