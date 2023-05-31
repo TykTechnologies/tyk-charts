@@ -78,4 +78,3 @@ jobs:
          owner: "tyk"
          repo: "helm"
          file: "${{ matrix.chart/[^\/]*$ }}-${{ steps.chart-version.outputs.version }}.tgz"
-          
