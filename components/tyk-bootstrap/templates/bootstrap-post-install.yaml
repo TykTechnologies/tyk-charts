@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name:  {{ .Values.jobs.bootstrapJobName }}
+  name:  {{ .Values.bootstrap.jobs.bootstrapJobName }}
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
@@ -10,8 +10,6 @@ metadata:
     # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
     # when every app will have its own a chart
     # app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-
-    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
@@ -35,11 +33,11 @@ spec:
             - name: TYK_DB_OMITCONFIGFILE
               value: "true"
             - name: TYK_ADMIN_FIRST_NAME
-              value: {{ .Values.adminUser.firstName | quote }}
+              value: {{ .Values.bootstrap.adminUser.firstName | quote }}
             - name: TYK_ADMIN_LAST_NAME
-              value: {{ .Values.adminUser.lastName | quote }}
+              value: {{ .Values.bootstrap.adminUser.lastName | quote }}
             - name: TYK_ADMIN_EMAIL
-              value: {{ .Values.adminUser.email | quote }}
+              value: {{ .Values.bootstrap.adminUser.email | quote }}
             - name: TYK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -50,30 +48,30 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: TYK_DASHBOARD_PROTO
-              value: {{ include "tyk-bootstrap.dash_proto" . }}
+              value: "{{ include "tyk-bootstrap.dash_proto" . }}"
             - name: TYK_DASHBOARD_SVC
-              value: dashboard-svc-tyk-dashboard
+              value: "dashboard-svc-{{.Release.Name}}-tyk-dashboard"
             - name: TYK_DB_LISTENPORT
-              value: "{{ .Values.containerPort }}"
+              value: "{{ .Values.bootstrap.dashboard.service.port }}"
             - name: TYK_DB_LICENSEKEY
-              value: {{ .Values.license | quote }}
+              value: {{ .Values.bootstrap.license | quote }}
             - name: TYK_ADMIN_SECRET
-              value: {{ .Values.secrets.AdminSecret | quote }}
+              value: {{ .Values.bootstrap.secrets.AdminSecret | quote }}
             - name: TYK_ORG_NAME
-              value: {{ .Values.org.name | quote }}
+              value: {{ .Values.bootstrap.org.name | quote }}
             - name: TYK_ORG_CNAME
-              value: {{ .Values.org.cname | quote }}
-            {{- if .Values.dashboard.enabled }}
+              value: {{ .Values.bootstrap.org.cname | quote }}
+            {{- if .Values.bootstrap.dashboard.enabled }}
             - name: DASHBOARD_ENABLED
               value: "true"
             {{- end }}
-            {{- if .Values.operatorSecret }}
+            {{- if .Values.bootstrap.operatorSecret }}
             - name: OPERATOR_SECRET_ENABLED
               value: "true"
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
             {{- end }}
-            {{- if .Values.enterprisePortalSecret }}
+            {{- if .Values.bootstrap.enterprisePortalSecret }}
             - name: ENTERPRISE_PORTAL_SECRET_ENABLED
               value: "true"
             - name: ENTERPRISE_PORTAL_SECRET_NAME
@@ -84,13 +82,13 @@ spec:
               value: "true"
             {{- end }}
             - name: GATEWAY_ADDRESS
-              value: {{ include "tyk-bootstrap.gateway_url" . }}
+              value: "{{ include "tyk-bootstrap.gateway_url" . }}"
             {{- if .Values.bootstrap.portal.enabled }}
             - name: BOOTSTRAP_PORTAL
               value: "true"
             {{- end }}
             - name: TYK_DASHBOARD_DEPLOY
-              value: {{ .Values.bootstrap.dashboard.deploymentName}}
+              value: "dashboard-{{.Release.Name}}-tyk-dashboard"
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}

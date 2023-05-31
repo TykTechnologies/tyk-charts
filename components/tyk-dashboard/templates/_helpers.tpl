@@ -32,7 +32,7 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{- define "tyk-dashboard.gwproto" -}}
-{{- if .Values.dashboard.gateway.tls -}}
+{{- if .Values.global.gateway.tls -}}
 https
 {{- else -}}
 http
@@ -48,11 +48,15 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.dash_url" -}}
-{{ include "tyk-dashboard.dash_proto" . }}://dashboard-svc-{{ include "tyk-dashboard.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dashboard.containerPort }}
+{{ include "tyk-dashboard.dash_proto" . }}://dashboard-svc-{{.Release.Name}}-tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dashboard.containerPort }}
+{{- end -}}
+
+{{- define "tyk-dashboard.gateway_host" -}}
+{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_url" -}}
-{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{ include "tyk-dashboard.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dashboard.gateway.port }}
+{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.gateway.port }}
 {{- end -}}
 
 {{- define "tyk-dashboard.redis_url" -}}

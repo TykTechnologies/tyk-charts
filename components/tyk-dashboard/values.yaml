@@ -24,14 +24,38 @@ global:
     sslmode:
 
   redis:
-    enableCluster: false
-    useSSL: false
-    port: 6379
-    host: ""
-    pass: ""
+    # The addrs value will allow you to set your Redis addresses. If you are
+    # using a redis cluster, you can list the endpoints of the redis instances
+    # or use the cluster configuration endpoint.
+    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
     addrs:
-    #  If using bitnami-redis charts:
-    #    - "tyk-redis-master.tyk.svc.cluster.local:6379"
+    #   - redis.tyk.svc.cluster.local:6379
+    #   This is the DNS name of the redis as set when using Bitnami
+    #   - "tyk-redis-master.tyk.svc.cluster.local:6379"
+
+
+    # Redis password
+    # If you're using Bitnami Redis chart please input your password in the field below
+    pass: ""
+
+    # Enables SSL for Redis connection. Redis instance will have to support that.
+    # Default value: false
+    # useSSL: true
+
+    # The enableCluster value will allow you to indicate to Tyk whether you are
+    # running a Redis cluster or not.
+    # Default value: false
+    # enableCluster: true
+
+    # By default the database index is 0. Setting the database index is not
+    # supported with redis cluster. As such, if you have enableCluster: true,
+    # then this value should be omitted or explicitly set to 0.
+    storage:
+      database: 0
+
+  gateway:
+    port: 8080
+    tls: false
 
   mongo:
     useSSL: false
@@ -114,11 +138,6 @@ dashboard:
   ##     readOnly: true
   extraVolumeMounts: [ ]
   mounts: [ ]
-  gateway:
-    hostName: "hname"
-    port: 8080
-    host: "host"
-    tls: false
 
   # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true

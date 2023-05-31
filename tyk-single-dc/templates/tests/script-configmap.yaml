@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-tyk-single-dc-map
+  annotations:
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+data:
+{{ (.Files.Glob "scripts/tests/tyk-single-dc-test.sh").AsConfig | indent 2 }}

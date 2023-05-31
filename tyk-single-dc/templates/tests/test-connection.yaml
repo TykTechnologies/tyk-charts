@@ -1,0 +1,15 @@
+  {{/*apiVersion: v1*/}}
+  {{/*kind: Pod*/}}
+  {{/*metadata:*/}}
+  {{/*  name: "{{ include "tyk-data-plane.fullname" . }}-test-connection"*/}}
+  {{/*  labels:*/}}
+  {{/*    {{- include "tyk-data-plane.labels" . | nindent 4 }}*/}}
+  {{/*  annotations:*/}}
+  {{/*    "helm.sh/hook": test*/}}
+  {{/*spec:*/}}
+  {{/*  containers:*/}}
+  {{/*    - name: wget*/}}
+  {{/*      image: busybox*/}}
+  {{/*      command: ['wget']*/}}
+  {{/*      args: ['{{ include "tyk-data-plane.fullname" . }}:{{ .Values.service.port }}']*/}}
+  {{/*  restartPolicy: Never*/}}

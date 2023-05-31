@@ -98,8 +98,6 @@ spec:
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "true"
          {{ else }}
-          - name: TYK_GW_STORAGE_MASTERNAME
-            value: ""
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "false"
          {{ end }}
@@ -170,8 +168,8 @@ spec:
             value: "murmur128"
           - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEWEBSOCKETS
             value: "true"
-          - name: TYK_GW_HTTPSERVEROPTIONS_SERVERNAME
-            value: "*"
+{{/*          - name: TYK_GW_HTTPSERVEROPTIONS_SERVERNAME*/}}
+{{/*            value: "*"*/}}
           - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
             value: "771"
           - name: TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
