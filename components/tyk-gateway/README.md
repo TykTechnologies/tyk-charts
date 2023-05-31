@@ -26,13 +26,11 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
 
     helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
     helm repo update
-    helm show values tyk-helm/tyk-gateway > values-gateway.yaml
-    helm install tyk-gateway tyk-helm/tyk-gateway -n tyk --create-namespace -f values-gateway.yaml
-
+    helm show values tyk-helm/tyk-gateway > values.yaml
 
 Note: Set redis connection details first. See [Configuration](#configuration) below.
 
-    helm install tyk-gateway tyk-gateway -n tyk --create-namespace -f values.yaml
+    helm install tyk-gateway tyk-helm/tyk-gateway -n tyk --create-namespace -f values.yaml
 
 ## Uninstalling the Chart
 
