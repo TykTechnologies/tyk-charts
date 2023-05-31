@@ -21,12 +21,14 @@ For typical usage, we recommend using following umbrella charts:
 * [Redis](https://tyk.io/docs/planning-for-production/redis/)
 
 ## Installing the Chart
+To install the chart from Git repository in namespace `tyk` with the release name `tyk-pump`:
 
 To install the chart from the Helm repository in namespace `tyk` with the release name `tyk-pump`:
 
     helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
     helm repo update
     helm show values tyk-helm/tyk-pump > values-pump.yaml
+    helm install tyk-pump tyk-helm/tyk-pump -n tyk --create-namespace -f values-pump.yaml
 
 Note: Set redis connection details first. See [Configuration](#configuration) below.
 

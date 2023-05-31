@@ -29,6 +29,7 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
     helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
     helm repo update
     helm show values tyk-helm/tyk-mdcb-data-plane > values-data-plane.yaml
+    helm install tyk-mdcb-data-plane tyk-helm/tyk-mdcb-data-plane -n tyk --create-namespace -f values-mdcb-data-plane.yaml
 
 
 
