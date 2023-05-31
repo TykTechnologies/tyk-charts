@@ -22,6 +22,6 @@ dependencies:
     version: 1.0.0-beta1
     repository: file://../components/tyk-gateway
   - name: tyk-pump
-    version: 1.0.0-beta-1
+    version: 1.0.0-beta1
     repository: file://../components/tyk-pump
     condition: global.components.pump
