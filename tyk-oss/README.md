@@ -23,16 +23,13 @@ Also, you can set the version of each component through `image.tag`. You could f
 
 ## Installing the Chart
 
-## Installing the Chart
-
-<!--
 To install the chart from the Helm repository in namespace `tyk` with the release name `tyk-oss`:
 
     helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
     helm repo update
     helm show values tyk-helm/tyk-oss > values-oss.yaml
     helm install tyk-oss tyk-helm/tyk-oss -n tyk --create-namespace -f values-oss.yaml
--->
+
 
 If you use the bitnami chart for Redis installation, the DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379` You can update them in your local `values-oss.yaml` file under `global.redis.addr` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
