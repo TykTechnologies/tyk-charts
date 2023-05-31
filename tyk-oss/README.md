@@ -19,7 +19,7 @@ Also, you can set the version of each component through `image.tag`. You could f
 
 * Kuberentes 1.19+
 * Helm 3+
-* Redis should already be installed or accessible by the gateway. For Redis installation instruction, please see https://tyk.io/docs/tyk-oss/ce-helm-chart/#recommended-via-bitnami-chart.
+* Redis should already be installed or accessible by the gateway. For Redis installation instruction, please see [https://tyk.io/docs/tyk-oss/ce-helm-chart/#recommended-via-bitnami-chart](https://tyk.io/docs/tyk-oss/ce-helm-chart/#recommended-via-bitnami-chart).
 
 ## Installing the Chart
 
@@ -33,7 +33,7 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
 
 If you use the bitnami chart for Redis installation, the DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379` You can update them in your local `values-oss.yaml` file under `global.redis.addr` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
-    helm install tyk-oss tyk-oss -n tyk --create-namespace -f values-oss.yaml
+    helm install tyk-oss tyk-helm/tyk-oss -n tyk --create-namespace -f values-oss.yaml
 
 ## Uninstalling the Chart
 
@@ -61,12 +61,12 @@ To get all configurable options with detailed comments:
 You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation. 
 Alternatively, you can use `--set` flag to set it in Tyk installation.
 
-### Set Redis connection details (Required)
+### Set Redis Connection Details (Required)
 
-Tyk uses Redis for distributed rate-limiting and token storage. You may set `global.redis.addr` and `global.redis.pass` with redis connection 
+Tyk uses Redis for distributed rate-limiting and token storage. You may set `global.redis.addr` and `global.redis.pass` with Redis connection 
 string and password respectively.
 
-If you do not already have redis installed, you may use these charts provided by Bitnami
+If you do not already have Redis installed, you may use these charts provided by Bitnami
 
     helm repo add bitnami https://charts.bitnami.com/bitnami
     helm install tyk-redis bitnami/redis -n tyk --create-namespace
@@ -172,7 +172,7 @@ Add following under the `global` section in `values.yaml`:
 ```
 
 #### Uptime Pump
-Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It support following values
+Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It support the following values
 1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
 2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
 3. empty: Used to disable uptime analytics.
