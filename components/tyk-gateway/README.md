@@ -21,24 +21,16 @@ For typical usage, we recommend using following umbrella charts:
 * [Redis](https://tyk.io/docs/planning-for-production/redis/) should already be installed or accessible by the gateway 
 
 ## Installing the Chart
-<!--
+
 To install the chart from the Helm repository in namespace `tyk` with the release name `tyk-gateway`:
 
     helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-    helm show values tyk-helm/tyk-gateway > values-gateway.yaml
-    helm install tyk-gateway tyk-helm/tyk-gateway -n tyk --create-namespace -f values-gateway.yaml
--->
-
-<!-- To be removed after the chart is published -->
-To install the chart from Git repository in namespace `tyk` with the release name `tyk-gateway`:
-
-    git clone https://github.com/TykTechnologies/tyk-charts.git
-    cd tyk-charts
-    helm show values tyk-gateway > values.yaml
+    helm repo update
+    helm show values tyk-helm/tyk-gateway > values.yaml
 
 Note: Set redis connection details first. See [Configuration](#configuration) below.
 
-    helm install tyk-gateway tyk-gateway -n tyk --create-namespace -f values.yaml
+    helm install tyk-gateway tyk-helm/tyk-gateway -n tyk --create-namespace -f values.yaml
 
 ## Uninstalling the Chart
 
