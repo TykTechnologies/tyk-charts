@@ -68,7 +68,7 @@ You may set `global.redis.addr` and `global.redis.pass` with redis connection st
 | Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.global.mongo`.                 |
 | SQL Pump                  | Add `postgres` to `.pump.backend`, and add connection details for postgres under `.global.postgres`.       |
 | Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                          |
-| Hybrid Pump               | Setup `global.remoteControlPlane` section with the required adresses and tokens                            |
+| Hybrid Pump               | Add `hybrid` to `.pump.backend`, and setup `.global.remoteControlPlane` section with the required adresses and tokens           |
 | Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                 |
 
 #### Prometheus Pump
