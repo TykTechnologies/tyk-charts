@@ -122,7 +122,7 @@ To enable Pump, set `global.components.pump` to true, and configure below inside
 | Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.mongo`.                        |
 | SQL Pump                  | Add `postgres` to `pump.backend`, and add connection details for postgres under `.postgres`.               |
 | Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                          |
-| Hybrid Pump               | Add `hybrid` to `pump.backend`, and setup `global.remoteControlPlane` section with the required adresses and tokens |
+| Hybrid Pump               | Add `hybrid` to `pump.backend`, and setup `.remoteControlPlane` section with the required adresses and tokens |
 | Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                 |
 
 #### Prometheus Pump
