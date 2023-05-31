@@ -55,38 +55,22 @@ spec:
             value: "128"
          {{ if has "hybrid" .Values.pump.backend }}
           # Configure Hybrid Pump for Tyk Pump
-          - name: TYK_PMP_PUMPS_PROMETHEUS_TYPE
+          - name: TYK_PMP_PUMPS_HYBRID_TYPE
             value: hybrid
           - name: TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING
-            {{ if typeIs "string" .Values.pump.hybridPump.connectionString }}
-            value: "{{ .Values.pump.hybridPump.connectionString }}"
-            {{ else }}
-{{ .Values.pump.hybridPump.connectionString | toYaml | indent 12 }}
-            {{ end }}
+            value: "{{ .Values.global.remoteControlPlane.connectionString }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCKEY
-            {{ if typeIs "string" .Values.pump.hybridPump.userApiKey }}
-            value: "{{ .Values.pump.hybridPump.userApiKey }}"
-            {{ else }}
-{{ .Values.pump.hybridPump.userApiKey | toYaml | indent 12 }}
-            {{ end }}
+            value: "{{ .Values.global.remoteControlPlane.orgId }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_APIKEY
-            {{ if typeIs "string" .Values.pump.hybridPump.userApiKey }}
-            value: "{{ .Values.pump.hybridPump.userApiKey }}"
-            {{ else }}
-{{ .Values.pump.hybridPump.userApiKey | toYaml | indent 12 }}
-            {{ end }}
+            value: "{{ .Values.global.remoteControlPlane.userApiKey }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_GROUPID
+            value: "{{ .Values.global.remoteControlPlane.groupID }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_USESSL
+            value: "{{ .Values.global.remoteControlPlane.useSSL }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_SSLINSECURESKIPVERIFY
+            value: "{{ .Values.global.remoteControlPlane.sslInsecureSkipVerify }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_AGGREGATED
             value: "{{ .Values.pump.hybridPump.enableAggregateAnalytics }}"
-          - name: TYK_PMP_PUMPS_HYBRID_META_USESSL
-            value: "{{ .Values.pump.hybridPump.useSSL }}"
-          - name: TYK_PMP_PUMPS_HYBRID_META_SSLINSECURESKIPVERIFY
-            value: "{{ .Values.pump.hybridPump.skipSSLVerification }}"
-          - name: TYK_PMP_PUMPS_HYBRID_META_GROUPID
-            {{ if typeIs "string" .Values.pump.hybridPump.userApiKey }}
-            value: "{{ .Values.pump.hybridPump.userApiKey }}"
-            {{ else }}
-{{ .Values.pump.hybridPump.userApiKey | toYaml | indent 12 }}
-            {{ end }}
           - name: TYK_PMP_PUMPS_HYBRID_META_CALLTIMEOUT
             value: "{{ .Values.pump.hybridPump.callTimeout }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCPOOLSIZE

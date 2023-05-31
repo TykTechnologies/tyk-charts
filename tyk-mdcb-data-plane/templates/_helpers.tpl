@@ -60,3 +60,11 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "tyk-data-plane.gwproto" -}}
+{{- if index .Values "tyk-gateway" "gateway" "tls" "enabled" -}}
+https
+{{- else -}}
+http
+{{- end -}}
+{{- end -}}

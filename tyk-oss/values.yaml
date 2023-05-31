@@ -97,7 +97,7 @@ tyk-gateway:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
       secretName: tyk-default-tls-secret
 
-    # kind is type of k8s object to be created for gateway. 
+    # kind is type of k8s object to be created for gateway.
     kind: Deployment
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.
@@ -111,7 +111,7 @@ tyk-gateway:
       repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v4.3.1
+      tag: v5.0.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -169,7 +169,6 @@ tyk-gateway:
       #    hosts:
       #      - chart-example.local
       tls: []
-    
 
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -255,7 +254,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.7.0
+      tag: v1.8.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -284,7 +283,7 @@ tyk-pump:
       # customMetrics allows defining custom Prometheus metrics for Tyk Pump.
       # It accepts a string that represents a JSON object. For instance,
       #
-      # customMetrics: '[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name"]}]'
+      # customMetrics: '[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name","method","api_key","alias","path"]},          {              "name":"tyk_http_latency",              "description":"Latency of API requests",              "metric_type":"histogram",              "labels":["type","response_code","api_name","method","api_key","alias","path"]          }]'
       customMetrics: ""
       # If you are using prometheus Operator, set the fields in the section below.
       prometheusOperator:
@@ -304,7 +303,7 @@ tyk-pump:
         podMonitorSelector:
           release: prometheus-stack
 
-    # annotations for pump deployment  
+    # annotations for pump deployment
     annotations: {}
 
     # We usually recommend not to specify default resources and to leave this
@@ -319,8 +318,8 @@ tyk-pump:
     #  cpu: 100m
     #  memory: 128Mi
     resources: {}
-      
-    # securityContext values for pump pod 
+
+    # securityContext values for pump pod
     securityContext:
       runAsUser: 1000
       fsGroup: 2000

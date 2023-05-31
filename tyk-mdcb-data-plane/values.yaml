@@ -78,8 +78,6 @@ global:
     storage:
       database: 0
 
-
-
 tyk-gateway:
   ## Default values for tyk-gateway chart.
   ## This is a YAML-formatted file.
@@ -123,7 +121,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v4.3.1
+      tag: v5.0.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -220,12 +218,12 @@ tyk-gateway:
         valueFrom:
           secretKeyRef:
             name: secrets-tyk-data-plane
-            key: orgID
+            key: orgId
       - name: TYK_GW_SLAVEOPTIONS_APIKEY
         valueFrom:
           secretKeyRef:
             name: secrets-tyk-data-plane
-            key: apiKey
+            key: userApiKey
       - name: TYK_GW_SECRET
         valueFrom:
           secretKeyRef:
@@ -238,8 +236,8 @@ tyk-gateway:
             key: groupID
       - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
         valueFrom:
-          configMapKeyRef:
-            name: config-tyk-data-plane
+          secretKeyRef:
+            name: secrets-tyk-data-plane
             key: rpcConnString
       - name: TYK_GW_SLAVEOPTIONS_USESSL
         valueFrom:
@@ -257,8 +255,6 @@ tyk-gateway:
     #    mountPath: /opt/test
     mounts: []
 
-
-
 tyk-pump:
   ## Default values for tyk-pump chart.
   ## This is a YAML-formatted file.
@@ -275,90 +271,6 @@ tyk-pump:
   # Default value: tyk-pump.fullname
   fullnameOverride: ""
 
-  global:
-    secrets:
-      # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
-      # rather provide the k8s Secret externally.
-      # Can set following fields in the secret:
-      # - redisPass: Sets redis password
-      # - redisSentinelPass: Set if you  are using Redis Sentinel. Used to set Redis password
-      # - mongoURL: Sets mongo connection url
-      # - pgConnectionString: Sets postgres connection details
-      useSecretName: ""
-
-    redis:
-      # The addrs value will allow you to set your Redis addresses.
-      #
-      # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
-      # endpoint. If using sentinel connection mode for Redis, please update the port number (typically 26379).
-      #
-      # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
-      # the endpoints of the redis instances or use the cluster configuration endpoint.
-      #
-      # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
-      # addrs:
-      #   Example using tyk simple redis chart
-      #   - redis.tyk.svc.cluster.local:6379
-      #   Example using bitnami/redis
-      #   - tyk-redis-master.tyk.svc.cluster.local:6379
-      #   Example using bitnami/redis with sentinel
-      #   - tyk-redis.tyk.svc.cluster.local:26379
-      #   Example using bitnami/redis-cluster
-      #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
-
-      # Redis password
-      # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
-      # your password in the field below
-      # pass: ""
-
-      # Enables SSL for Redis connection. Redis instance will have to support that.
-      # Default value: false
-      # useSSL: true
-
-      # If using "Redis Cluster" set enableCluster to true
-      # (e.g. if using bitnami/redis-cluster)
-      # enableCluster: true
-
-      # Enables sentinel connection mode for Redis. If enabled, provide both
-      # mandatory values for sentinelPass and masterName.
-      # enableSentinel: false
-
-      # Redis sentinel password, only required while enableSentinel is true.
-      # For bitnami/redis the same password as Redis above
-      # sentinelPass: ""
-
-      # Redis sentinel master name, only required while enableSentinel is true.
-      # For bitnami/redis typically redis-master
-      # masterName: ""
-
-      # By default the database index is 0. Setting the database index is not
-      # supported with redis cluster. As such, if you have enableCluster: true,
-      # then this value should be omitted or explicitly set to 0.
-      storage:
-        database: 0
-
-
-  # If Mongo pump is in use, please set the connection details of MongoDB in the below field.
-  mongo:
-    # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-    # If your MongoDB has a password you can add the username and password to the url
-    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
-
-    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-    # Default value: false
-    useSSL: false
-
-  # If postgres pump is in use, please set the connection details of Postgres in the below field.
-  postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
-    port: 5432
-    user: postgres
-    password:
-    database: tyk_analytics
-    sslmode: disable
-
   # If pump is enabled the Gateway will create and collect analytics data to send
   # to a data store of your choice. These can be set up in the pump config. The
   # possible pump configs can be found here:
@@ -372,16 +284,15 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.7.0
+      tag: v1.8.0
 
       # image pull policy
       pullPolicy: IfNotPresent
 
     # backend defines the pumps to be created by default, as an array of string.
-    # Supported backends are ["mongo", "postgres", "prometheus"]
+    # Supported backends are ["mongo", "postgres", "prometheus","hybrid"]
     # If you would like to use other backends such as ElasticSearch, please
     # configure the backend via environment variables.
-    # By default, Tyk Pump uses Prometheus.
     backend:
       - "prometheus"
       - "hybrid"
@@ -393,39 +304,8 @@ tyk-pump:
     # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
     # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
     hybridPump:
-      # Connection string used to connect to an MDCB deployment.
-      # For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
-      connectionString:
-        valueFrom:
-          configMapKeyRef:
-            name: config-tyk-data-plane
-            key: rpcConnString
-      # orgID of your dashboard user
-      orgId:
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: orgID
-      # API key of your dashboard user
-      userApiKey:
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: apiKey
-      # needed in case you want to have multiple data-planes connected to the same redis instance
-      # TODO: this is a pump bug
-      groupID: ""
-#        valueFrom:
-#          secretKeyRef:
-#            name: secrets-tyk-data-plane
-#            key: groupID
-
       # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
       enableAggregateAnalytics: true
-      # Use SSL to connect to Tyk Control Plane.
-      useSSL: true
-      # Skip SSL verification.
-      skipSSLVerification: true
       # Hybrid pump RPC calls timeout in seconds.
       callTimeout: 30
       # Hybrid pump connection pool size.
@@ -443,7 +323,7 @@ tyk-pump:
       # customMetrics allows defining custom Prometheus metrics for Tyk Pump.
       # It accepts a string that represents a JSON object. For instance,
       #
-      # customMetrics: '[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name"]}]'
+      # customMetrics: '[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name","method","api_key","alias","path"]},          {              "name":"tyk_http_latency",              "description":"Latency of API requests",              "metric_type":"histogram",              "labels":["type","response_code","api_name","method","api_key","alias","path"]          }]'
       customMetrics: ""
       # If you are using prometheus Operator, set the fields in the section below.
       prometheusOperator:
@@ -463,7 +343,7 @@ tyk-pump:
         podMonitorSelector:
           release: prometheus-stack
 
-    # annotations for pump deployment  
+    # annotations for pump deployment
     annotations: {}
 
     # We usually recommend not to specify default resources and to leave this
@@ -479,7 +359,7 @@ tyk-pump:
     #  memory: 128Mi
     resources: {}
 
-    # securityContext values for pump pod 
+    # securityContext values for pump pod
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
@@ -518,4 +398,3 @@ tyk-pump:
     #   filename: test.csv
     #   mountPath: /opt/test
     mounts: []
-  

@@ -96,6 +96,20 @@ global:
     database: tyk_analytics
     sslmode: disable
 
+  remoteControlPlane:
+    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+    connectionString: ""
+    # orgID of your dashboard user
+    orgId: ""
+    # API key of your dashboard user
+    userApiKey: ""
+    # needed in case you want to have multiple data-planes connected to the same redis instance
+    groupID: ""
+    # enable/disable ssl
+    useSSL: true
+    # Disables SSL certificate verification
+    sslInsecureSkipVerify: true
+
 # If pump is enabled the Gateway will create and collect analytics data to send
 # to a data store of your choice. These can be set up in the pump config. The
 # possible pump configs can be found here:
@@ -109,16 +123,15 @@ pump:
     repository: docker.tyk.io/tyk-pump/tyk-pump
 
     # tag for Tyk pump
-    tag: v1.7.0
+    tag: v1.8.0
 
     # image pull policy
     pullPolicy: IfNotPresent
 
   # backend defines the pumps to be created by default, as an array of string.
-  # Supported backends are ["mongo", "postgres", "prometheus"]
+  # Supported backends are ["mongo", "postgres", "prometheus","hybrid"]
   # If you would like to use other backends such as ElasticSearch, please
   # configure the backend via environment variables.
-  # By default, Tyk Pump uses Prometheus.
   backend:
     - "prometheus"
 
@@ -128,21 +141,9 @@ pump:
 
   # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
   # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
-  hybridPump:
-    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
-    connectionString: ""
-    # orgID of your dashboard user
-    orgId: ""
-    # API key of your dashboard user
-    userApiKey: ""
-    # needed in case you want to have multiple data-planes connected to the same redis instance
-    groupID: ""
+  hybridPump: 
     # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
     enableAggregateAnalytics: true
-    # Use SSL to connect to Tyk Control Plane.
-    useSSL: true
-    # Skip SSL verification.
-    skipSSLVerification: true
     # Hybrid pump RPC calls timeout in seconds.
     callTimeout: 30
     # Hybrid pump connection pool size.
@@ -160,7 +161,7 @@ pump:
     # customMetrics allows defining custom Prometheus metrics for Tyk Pump.
     # It accepts a string that represents a JSON object. For instance,
     #
-    # customMetrics: '[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name"]}]'
+    # customMetrics: '[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name","method","api_key","alias","path"]},          {              "name":"tyk_http_latency",              "description":"Latency of API requests",              "metric_type":"histogram",              "labels":["type","response_code","api_name","method","api_key","alias","path"]          }]'
     customMetrics: ""
     # If you are using prometheus Operator, set the fields in the section below.
     prometheusOperator:
