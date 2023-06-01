@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-      - fix/githubReleaseAction
-    paths: 
+    paths:
       - '**/Chart.yaml'
 
 jobs:
@@ -76,12 +75,12 @@ jobs:
       - name: Package Helm Chart
         run: helm package ${{ matrix.chart }} --version ${{ steps.chart-version.outputs.version }}
 
-#      - name: Push Helm Chart
-#        uses: cloudsmith-io/action@v0.5.2
-#        with:
-#         api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-#         command: "push"
-#         format: "helm"
-#         owner: "tyk"
-#         repo: "helm"
-#         file: "${{ steps.file-name.outputs.fileName }}"
+      - name: Push Helm Chart
+        uses: cloudsmith-io/action@v0.5.2
+        with:
+         api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+         command: "push"
+         format: "helm"
+         owner: "tyk"
+         repo: "helm"
+         file: "${{ steps.file-name.outputs.fileName }}"
