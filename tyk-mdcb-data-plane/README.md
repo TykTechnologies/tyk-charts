@@ -209,6 +209,18 @@ Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml
       sslInsecureSkipVerify: true
 ```
 
+```yaml
+  # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
+  # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
+  hybridPump: 
+    # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
+    enableAggregateAnalytics: true
+    # Hybrid pump RPC calls timeout in seconds.
+    callTimeout: 30
+    # Hybrid pump connection pool size.
+    poolSize: 30
+```
+
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
 
