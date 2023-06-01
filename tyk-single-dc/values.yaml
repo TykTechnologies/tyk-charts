@@ -3,6 +3,8 @@
 # Declare variables to be passed into your templates.
 
 global:
+  license:
+    dashboard: ""
   components:
     # Determines whether or not the pump component should be installed.
     pump: true
@@ -504,7 +506,6 @@ tyk-bootstrap:
     # Set a password or a random one will be assigned.
     password: "123456"
 
-  license: ""
 
   org:
     name: Default Org
@@ -645,8 +646,7 @@ tyk-dashboard:
     # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
     # variables in extraEnvs object array to define your SSL cert and key files.
     tls: false
-    # Dashboard license.
-    license: ""
+
     # Dashboard admin information.
     adminUser:
       firstName: admin

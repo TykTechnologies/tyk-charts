@@ -56,7 +56,6 @@ spec:
         securityContext:
           runAsUser: 999
           runAsGroup: 999
-{{/*          fsGroup: 2000*/}}
         env:
           ## DEFAULT TYK DASHBOARD CONFIGURATION
           - name: "TYK_DB_ENABLEOWNERSHIP"
@@ -67,10 +66,6 @@ spec:
             value: "debug"
           - name: "TYK_DB_PAGESIZE"
             value: "{{ .Values.dashboard.defaultPageSize }}"
-{{/*          - name: "TYK_DB_REDISPORT"*/}}
-{{/*            value: {{ include "tyk-dashboard.redis_host" . }}*/}}
-{{/*          - name: "TYK_DB_REDISHOST"*/}}
-{{/*            value: {{ include "tyk-dashboard.redis_host" . }}*/}}
           - name: TYK_GW_STORAGE_ADDRS
             value: {{ include "tyk-dashboard.redis_url" . | quote }}
           - name: "TYK_DB_NOTIFYONCHANGE"

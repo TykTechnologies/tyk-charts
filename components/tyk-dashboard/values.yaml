@@ -1,4 +1,6 @@
 global:
+  license:
+    dashboard:
   secrets:
     # tyk_analytics.conf tyk_api_config.secret
     # tyk_analytics.conf shared_node_secret
@@ -150,8 +152,6 @@ dashboard:
   # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
   # variables in extraEnvs object array to define your SSL cert and key files.
   tls: false
-  # Dashboard license.
-  license: ""
   # Dashboard admin information.
   adminUser:
     firstName: admin

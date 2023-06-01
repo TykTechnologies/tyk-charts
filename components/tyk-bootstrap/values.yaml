@@ -25,8 +25,6 @@ bootstrap:
     # Set a password or a random one will be assigned.
     password: "123456"
 
-  license: ""
-
   org:
     name: Default Org
     # The hostname to bind the Portal to.
@@ -46,6 +44,8 @@ bootstrap:
   nameOverride: ""
 
 global:
+  license:
+    dashboard: ""
   redis:
     # The addrs value will allow you to set your Redis addresses. If you are
     # using a redis cluster, you can list the endpoints of the redis instances
