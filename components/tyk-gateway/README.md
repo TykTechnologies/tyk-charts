@@ -10,7 +10,7 @@ This chart defines a standalone open source Tyk Gateway component on a [Kubernet
 
 For typical usage, we recommend using following umbrella charts:
 * For Tyk Open Source, please use [tyk-oss](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss)
-* Coming soon: For Tyk Hybrid Gateway, please use [tyk-hybrid-gateway](https://github.com/TykTechnologies/tyk-charts/tree/main/)
+* For Tyk Hybrid Gateway with Tyk Cloud or MDCB Remote Gateway, please use [tyk-mdcb-data-plane](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-mdcb-data-plane)
 * Coming soon: For Tyk Self-Managed, please use [tyk-self-managed](https://github.com/TykTechnologies/tyk-charts/tree/main/)
 
 [Learn more about different deployment options](https://tyk.io/docs/apim/)
