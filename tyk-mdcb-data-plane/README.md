@@ -54,7 +54,7 @@ global.remoteControlPlane.groupID: "test-group-id" (change this to something mea
 
 Then just run:
 
-    helm install tyk-data-plane tyk-helm/tyk-mdcb-data-plane -n tyk --create-namespace -f values-data-plane.yaml
+    helm install tyk-data-plane tyk-helm/tyk-mdcb-data-plane -n tyk --create-namespace -f values-data-plane.yaml --devel
 
 
 ## Uninstalling the Chart
