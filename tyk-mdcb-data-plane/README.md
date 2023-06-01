@@ -28,7 +28,7 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
 
     helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
     helm repo update
-    helm show values tyk-helm/tyk-mdcb-data-plane > values-data-plane.yaml
+    helm show values tyk-helm/tyk-mdcb-data-plane > values-data-plane.yaml --devel
 
 
 
@@ -54,7 +54,7 @@ global.remoteControlPlane.groupID: "test-group-id" (change this to something mea
 
 Then just run:
 
-    helm install tyk-data-plane tyk-helm/tyk-mdcb-data-plane -n tyk --create-namespace -f values-data-plane.yaml
+    helm install tyk-data-plane tyk-helm/tyk-mdcb-data-plane -n tyk --create-namespace -f values-data-plane.yaml --devel
 
 
 ## Uninstalling the Chart
@@ -67,14 +67,14 @@ This removes all the Kubernetes components associated with the chart and deletes
 ## Upgrading Chart
 
 ```
-helm upgrade tyk-data-plane tyk-mdcb-data-plane -n tyk
+helm upgrade tyk-data-plane tyk-helm/tyk-mdcb-data-plane -n tyk --devel
 ```
 
 ## Configuration
 
 To get all configurable options with detailed comments:
 
-    helm show values tyk-mdcb-data-plane > values.yaml
+    helm show values tyk-helm/tyk-mdcb-data-plane > values.yaml --devel
 
 You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation. 
 Alternatively, you can use `--set` flag to set it in Tyk installation.
@@ -131,7 +131,7 @@ Add `prometheus` to `pump.backend`, and add connection details for prometheus un
 We also support monitoring using Prometheus Operator. All you have to do is set `pump.prometheusPump.prometheusOperator.enabled` to true.
 This will create a PodMonitor resource for your Pump instance.
 
-#### Mongo pump
+#### Mongo Pump
 If you are using the MongoDB pumps in the tyk-oss installation you will require MongoDB installed for that as well.
 
 To install Mongo you can use these rather excellent charts provided by Bitnami:
@@ -161,7 +161,7 @@ NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) 
     # useSSL: false
 ```
 
-#### SQL pump
+#### SQL Pump
 If you are using the SQL pumps in the tyk-oss installation you will require PostgreSQL installed for that as well.
 
 To install PostgreSQL you can use these rather excellent charts provided by Bitnami:
@@ -207,6 +207,18 @@ Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml
       useSSL: true
       # Disables SSL certificate verification
       sslInsecureSkipVerify: true
+```
+
+```yaml
+  # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
+  # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
+  hybridPump: 
+    # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
+    enableAggregateAnalytics: true
+    # Hybrid pump RPC calls timeout in seconds.
+    callTimeout: 30
+    # Hybrid pump connection pool size.
+    poolSize: 30
 ```
 
 #### Other Pumps

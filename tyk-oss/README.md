@@ -27,12 +27,12 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
 
     helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
     helm repo update
-    helm show values tyk-helm/tyk-oss > values-oss.yaml
+    helm show values tyk-helm/tyk-oss > values-oss.yaml --devel
 
 
 If you use the bitnami chart for Redis installation, the DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379` You can update them in your local `values-oss.yaml` file under `global.redis.addr` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
-    helm install tyk-oss tyk-helm/tyk-oss -n tyk --create-namespace -f values-oss.yaml
+    helm install tyk-oss tyk-helm/tyk-oss -n tyk --create-namespace -f values-oss.yaml --devel
 
 ## Uninstalling the Chart
 
@@ -44,7 +44,7 @@ This removes all the Kubernetes components associated with the chart and deletes
 ## Upgrading Chart
 
 ```
-helm upgrade tyk-oss tyk-oss -n tyk
+helm upgrade tyk-oss tyk-helm/tyk-oss -n tyk --devel
 ```
 
 *Note: Upgrading from tyk-headless chart*
@@ -55,7 +55,7 @@ If you were using `tyk-headless` chart for existing release, you cannot upgrade 
 
 To get all configurable options with detailed comments:
 
-    helm show values tyk-oss > values.yaml
+    helm show values tyk-helm/tyk-oss > values.yaml --devel
 
 You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation. 
 Alternatively, you can use `--set` flag to set it in Tyk installation.
@@ -113,7 +113,7 @@ Add `prometheus` to `pump.backend`, and add connection details for prometheus un
 We also support monitoring using Prometheus Operator. All you have to do is set `pump.prometheusPump.prometheusOperator.enabled` to true.
 This will create a PodMonitor resource for your Pump instance.
 
-#### Mongo pump
+#### Mongo Pump
 If you are using the MongoDB pumps in the tyk-oss installation you will require MongoDB installed for that as well.
 
 To install Mongo you can use these rather excellent charts provided by Bitnami:
@@ -145,7 +145,7 @@ Add following under the `global` section in `values.yaml`:
     # useSSL: false
 ```
 
-#### SQL pump
+#### SQL Pump
 If you are using the SQL pumps in the tyk-oss installation you will require PostgreSQL installed for that as well.
 
 To install PostgreSQL you can use these rather excellent charts provided by Bitnami:
