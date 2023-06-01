@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fix/githubReleaseAction
     paths: 
       - '**/Chart.yaml'
 
@@ -63,18 +64,23 @@ jobs:
         id: chart-version
         run: echo "version=$(awk '/^version:/ {print $2}' ${{ matrix.chart }}/Chart.yaml)" >> "$GITHUB_OUTPUT"
 
+      - name: Helm Chart package file name
+        id: file-name
+        run: |
+          echo "fileName=$(basename ${{ matrix.chart }})-${{ steps.chart-version.outputs.version }}.tgz" >> "$GITHUB_OUTPUT"
+
       - name: Update dependencies
         run: helm dependency update ${{ matrix.chart }}
 
       - name: Package Helm Chart
         run: helm package ${{ matrix.chart }} --version ${{ steps.chart-version.outputs.version }}
 
-      - name: Push Helm Chart
-        uses: cloudsmith-io/action@v0.5.2
-        with:
-         api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-         command: "push"
-         format: "helm"
-         owner: "tyk"
-         repo: "helm"
-         file: "${{ matrix.chart/[^\/]*$ }}-${{ steps.chart-version.outputs.version }}.tgz"
+#      - name: Push Helm Chart
+#        uses: cloudsmith-io/action@v0.5.2
+#        with:
+#         api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+#         command: "push"
+#         format: "helm"
+#         owner: "tyk"
+#         repo: "helm"
+#         file: "${{ steps.file-name.outputs.fileName }}"
