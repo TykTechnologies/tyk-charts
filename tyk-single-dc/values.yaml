@@ -15,7 +15,7 @@ global:
     orgId: ""
     # API key of your dashboard user
     userApiKey: ""
-    # needed in case you want to have multiple data-planes connected to the same redis instance
+    # needed in case you want to have multiple single-dcs connected to the same redis instance
     groupID: ""
     # enable/disable ssl
     useSSL: false
@@ -25,6 +25,7 @@ global:
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME
+
 
   redis:
     # The addrs value will allow you to set your Redis addresses. If you are
@@ -39,7 +40,7 @@ global:
 
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
-    pass: "ltsjxg9yOt"
+    pass: "gwyzzJtLgR"
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -219,37 +220,37 @@ tyk-gateway:
       - name: TYK_GW_SLAVEOPTIONS_RPCKEY
         valueFrom:
           secretKeyRef:
-            name: secrets-tyk-data-plane
+            name: secrets-tyk-single-dc
             key: orgID
       - name: TYK_GW_SLAVEOPTIONS_APIKEY
         valueFrom:
           secretKeyRef:
-            name: secrets-tyk-data-plane
+            name: secrets-tyk-single-dc
             key: apiKey
       - name: TYK_GW_SECRET
         valueFrom:
           secretKeyRef:
-            name: secrets-tyk-data-plane
+            name: secrets-tyk-single-dc
             key: APISecret
       - name: TYK_GW_SLAVEOPTIONS_GROUPID
         valueFrom:
           secretKeyRef:
-            name: secrets-tyk-data-plane
+            name: secrets-tyk-single-dc
             key: groupID
       - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
         valueFrom:
           configMapKeyRef:
-            name: config-tyk-data-plane
+            name: config-tyk-single-dc
             key: rpcConnString
       - name: TYK_GW_SLAVEOPTIONS_USESSL
         valueFrom:
           configMapKeyRef:
-            name: config-tyk-data-plane
+            name: config-tyk-single-dc
             key: rpcUseSSL
       - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
         valueFrom:
           configMapKeyRef:
-            name: config-tyk-data-plane
+            name: config-tyk-single-dc
             key: rpcSslInsecureSkipVerify
     # used to mount files to the gateway containers
     #  - name: test

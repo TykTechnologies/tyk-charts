@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "tyk-data-plane.fullname" . }}-test-tyk-data-plane"
+  name: "{{ include "tyk-single-dc.fullname" . }}-test-tyk-single-dc"
   labels:
-    chart: {{ include "tyk-data-plane.chart" . }}
+    chart: {{ include "tyk-single-dc.chart" . }}
   annotations:
     "helm.sh/hook": test
 spec:
@@ -17,10 +17,10 @@ spec:
         - /tests/tyk-single-dc-test.sh
       volumeMounts:
         - mountPath: "/tests"
-          name: test-tyk-data-plane
+          name: test-tyk-single-dc
       env:
         - name: TYK_GW_PROTO
-          value: {{ include "tyk-data-plane.gwproto" . }}
+          value: {{ include "tyk-single-dc.gwproto" . }}
         - name: TYK_GW_SVC
           value: gateway-svc-{{ .Release.Name }}-tyk-gateway
         - name: TYK_GW_LISTENPORT
@@ -32,10 +32,10 @@ spec:
         - name: TYK_GW_SECRET
           valueFrom:
             secretKeyRef:
-              name: secrets-tyk-data-plane
+              name: secrets-tyk-single-dc
               key: APISecret
   volumes:
-    - name: test-tyk-data-plane
+    - name: test-tyk-single-dc
       configMap:
         name: test-tyk-single-dc-map
         defaultMode: 0777

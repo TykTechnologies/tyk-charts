@@ -61,6 +61,10 @@ spec:
           ## DEFAULT TYK DASHBOARD CONFIGURATION
           - name: "TYK_DB_ENABLEOWNERSHIP"
             value: "{{ .Values.dashboard.enableOwnership }}"
+          - name: "TYK_DB_LOGLEVEL"
+            value: "debug"
+          - name: "TYK_LOGLEVEL"
+            value: "debug"
           - name: "TYK_DB_PAGESIZE"
             value: "{{ .Values.dashboard.defaultPageSize }}"
 {{/*          - name: "TYK_DB_REDISPORT"*/}}

@@ -1,9 +1,9 @@
   {{/*apiVersion: v1*/}}
   {{/*kind: Pod*/}}
   {{/*metadata:*/}}
-  {{/*  name: "{{ include "tyk-data-plane.fullname" . }}-test-connection"*/}}
+  {{/*  name: "{{ include "tyk-single-dc.fullname" . }}-test-connection"*/}}
   {{/*  labels:*/}}
-  {{/*    {{- include "tyk-data-plane.labels" . | nindent 4 }}*/}}
+  {{/*    {{- include "tyk-single-dc.labels" . | nindent 4 }}*/}}
   {{/*  annotations:*/}}
   {{/*    "helm.sh/hook": test*/}}
   {{/*spec:*/}}
@@ -11,5 +11,5 @@
   {{/*    - name: wget*/}}
   {{/*      image: busybox*/}}
   {{/*      command: ['wget']*/}}
-  {{/*      args: ['{{ include "tyk-data-plane.fullname" . }}:{{ .Values.service.port }}']*/}}
+  {{/*      args: ['{{ include "tyk-single-dc.fullname" . }}:{{ .Values.service.port }}']*/}}
   {{/*  restartPolicy: Never*/}}

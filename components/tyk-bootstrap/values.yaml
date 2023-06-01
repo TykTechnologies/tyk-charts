@@ -25,7 +25,7 @@ bootstrap:
     # Set a password or a random one will be assigned.
     password: "123456"
 
-license: ""
+  license: ""
 
   org:
     name: Default Org
