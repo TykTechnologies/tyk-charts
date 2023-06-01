@@ -26,7 +26,7 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
 
     helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
     helm repo update
-    helm show values tyk-helm/tyk-gateway > values.yaml
+    helm show values tyk-helm/tyk-gateway > values.yaml --devel
     
 Note: Set redis connection details first. See [Configuration](#configuration) below.
 
@@ -40,7 +40,7 @@ This removes all the Kubernetes components associated with the chart and deletes
 
 ## Upgrading Chart
 
-    helm upgrade tyk-gateway tyk-gateway -n tyk
+    helm upgrade tyk-gateway tyk-helm/tyk-gateway -n tyk --devel
 
 ### Upgrading from tyk-headless chart
 Please see Migration notes in [tyk-oss](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss) chart
@@ -48,7 +48,7 @@ Please see Migration notes in [tyk-oss](https://github.com/TykTechnologies/tyk-c
 ## Configuration
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To get all configurable options with detailed comments:
 
-    helm show values tyk-gateway > values.yaml
+    helm show values tyk-helm/tyk-gateway > values.yaml --devel
     
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
 
