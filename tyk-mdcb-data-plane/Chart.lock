@@ -1,9 +1,9 @@
 dependencies:
 - name: tyk-gateway
   repository: file://../components/tyk-gateway
-  version: 1.0.0-beta2
+  version: 1.0.0-beta3
 - name: tyk-pump
   repository: file://../components/tyk-pump
-  version: 1.0.0-beta2
-digest: sha256:94a4b4b8016c3c56c1f4891c7e506186c131a25b0a93fddf5c46c283bd5fcf7d
-generated: "2023-06-01T15:01:33.582418+03:00"
+  version: 1.0.0-beta3
+digest: sha256:428f9ac84e27a1d508a6724a0ee2baa336f8f84fd6cc179458a880f447598dbf
+generated: "2023-06-02T12:26:01.414068+03:00"
