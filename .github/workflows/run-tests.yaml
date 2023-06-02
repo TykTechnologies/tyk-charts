@@ -7,9 +7,10 @@ on:
       - master
 
 env:
-  TIMEOUT: 10m
+  TIMEOUT: 15m
   TYK_OSS_NS: tyk-oss
   TYK_MDCB_DATAPLANE_NS: tyk-mdcb-dataplane
+  TYK_SINGLE_DC_NS: tyk-single-dc
 
 jobs:
   lint-test:
@@ -70,12 +71,31 @@ jobs:
           helm dependency update ./tyk-oss
 
       - name: Run chart-testing (install)
-        run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true"
+        run: ct install --namespace ${{ env.TYK_SINGLE_DC_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true"
 
       - name: Uninstall Tyk OSS Dependencies
         run: |
-          helm uninstall redis -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
-          kubectl delete namespace ${{ env.TYK_OSS_NS }}
+          helm uninstall redis -n ${{ env.TYK_SINGLE_DC_NS }} --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace ${{ env.TYK_SINGLE_DC_NS }}
+
+      # Tyk Single Data Center tests
+      - name: Deploy Tyk Single Data Center and dependencies
+        run: |
+          kubectl create namespace ${{ env.TYK_SINGLE_DC_NS }}
+
+          # Do not change the name
+          helm install redis simple-redis --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_SINGLE_DC_NS }} --timeout ${{ env.TIMEOUT }}
+
+          helm dependency update ./tyk-single-dc
+
+      - name: Run chart-testing (install)
+        run: ct install --namespace ${{ env.TYK_SINGLE_DC_NS }} --charts ./tyk-single-dc --helm-extra-set-args "--wait=true"
+
+      - name: Uninstall Tyk OSS Dependencies
+        run: |
+          helm uninstall redis -n ${{ env.TYK_SINGLE_DC_NS }} --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace ${{ env.TYK_SINGLE_DC_NS }}
+      
 
       # Tyk MDCB Data Plane tests
       - name: Deploy Tyk MDCB Data Plane and Dependencies
