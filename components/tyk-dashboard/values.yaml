@@ -1,6 +1,9 @@
 global:
   license:
-    dashboard:
+    dashboard: ""
+
+  components:
+    dashboard: "true"
   secrets:
     # tyk_analytics.conf tyk_api_config.secret
     # tyk_analytics.conf shared_node_secret

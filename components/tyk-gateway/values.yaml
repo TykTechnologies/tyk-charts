@@ -14,6 +14,8 @@ nameOverride: ""
 fullnameOverride: ""
 
 global:
+  components:
+    dashboard: "false"
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME

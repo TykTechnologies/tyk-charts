@@ -16,7 +16,7 @@ bootstrap:
       port: 8080
 
   jobs:
-    bootstrapJobName: boostrap-post-install
+    bootstrapJobName: bootstrap-post-install
 
   adminUser:
     firstName: admin

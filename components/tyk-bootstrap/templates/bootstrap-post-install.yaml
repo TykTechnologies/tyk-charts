@@ -77,10 +77,6 @@ spec:
             - name: ENTERPRISE_PORTAL_SECRET_NAME
               value: "tyk-enterprise-portal-conf"
             {{- end }}
-            {{- if .Values.bootstrap.dashboard.enabled }}
-            - name: BOOTSTRAP_DASHBOARD
-              value: "true"
-            {{- end }}
             - name: GATEWAY_ADDRESS
               value: "{{ include "tyk-bootstrap.gateway_url" . }}"
             {{- if .Values.bootstrap.portal.enabled }}

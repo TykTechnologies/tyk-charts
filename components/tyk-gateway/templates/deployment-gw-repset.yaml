@@ -75,9 +75,10 @@ spec:
             value : "false"
           - name: TYK_GW_LISTENPORT
             value: "{{ .Values.gateway.containerPort }}"
+          {{ if .Values.global.components.dashboard}}
           - name: TYK_GW_USEDBAPPCONFIGS
             value: "true"
-
+           {{- end }}
           {{- if .Values.gateway.control.enabled }}
           - name: TYK_GW_CONTROLAPIPORT
             value: "{{ .Values.gateway.control.containerPort }}"
@@ -172,8 +173,6 @@ spec:
             value: "murmur128"
           - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEWEBSOCKETS
             value: "true"
-{{/*          - name: TYK_GW_HTTPSERVEROPTIONS_SERVERNAME*/}}
-{{/*            value: "*"*/}}
           - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
             value: "771"
           - name: TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES

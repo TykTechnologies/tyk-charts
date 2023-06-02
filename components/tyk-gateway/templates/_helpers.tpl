@@ -31,14 +31,6 @@ http
 {{- end -}}
 {{- end -}}
 
-{{- define "tyk-gateway.dash_proto" -}}
-{{- if .Values.gateway.tls.enabled -}}
-https
-{{- else -}}
-http
-{{- end -}}
-{{- end -}}
-
 
 {{/*
 Create chart name and version as used by the chart label.

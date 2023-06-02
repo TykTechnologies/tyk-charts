@@ -9,6 +9,8 @@ global:
     # Determines whether or not the pump component should be installed.
     pump: true
 
+    dashboard: true
+
   remoteControlPlane:
     enabled: false
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
@@ -497,7 +499,7 @@ tyk-bootstrap:
       service:
         port: 8080
   jobs:
-    bootstrapJobName: boostrap-post-install
+    bootstrapJobName: bootstrap-post-install
 
   adminUser:
     firstName: admin
