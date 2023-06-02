@@ -32,7 +32,7 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{- define "tyk-dashboard.gwproto" -}}
-{{- if .Values.global.gateway.tls -}}
+{{- if .Values.global.tls.gateway -}}
 https
 {{- else -}}
 http
@@ -40,7 +40,7 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.dash_proto" -}}
-{{- if .Values.dashboard.tls -}}
+{{- if .Values.global.tls.dashboard -}}
 https
 {{- else -}}
 http

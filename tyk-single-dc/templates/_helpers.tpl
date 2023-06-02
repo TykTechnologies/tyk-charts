@@ -62,7 +62,7 @@ Create the name of the service account to use
 {{- end }}
 
 {{- define "tyk-single-dc.gwproto" -}}
-{{- if index .Values "tyk-gateway" "gateway" "tls" "enabled" -}}
+{{- if .Values.global.tls.gateway -}}
 https
 {{- else -}}
 http

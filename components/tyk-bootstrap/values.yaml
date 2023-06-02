@@ -46,6 +46,9 @@ bootstrap:
 global:
   license:
     dashboard: ""
+  tls:
+    dashboard: false
+    gateway: false
   redis:
     # The addrs value will allow you to set your Redis addresses. If you are
     # using a redis cluster, you can list the endpoints of the redis instances

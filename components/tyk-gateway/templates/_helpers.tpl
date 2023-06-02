@@ -24,7 +24,15 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{- define "tyk-gateway.gwproto" -}}
-{{- if .Values.gateway.gwTls -}}
+{{- if .Values.global.tls.gateway -}}
+https
+{{- else -}}
+http
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-gateway.dash_proto" -}}
+{{- if .Values.global.tls.dashboard -}}
 https
 {{- else -}}
 http

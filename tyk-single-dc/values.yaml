@@ -11,6 +11,10 @@ global:
 
     dashboard: true
 
+  tls:
+    dashboard: false
+    gateway: false
+
   remoteControlPlane:
     enabled: false
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.

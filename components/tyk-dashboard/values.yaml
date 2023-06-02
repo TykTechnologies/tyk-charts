@@ -18,6 +18,10 @@ global:
     # rather provide the k8s Secret externally please populate the value below
     useSecretName: ""
 
+  tls:
+    gateway: false
+    dashboard: false
+
   backend: mongo
 
   postgres:
