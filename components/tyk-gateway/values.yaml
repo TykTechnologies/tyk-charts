@@ -18,7 +18,7 @@ global:
     gateway: false
     dashboard: false
   components:
-    dashboard: "false"
+    dashboard: false
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME
