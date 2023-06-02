@@ -531,8 +531,6 @@ tyk-bootstrap:
   fullnameOverride: ""
   nameOverride: ""
 
-
-
 tyk-dashboard:
   dashboard:
     enableOwnership: true
@@ -571,12 +569,9 @@ tyk-dashboard:
       type: NodePort
       port: 3000
       externalTrafficPolicy: Local
-      annotations: { }
+      annotations: {}
 
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
-    resources: { }
+    resources: {}
       # We usually recommend not to specify default resources and to leave this
       # as a conscious choice for the user. This also increases chances charts
       # run on environments with little resources, such as Minikube. If you do
@@ -591,24 +586,24 @@ tyk-dashboard:
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
-    nodeSelector: { }
-    tolerations: [ ]
-    affinity: { }
-    extraEnvs: [ ]
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    extraEnvs: []
     ## extraVolumes A list of volumes to be added to the pod
     ## extraVolumes:
     ##   - name: ca-certs
     ##     secret:
     ##       defaultMode: 420
     ##       secretName: ca-certs
-    extraVolumes: [ ]
+    extraVolumes: []
     ## extraVolumeMounts A list of volume mounts to be added to the pod
     ## extraVolumeMounts:
     ##   - name: ca-certs
     ##     mountPath: /etc/ssl/certs/ca-certs.crt
     ##     readOnly: true
-    extraVolumeMounts: [ ]
-    mounts: [ ]
+    extraVolumeMounts: []
+    mounts: []
 
     # Dashboard will only bootstrap if the master bootstrap option is set to true.
     bootstrap: true
