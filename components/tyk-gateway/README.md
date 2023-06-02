@@ -10,7 +10,7 @@ This chart defines a standalone open source Tyk Gateway component on a [Kubernet
 
 For typical usage, we recommend using following umbrella charts:
 * For Tyk Open Source, please use [tyk-oss](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss)
-* Coming soon: For Tyk Hybrid Gateway, please use [tyk-hybrid-gateway](https://github.com/TykTechnologies/tyk-charts/tree/main/)
+* For Tyk Hybrid Gateway with Tyk Cloud or MDCB Remote Gateway, please use [tyk-mdcb-data-plane](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-mdcb-data-plane)
 * Coming soon: For Tyk Self-Managed, please use [tyk-self-managed](https://github.com/TykTechnologies/tyk-charts/tree/main/)
 
 [Learn more about different deployment options](https://tyk.io/docs/apim/)
@@ -21,24 +21,16 @@ For typical usage, we recommend using following umbrella charts:
 * [Redis](https://tyk.io/docs/planning-for-production/redis/) should already be installed or accessible by the gateway 
 
 ## Installing the Chart
-<!--
+
 To install the chart from the Helm repository in namespace `tyk` with the release name `tyk-gateway`:
 
     helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-    helm show values tyk-helm/tyk-gateway > values-gateway.yaml
-    helm install tyk-gateway tyk-helm/tyk-gateway -n tyk --create-namespace -f values-gateway.yaml
--->
-
-<!-- To be removed after the chart is published -->
-To install the chart from Git repository in namespace `tyk` with the release name `tyk-gateway`:
-
-    git clone https://github.com/TykTechnologies/tyk-charts.git
-    cd tyk-charts
-    helm show values tyk-gateway > values.yaml
-
+    helm repo update
+    helm show values tyk-helm/tyk-gateway > values.yaml --devel
+    
 Note: Set redis connection details first. See [Configuration](#configuration) below.
 
-    helm install tyk-gateway tyk-gateway -n tyk --create-namespace -f values.yaml
+    helm install tyk-gateway tyk-helm/tyk-gateway -n tyk --create-namespace -f values.yaml --devel
 
 ## Uninstalling the Chart
 
@@ -48,7 +40,7 @@ This removes all the Kubernetes components associated with the chart and deletes
 
 ## Upgrading Chart
 
-    helm upgrade tyk-gateway tyk-gateway -n tyk
+    helm upgrade tyk-gateway tyk-helm/tyk-gateway -n tyk --devel
 
 ### Upgrading from tyk-headless chart
 Please see Migration notes in [tyk-oss](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss) chart
@@ -56,7 +48,7 @@ Please see Migration notes in [tyk-oss](https://github.com/TykTechnologies/tyk-c
 ## Configuration
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To get all configurable options with detailed comments:
 
-    helm show values tyk-gateway > values.yaml
+    helm show values tyk-helm/tyk-gateway > values.yaml --devel
     
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
 
