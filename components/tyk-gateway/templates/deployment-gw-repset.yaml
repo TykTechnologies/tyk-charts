@@ -196,12 +196,12 @@ spec:
           - name: TYK_GW_SECRET
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-tyk-single-dc-tyk-gateway {{ end}}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{.Release.Name}}-tyk-gateway {{ end}}
                 key: APISecret
           - name: TYK_GW_NODESECRET
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-tyk-single-dc-tyk-gateway {{ end}}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{.Release.Name}}-tyk-gateway {{ end}}
                 key: APISecret
 
         {{- if .Values.global.components }}
