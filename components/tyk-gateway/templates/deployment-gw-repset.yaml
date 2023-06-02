@@ -130,7 +130,7 @@ spec:
           - name: TYK_GW_POLICIES_ALLOWEXPLICITPOLICYID
             value: "true"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
-            value: "{{ .Values.gateway.tls.enabled }}"
+            value: "{{ .Values.global.tls.gateway }}"
           - name: TYK_GW_TEMPLATEPATH
             value: "/opt/tyk-gateway/templates"
           - name: TYK_GW_TYKJSPATH
@@ -224,7 +224,7 @@ spec:
         resources:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
-          {{ if .Values.gateway.tls.enabled }}
+          {{ if .Values.global.tls.gateway }}
           - name: {{ .Values.gateway.tls.secretName }}
             mountPath: /etc/certs
           {{ end }}
@@ -241,7 +241,7 @@ spec:
           {{- end }}
         livenessProbe:
           httpGet:
-            scheme: "HTTP{{ if .Values.gateway.tls.enabled }}S{{ end }}"
+            scheme: "HTTP{{ if .Values.global.tls.gateway }}S{{ end }}"
             path: /hello
             {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
             port: {{ .Values.gateway.control.containerPort }}
@@ -254,7 +254,7 @@ spec:
           failureThreshold: 2
         readinessProbe:
           httpGet:
-            scheme: "HTTP{{ if .Values.gateway.tls.enabled }}S{{ end }}"
+            scheme: "HTTP{{ if .Values.global.tls.gateway }}S{{ end }}"
             path: /hello
             {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
             port: {{ .Values.gateway.control.containerPort }}
@@ -272,7 +272,7 @@ spec:
       volumes:
         - name: tyk-scratch
           emptyDir: {}
-        {{ if .Values.gateway.tls.enabled }}
+        {{ if .Values.global.tls.gateway }}
         - name: {{ .Values.gateway.tls.secretName }}
           secret:
             secretName: {{ .Values.gateway.tls.secretName }}

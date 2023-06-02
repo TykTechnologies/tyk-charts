@@ -6,7 +6,7 @@ Tyk Dashboard is provided ‘Batteries-included’, with no feature lockout. Ena
 [Overview of Tyk Dashboard](https://tyk.io/docs/tyk-dashboard/)
 
 ## Introduction
-This chart defines a standalone open source Tyk Dashboard component on a [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
+This chart defines a standalone Tyk Dashboard component on a [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
 
 For typical usage, we recommend using following umbrella charts:
 * For Tyk Open Source, please use [tyk-oss](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss)
@@ -40,16 +40,16 @@ This removes all the Kubernetes components associated with the chart and deletes
 
 ## Upgrading Chart
 
-    helm upgrade tyk-dashboard tyk-dashboard -n tyk
+    helm upgrade tyk-dashboard tyk-helm/tyk-dashboard -n tyk
 
 ## Configuration
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To get all configurable options with detailed comments:
 
-    helm show values tyk-dashboard > values.yaml
+    helm show values tyk-helm/tyk-dashboard > values.yaml
     
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
 
-### Set Redis conenction details (Required)
+### Set Redis connection details (Required)
 Tyk uses Redis for distributed rate-limiting and token storage. You may set `global.redis.addr` and `global.redis.pass` with redis connection string and password respectively.
 
 If you do not already have redis installed, you can use these charts provided by Bitnami

@@ -37,9 +37,6 @@ bootstrap:
 
   enterprisePortalSecret: true
 
-  tls: false
-  gwTls: false
-
   fullnameOverride: ""
   nameOverride: ""
 

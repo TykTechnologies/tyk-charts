@@ -52,7 +52,7 @@ See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_h
     
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
 
-### Set Redis conenction details (Required)
+### Set Redis connection details (Required)
 Tyk uses Redis for distributed rate-limiting and token storage. You may set `global.redis.addr` and `global.redis.pass` with redis connection string and password respectively.
 
 If you do not already have redis installed, you can use these charts provided by Bitnami
