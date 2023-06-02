@@ -534,37 +534,6 @@ tyk-bootstrap:
 
 
 tyk-dashboard:
-#  global:
-#    secrets:
-#      # tyk_analytics.conf tyk_api_config.secret
-#      # tyk_analytics.conf shared_node_secret
-#      # tyk.conf node_secret
-#      # tyk.conf secret
-#      APISecret: CHANGEME
-#      # tyk_analytics.conf admin_secret
-#      # tib.conf TykAPISettings.GatewayConfig.AdminSecret
-#      # tib.conf TykAPISettings.DashboardConfig.AdminSecret
-#      AdminSecret: "12345"
-#      # If you don't want to store plaintext secrets in the Helm value file and would
-#      # rather provide the k8s Secret externally please populate the value below
-#      useSecretName: ""
-#
-#    backend: mongo
-#
-#    postgres:
-#      host: tyk-postgres-postgresql.tyk.svc.cluster.local
-#      port: 5432
-#      user: postgres
-#      password:
-#      database: tyk_analytics
-#      sslmode:
-#
-#    mongo:
-#      useSSL: false
-#      # For tyk-syimple-mongo (no auth)
-#      # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-#      mongoURL: ""
-
   dashboard:
     enableOwnership: true
     defaultPageSize: 10
