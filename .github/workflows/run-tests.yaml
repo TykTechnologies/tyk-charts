@@ -91,7 +91,7 @@ jobs:
       - name: Run chart-testing (install)
         run: ct install --namespace ${{ env.TYK_SINGLE_DC_NS }} --charts ./tyk-single-dc --helm-extra-set-args "--wait=true"
 
-      - name: Uninstall Tyk OSS Dependencies
+      - name: Uninstall Tyk Single DC Dependencies
         run: |
           helm uninstall redis -n ${{ env.TYK_SINGLE_DC_NS }} --timeout ${{ env.TIMEOUT }}
           kubectl delete namespace ${{ env.TYK_SINGLE_DC_NS }}
