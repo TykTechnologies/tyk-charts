@@ -1,12 +1,13 @@
 apk --no-cache add curl jq
 
-TYK_DB_ADDR="${TYK_DB_PROTO}://${TYK_DB_SVC}.${TYK_POD_NAMESPACE}.svc.cluster.local:${TYK_DB_LISTENPORT}"
+TYK_GW_ADDR="${TYK_GW_PROTO}://${TYK_GW_SVC}.${TYK_POD_NAMESPACE}.svc.cluster.local:${TYK_GW_LISTENPORT}"
+TYK_GW_SECRET=${TYK_GW_SECRET}
 
 checkGateway() {
   count=0
   while [ $count -le 10 ]
   do
-    healthCheck="$(curl --fail-with-body -sS ${TYK_DB_ADDR}/hello)"
+    healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello)"
 
     redisStatus=$(echo "${healthCheck}" | jq -r '.details.redis.status')
     if [[ "${redisStatus}" != "pass" ]]
@@ -18,7 +19,7 @@ checkGateway() {
       continue
     fi
 
-    dashStatus=$(echo "${healthCheck}" | jq -r '.status')
+    dashStatus=$(echo "${healthCheck}" | jq -r '.details.dashboard.status')
     if [[ "${dashStatus}" != "ok" ]]
     then
       echo "Dashboard is ready"

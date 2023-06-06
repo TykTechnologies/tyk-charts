@@ -19,12 +19,12 @@ spec:
         - mountPath: "/tests"
           name: test-tyk-single-dc
       env:
-        - name: TYK_DB_PROTO
+        - name: TYK_GW_PROTO
           value: {{ include "tyk-single-dc.gwproto" . }}
-        - name: TYK_DB_SVC
-          value: dashboard-svc-{{ .Release.Name }}-tyk-dashboard
-        - name: TYK_DB_LISTENPORT
-          value: "{{ index .Values "tyk-dashboard" "dashboard" "containerPort" }}"
+        - name: TYK_GW_SVC
+          value: gateway-svc-{{ include "tyk-oss.fullname" . }}-tyk-gateway
+        - name: TYK_GW_LISTENPORT
+          value: "{{ index .Values "tyk-gateway" "gateway" "service" "port" }}"
         - name: TYK_POD_NAMESPACE
           valueFrom:
             fieldRef:
