@@ -20,7 +20,7 @@ checkGateway() {
     fi
 
     dashStatus=$(echo "${healthCheck}" | jq -r '.details.dashboard.status')
-    if [[ "${dashStatus}" != "ok" ]]
+    if [[ "${dashStatus}" != "pass" ]]
     then
       echo "Dashboard is ready"
       echo "${healthCheck}"
