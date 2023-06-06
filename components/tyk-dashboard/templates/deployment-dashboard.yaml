@@ -157,8 +157,7 @@ spec:
 
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dashboard.hostName }}"
-          - name: TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
-            value: "{{ .Values.dashboard.hostName }}"
+
           {{ if eq "postgres" (include "tyk-dashboard.backend" .) }}
           - name: TYK_DB_ENABLEAGGREGATELOOKUPS
             value: "false"
