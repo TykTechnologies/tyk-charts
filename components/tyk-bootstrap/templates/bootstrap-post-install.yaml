@@ -64,6 +64,8 @@ spec:
             {{- if .Values.bootstrap.dashboard.enabled }}
             - name: DASHBOARD_ENABLED
               value: "true"
+            - name: BOOTSTRAP_DASHBOARD
+              value: "true"
             {{- end }}
             {{- if .Values.bootstrap.operatorSecret }}
             - name: OPERATOR_SECRET_ENABLED
