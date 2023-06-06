@@ -18,7 +18,7 @@ For typical usage, we recommend using following umbrella charts:
 * Kuberentes 1.19+
 * Helm 3+
 * [Redis](https://tyk.io/docs/planning-for-production/redis/) should already be installed or accessible by the dashboard 
-* [Mongo](https://tyk.io/docs/planning-for-production/database-settings/mongodb/) should already be installed or accessible by the dashboard
+* [Mongo](https://tyk.io/docs/planning-for-production/database-settings/mongodb/) or [PostgreSQL](https://tyk.io/docs/planning-for-production/database-settings/postgresql/) should already be installed or accessible by the dashboard
 
 ## Installing the Chart
 
@@ -58,6 +58,26 @@ If you do not already have redis installed, you can use these charts provided by
     helm install tyk-redis bitnami/redis -n tyk --create-namespace
 
 Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379` (Tyk needs the name including the port) You can update them in your local values.yaml file under `global.redis.addrs` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
+
+### Set Mongo or PostgresSQL connection details (Required)
+If you have already installed mongo/postgresSQL, you can set the connection details in `global.mongo` and `global.postgres` section of values file respectively.
+
+If not, you can use these rather excellent charts provided by Bitnami to install mongo/postgres:
+
+**Mongo Installation**
+
+```
+helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
+```
+
+**PostgresSQL Installation**
+```
+helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics" -n tyk
+```
+
+Follow the notes from the installation output to get connection details.
+
+>NOTE: Please make sure you are installing mongo/postgres versions that are supported by Tyk. Please refer to Tyk docs to get list of supported versions.
 
 ### Dashboard Configurations
 
