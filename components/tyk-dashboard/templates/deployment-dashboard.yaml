@@ -62,8 +62,6 @@ spec:
             value: "{{ .Values.dashboard.enableOwnership }}"
           - name: "TYK_DB_PAGESIZE"
             value: "{{ .Values.dashboard.defaultPageSize }}"
-          - name: TYK_GW_STORAGE_ADDRS
-            value: {{ include "tyk-dashboard.redis_url" . | quote }}
           - name: "TYK_DB_NOTIFYONCHANGE"
             value: "{{ .Values.dashboard.notifyOnChange }}"
           - name: "TYK_DB_HASHKEYS"
