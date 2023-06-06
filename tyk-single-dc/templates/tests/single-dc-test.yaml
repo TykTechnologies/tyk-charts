@@ -24,7 +24,7 @@ spec:
         - name: TYK_DB_SVC
           value: dashboard-svc-{{ .Release.Name }}-tyk-dashboard
         - name: TYK_DB_LISTENPORT
-          value: "{{ index .Values "tyk-dashboard" "containerPort" }}"
+          value: "{{ index .Values "tyk-dashboard" "dashboard" "containerPort" }}"
         - name: TYK_POD_NAMESPACE
           valueFrom:
             fieldRef:
