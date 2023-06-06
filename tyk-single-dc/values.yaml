@@ -229,41 +229,11 @@ tyk-gateway:
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
     extraEnvs:
-      - name: TYK_GW_SLAVEOPTIONS_RPCKEY
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-single-dc
-            key: orgID
-      - name: TYK_GW_SLAVEOPTIONS_APIKEY
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-single-dc
-            key: apiKey
       - name: TYK_GW_SECRET
         valueFrom:
           secretKeyRef:
             name: secrets-tyk-single-dc
             key: APISecret
-      - name: TYK_GW_SLAVEOPTIONS_GROUPID
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-single-dc
-            key: groupID
-      - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
-        valueFrom:
-          configMapKeyRef:
-            name: config-tyk-single-dc
-            key: rpcConnString
-      - name: TYK_GW_SLAVEOPTIONS_USESSL
-        valueFrom:
-          configMapKeyRef:
-            name: config-tyk-single-dc
-            key: rpcUseSSL
-      - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
-        valueFrom:
-          configMapKeyRef:
-            name: config-tyk-single-dc
-            key: rpcSslInsecureSkipVerify
     # used to mount files to the gateway containers
     #  - name: test
     #    filename: test.txt
