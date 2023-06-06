@@ -17,7 +17,13 @@ global:
     useSecretName: ""
 
   tls:
+    # When true, sets the gateway protocol to HTTPS.
     gateway: false
+    # If set to true the Dashboard will use SSL connection.
+    # You will also need to set the:
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+    # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
 
   backend: mongo
@@ -62,7 +68,6 @@ global:
 
   gateway:
     port: 8080
-    tls: false
 
   mongo:
     useSSL: false
@@ -151,12 +156,7 @@ dashboard:
 
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
-  # If set to true the Dashboard will use SSL connection.
-  # You will also need to set the:
-  # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-  # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-  # variables in extraEnvs object array to define your SSL cert and key files.
-  tls: false
+
   # Dashboard admin information.
   adminUser:
     firstName: admin

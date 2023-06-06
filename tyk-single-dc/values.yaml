@@ -12,7 +12,13 @@ global:
     dashboard: true
 
   tls:
+    # If set to true the Dashboard will use SSL connection.
+    # You will also need to set the:
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+    # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
+    # When true, sets the gateway protocol to HTTPS.
     gateway: false
 
   remoteControlPlane:
@@ -110,8 +116,6 @@ tyk-gateway:
     hostName: tyk-gw.local
 
     tls:
-      # When true, sets the gateway protocol to HTTPS.
-      enabled: false
       # When true, it will install the certificate present in the templates folder, set to false when using
       # a custom TLS certificate to avoid overwriting yours
       useDefaultTykCertificate: true
@@ -524,9 +528,6 @@ tyk-bootstrap:
   operatorSecret: true
 
   enterprisePortalSecret: true
-
-  tls: false
-  gwTls: false
 
   fullnameOverride: ""
   nameOverride: ""

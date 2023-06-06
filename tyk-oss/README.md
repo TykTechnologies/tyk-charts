@@ -81,12 +81,12 @@ Configure below inside `tyk-gateway` section.
 <!-- BEGIN import from gateway doc -->
 
 #### Enabling TLS
-We have provided an easy way of enabling TLS via the `gateway.tls.enabled` flag. Setting this value to true will
+We have provided an easy way of enabling TLS via the `global.tls.gateway` flag. Setting this value to true will
 automatically enable TLS using the certificate provided under tyk-gateway/certs/cert.pem.
 
 If you want to use your own key/cert pair, you must follow the following steps:
 1. Create a tls secret using your cert and key pair.
-2. Set `.Values.tyk-gateway.tls.enabled`  to true.
+2. Set `.Values.global.tls.gateway`  to true.
 3. Set `.Values.tyk-gateway.tls.useDefaultTykCertificate` to false.
 4. Set `.Values.tyk-gateway.tls.secretName` to the name of the newly created secret.
 

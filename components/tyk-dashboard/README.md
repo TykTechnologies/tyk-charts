@@ -87,5 +87,5 @@ automatically enable TLS using the certificate provided under tyk-dashboard/cert
 
 If you want to use your own key/cert pair, you must follow the following steps:
 1. Create a tls secret using your cert and key pair.
-2. Set `global.tls.enabled`  to true.
+2. Set `global.tls.dashboard` to true.
 
