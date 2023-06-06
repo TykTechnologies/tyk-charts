@@ -1,45 +1,6 @@
 # Default values for tyk-bootstrap.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-bootstrap:
-  dashboard:
-    enabled: true
-    deploymentName: dashboard-tyk-dashboard
-    service:
-      port: 3000
-  portal:
-    enabled: true
-  gateway:
-    deploymentName: gateway-tyk-gateway
-    service:
-      port: 8080
-
-  jobs:
-    bootstrapJobName: bootstrap-post-install
-
-  adminUser:
-    firstName: admin
-    lastName: user
-    email: default@example.com
-    # Set a password or a random one will be assigned.
-    password: "123456"
-
-  org:
-    name: Default Org
-    # The hostname to bind the Portal to.
-    cname: tyk-portal.local
-
-  secrets:
-    AdminSecret: "12345"
-
-  operatorSecret: true
-
-  enterprisePortalSecret: true
-
-  fullnameOverride: ""
-  nameOverride: ""
-
 global:
   license:
     dashboard: ""
@@ -99,3 +60,42 @@ global:
 
   # Choose the backend for Tyk. [ "mongo", "postgres" ]
   backend: mongo
+  
+bootstrap:
+  dashboard:
+    enabled: true
+    deploymentName: dashboard-tyk-dashboard
+    service:
+      port: 3000
+  portal:
+    enabled: true
+  gateway:
+    deploymentName: gateway-tyk-gateway
+    service:
+      port: 8080
+
+  jobs:
+    bootstrapJobName: bootstrap-post-install
+
+  adminUser:
+    firstName: admin
+    lastName: user
+    email: default@example.com
+    # Set a password or a random one will be assigned.
+    password: "123456"
+
+  org:
+    name: Default Org
+    # The hostname to bind the Portal to.
+    cname: tyk-portal.local
+
+  secrets:
+    AdminSecret: "12345"
+
+  operatorSecret: true
+
+  enterprisePortalSecret: true
+
+  fullnameOverride: ""
+  nameOverride: ""
+
