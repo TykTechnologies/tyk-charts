@@ -105,9 +105,6 @@ tyk-gateway:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
-    # containerPort for gateway
-    containerPort: 8080
-
     image:
       # image repository for Tyk Gateway
       repository: docker.tyk.io/tyk-gateway/tyk-gateway

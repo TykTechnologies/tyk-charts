@@ -14,6 +14,10 @@ nameOverride: ""
 fullnameOverride: ""
 
 global:
+  servicePorts:
+    dashboard: 3000
+    gateway: 8080
+
   tls:
     gateway: false
     # If set to true the Dashboard will use SSL connection.
@@ -118,9 +122,6 @@ gateway:
 
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
-
-  # containerPort for gateway
-  containerPort: 8080
 
   image:
     # image repository for Tyk Gateway

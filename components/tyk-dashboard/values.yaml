@@ -2,6 +2,10 @@ global:
   license:
     dashboard: ""
 
+  servicePorts:
+    dashboard: 3000
+    gateway: 8080
+
   secrets:
     # tyk_analytics.conf tyk_api_config.secret
     # tyk_analytics.conf shared_node_secret
@@ -66,9 +70,6 @@ global:
     storage:
       database: 0
 
-  gateway:
-    port: 8080
-
   mongo:
     useSSL: false
     # For tyk-syimple-mongo (no auth)
@@ -103,14 +104,12 @@ dashboard:
 
   enableIstioIngress: false
   replicaCount: 1
-  containerPort: 3000
   image:
     repository: tykio/tyk-dashboard
     tag: v5.0.0
     pullPolicy: Always
   service:
     type: NodePort
-    port: 3000
     externalTrafficPolicy: Local
     annotations: { }
 

@@ -42,7 +42,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: BOOTSTRAP_JOB_NAME
-              value: {{ .Values.jobs.bootstrapJobName }}
+              value: {{ .Values.bootstrap.jobs.bootstrapJobName }}
       terminationGracePeriodSeconds: 0
       restartPolicy: Never
 {{- end }}

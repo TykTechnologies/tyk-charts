@@ -48,7 +48,7 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.dash_url" -}}
-{{ include "tyk-dashboard.dash_proto" . }}://dashboard-svc-{{.Release.Name}}-tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dashboard.containerPort }}
+{{ include "tyk-dashboard.dash_proto" . }}://dashboard-svc-{{.Release.Name}}-tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.dashboard }}
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_host" -}}
@@ -56,7 +56,7 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_url" -}}
-{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.gateway.port }}
+{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}
 {{- end -}}
 
 {{- define "tyk-dashboard.redis_url" -}}

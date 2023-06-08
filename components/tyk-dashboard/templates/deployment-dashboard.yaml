@@ -27,7 +27,7 @@ spec:
         release: {{ .Release.Name }}
       annotations:
       {{- if .Values.dashboard.enableIstioIngress }}
-        traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.dashboard.containerPort }}"
+        traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.global.servicePorts.dashboard }}"
         traffic.sidecar.istio.io/includeInboundPorts: ""
       {{- end }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
@@ -106,7 +106,7 @@ spec:
             value: "{{ .Values.dashboard.enableMultiOrgUsers }}"
           ## DEFAULT TYK CONFIGURATION END
           - name: TYK_DB_LISTENPORT
-            value: "{{ .Values.dashboard.containerPort }}"
+            value: "{{ .Values.global.servicePorts.dashboard }}"
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
@@ -114,7 +114,7 @@ spec:
             # this needs to be setup from values
             value: {{ include "tyk-dashboard.gateway_host" .}}
           - name: TYK_DB_TYKAPI_PORT
-            value: "{{ .Values.global.gateway.port }}"
+            value: "{{ .Values.global.servicePorts.dashboard }}"
           - name: TYK_DB_TYKAPI_SECRET
             valueFrom:
               secretKeyRef:
@@ -200,7 +200,7 @@ spec:
 {{ toYaml .Values.dashboard.resources | indent 12 }}
         command: ["/opt/tyk-dashboard/tyk-analytics"]
         ports:
-        - containerPort: {{ .Values.dashboard.containerPort }}
+        - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
           {{- if .Values.dashboard.mounts }}
           {{- range $secret := .Values.dashboard.mounts }}
@@ -215,7 +215,7 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.dashboard }}S{{ end }}"
             path: /
-            port: {{ .Values.dashboard.containerPort }}
+            port: {{ .Values.global.servicePorts.dashboard }}
           initialDelaySeconds: 10
           periodSeconds: 2
           timeoutSeconds: 3
@@ -224,7 +224,7 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.dashboard }}S{{ end }}"
             path: /
-            port: {{ .Values.dashboard.containerPort }}
+            port: {{ .Values.global.servicePorts.dashboard }}
           initialDelaySeconds: 10
           periodSeconds: 10
           timeoutSeconds: 3

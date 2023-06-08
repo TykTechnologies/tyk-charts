@@ -4,6 +4,11 @@
 global:
   license:
     dashboard: ""
+
+  servicePorts:
+    dashboard: 3000
+    gateway: 8080
+
   tls:
     # If set to true the Dashboard will use SSL connection.
     # You will also need to set the:
@@ -71,14 +76,10 @@ bootstrap:
   dashboard:
     enabled: true
     deploymentName: dashboard-tyk-dashboard
-    service:
-      port: 3000
   portal:
     enabled: true
   gateway:
     deploymentName: gateway-tyk-gateway
-    service:
-      port: 8080
 
   jobs:
     bootstrapJobName: bootstrap-post-install

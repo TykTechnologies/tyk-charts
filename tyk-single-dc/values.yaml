@@ -11,6 +11,10 @@ global:
 
     dashboard: true
 
+  servicePorts:
+    dashboard: 3000
+    gateway: 8080
+
   tls:
     # If set to true the Dashboard will use SSL connection.
     # You will also need to set the:
@@ -128,9 +132,6 @@ tyk-gateway:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
-    # containerPort for gateway
-    containerPort: 8080
-
     image:
       # image repository for Tyk Gateway
       repository: tykio/tyk-gateway
@@ -144,9 +145,6 @@ tyk-gateway:
     service:
       # type of service
       type: NodePort
-
-      # service port
-      port: 8080
 
       # external traffic policy of the service. Set it only if you are using LoadBalancer service type
       externalTrafficPolicy: Local
@@ -383,14 +381,10 @@ tyk-bootstrap:
     dashboard:
       enabled: true
       deploymentName: dashboard-tyk-dashboard
-      service:
-        port: 3000
     portal:
       enabled: true
     gateway:
       deploymentName: gateway-tyk-gateway
-      service:
-        port: 8080
   jobs:
     bootstrapJobName: bootstrap-post-install
 
@@ -446,14 +440,12 @@ tyk-dashboard:
 
     enableIstioIngress: false
     replicaCount: 1
-    containerPort: 3000
     image:
       repository: tykio/tyk-dashboard
       tag: v5.0.0
       pullPolicy: Always
     service:
       type: NodePort
-      port: 3000
       externalTrafficPolicy: Local
       annotations: {}
 

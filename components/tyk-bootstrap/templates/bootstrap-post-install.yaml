@@ -52,7 +52,7 @@ spec:
             - name: TYK_DASHBOARD_SVC
               value: "dashboard-svc-{{.Release.Name}}-tyk-dashboard"
             - name: TYK_DB_LISTENPORT
-              value: "{{ .Values.bootstrap.dashboard.service.port }}"
+              value: "{{ .Values.global.servicePorts.dashboard }}"
             - name: TYK_DB_LICENSEKEY
               value: {{ .Values.global.license.dashboard | quote }}
             - name: TYK_ADMIN_SECRET
