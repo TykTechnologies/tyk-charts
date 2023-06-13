@@ -55,6 +55,8 @@ spec:
             value: "128"
          {{ if has "hybrid" .Values.pump.backend }}
           # Configure Hybrid Pump for Tyk Pump
+          # If you want to use hybrid pump with MDCB please also set
+          # Values.gateway.analyticsConfigType to "" in your gateway deployment
           - name: TYK_PMP_PUMPS_HYBRID_TYPE
             value: hybrid
           - name: TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING
