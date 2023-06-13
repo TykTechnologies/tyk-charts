@@ -150,7 +150,7 @@ spec:
         {{- end}}
         {{- if .Values.global.remoteControlPlane.enabled }}
           - name: TYK_GW_ANALYTICSCONFIG_TYPE
-            value: "rpc"
+            value: "{{.Values.gateway.analyticsConfigType}}"
           - name: TYK_GW_SLAVEOPTIONS_USERPC
             value: "true"
           - name: TYK_GW_AUTHOVERRIDE_FORCEAUTHPROVIDER
