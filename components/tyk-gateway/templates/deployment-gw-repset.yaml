@@ -197,6 +197,13 @@ spec:
         {{- end }}
         {{- end }}
 
+        {{- if .Values.gateway.sharding.enabled }}
+          - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
+            value: "{{ .Values.gateway.sharding.enabled }}"
+          - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
+            value: "{{ .Values.gateway.sharding.tags }}"
+        {{- end }}
+
         {{- if .Values.gateway.extraEnvs }}
         {{- include "tyk-gateway.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
