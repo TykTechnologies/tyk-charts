@@ -177,7 +177,13 @@ gateway:
     #    hosts:
     #      - chart-example.local
     tls: []
-  
+
+  # Sharding gateway allows you to selectively load APIs to specific gateways.
+  # If enabled make sure you have at least one gateway that is not sharded.
+  # Also be sure to match API segmentation tags with the tags selected below.
+  sharding:
+    enabled: false
+    tags: ""
 
   # We usually recommend not to specify default resources and to leave this
   # as a conscious choice for the user. This also increases chances charts
@@ -233,3 +239,7 @@ gateway:
   #    filename: test.txt
   #    mountPath: /opt/test
   mounts: []
+
+  # used to decide whether to send the results back directly to Tyk without a hybrid pump
+  # if you want to use a hybrid pump, please change "rpc" to ""
+  analyticsConfigType: ""
