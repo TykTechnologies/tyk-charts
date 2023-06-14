@@ -72,7 +72,7 @@ global:
 
   mongo:
     useSSL: false
-    # For tyk-syimple-mongo (no auth)
+    # For tyk-simple-mongo (no auth)
     # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
     mongoURL: ""
 
