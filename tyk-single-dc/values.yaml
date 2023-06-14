@@ -380,11 +380,11 @@ tyk-bootstrap:
   bootstrap:
     dashboard:
       enabled: true
-      deploymentName: dashboard-tyk-dashboard
+      deploymentName: dashboard-tyk-single-dc-tyk-dashboard
     portal:
       enabled: true
     gateway:
-      deploymentName: gateway-tyk-gateway
+      deploymentName: gateway-tyk-single-dc-tyk-gateway
   jobs:
     bootstrapJobName: bootstrap-post-install
 

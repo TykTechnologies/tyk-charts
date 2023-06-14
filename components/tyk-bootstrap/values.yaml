@@ -9,6 +9,9 @@ global:
     dashboard: 3000
     gateway: 8080
 
+  components:
+    dashboard: false
+
   tls:
     # If set to true the Dashboard will use SSL connection.
     # You will also need to set the:

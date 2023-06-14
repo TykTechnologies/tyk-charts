@@ -50,7 +50,11 @@ spec:
             - name: TYK_DASHBOARD_PROTO
               value: "{{ include "tyk-bootstrap.dash_proto" . }}"
             - name: TYK_DASHBOARD_SVC
+              {{- if .Values.global.components.dashboard }}
               value: "dashboard-svc-{{.Release.Name}}-tyk-dashboard"
+              {{- else }}
+              value: "dashboard-svc-tyk-dashboard"
+              {{- end }}
             - name: TYK_DB_LISTENPORT
               value: "{{ .Values.global.servicePorts.dashboard }}"
             - name: TYK_DB_LICENSEKEY
@@ -86,7 +90,7 @@ spec:
               value: "true"
             {{- end }}
             - name: TYK_DASHBOARD_DEPLOY
-              value: "dashboard-{{.Release.Name}}-tyk-dashboard"
+              value: {{ .Values.bootstrap.dashboard.deploymentName }}
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}
