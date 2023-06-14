@@ -90,7 +90,11 @@ spec:
               value: "true"
             {{- end }}
             - name: TYK_DASHBOARD_DEPLOY
+            {{- if .Values.global.components.dashboard }}
+              value: "dashboard-{{.Release.Name}}-tyk-dashboard"
+            {{- else }}
               value: {{ .Values.bootstrap.dashboard.deploymentName }}
+            {{- end }}
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}
