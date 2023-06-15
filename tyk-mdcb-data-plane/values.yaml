@@ -213,6 +213,14 @@ tyk-gateway:
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
+
+    # Sharding gateway allows you to selectively load APIs to specific gateways.
+    # If enabled make sure you have at least one gateway that is not sharded.
+    # Also be sure to match API segmentation tags with the tags selected below.
+    sharding:
+      enabled: false
+      tags: ""
+
     extraEnvs:
       - name: TYK_GW_SLAVEOPTIONS_RPCKEY
         valueFrom:
@@ -249,6 +257,11 @@ tyk-gateway:
           configMapKeyRef:
             name: config-tyk-data-plane
             key: rpcSslInsecureSkipVerify
+
+    # used to decide whether to send the results back directly to Tyk without a hybrid pump
+    # if you want to use a hybrid pump, please change "rpc" to ""
+    analyticsConfigType: "rpc"
+
 
 tyk-pump:
   ## Default values for tyk-pump chart.

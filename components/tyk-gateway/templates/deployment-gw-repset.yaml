@@ -150,7 +150,7 @@ spec:
         {{- end}}
         {{- if .Values.global.remoteControlPlane.enabled }}
           - name: TYK_GW_ANALYTICSCONFIG_TYPE
-            value: "rpc"
+            value: "{{.Values.gateway.analyticsConfigType}}"
           - name: TYK_GW_SLAVEOPTIONS_USERPC
             value: "true"
           - name: TYK_GW_AUTHOVERRIDE_FORCEAUTHPROVIDER
@@ -195,6 +195,13 @@ spec:
           - name: TYK_GW_ENABLEANALYTICS
             value: "true"
         {{- end }}
+        {{- end }}
+
+        {{- if .Values.gateway.sharding.enabled }}
+          - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
+            value: "{{ .Values.gateway.sharding.enabled }}"
+          - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
+            value: "{{ .Values.gateway.sharding.tags }}"
         {{- end }}
 
         {{- if .Values.gateway.extraEnvs }}
