@@ -249,11 +249,6 @@ tyk-gateway:
           configMapKeyRef:
             name: config-tyk-data-plane
             key: rpcSslInsecureSkipVerify
-    # used to mount files to the gateway containers
-    #  - name: test
-    #    filename: test.txt
-    #    mountPath: /opt/test
-    mounts: []
 
 tyk-pump:
   ## Default values for tyk-pump chart.
@@ -392,9 +387,3 @@ tyk-pump:
     ##     mountPath: /etc/ssl/certs/ca-certs.crt
     ##     readOnly: true
     extraVolumeMounts: []
-
-    # mounts can be used to mount files on pump container
-    # - name: test
-    #   filename: test.csv
-    #   mountPath: /opt/test
-    mounts: []

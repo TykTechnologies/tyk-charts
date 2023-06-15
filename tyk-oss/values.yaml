@@ -219,12 +219,6 @@ tyk-gateway:
     ##     readOnly: true
     extraVolumeMounts: []
 
-    # used to mount files to the gateway containers
-    #  - name: test
-    #    filename: test.txt
-    #    mountPath: /opt/test
-    mounts: []
-
 tyk-pump:
   ## Default values for tyk-pump chart.
   ## This is a YAML-formatted file.
@@ -352,9 +346,3 @@ tyk-pump:
     ##     mountPath: /etc/ssl/certs/ca-certs.crt
     ##     readOnly: true
     extraVolumeMounts: []
-
-    # mounts can be used to mount files on pump container
-    # - name: test
-    #   filename: test.csv
-    #   mountPath: /opt/test
-    mounts: []
