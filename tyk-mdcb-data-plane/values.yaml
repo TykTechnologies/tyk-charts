@@ -320,9 +320,9 @@ tyk-pump:
       # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
       enableAggregateAnalytics: true
       # Hybrid pump RPC calls timeout in seconds.
-      callTimeout: 30
+      callTimeout: 10
       # Hybrid pump connection pool size.
-      poolSize: 30
+      poolSize: 5
 
     # prometheusPump configures Tyk Pump to expose Prometheus metrics.
     # Please add "prometheus" to .Values.pump.backend in order to enable Prometheus Pump.
