@@ -1,6 +1,6 @@
 ## Tyk Tyk single dc
 
-`tyk-single-dc` provides the default deployment of a Tyk Single Data Center. It will deploy the data center components with the settings provided in the values.yaml file.
+`tyk-single-dc` provides the default deployment of Tyk Pro on single data center. It will deploy all required Tyk components with the settings provided in the values.yaml file.
 
 It includes:
 - the Tyk Gateway, an open source Enterprise API Gateway (supporting REST, GraphQL, TCP and gRPC protocols)
