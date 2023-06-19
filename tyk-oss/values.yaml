@@ -101,7 +101,7 @@ tyk-gateway:
     kind: Deployment
 
     # podAnnotations is annotations to be added to Tyk Gateway pod.
-    # It takes key-value pairs. 
+    # It takes key-value pairs.
     # There are no required annotation field for Tyk Gateway.
     #
     # podAnnotations:
