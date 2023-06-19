@@ -27,7 +27,7 @@ This removes all the Kubernetes components associated with the chart and deletes
 
 ## Upgrading Chart
 
-    helm upgrade tyk-bootstrap tyk-bootstrap -n tyk
+    helm upgrade tyk-bootstrap tyk-helm/tyk-bootstrap -n tyk
 
 ## Configuration
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To get all configurable options with detailed comments:
