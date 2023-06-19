@@ -26,7 +26,6 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
 
     helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
     helm show values tyk-helm/tyk-dashboard > values-dashboard.yaml
-    helm install tyk-dashboard tyk-helm/tyk-dashboard -n tyk --create-namespace -f values-dashboard.yaml
 
 Note: Set redis connection details first. See [Configuration](#configuration) below.
 
