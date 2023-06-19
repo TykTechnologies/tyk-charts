@@ -61,10 +61,15 @@ helm upgrade tyk-single-dc tyk-helm/tyk-single-dc -n tyk
 
 To get all configurable options with detailed comments:
 
-    helm show values tyk-helm/tyk-single-dc > values-single-dc.yaml
+    helm show values tyk-helm/tyk-single-dc > values-single-dc.yaml --devel
 
 You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation. 
 Alternatively, you can use `--set` flag to set it in Tyk installation.
+
+Note:
+* Set redis connection details first at .Values.global.redis
+* Set mongo connection details second at .Values.global.mongo
+* If used, the Tyk Dashboard also requires a license to be set at .Values.global.license.dashboard
 
 ### Set Redis connection details (Required)
 

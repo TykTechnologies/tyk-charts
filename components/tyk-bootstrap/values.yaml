@@ -3,13 +3,17 @@
 # Declare variables to be passed into your templates.
 global:
   license:
+    # The license key needed for the Tyk Dashboard.
     dashboard: ""
 
   servicePorts:
+    # The port at which the dashboard service can be found at
     dashboard: 3000
+    # The port at which the gateway service can be found at
     gateway: 8080
 
   components:
+    # Enables/disables the dashboard component
     dashboard: false
 
   tls:
@@ -77,14 +81,19 @@ global:
   
 bootstrap:
   dashboard:
+    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
     enabled: true
+    # Name of the deployment that we want to bootstrap
     deploymentName: dashboard-tyk-dashboard
   portal:
+    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
     enabled: true
   gateway:
+    # Name of the gateway deployment
     deploymentName: gateway-tyk-gateway
 
   jobs:
+    # Name of bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
     bootstrapJobName: bootstrap-post-install
 
   adminUser:
@@ -95,15 +104,19 @@ bootstrap:
     password: "123456"
 
   org:
+    # The name for your organization inside Tyk
     name: Default Org
     # The hostname to bind the Portal to.
     cname: tyk-portal.local
 
   secrets:
+    # Secret needed for the admin user. Please change it to a more secure value.
     AdminSecret: "12345"
 
+  # Trigger to control if we want to create the tyk-operator secret
   operatorSecret: true
 
+  # Trigger to control if we want to create the tyk-enterprise-portal secret
   enterprisePortalSecret: true
 
   fullnameOverride: ""

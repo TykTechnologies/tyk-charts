@@ -1,9 +1,7 @@
 ## Tyk Dashboard
-[Tyk](https://tyk.io) is an open source Enterprise API Dashboard, supporting REST, GraphQL, TCP and gRPC protocols.
+The [Tyk Dashboard](https://tyk.io/docs/tyk-dashboard/) is the GUI and analytics platform for Tyk. It provides an easy-to-use management interface for managing a Tyk installation as well as clear and granular analytics.
 
-Tyk Dashboard is provided ‘Batteries-included’, with no feature lockout. Enabling your organization to control who accesses your APIs, when they access, and how they access it. Tyk Dashboard can also be deployed as part of a larger Full Lifecycle API Management platform Tyk Self-Managed which also includes Management Control Plane, Dashboard GUI and Developer Portal.
-
-[Overview of Tyk Dashboard](https://tyk.io/docs/tyk-dashboard/)
+The Dashboard also provides the [API Developer Portal](https://tyk.io/docs/tyk-developer-portal/), a customisable developer portal for your API documentation, developer auto-enrolment and usage tracking.
 
 ## Introduction
 This chart defines a standalone Tyk Dashboard component on a [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
@@ -12,7 +10,7 @@ For typical usage, we recommend using following umbrella charts:
 * For single data centre deployment, please use [tyk-single-dc](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-single-dc)
 * For multi data centre deployment, please use tyk-mdcb-control-plane (Coming soon!)
 
-[Learn more about different deployment options](https://tyk.io/docs/apim/)
+[Learn more about Tyk Licensing and Deployment models](https://tyk.io/docs/tyk-on-premises/licensing/)
 
 ## Prerequisites
 * Kuberentes 1.19+
@@ -25,9 +23,14 @@ For typical usage, we recommend using following umbrella charts:
 To install the chart from the Helm repository in namespace `tyk` with the release name `tyk-dashboard`:
 
     helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-    helm show values tyk-helm/tyk-dashboard > values-dashboard.yaml
+    helm show values tyk-helm/tyk-dashboard > values-dashboard.yaml --devel
 
-Note: Set redis connection details first. See [Configuration](#configuration) below.
+Note: 
+* Set redis connection details first at .Values.global.redis
+* Set mongo connection details second at .Values.global.mongo
+* The Tyk Dashboard also requires a license to be set at .Values.global.license.dashboard
+* The Tyk Dashboard will require bootstrapping in order to work. This can be achieved by running the component
+chart "tyk-bootstrap"
 
     helm install tyk-dashboard tyk-helm/tyk-dashboard -n tyk --create-namespace -f values-dashboard.yaml
 
@@ -44,7 +47,7 @@ This removes all the Kubernetes components associated with the chart and deletes
 ## Configuration
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To get all configurable options with detailed comments:
 
-    helm show values tyk-helm/tyk-dashboard > values.yaml
+    helm show values tyk-helm/tyk-dashboard > values.yaml --devel
     
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
 
