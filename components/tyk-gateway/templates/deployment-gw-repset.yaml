@@ -34,6 +34,9 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      {{- if .Values.gateway.podAnnotations }}
+      annotations: {{ toYaml .Values.gateway.podAnnotations | nindent 8 }}
+      {{- end }}
       labels:
         app: gateway-{{ include "tyk-gateway.fullname" . }}
         release: {{ .Release.Name }}
