@@ -32,6 +32,6 @@ This removes all the Kubernetes components associated with the chart and deletes
 ## Configuration
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To get all configurable options with detailed comments:
 
-    helm show values tyk-bootstrap > values-bootstrap.yaml
+    helm show values tyk-helm/tyk-bootstrap > values-bootstrap.yaml
     
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
