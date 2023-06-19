@@ -17,8 +17,6 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
     helm show values tyk-helm/tyk-bootstrap > values-bootstrap.yaml
     helm install tyk-bootstrap tyk-helm/tyk-bootstrap -n tyk --create-namespace -f values-bootstrap.yaml
 
-The chart provides little benefits by itself and should only be used in conjunction with other charts that also use the
-dashboard component.
 
 
 ## Uninstalling the Chart
