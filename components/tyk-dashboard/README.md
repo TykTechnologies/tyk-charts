@@ -29,7 +29,7 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
 
 Note: Set redis connection details first. See [Configuration](#configuration) below.
 
-    helm install tyk-dashboard tyk-dashboard -n tyk --create-namespace -f values.yaml
+    helm install tyk-dashboard tyk-helm/tyk-dashboard -n tyk --create-namespace -f values-dashboard.yaml
 
 ## Uninstalling the Chart
 
