@@ -91,7 +91,7 @@ bootstrap:
     firstName: admin
     lastName: user
     email: default@example.com
-    # Set a password or a random one will be assigned.
+    # Set a password or a random one will be assigned. Admin user password must have at least 6 characters.
     password: "123456"
 
   org:
