@@ -1,7 +1,9 @@
 ## Tyk Bootstrap
 
 ## Introduction
-This chart helps with the bootstrapping of the Tyk Dashboard by creating a job which provisions the cluster with all the required secrets/configmaps/HTTP initalization calls [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
+This chart helps with the bootstrapping of the Tyk Dashboard by creating a job which provisions the cluster with all the required secrets/configmaps/HTTP initialization calls on [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
+
+The chart provides little benefits by itself and should only be used in conjunction with other charts that also use the dashboard component.
 
 ## Prerequisites
 * Kuberentes 1.19+
