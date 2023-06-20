@@ -243,12 +243,6 @@ gateway:
   ##     readOnly: true
   extraVolumeMounts: []
 
-  # used to mount files to the gateway containers
-  #  - name: test
-  #    filename: test.txt
-  #    mountPath: /opt/test
-  mounts: []
-
   # used to decide whether to send the results back directly to Tyk without a hybrid pump
   # if you want to use a hybrid pump, please change "rpc" to ""
   analyticsConfigType: ""
