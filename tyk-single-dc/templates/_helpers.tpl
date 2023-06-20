@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "tyk-oss.name" -}}
+{{- define "tyk-single-dc.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "tyk-oss.fullname" -}}
+{{- define "tyk-single-dc.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "tyk-oss.chart" -}}
+{{- define "tyk-single-dc.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "tyk-oss.labels" -}}
-helm.sh/chart: {{ include "tyk-oss.chart" . }}
-{{ include "tyk-oss.selectorLabels" . }}
+{{- define "tyk-single-dc.labels" -}}
+helm.sh/chart: {{ include "tyk-single-dc.chart" . }}
+{{ include "tyk-single-dc.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,24 +45,24 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "tyk-oss.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "tyk-oss.name" . }}
+{{- define "tyk-single-dc.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "tyk-single-dc.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "tyk-oss.serviceAccountName" -}}
+{{- define "tyk-single-dc.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "tyk-oss.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "tyk-single-dc.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
 
-{{- define "tyk-oss.gwproto" -}}
-{{- if index .Values "global" "tls" "gateway" -}}
+{{- define "tyk-single-dc.gwproto" -}}
+{{- if .Values.global.tls.gateway -}}
 https
 {{- else -}}
 http

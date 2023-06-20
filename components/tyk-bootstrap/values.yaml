@@ -1,0 +1,126 @@
+# Default values for tyk-bootstrap.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+global:
+  license:
+    # The license key needed for the Tyk Dashboard.
+    dashboard: ""
+
+  servicePorts:
+    # The port at which the dashboard service can be found at
+    dashboard: 3000
+    # The port at which the gateway service can be found at
+    gateway: 8080
+
+  components:
+    # Enables/disables the dashboard component and also used to detect when the bootstrapping needs to be done
+    # for a separate Tyk Dashboard installation or for an umbrella chart installation
+    dashboard: false
+
+  tls:
+    # If set to true the Dashboard will use SSL connection.
+    # You will also need to set the:
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+    # variables in extraEnvs object array to define your SSL cert and key files.
+    # When true, sets the dashboard protocol to HTTPS.
+    dashboard: false
+    # When true, sets the gateway protocol to HTTPS.
+    gateway: false
+  redis:
+    # The addrs value will allow you to set your Redis addresses. If you are
+    # using a redis cluster, you can list the endpoints of the redis instances
+    # or use the cluster configuration endpoint.
+    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+    addrs:
+      #   - redis.tyk.svc.cluster.local:6379
+      #   This is the DNS name of the redis as set when using Bitnami
+      #   - "tyk-redis-master.tyk.svc.cluster.local:6379"
+
+
+    # Redis password
+    # If you're using Bitnami Redis chart please input your password in the field below
+    pass: ""
+
+    # Enables SSL for Redis connection. Redis instance will have to support that.
+    # Default value: false
+    # useSSL: true
+
+    # The enableCluster value will allow you to indicate to Tyk whether you are
+    # running a Redis cluster or not.
+    # Default value: false
+    # enableCluster: true
+
+    # By default the database index is 0. Setting the database index is not
+    # supported with redis cluster. As such, if you have enableCluster: true,
+    # then this value should be omitted or explicitly set to 0.
+    storage:
+      database: 0
+
+  mongo:
+    # The mongoURL value will allow you to set your MongoDB address.
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+
+    # If your MongoDB has a password you can add the username and password to the url
+    mongoURL: ""
+
+    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+    # Default value: false
+    useSSL: false
+
+  # Postgres connection string parameters.
+  postgres:
+    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    port: 5432
+    user: postgres
+    password:
+    database: tyk_analytics
+    sslmode:
+
+  # Choose the backend for Tyk. [ "mongo", "postgres" ]
+  backend: mongo
+  
+bootstrap:
+  dashboard:
+    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+    enabled: true
+    # Name of the deployment that we want to bootstrap
+    deploymentName: dashboard-tyk-dashboard
+  portal:
+    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+    enabled: true
+  gateway:
+    # Name of the gateway deployment
+    deploymentName: gateway-tyk-gateway
+
+  jobs:
+    # Name of bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
+    bootstrapJobName: bootstrap-post-install
+
+  adminUser:
+    firstName: admin
+    lastName: user
+    email: default@example.com
+    # Set a password or a random one will be assigned. Admin user password must have at least 6 characters.
+    password: "123456"
+
+  org:
+    # The name for your organization inside Tyk
+    name: Default Org
+    # The hostname to bind the Portal to.
+    cname: tyk-portal.local
+
+  secrets:
+    # Secret needed for the admin user. Please change it to a more secure value.
+    AdminSecret: "12345"
+
+  # Trigger to control if we want to create the tyk-operator secret
+  operatorSecret: true
+
+  # Trigger to control if we want to create the tyk-enterprise-portal secret
+  enterprisePortalSecret: true
+
+  fullnameOverride: ""
+  nameOverride: ""
+

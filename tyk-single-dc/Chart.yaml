@@ -1,6 +1,6 @@
 apiVersion: v2
-name: tyk-mdcb-data-plane
-description: A Helm chart for deploy a Tyk Multi Data Center Bridge composed on Kubernetes
+name: tyk-single-dc
+description: A Helm chart for deploying an instance of Tyk Single Datacenter composed of Tyk Gateway, Tyk Pump and Tyk Dashboard
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -25,3 +25,9 @@ dependencies:
     version: 1.0.0-beta3
     repository: file://../components/tyk-pump
     condition: global.components.pump
+  - name: tyk-dashboard
+    version: 1.0.0-beta3
+    repository: file://../components/tyk-dashboard
+  - name: tyk-bootstrap
+    version: 1.0.0-beta3
+    repository: file://../components/tyk-bootstrap

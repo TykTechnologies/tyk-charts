@@ -1,67 +1,73 @@
+# Default values for tyk-single-dc.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
 global:
+  license:
+    dashboard: ""
   components:
-    # Determines whether the pump component should be installed.
-    pump: false
+    # Determines whether or not the pump component should be installed.
+    pump: true
+
+    dashboard: true
+
+  servicePorts:
+    dashboard: 3000
+    gateway: 8080
 
   tls:
+    # If set to true the Dashboard will use SSL connection.
+    # You will also need to set the:
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+    # variables in extraEnvs object array to define your SSL cert and key files.
+    dashboard: false
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
 
+  remoteControlPlane:
+    enabled: false
+    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+    connectionString: ""
+    # orgID of your dashboard user
+    orgId: ""
+    # API key of your dashboard user
+    userApiKey: ""
+    # needed in case you want to have multiple single-dcs connected to the same redis instance
+    groupID: ""
+    # enable/disable ssl
+    useSSL: false
+    # Disables SSL certificate verification
+    sslInsecureSkipVerify: true
+
   secrets:
-    # APISecret sets secret in tyk.conf
+    # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME
-    # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
-    # rather provide the k8s Secret externally.
-    # You can set following fields in the secret
-    # - APISecret - Sets node_secret and secret in tyk.conf
-    # - redisPass - Sets Redis password
-    # - redisSentinelPass - Sets Redis Password. Set it only if you are using Redis Sentinel
-    useSecretName: ""
+
 
   redis:
-    # The addrs value will allow you to set your Redis addresses.
-    #
-    # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
-    # endpoint. If using sentinel connection mode for Redis, please update the port number (typically 26379).
-    #
-    # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
-    # the endpoints of the redis instances or use the cluster configuration endpoint.
-    #
+    # The addrs value will allow you to set your Redis addresses. If you are
+    # using a redis cluster, you can list the endpoints of the redis instances
+    # or use the cluster configuration endpoint.
     # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
-    # addrs:
-    #   Example using tyk simple redis chart
-    #   - redis.tyk.svc.cluster.local:6379
-    #   Example using bitnami/redis
-    #   - tyk-redis-master.tyk.svc.cluster.local:6379
-    #   Example using bitnami/redis with sentinel
-    #   - tyk-redis.tyk.svc.cluster.local:26379
-    #   Example using bitnami/redis-cluster
-    #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
+    addrs:
+      - redis.tyk.svc.cluster.local:6379
+      #   This is the DNS name of the redis as set when using Bitnami
+      # - "tyk-redis-master.tyk.svc.cluster.local:6379"
+
 
     # Redis password
-    # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
-    # your password in the field below
-    # pass: ""
+    # If you're using Bitnami Redis chart please input your password in the field below
+    pass: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
-    # useSSL: true
+    useSSL: false
 
-    # If using "Redis Cluster" set enableCluster to true
-    # (e.g. if using bitnami/redis-cluster)
+    # The enableCluster value will allow you to indicate to Tyk whether you are
+    # running a Redis cluster or not.
+    # Default value: false
     # enableCluster: true
-
-    # Enables sentinel connection mode for Redis. If enabled, provide both
-    # mandatory values for sentinelPass and masterName.
-    # enableSentinel: false
-
-    # Redis sentinel password, only required while enableSentinel is true.
-    # For bitnami/redis the same password as Redis above
-    # sentinelPass: ""
-
-    # Redis sentinel master name, only required while enableSentinel is true.
-    # For bitnami/redis typically redis-master
-    # masterName: ""
 
     # By default the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
@@ -69,8 +75,29 @@ global:
     storage:
       database: 0
 
-  remoteControlPlane:
-    enabled: false
+  mongo:
+    # The mongoURL value will allow you to set your MongoDB address.
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+
+    # If your MongoDB has a password you can add the username and password to the url
+    # mongoURL: ""
+
+    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+    # Default value: false
+    useSSL: false
+
+  # Postgres connection string parameters.
+  postgres:
+    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    port: 5432
+    user: postgres
+    password:
+    database: tyk_analytics
+    sslmode:
+
+  # Choose the backend for Tyk. [ "mongo", "postgres" ]
+  backend: mongo
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
@@ -107,7 +134,7 @@ tyk-gateway:
 
     image:
       # image repository for Tyk Gateway
-      repository: docker.tyk.io/tyk-gateway/tyk-gateway
+      repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
       tag: v5.0.0
@@ -118,9 +145,6 @@ tyk-gateway:
     service:
       # type of service
       type: NodePort
-
-      # service port
-      port: 443
 
       # external traffic policy of the service. Set it only if you are using LoadBalancer service type
       externalTrafficPolicy: Local
@@ -169,6 +193,7 @@ tyk-gateway:
       #      - chart-example.local
       tls: []
 
+
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
     # run on environments with little resources, such as Minikube. If you do
@@ -201,22 +226,17 @@ tyk-gateway:
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
-    extraEnvs: []
-
-    ## extraVolumes is a list of volumes to be added to the pod
-    ## extraVolumes:
-    ##   - name: ca-certs
-    ##     secret:
-    ##       defaultMode: 420
-    ##       secretName: ca-certs
-    extraVolumes: []
-
-    ## extraVolumeMounts is a list of volume mounts to be added to the pod
-    ## extraVolumeMounts:
-    ##   - name: ca-certs
-    ##     mountPath: /etc/ssl/certs/ca-certs.crt
-    ##     readOnly: true
-    extraVolumeMounts: []
+    extraEnvs:
+      - name: TYK_GW_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: secrets-tyk-single-dc
+            key: APISecret
+    # used to mount files to the gateway containers
+    #  - name: test
+    #    filename: test.txt
+    #    mountPath: /opt/test
+    mounts: []
 
 tyk-pump:
   ## Default values for tyk-pump chart.
@@ -247,7 +267,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.8.0
+      tag: v1.7.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -271,7 +291,7 @@ tyk-pump:
       host: ""
       # port represents the port where Tyk Pump serve the metrics for Prometheus.
       port: 9090
-      # path represents the path to the Prometheus metrics endpoint. For example /metrics.
+      # path represents the path to the Prometheus collection. For example /metrics.
       path: /metrics
       # customMetrics allows defining custom Prometheus metrics for Tyk Pump.
       # It accepts a string that represents a JSON object. For instance,
@@ -345,3 +365,141 @@ tyk-pump:
     ##     mountPath: /etc/ssl/certs/ca-certs.crt
     ##     readOnly: true
     extraVolumeMounts: []
+
+    # mounts can be used to mount files on pump container
+    # - name: test
+    #   filename: test.csv
+    #   mountPath: /opt/test
+    mounts: []
+
+tyk-bootstrap:
+  # Default values for tyk-bootstrap.
+  # This is a YAML-formatted file.
+  # Declare variables to be passed into your templates.
+
+  bootstrap:
+    dashboard:
+      enabled: true
+      deploymentName: dashboard-tyk-single-dc-tyk-dashboard
+    portal:
+      enabled: true
+    gateway:
+      deploymentName: gateway-tyk-single-dc-tyk-gateway
+  jobs:
+    bootstrapJobName: bootstrap-post-install
+
+  adminUser:
+    firstName: admin
+    lastName: user
+    email: default@example.com
+    # Set a password or a random one will be assigned.
+    password: "123456"
+
+
+  org:
+    name: Default Org
+    # The hostname to bind the Portal to.
+    cname: tyk-portal.local
+
+  secrets:
+    AdminSecret: "12345"
+
+  operatorSecret: true
+
+  enterprisePortalSecret: true
+
+  fullnameOverride: ""
+  nameOverride: ""
+
+tyk-dashboard:
+  dashboard:
+    enableOwnership: true
+    defaultPageSize: 10
+    notifyOnChange: true
+    hashKeys: true
+    enableDuplicateSlugs: true
+    showOrgId: true
+    hostConfig:
+      enableHostNames: true
+      disableOrgSlugPrefix: true
+      overrideHostname: "dashboard-svc-tyk-pro.tyk.svc.cluster.local"
+    homeDir: "/opt/tyk-dashboard"
+    useShardedAnalytics: false
+    enableAggregateLookups: true
+    enableAnalyticsCache: true
+    allowExplicitPolicyId: true
+    oauthRedirectUriSeparator: ";"
+    keyRequestFields: "appName;appType"
+    dashboardSessionLifetime: 43200
+    ssoEnableUserLookup: true
+    notificationsListenPort: 5000
+    enableDeleteKeyByHash: true
+    enableUpdateKeyByHash: true
+    enableHashedKeysListing: true
+    enableMultiOrgUsers: true
+
+    enableIstioIngress: false
+    replicaCount: 1
+    image:
+      repository: tykio/tyk-dashboard
+      tag: v5.0.0
+      pullPolicy: Always
+    service:
+      type: NodePort
+      externalTrafficPolicy: Local
+      annotations: {}
+
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this
+      # as a conscious choice for the user. This also increases chances charts
+      # run on environments with little resources, such as Minikube. If you do
+      # want to specify resources, uncomment the following lines, adjust them
+      # as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+    securityContext:
+      runAsUser: 1000
+      fsGroup: 2000
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    extraEnvs: []
+    ## extraVolumes A list of volumes to be added to the pod
+    ## extraVolumes:
+    ##   - name: ca-certs
+    ##     secret:
+    ##       defaultMode: 420
+    ##       secretName: ca-certs
+    extraVolumes: []
+    ## extraVolumeMounts A list of volume mounts to be added to the pod
+    ## extraVolumeMounts:
+    ##   - name: ca-certs
+    ##     mountPath: /etc/ssl/certs/ca-certs.crt
+    ##     readOnly: true
+    extraVolumeMounts: []
+    mounts: []
+
+    # Dashboard will only bootstrap if the master bootstrap option is set to true.
+    bootstrap: true
+
+    # The hostname to bind the Dashboard to.
+    hostName: tyk-dashboard.local
+    # If set to true the Dashboard will use SSL connection.
+    # You will also need to set the:
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+    # variables in extraEnvs object array to define your SSL cert and key files.
+    tls: false
+
+    # Dashboard admin information.
+    adminUser:
+      firstName: admin
+      lastName: user
+      email: default@example.com
+      # Set a password or a random one will be assigned.
+      password: "123456"
+    # Dashboard Organisation information.

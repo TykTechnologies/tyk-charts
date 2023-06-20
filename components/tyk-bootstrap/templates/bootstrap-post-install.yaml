@@ -1,0 +1,101 @@
+{{- if .Values.bootstrap -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name:  {{ .Values.bootstrap.jobs.bootstrapJobName }}
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+
+    # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
+    # when every app will have its own a chart
+    # app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: “false”
+    spec:
+      serviceAccountName: k8s-bootstrap-role
+      containers:
+        - name: bootstrap-tyk-post-install
+          image: tykio/tyk-k8s-bootstrap-post:latest
+          command: [ './app/bin/bootstrap-app-post' ]
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TYK_DB_OMITCONFIGFILE
+              value: "true"
+            - name: TYK_ADMIN_FIRST_NAME
+              value: {{ .Values.bootstrap.adminUser.firstName | quote }}
+            - name: TYK_ADMIN_LAST_NAME
+              value: {{ .Values.bootstrap.adminUser.lastName | quote }}
+            - name: TYK_ADMIN_EMAIL
+              value: {{ .Values.bootstrap.adminUser.email | quote }}
+            - name: TYK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tyk-dashboard-login-details
+                  key: TYK_PASS
+            - name: TYK_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: TYK_DASHBOARD_PROTO
+              value: "{{ include "tyk-bootstrap.dash_proto" . }}"
+            - name: TYK_DASHBOARD_SVC
+              {{- if .Values.global.components.dashboard }}
+              value: "dashboard-svc-{{.Release.Name}}-tyk-dashboard"
+              {{- else }}
+              value: "dashboard-svc-tyk-dashboard"
+              {{- end }}
+            - name: TYK_DB_LISTENPORT
+              value: "{{ .Values.global.servicePorts.dashboard }}"
+            - name: TYK_DB_LICENSEKEY
+              value: {{ .Values.global.license.dashboard | quote }}
+            - name: TYK_ADMIN_SECRET
+              value: {{ .Values.bootstrap.secrets.AdminSecret | quote }}
+            - name: TYK_ORG_NAME
+              value: {{ .Values.bootstrap.org.name | quote }}
+            - name: TYK_ORG_CNAME
+              value: {{ .Values.bootstrap.org.cname | quote }}
+            {{- if .Values.bootstrap.dashboard.enabled }}
+            - name: DASHBOARD_ENABLED
+              value: "true"
+            - name: BOOTSTRAP_DASHBOARD
+              value: "true"
+            {{- end }}
+            {{- if .Values.bootstrap.operatorSecret }}
+            - name: OPERATOR_SECRET_ENABLED
+              value: "true"
+            - name: OPERATOR_SECRET_NAME
+              value: "tyk-operator-conf"
+            {{- end }}
+            {{- if .Values.bootstrap.enterprisePortalSecret }}
+            - name: ENTERPRISE_PORTAL_SECRET_ENABLED
+              value: "true"
+            - name: ENTERPRISE_PORTAL_SECRET_NAME
+              value: "tyk-enterprise-portal-conf"
+            {{- end }}
+            - name: GATEWAY_ADDRESS
+              value: "{{ include "tyk-bootstrap.gateway_url" . }}"
+            {{- if .Values.bootstrap.portal.enabled }}
+            - name: BOOTSTRAP_PORTAL
+              value: "true"
+            {{- end }}
+            - name: TYK_DASHBOARD_DEPLOY
+            {{- if .Values.global.components.dashboard }}
+              value: "dashboard-{{.Release.Name}}-tyk-dashboard"
+            {{- else }}
+              value: {{ .Values.bootstrap.dashboard.deploymentName }}
+            {{- end }}
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+{{- end }}
+      

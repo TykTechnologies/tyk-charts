@@ -52,7 +52,7 @@ See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_h
     
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
 
-### Set Redis conenction details (Required)
+### Set Redis connection details (Required)
 Tyk uses Redis for distributed rate-limiting and token storage. You may set `global.redis.addr` and `global.redis.pass` with redis connection string and password respectively.
 
 If you do not already have redis installed, you can use these charts provided by Bitnami
@@ -65,11 +65,11 @@ Follow the notes from the installation output to get connection details and pass
 ### Gateway Configurations
 
 #### Enabling TLS
-We have provided an easy way of enabling TLS via the `gateway.tls.enabled` flag. Setting this value to true will
+We have provided an easy way of enabling TLS via the `global.tls.gateway` flag. Setting this value to true will
 automatically enable TLS using the certificate provided under tyk-gateway/certs/cert.pem.
 
 If you want to use your own key/cert pair, you must follow the following steps:
 1. Create a tls secret using your cert and key pair.
-2. Set `gateway.tls.enabled`  to true.
+2. Set `global.tls.gateway`  to true.
 3. Set `gateway.tls.useDefaultTykCertificate` to false.
 4. Set `gateway.tls.secretName` to the name of the newly created secret.

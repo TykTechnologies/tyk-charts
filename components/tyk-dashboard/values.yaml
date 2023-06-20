@@ -1,0 +1,173 @@
+global:
+  license:
+    # The license key needed by Tyk Dashboard to work
+    dashboard: ""
+
+  servicePorts:
+    # The port at which the dashboard service can be found
+    dashboard: 3000
+    # The port at which the dashboard service can be found
+    gateway: 8080
+
+  secrets:
+    # tyk_analytics.conf tyk_api_config.secret
+    # tyk_analytics.conf shared_node_secret
+    # tyk.conf node_secret
+    # tyk.conf secret
+    APISecret: CHANGEME
+    # tyk_analytics.conf admin_secret
+    # tib.conf TykAPISettings.GatewayConfig.AdminSecret
+    # tib.conf TykAPISettings.DashboardConfig.AdminSecret
+    AdminSecret: "12345"
+    # If you don't want to store plaintext secrets in the Helm value file and would
+    # rather provide the k8s Secret externally please populate the value below
+    useSecretName: ""
+
+  tls:
+    # When true, sets the gateway protocol to HTTPS.
+    gateway: false
+    # If set to true the Dashboard will use SSL connection.
+    # You will also need to set the:
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+    # variables in extraEnvs object array to define your SSL cert and key files.
+    dashboard: false
+
+  # Choose the backend for Tyk. [ "mongo", "postgres" ]
+  backend: mongo
+
+  postgres:
+    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    port: 5432
+    user: postgres
+    password:
+    database: tyk_analytics
+    sslmode:
+
+  redis:
+    # The addrs value will allow you to set your Redis addresses. If you are
+    # using a redis cluster, you can list the endpoints of the redis instances
+    # or use the cluster configuration endpoint.
+    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+    addrs:
+    #   - redis.tyk.svc.cluster.local:6379
+    #   This is the DNS name of the redis as set when using Bitnami
+    #   - "tyk-redis-master.tyk.svc.cluster.local:6379"
+
+
+    # Redis password
+    # If you're using Bitnami Redis chart please input your password in the field below
+    pass: ""
+
+    # Enables SSL for Redis connection. Redis instance will have to support that.
+    # Default value: false
+    # useSSL: true
+
+    # The enableCluster value will allow you to indicate to Tyk whether you are
+    # running a Redis cluster or not.
+    # Default value: false
+    # enableCluster: true
+
+    # By default the database index is 0. Setting the database index is not
+    # supported with redis cluster. As such, if you have enableCluster: true,
+    # then this value should be omitted or explicitly set to 0.
+    storage:
+      database: 0
+
+  mongo:
+    useSSL: false
+    # For tyk-simple-mongo (no auth)
+    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    mongoURL: ""
+
+dashboard:
+  enableOwnership: true
+  defaultPageSize: 10
+  notifyOnChange: true
+  hashKeys: true
+  enableDuplicateSlugs: true
+  showOrgId: true
+  hostConfig:
+    enableHostNames: true
+    disableOrgSlugPrefix: true
+    overrideHostname: "dashboard-svc-tyk-pro.tyk.svc.cluster.local"
+  homeDir: "/opt/tyk-dashboard"
+  useShardedAnalytics: false
+  enableAggregateLookups: true
+  enableAnalyticsCache: true
+  allowExplicitPolicyId: true
+  oauthRedirectUriSeparator: ";"
+  keyRequestFields: "appName;appType"
+  dashboardSessionLifetime: 43200
+  ssoEnableUserLookup: true
+  notificationsListenPort: 5000
+  enableDeleteKeyByHash: true
+  enableUpdateKeyByHash: true
+  enableHashedKeysListing: true
+  enableMultiOrgUsers: true
+
+  enableIstioIngress: false
+  replicaCount: 1
+  image:
+    repository: tykio/tyk-dashboard
+    tag: v5.0.0
+    pullPolicy: Always
+  service:
+    type: NodePort
+    externalTrafficPolicy: Local
+    annotations: { }
+
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+  resources: { }
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
+  nodeSelector: { }
+  tolerations: [ ]
+  affinity: { }
+  extraEnvs: [ ]
+  ## extraVolumes A list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: [ ]
+  ## extraVolumeMounts A list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: [ ]
+  mounts: [ ]
+
+  # Dashboard will only bootstrap if the master bootstrap option is set to true.
+  bootstrap: true
+
+  # The hostname to bind the Dashboard to.
+  hostName: tyk-dashboard.local
+
+  # Dashboard admin information.
+  adminUser:
+    # First name of the admin user
+    firstName: admin
+    # Last name of the admin user
+    lastName: user
+    # Email address of the admin user
+    email: default@example.com
+    # Set a password or a random one will be assigned.
+    password: "123456"
+  # Dashboard Organisation information.
