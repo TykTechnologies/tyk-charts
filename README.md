@@ -7,7 +7,7 @@ This is a WIP repository for new Tyk helm charts. We will roll out new component
 ## Component Charts
 * [tyk-gateway](./components/tyk-gateway)
 * [tyk-pump](./components/tyk-pump)
-* tyk-dashboard (Coming soon!)
+* [tyk-dashboard](./components/tyk-dashboard)
 * tyk-mdcb (Coming soon!)
 * tyk-portal (Coming soon!)
 * tyk-tib (Coming soon!)
