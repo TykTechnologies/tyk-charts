@@ -166,9 +166,9 @@ Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml
     # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
     enableAggregateAnalytics: true
     # Hybrid pump RPC calls timeout in seconds.
-    callTimeout: 30
+    callTimeout: 10
     # Hybrid pump connection pool size.
-    poolSize: 30
+    poolSize: 5
 ```
 
 #### Other Pumps
