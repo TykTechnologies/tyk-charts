@@ -262,6 +262,15 @@ tyk-pump:
     # number for replicas for pump deployment
     replicaCount: 1
 
+    # podAnnotations is annotations to be added to Tyk Pump pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Pump.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
+    podAnnotations: {}
+
     image:
       # image repository for Tyk pump
       repository: docker.tyk.io/tyk-pump/tyk-pump
