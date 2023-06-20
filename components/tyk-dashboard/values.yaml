@@ -107,20 +107,37 @@ dashboard:
   enableMultiOrgUsers: true
 
   enableIstioIngress: false
+
+  # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
+
+  # podAnnotations is annotations to be added to Tyk Dashboard pod.
+  # It takes key-value pairs.
+  # There are no required annotation field for Tyk Dashboard.
+  #
+  # podAnnotations:
+  #   yourkey: value
+  #   image: yourhub
+  podAnnotations: {}
+
   image:
+    # image repository for Tyk Dashboard.
     repository: tykio/tyk-dashboard
+
+    # tag for Tyk Dashboard
     tag: v5.0.0
+
+    # image pull policy
     pullPolicy: Always
   service:
     type: NodePort
     externalTrafficPolicy: Local
-    annotations: { }
+    annotations: {}
 
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-  resources: { }
+  resources: {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
     # run on environments with little resources, such as Minikube. If you do
@@ -135,24 +152,24 @@ dashboard:
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
-  nodeSelector: { }
-  tolerations: [ ]
-  affinity: { }
-  extraEnvs: [ ]
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  extraEnvs: []
   ## extraVolumes A list of volumes to be added to the pod
   ## extraVolumes:
   ##   - name: ca-certs
   ##     secret:
   ##       defaultMode: 420
   ##       secretName: ca-certs
-  extraVolumes: [ ]
+  extraVolumes: []
   ## extraVolumeMounts A list of volume mounts to be added to the pod
   ## extraVolumeMounts:
   ##   - name: ca-certs
   ##     mountPath: /etc/ssl/certs/ca-certs.crt
   ##     readOnly: true
-  extraVolumeMounts: [ ]
-  mounts: [ ]
+  extraVolumeMounts: []
+  mounts: []
 
   # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true

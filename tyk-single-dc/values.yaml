@@ -449,9 +449,24 @@ tyk-dashboard:
 
     enableIstioIngress: false
     replicaCount: 1
+
+    # podAnnotations is annotations to be added to Tyk Dashboard pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Dashboard.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
+    podAnnotations: {}
+
     image:
+      # image repository for Tyk Dashboard.
       repository: tykio/tyk-dashboard
+
+      # tag for Tyk Dashboard
       tag: v5.0.0
+
+      # image pull policy
       pullPolicy: Always
     service:
       type: NodePort
