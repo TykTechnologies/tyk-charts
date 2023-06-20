@@ -103,8 +103,9 @@ To enable Pump, set `global.components.pump` to true, and configure below inside
 |---------------------------|------------------------------------------------------------------------------------------------------------| 
 | Prometheus Pump (Default) | Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. |
 | Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.global.mongo`.                 |
-| SQL Pump                  | Add `postgres` to `pump.backend`, and add connection details for postgres under `.global.postgres`.        |
+| SQL Pump                  | Add `postgres` to `.pump.backend`, and add connection details for postgres under `.global.postgres`.       |
 | Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                          |
+| Hybrid Pump               | Add `hybrid` to `.pump.backend`, and setup `.global.remoteControlPlane` section with the required adresses and tokens           |
 | Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                 |
 
 #### Prometheus Pump
@@ -128,21 +129,22 @@ NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) 
 
 *Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1. If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1. Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
 
+
 Add following under the `global` section in `values.yaml`:
 
 ```yaml
- # Set mongo connection details if you want to configure mongo pump.     
- mongo:
-    # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-    # If your MongoDB has a password you can add the username and password to the url
-    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
-    mongoURL: <MongoDB address>
+   # Set mongo connection details if you want to configure mongo pump.     
+   mongo:
+      # The mongoURL value will allow you to set your MongoDB address.
+      # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+      # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+      # If your MongoDB has a password you can add the username and password to the url
+      # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+      mongoURL: <MongoDB address>
 
-    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-    # Default value: false
-    # useSSL: false
+      # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+      # Default value: false
+      # useSSL: false
 ```
 
 #### SQL Pump
@@ -159,22 +161,53 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 Add following under the `global` section in `values.yaml`:
 
 ```yaml
-    # Set postgres connection details if you want to configure postgres pump.
-    # Postgres connection string parameters.
-    postgres:
-        host: tyk-postgres-postgresql.tyk.svc.cluster.local
-        port: 5432
-        user: postgres
-        password:
-        database: tyk_analytics
-        sslmode: disable
+  # Set postgres connection details if you want to configure postgres pump.
+  # Postgres connection string parameters.
+  postgres:
+      host: tyk-postgres-postgresql.tyk.svc.cluster.local
+      port: 5432
+      user: postgres
+      password:
+      database: tyk_analytics
+      sslmode: disable
 ```
 
 #### Uptime Pump
-Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It support the following values
+Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It support following values
 1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
 2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
 3. empty: Used to disable uptime analytics.
+
+#### Hybrid Pump
+
+```yaml
+  # Set remoteControlPlane connection details if you want to configure hybrid pump.
+  remoteControlPlane:
+      # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+      connectionString: ""
+      # orgID of your dashboard user
+      orgId: ""
+      # API key of your dashboard user
+      userApiKey: ""
+      # needed in case you want to have multiple data-planes connected to the same redis instance
+      groupID: ""
+      # enable/disable ssl
+      useSSL: true
+      # Disables SSL certificate verification
+      sslInsecureSkipVerify: true
+```
+
+```yaml
+  # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
+  # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
+  hybridPump: 
+    # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
+    enableAggregateAnalytics: true
+    # Hybrid pump RPC calls timeout in seconds.
+    callTimeout: 10
+    # Hybrid pump connection pool size.
+    poolSize: 5
+```
 
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
