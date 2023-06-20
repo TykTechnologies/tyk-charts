@@ -15,7 +15,7 @@ global:
     orgId: ""
     # API key of your dashboard user
     userApiKey: ""
-    # needed in case you want to have multiple data-planes connected to the same redis instance
+    # ID to identify this gateway cluster - API events will only work if this is set
     groupID: ""
     # enable/disable ssl
     useSSL: true
