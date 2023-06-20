@@ -2,9 +2,9 @@ Thank you for installing Tyk OSS Chart {{ .Chart.Name }}. Your release is named 
 
 {{ $gwDependency := "tyk-gateway" }}
 {{- range $i, $dep := .Chart.Dependencies }}
-{{ if contains "gateway" ($dep.Name | quote) }}
-{{ $gwDependency = $dep.Name }}
-{{ end }}
+{{- if contains "gateway" ($dep.Name | quote) }}
+{{- $gwDependency = $dep.Name }}
+{{- end }}
 {{- end }}
 
 {{- if index .Values "tyk-gateway" "gateway" "control" "enabled" }}
@@ -19,6 +19,8 @@ To quickly test everything is ok, you can port-forward gateway pod to 8080 on yo
 and run `curl localhost:8080/hello` to see some data back.
 {{- end }}
 
-Manage Ingress resources and APIs
+=======================================
+   Manage Ingress resources and APIs
+=======================================
 You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
 [Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)
