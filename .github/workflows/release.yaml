@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-    paths: 
+    paths:
       - '**/Chart.yaml'
 
 jobs:
@@ -63,6 +63,12 @@ jobs:
         id: chart-version
         run: echo "version=$(awk '/^version:/ {print $2}' ${{ matrix.chart }}/Chart.yaml)" >> "$GITHUB_OUTPUT"
 
+      - name: Helm Chart package file name
+        id: file-name
+        run: |
+          echo "fileName=$(basename ${{ matrix.chart }})-${{ steps.chart-version.outputs.version }}.tgz"
+          echo "fileName=$(basename ${{ matrix.chart }})-${{ steps.chart-version.outputs.version }}.tgz" >> "$GITHUB_OUTPUT"
+
       - name: Update dependencies
         run: helm dependency update ${{ matrix.chart }}
 
@@ -77,5 +83,4 @@ jobs:
          format: "helm"
          owner: "tyk"
          repo: "helm"
-         file: "${{ matrix.chart }}-${{ steps.chart-version.outputs.version }}.tgz"
-          
+         file: "${{ steps.file-name.outputs.fileName }}"

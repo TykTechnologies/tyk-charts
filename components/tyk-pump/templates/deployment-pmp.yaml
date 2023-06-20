@@ -53,8 +53,30 @@ spec:
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
-
-         {{ if has "prometheus" .Values.pump.backend }}
+         {{ if has "hybrid" .Values.pump.backend }}
+          # Configure Hybrid Pump for Tyk Pump
+          - name: TYK_PMP_PUMPS_HYBRID_TYPE
+            value: hybrid
+          - name: TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING
+            value: "{{ .Values.global.remoteControlPlane.connectionString }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_RPCKEY
+            value: "{{ .Values.global.remoteControlPlane.orgId }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_APIKEY
+            value: "{{ .Values.global.remoteControlPlane.userApiKey }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_GROUPID
+            value: "{{ .Values.global.remoteControlPlane.groupID }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_USESSL
+            value: "{{ .Values.global.remoteControlPlane.useSSL }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_SSLINSECURESKIPVERIFY
+            value: "{{ .Values.global.remoteControlPlane.sslInsecureSkipVerify }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_AGGREGATED
+            value: "{{ .Values.pump.hybridPump.enableAggregateAnalytics }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_CALLTIMEOUT
+            value: "{{ .Values.pump.hybridPump.callTimeout }}"
+          - name: TYK_PMP_PUMPS_HYBRID_META_RPCPOOLSIZE
+            value: "{{ .Values.pump.hybridPump.poolSize }}"
+          {{ end }}
+          {{ if has "prometheus" .Values.pump.backend }}
           # Configure Prometheus Pump for Tyk Pump
           - name: TYK_PMP_PUMPS_PROMETHEUS_TYPE
             value: prometheus
@@ -196,12 +218,6 @@ spec:
 
         command: ["/opt/tyk-pump/tyk-pump"]
         volumeMounts:
-          {{- if .Values.pump.mounts }}
-          {{- range $secret := .Values.pump.mounts }}
-          - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
-            mountPath: {{ $secret.mountPath }}
-          {{- end }}
-          {{- end }}
           {{- if .Values.pump.extraVolumeMounts }}
           {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
@@ -212,13 +228,6 @@ spec:
       {{- toYaml .Values.pump.securityContext | nindent 10 }}
       {{- end }}
       volumes:
-        {{- if .Values.pump.mounts }}
-        {{- range $secret := .Values.pump.mounts }}
-        - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
-          secret:
-            secretName: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
-        {{- end }}
-        {{- end }}
         {{- if .Values.pump.extraVolumes }}
         {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
