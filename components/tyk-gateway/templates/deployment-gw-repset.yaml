@@ -74,9 +74,14 @@ spec:
             drop:
               - all
         env:
+          - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
+            value : "false"
           - name: TYK_GW_LISTENPORT
-            value: "{{ .Values.gateway.containerPort }}"
-
+            value: "{{ .Values.global.servicePorts.gateway }}"
+          {{ if .Values.global.components.dashboard}}
+          - name: TYK_GW_USEDBAPPCONFIGS
+            value: "true"
+           {{- end }}
           {{- if .Values.gateway.control.enabled }}
           - name: TYK_GW_CONTROLAPIPORT
             value: "{{ .Values.gateway.control.containerPort }}"
@@ -101,8 +106,6 @@ spec:
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "true"
          {{ else }}
-          - name: TYK_GW_STORAGE_MASTERNAME
-            value: ""
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "false"
          {{ end }}
@@ -130,7 +133,7 @@ spec:
           - name: TYK_GW_POLICIES_ALLOWEXPLICITPOLICYID
             value: "true"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
-            value: "{{ .Values.gateway.tls.enabled }}"
+            value: "{{ .Values.global.tls.gateway }}"
           - name: TYK_GW_TEMPLATEPATH
             value: "/opt/tyk-gateway/templates"
           - name: TYK_GW_TYKJSPATH
@@ -139,6 +142,8 @@ spec:
             value: "/mnt/tyk-gateway/middleware"
           - name: TYK_GW_APPPATH
             value: "/mnt/tyk-gateway/apps"
+          - name: TYK_GW_POLICIES_POLICYPATH
+            value: "/mnt/tyk-gateway/policies"
           - name: TYK_GW_STORAGE_MAXIDLE
             value: "1000"
           - name: TYK_GW_OPTIMISATIONSUSEASYNCSESSIONWRITE
@@ -173,8 +178,6 @@ spec:
             value: "murmur128"
           - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEWEBSOCKETS
             value: "true"
-          - name: TYK_GW_HTTPSERVEROPTIONS_SERVERNAME
-            value: "*"
           - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
             value: "771"
           - name: TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
@@ -192,6 +195,10 @@ spec:
           - name: TYK_GW_PIDFILELOCATION
             value: "/mnt/tyk-gateway/tyk.pid"
 
+          - name: TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
+            value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.dashboard}}"
+          - name: TYK_GW_POLICIES_POLICYCONNECTIONSTRING
+            value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}"
 
         {{- if .Values.global.components }}
         {{- if .Values.global.components.pump }}
@@ -213,36 +220,30 @@ spec:
         command: ["/opt/tyk-gateway/tyk"]
         workingDir: /opt/tyk-gateway
         ports:
-        - containerPort: {{ .Values.gateway.containerPort }}
+        - containerPort: {{ .Values.global.servicePorts.gateway }}
         {{- if .Values.gateway.control.enabled }}
         - containerPort: {{ .Values.gateway.control.containerPort }}
         {{- end }}
         resources:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
-          {{ if .Values.gateway.tls.enabled }}
+          {{ if .Values.global.tls.gateway }}
           - name: {{ .Values.gateway.tls.secretName }}
             mountPath: /etc/certs
           {{ end }}
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway
-          {{- if .Values.gateway.mounts }}
-          {{- range $secret := .Values.gateway.mounts }}
-          - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
-            mountPath: {{ $secret.mountPath }}
-          {{- end }}
-          {{- end }}
           {{- if .Values.gateway.extraVolumeMounts }}
           {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         livenessProbe:
           httpGet:
-            scheme: "HTTP{{ if .Values.gateway.tls.enabled }}S{{ end }}"
+            scheme: "HTTP{{ if .Values.global.tls.gateway }}S{{ end }}"
             path: /hello
             {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
             port: {{ .Values.gateway.control.containerPort }}
             {{- else }}
-            port: {{ .Values.gateway.containerPort }}
+            port: {{ .Values.global.servicePorts.gateway }}
             {{- end }}
           initialDelaySeconds: 5
           periodSeconds: 2
@@ -250,12 +251,12 @@ spec:
           failureThreshold: 2
         readinessProbe:
           httpGet:
-            scheme: "HTTP{{ if .Values.gateway.tls.enabled }}S{{ end }}"
+            scheme: "HTTP{{ if .Values.global.tls.gateway }}S{{ end }}"
             path: /hello
             {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
             port: {{ .Values.gateway.control.containerPort }}
             {{- else }}
-            port: {{ .Values.gateway.containerPort }}
+            port: {{ .Values.global.servicePorts.gateway }}
             {{- end }}
           initialDelaySeconds: 1
           periodSeconds: 10
@@ -268,18 +269,11 @@ spec:
       volumes:
         - name: tyk-scratch
           emptyDir: {}
-        {{ if .Values.gateway.tls.enabled }}
+        {{ if .Values.global.tls.gateway }}
         - name: {{ .Values.gateway.tls.secretName }}
           secret:
             secretName: {{ .Values.gateway.tls.secretName }}
         {{ end }}
-        {{- if .Values.gateway.mounts }}
-        {{- range $secret := .Values.gateway.mounts }}
-        - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
-          secret:
-            secretName: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
-        {{- end }}
-        {{- end }}
         {{- if .Values.gateway.extraVolumes }}
         {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

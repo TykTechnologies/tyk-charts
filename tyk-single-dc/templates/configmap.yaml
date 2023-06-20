@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-tyk-single-dc
+  namespace: {{ .Release.Namespace}}
+  labels:
+    app: secrets-tyk-single-dc
+    release: {{ .Release.Name }}
+data:
+  rpcConnString: "{{ .Values.global.remoteControlPlane.connectionString }}"
+  rpcUseSSL: "{{ .Values.global.remoteControlPlane.useSSL}}"
+  rpcSslInsecureSkipVerify: "{{ .Values.global.remoteControlPlane.sslInsecureSkipVerify}}"
