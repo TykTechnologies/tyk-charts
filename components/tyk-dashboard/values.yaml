@@ -1,9 +1,12 @@
 global:
   license:
+    # The license key needed by Tyk Dashboard to work
     dashboard: ""
 
   servicePorts:
+    # The port at which the dashboard service can be found
     dashboard: 3000
+    # The port at which the dashboard service can be found
     gateway: 8080
 
   secrets:
@@ -30,6 +33,7 @@ global:
     # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
 
+  # Choose the backend for Tyk. [ "mongo", "postgres" ]
   backend: mongo
 
   postgres:
@@ -158,8 +162,11 @@ dashboard:
 
   # Dashboard admin information.
   adminUser:
+    # First name of the admin user
     firstName: admin
+    # Last name of the admin user
     lastName: user
+    # Email address of the admin user
     email: default@example.com
     # Set a password or a random one will be assigned.
     password: "123456"

@@ -26,9 +26,9 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
     helm show values tyk-helm/tyk-dashboard > values-dashboard.yaml --devel
 
 Note: 
-* Set redis connection details first at .Values.global.redis
-* Set mongo connection details second at .Values.global.mongo
-* The Tyk Dashboard also requires a license to be set at .Values.global.license.dashboard
+* Set redis connection details first at `.Values.global.redis`
+* Set mongo connection details second at `.Values.global.mongo`
+* The Tyk Dashboard also requires a license to be set at `.Values.global.license.dashboard`
 * The Tyk Dashboard will require bootstrapping in order to work. This can be achieved by running the component
 chart "tyk-bootstrap"
 
