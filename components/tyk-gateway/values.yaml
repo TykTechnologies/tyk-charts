@@ -77,7 +77,7 @@ global:
       database: 0
 
   remoteControlPlane:
-    enabled: true
+    enabled: false
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
     connectionString: ""
     # orgID of your dashboard user
