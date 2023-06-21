@@ -120,9 +120,9 @@ To enable Pump, set `global.components.pump` to true, and configure below inside
 |---------------------------|------------------------------------------------------------------------------------------------------------| 
 | Prometheus Pump (Default) | Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. |
 | Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.global.mongo`.                 |
-| SQL Pump                  | Add `postgres` to `.pump.backend`, and add connection details for postgres under `.global.postgres`.       |
+| SQL Pump                  | Add `postgres` to `pump.backend`, and add connection details for postgres under `.global.postgres`.       |
 | Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                          |
-| Hybrid Pump               | Add `hybrid` to `.pump.backend`, and setup `.global.remoteControlPlane` section with the required adresses and tokens           |
+| Hybrid Pump               | Add `hybrid` to `pump.backend`, and setup `.global.remoteControlPlane` section with the required adresses and tokens           |
 | Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                 |
 
 #### Prometheus Pump
@@ -193,10 +193,12 @@ Add following under the `global` section in `values.yaml`:
 Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It support following values
 1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
 2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
-3. empty: Used to disable uptime analytics.
+3. '': Used to disable uptime analytics.
 
 #### Hybrid Pump
+To enable Hybrid pump, first add `hybrid` to `pump.backend`.
 
+You should also configure `.global.remoteControlPlane` section with the required adresses and tokens
 ```yaml
   # Set remoteControlPlane connection details if you want to configure hybrid pump.
   remoteControlPlane:
@@ -214,9 +216,10 @@ Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml
       sslInsecureSkipVerify: true
 ```
 
+You can configure hybrid pump in `pump.hybridPump` section.
 ```yaml
   # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
-  # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
+  # Please add "hybrid" to `pump.backend` in order to enable Hybrid Pump.
   hybridPump: 
     # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
     enableAggregateAnalytics: true
