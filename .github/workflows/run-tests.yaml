@@ -92,20 +92,21 @@ jobs:
 
           helm dependency update ./tyk-single-dc
 
-      - name: Run chart-testing (install)
-        run: |
-             ct install --namespace ${{ env.TYK_SINGLE_DC_NS }} --charts ./tyk-single-dc --helm-extra-set-args "--wait=true" \
-              --helm-extra-set-args "--set=global.mongo.mongoURL=mongodb://mongo.tyk-single-dc.svc.cluster.local:27017/tyk_analytics \
-              --helm-extra-set-args "--timeout=${{ env.TIMEOUT }}" \
-              --set=global.redis.addrs[0]=redis.tyk-single-dc.svc.cluster.local:6379 \
-              --set=global.license.dashboard=${{ secrets.DASH_LICENSE }}"
+          helm install --namespace ${{ env.TYK_SINGLE_DC_NS }} tyk-single-dc ./tyk-single-dc --wait \
+            --set global.mongo.mongoURL=mongodb://mongo.tyk-single-dc.svc.cluster.local:27017/tyk_analytics \
+            --set=global.redis.addrs[0]=redis.tyk-single-dc.svc.cluster.local:6379 \
+            --set=global.license.dashboard=${{ secrets.DASH_LICENSE }}" \
+            --timeout=${{ env.TIMEOUT }}
+
+      - name: Run integration tests for Tyk Single DC
+        run: helm test -n ${{ env.TYK_SINGLE_DC_NS }} tyk-single-dc
 
       - name: Uninstall Tyk Single DC Dependencies
         run: |
           helm uninstall redis -n ${{ env.TYK_SINGLE_DC_NS }} --timeout ${{ env.TIMEOUT }}
           helm uninstall mongo -n ${{ env.TYK_SINGLE_DC_NS }} --timeout ${{ env.TIMEOUT }} 
+          helm uninstall tyk-single-dc -n ${{ env.TYK_SINGLE_DC_NS }} --timeout ${{ env.TIMEOUT }} 
           kubectl delete namespace ${{ env.TYK_SINGLE_DC_NS }}
-      
 
       # Tyk MDCB Data Plane tests
       - name: Deploy Tyk MDCB Data Plane and Dependencies
