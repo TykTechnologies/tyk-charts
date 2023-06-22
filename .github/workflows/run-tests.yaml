@@ -96,7 +96,7 @@ jobs:
         run: |
              ct install --namespace ${{ env.TYK_SINGLE_DC_NS }} --charts ./tyk-single-dc --helm-extra-set-args "--wait=true" \
               --helm-extra-set-args "--set=global.mongo.mongoURL=mongodb://mongo.tyk-single-dc.svc.cluster.local:27017/tyk_analytics \
-              --helm-extra-set-args "timeout=${{ env.TIMEOUT }}" \
+              --helm-extra-set-args "--timeout=${{ env.TIMEOUT }}" \
               --set=global.redis.addrs[0]=redis.tyk-single-dc.svc.cluster.local:6379 \
               --set=global.license.dashboard=${{ secrets.DASH_LICENSE }}"
 
