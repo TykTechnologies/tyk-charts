@@ -36,10 +36,10 @@ spec:
         image: "{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
         imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
         workingDir: "/opt/tyk-pump"
-        {{- if has "prometheus" .Values.pump.backend }}
+        {{- if or (has "prometheus" .Values.pump.backend) .Values.pump.service.enabled }}
         ports:
-          - name: prom-metrics
-            containerPort: {{ .Values.pump.prometheusPump.port }}
+          - name: tyk-pump-port
+            containerPort: {{ .Values.pump.containerPort }}
         {{ end }}
         securityContext:
           runAsNonRoot: true

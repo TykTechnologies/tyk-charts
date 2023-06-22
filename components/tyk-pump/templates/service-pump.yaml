@@ -1,0 +1,26 @@
+{{- if .Values.pump.service.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: pump-svc-{{ include "tyk-pump.fullname" . }}
+  {{- if .Values.pump.service.annotations }}
+  {{ toYaml .Values.pump.service.annotations }}
+  {{- end }}
+  labels:
+    app: pump-svc-{{ include "tyk-pump.fullname" . }}
+    chart: {{ include "tyk-pump.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+    - port: {{ .Values.pump.service.port }}
+      targetPort: {{ .Values.pump.containerPort }}
+      protocol: TCP
+  type: {{ .Values.pump.service.type }}
+  {{- if eq .Values.pump.service.type "LoadBalancer" }}
+  externalTrafficPolicy: {{ .Values.pump.service.externalTrafficPolicy }}
+  {{- end }}
+  selector:
+    app: pump-{{ include "tyk-pump.fullname" . }}
+    release: {{ .Release.Name }}
+{{- end}}
