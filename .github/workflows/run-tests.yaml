@@ -96,12 +96,6 @@ jobs:
             --set "global.mongo.mongoURL=mongodb://mongo.tyk-single-dc.svc.cluster.local:27017/tyk_analytics" \
             --set "global.redis.addrs[0]=redis.tyk-single-dc.svc.cluster.local:6379" \
             --set "global.license.dashboard=${{ secrets.DASH_LICENSE }}" \
-            --timeout=15
-
-          helm install --namespace ${{ env.TYK_SINGLE_DC_NS }} tyk-single-dc ./tyk-single-dc --wait \
-            --set global.mongo.mongoURL=mongodb://mongo.tyk-single-dc.svc.cluster.local:27017/tyk_analytics \
-            --set=global.redis.addrs[0]=redis.tyk-single-dc.svc.cluster.local:6379 \
-            --set=global.license.dashboard=${{ secrets.DASH_LICENSE }}" \
             --timeout=${{ env.TIMEOUT }}
 
       - name: Run integration tests for Tyk Single DC
