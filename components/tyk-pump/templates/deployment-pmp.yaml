@@ -36,11 +36,9 @@ spec:
         image: "{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
         imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
         workingDir: "/opt/tyk-pump"
-        {{- if or (has "prometheus" .Values.pump.backend) .Values.pump.service.enabled }}
         ports:
           - name: tyk-pump-port
             containerPort: {{ .Values.pump.containerPort }}
-        {{ end }}
         securityContext:
           runAsNonRoot: true
           allowPrivilegeEscalation: false
@@ -80,8 +78,9 @@ spec:
           # Configure Prometheus Pump for Tyk Pump
           - name: TYK_PMP_PUMPS_PROMETHEUS_TYPE
             value: prometheus
+          # Since PodMonitor is in use, please use containerPort of Tyk Pump pod.
           - name: TYK_PMP_PUMPS_PROMETHEUS_META_ADDR
-            value: "{{ .Values.pump.prometheusPump.host }}:{{ .Values.pump.prometheusPump.port }}"
+            value: "{{ .Values.pump.prometheusPump.host }}:{{ .Values.pump.containerPort }}"
           - name: TYK_PMP_PUMPS_PROMETHEUS_META_PATH
             value: "{{ .Values.pump.prometheusPump.path }}"
             {{ if .Values.pump.prometheusPump.customMetrics }}

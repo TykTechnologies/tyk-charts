@@ -312,9 +312,7 @@ tyk-pump:
       annotations: {}
 
     # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
-    # containerPort opens the specified port on Tyk Pump if either
-    # - Tyk Pump Service is enabled (.pump.service.enabled=true) or
-    # - Prometheus Pump is in use.
+    # The default port is 9090.
     containerPort: 9090
 
     # backend defines the pumps to be created by default, as an array of string.
