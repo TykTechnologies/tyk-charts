@@ -84,6 +84,7 @@ global:
     # If your MongoDB has a password you can add the username and password to the url
     # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
 
+    # Connection URL can also be set using a secret. Provide the name of the secret and key below.
     # connectionURLSecret:
     #   name: ""
     #   keyName: ""
@@ -100,6 +101,10 @@ global:
     password:
     database: tyk_analytics
     sslmode: disable
+
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
 
   remoteControlPlane:
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.

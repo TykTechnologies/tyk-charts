@@ -103,6 +103,31 @@ mongoURL
 {{- end -}}
 {{- end -}}
 
+{{- define "tyk-pump.pg_connection_string_secret_name" -}}
+{{- if .Values.global.postgres.connectionStringSecret -}}
+{{- if .Values.global.postgres.connectionStringSecret.name -}}
+{{ .Values.global.postgres.connectionStringSecret.name }}
+{{- else -}}
+secret-{{ include "tyk-pump.fullname" . }}
+{{- end -}}
+{{- else -}}
+secret-{{ include "tyk-pump.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-pump.pg_connection_string_secret_key" -}}
+{{- if .Values.global.postgres.connectionStringSecret -}}
+{{- if .Values.global.postgres.connectionStringSecret.keyName -}}
+{{ .Values.global.postgres.connectionStringSecret.keyName }}
+{{- else -}}
+pgConnectionString
+{{- end -}}
+{{- else -}}
+pgConnectionString
+{{- end -}}
+{{- end -}}
+
+
 {{- define "tyk-pump.uptimePump" -}}
 {{- if .Values.pump.uptimePumpBackend -}}
 {{ .Values.pump.uptimePumpBackend }}
