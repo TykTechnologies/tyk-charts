@@ -180,8 +180,8 @@ spec:
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SENTINELPASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end }}
-                key: redisSentinelPass
+                name: {{ include "tyk-pump.redis_secret_name" . }}
+                key: {{ include "tyk-pump.redis_secret_key" . }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MASTERNAME
             value: "{{- .Values.global.redis.masterName -}}"
           {{ else if .Values.global.redis.enableCluster }}
@@ -196,8 +196,8 @@ spec:
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end}}
-                key: redisPass
+               name: {{ include "tyk-pump.redis_secret_name" . }}
+                key: {{ include "tyk-pump.redis_secret_key" . }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
 

@@ -41,6 +41,30 @@ redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 {{- end -}}
 
+{{- define "tyk-pump.redis_secret_name" -}}
+{{- if .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.name -}}
+{{ .Values.global.redis.passSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-pump.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-pump.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-pump.redis_secret_key" -}}
+{{- if .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.keyName -}}
+{{ .Values.global.redis.passSecret.keyName }}
+{{- else -}}
+redisPass
+{{- end -}}
+{{- else -}}
+redisPass
+{{- end -}}
+{{- end -}}
+
 {{- define "tyk-pump.mongo_url" -}}
 {{- if .Values.global.mongo.mongoURL -}}
 {{ .Values.global.mongo.mongoURL }}
