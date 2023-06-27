@@ -84,6 +84,10 @@ global:
     # If your MongoDB has a password you can add the username and password to the url
     # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
 
+    # connectionURLSecret:
+    #   name: ""
+    #   keyName: ""
+
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
     useSSL: false

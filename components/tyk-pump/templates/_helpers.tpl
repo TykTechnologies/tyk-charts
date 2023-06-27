@@ -73,6 +73,30 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 
+{{- define "tyk-pump.mongo_url_secret_name" -}}
+{{- if .Values.global.mongo.connectionURLSecret -}}
+{{- if .Values.global.mongo.connectionURLSecret.name -}}
+{{ .Values.global.mongo.connectionURLSecret.name }}
+{{- else -}}
+secret-{{ include "tyk-pump.fullname" . }}
+{{- end -}}
+{{- else -}}
+secret-{{ include "tyk-pump.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-pump.mongo_url_secret_key" -}}
+{{- if .Values.global.mongo.connectionURLSecret -}}
+{{- if .Values.global.mongo.connectionURLSecret.keyName -}}
+{{ .Values.global.mongo.connectionURLSecret.keyName }}
+{{- else -}}
+mongoURL
+{{- end -}}
+{{- else -}}
+mongoURL
+{{- end -}}
+{{- end -}}
+
 {{- define "tyk-pump.pg_connection_string" -}}
 {{- if .Values.global.postgres -}}
 {{- range $key, $value := .Values.global.postgres }}{{ print $key "=" $value " " }}{{- end }}
