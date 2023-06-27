@@ -229,11 +229,6 @@ tyk-gateway:
           secretKeyRef:
             name: secrets-tyk-data-plane
             key: userApiKey
-      - name: TYK_GW_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: APISecret
       - name: TYK_GW_SLAVEOPTIONS_GROUPID
         valueFrom:
           secretKeyRef:
