@@ -35,8 +35,6 @@ global:
     # rather provide the k8s Secret externally.
     # You can set following fields in the secret
     # - APISecret - Sets node_secret and secret in tyk.conf
-    # - redisPass - Sets Redis password
-    # - redisSentinelPass - Sets Redis Password. Set it only if you are using Redis Sentinel
     useSecretName: ""
 
   redis:
