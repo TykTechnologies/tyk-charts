@@ -68,9 +68,6 @@ redisPass
 {{- define "tyk-pump.mongo_url" -}}
 {{- if .Values.global.mongo.mongoURL -}}
 {{ .Values.global.mongo.mongoURL }}
-{{- /* Adds support for older charts with the host and port options */}}
-{{- else if and .Values.global.mongo.host .Values.global.mongo.port -}}
-mongodb://{{ .Values.global.mongo.host }}:{{ .Values.global.mongo.port }}/tyk_analytics
 {{- else -}}
 mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
