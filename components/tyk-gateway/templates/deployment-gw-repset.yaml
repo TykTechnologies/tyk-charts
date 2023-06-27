@@ -95,8 +95,8 @@ spec:
           - name: TYK_GW_STORAGE_SENTINELPASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end }}
-                key: redisSentinelPass
+                name: {{ include "tyk-gateway.redis_secret_name" . }}
+                key: {{ include "tyk-gateway.redis_secret_key" . }}
           - name: TYK_GW_STORAGE_MASTERNAME
             value: "{{- .Values.global.redis.masterName -}}"
          {{ else if .Values.global.redis.enableCluster }}
@@ -112,8 +112,8 @@ spec:
           - name: TYK_GW_STORAGE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
-                key: redisPass
+                name: {{ include "tyk-gateway.redis_secret_name" . }}
+                key: {{ include "tyk-gateway.redis_secret_key" . }}
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
           - name: TYK_GW_SECRET

@@ -64,6 +64,11 @@ global:
     # your password in the field below
     # pass: ""
 
+    # Redis password can also be provided via a secret. Provide the name of the secret and key below.
+    # passSecret:
+    #   name: ""
+    #   keyName: ""
+
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
     # useSSL: true
@@ -77,7 +82,6 @@ global:
     # enableSentinel: false
 
     # Redis sentinel master name, only required while enableSentinel is true.
-    # For bitnami/redis typically redis-master
     # masterName: ""
 
     # By default the database index is 0. Setting the database index is not

@@ -63,6 +63,30 @@ redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 {{- end -}}
 
+{{- define "tyk-gateway.redis_secret_name" -}}
+{{- if .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.name -}}
+{{ .Values.global.redis.passSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-gateway.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-gateway.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-gateway.redis_secret_key" -}}
+{{- if .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.keyName -}}
+{{ .Values.global.redis.passSecret.keyName }}
+{{- else -}}
+redisPass
+{{- end -}}
+{{- else -}}
+redisPass
+{{- end -}}
+{{- end -}}
+
 {{- define "tyk-gateway.tplvalues.render" -}}
     {{- if typeIs "string" .value }}
         {{- tpl .value .context }}
