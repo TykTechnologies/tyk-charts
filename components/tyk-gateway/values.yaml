@@ -76,10 +76,6 @@ global:
     # mandatory values for sentinelPass and masterName.
     # enableSentinel: false
 
-    # Redis sentinel password, only required while enableSentinel is true.
-    # For bitnami/redis the same password as Redis above
-    # sentinelPass: ""
-
     # Redis sentinel master name, only required while enableSentinel is true.
     # For bitnami/redis typically redis-master
     # masterName: ""
