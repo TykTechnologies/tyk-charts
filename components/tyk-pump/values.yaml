@@ -92,7 +92,7 @@ global:
     database: tyk_analytics
     sslmode: disable
 
-    # connection string can also be set using a secret. Provide the name of the secret and key below.
+    # Connection string can also be set using a secret. Provide the name of the secret and key below.
     # connectionStringSecret:
     #   name: ""
     #   keyName: ""
