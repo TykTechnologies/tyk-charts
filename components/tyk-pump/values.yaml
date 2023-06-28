@@ -14,16 +14,6 @@ nameOverride: ""
 fullnameOverride: ""
 
 global:
-  secrets:
-    # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
-    # rather provide the k8s Secret externally.
-    # Can set following fields in the secret:
-    # - redisPass: Sets redis password
-    # - redisSentinelPass: Set if you  are using Redis Sentinel. Used to set Redis password
-    # - mongoURL: Sets mongo connection url
-    # - pgConnectionString: Sets postgres connection details
-    useSecretName: ""
-
   redis:
     # The addrs value will allow you to set your Redis addresses.
     #
