@@ -143,8 +143,8 @@ spec:
           - name: TYK_DB_REDISPASSWORD
             valueFrom:
               secretKeyRef:
-                name:{{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
-                key: redisPass
+                name: {{ include "tyk-dashboard.redis_secret_name" . }}
+                key: {{ include "tyk-dashboard.redis_secret_key" . }}
           - name: TYK_DB_REDISUSESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
