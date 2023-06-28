@@ -129,6 +129,30 @@ mongoURL
 {{- end -}}
 {{- end -}}
 
+{{- define "tyk-dashboard.pg_connection_string_secret_name" -}}
+{{- if .Values.global.postgres.connectionStringSecret -}}
+{{- if .Values.global.postgres.connectionStringSecret.name -}}
+{{ .Values.global.postgres.connectionStringSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-dashboard.pg_connection_string_secret_key" -}}
+{{- if .Values.global.postgres.connectionStringSecret -}}
+{{- if .Values.global.postgres.connectionStringSecret.keyName -}}
+{{ .Values.global.postgres.connectionStringSecret.keyName }}
+{{- else -}}
+pgConnectionString
+{{- end -}}
+{{- else -}}
+pgConnectionString
+{{- end -}}
+{{- end -}}
+
 {{- define "tyk-dashboard.backend" -}}
 {{- if .Values.global.backend -}}
 {{- if eq "postgres" .Values.global.backend -}}

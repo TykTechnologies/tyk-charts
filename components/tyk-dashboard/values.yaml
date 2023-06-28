@@ -44,6 +44,11 @@ global:
     database: tyk_analytics
     sslmode:
 
+    # connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
+
   redis:
     # The addrs value will allow you to set your Redis addresses. If you are
     # using a redis cluster, you can list the endpoints of the redis instances
