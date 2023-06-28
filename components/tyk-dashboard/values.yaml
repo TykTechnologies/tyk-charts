@@ -84,6 +84,11 @@ global:
     # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
     mongoURL: ""
 
+    # Connection URL can also be set using a secret. Provide the name of the secret and key below.
+    # connectionURLSecret:
+    #   name: ""
+    #   keyName: ""
+
 dashboard:
   enableOwnership: true
   defaultPageSize: 10

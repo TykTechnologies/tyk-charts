@@ -99,6 +99,30 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 
+{{- define "tyk-dashboard.mongo_url_secret_name" -}}
+{{- if .Values.global.mongo.connectionURLSecret -}}
+{{- if .Values.global.mongo.connectionURLSecret.name -}}
+{{ .Values.global.mongo.connectionURLSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-dashboard.mongo_url_secret_key" -}}
+{{- if .Values.global.mongo.connectionURLSecret -}}
+{{- if .Values.global.mongo.connectionURLSecret.keyName -}}
+{{ .Values.global.mongo.connectionURLSecret.keyName }}
+{{- else -}}
+mongoURL
+{{- end -}}
+{{- else -}}
+mongoURL
+{{- end -}}
+{{- end -}}
+
 {{- define "tyk-dashboard.pg_connection_string" -}}
 {{- if .Values.global.postgres -}}
 {{- range $key, $value := .Values.global.postgres }}{{ print $key "=" $value " " }}{{- end }}

@@ -188,8 +188,8 @@ spec:
           - name: TYK_DB_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
-                key: mongoURL
+                name: {{ include "tyk-dashboard.mongo_secret_name" . }}
+                key: {{ include "tyk-dashboard.mongo_secret_key" . }}
           - name: TYK_DB_MONGOUSESSL
             value: "{{ default "false" .Values.global.mongo.useSSL }}"
           {{ end }}
