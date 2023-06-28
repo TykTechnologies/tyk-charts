@@ -78,10 +78,10 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- if .Values.global.mongo.connectionURLSecret.name -}}
 {{ .Values.global.mongo.connectionURLSecret.name }}
 {{- else -}}
-secret-{{ include "tyk-pump.fullname" . }}
+secrets-{{ include "tyk-pump.fullname" . }}
 {{- end -}}
 {{- else -}}
-secret-{{ include "tyk-pump.fullname" . }}
+secrets-{{ include "tyk-pump.fullname" . }}
 {{- end -}}
 {{- end -}}
 
@@ -108,10 +108,10 @@ mongoURL
 {{- if .Values.global.postgres.connectionStringSecret.name -}}
 {{ .Values.global.postgres.connectionStringSecret.name }}
 {{- else -}}
-secret-{{ include "tyk-pump.fullname" . }}
+secrets-{{ include "tyk-pump.fullname" . }}
 {{- end -}}
 {{- else -}}
-secret-{{ include "tyk-pump.fullname" . }}
+secrets-{{ include "tyk-pump.fullname" . }}
 {{- end -}}
 {{- end -}}
 
