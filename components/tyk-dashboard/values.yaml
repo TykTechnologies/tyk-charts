@@ -12,8 +12,6 @@ global:
   secrets:
     # tyk_analytics.conf tyk_api_config.secret
     # tyk_analytics.conf shared_node_secret
-    # tyk.conf node_secret
-    # tyk.conf secret
     APISecret: CHANGEME
     # tyk_analytics.conf admin_secret
     # tib.conf TykAPISettings.GatewayConfig.AdminSecret
@@ -21,6 +19,10 @@ global:
     AdminSecret: "12345"
     # If you don't want to store plaintext secrets in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below
+    # You can set following fields in the secret
+    # APISecret - Sets tyk_api_config.Secret and shared_node_secret in Dashboard config file
+    # AdminSecret - Admin user secret key
+    # DashLicense - Tyk Dashboard license key
     useSecretName: ""
 
   tls:
