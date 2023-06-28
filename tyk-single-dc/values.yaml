@@ -98,7 +98,7 @@ global:
 
     # If your MongoDB has a password you can add the username and password to the url
     # mongoURL: ""
-  
+
     # Connection URL can also be set using a secret. Provide the name of the secret and key below.
     # connectionURLSecret:
     #   name: ""
