@@ -197,7 +197,7 @@ spec:
             valueFrom:
               secretKeyRef:
                name: {{ include "tyk-pump.redis_secret_name" . }}
-                key: {{ include "tyk-pump.redis_secret_key" . }}
+               key: {{ include "tyk-pump.redis_secret_key" . }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
 
