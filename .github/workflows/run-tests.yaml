@@ -144,7 +144,7 @@ jobs:
       - name: Create Kind Cluster
         uses: helm/kind-action@v1.4.0
         with:
-          node-image: "kindest/node:${{ matrix.k8s }}"
+          node_image: "kindest/node:${{ matrix.k8s_version }}"
 
       - name: Install helm
         uses: Azure/setup-helm@v1.1
