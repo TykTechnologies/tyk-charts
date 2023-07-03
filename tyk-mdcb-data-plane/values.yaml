@@ -218,43 +218,6 @@ tyk-gateway:
       enabled: false
       tags: ""
 
-    extraEnvs:
-      - name: TYK_GW_SLAVEOPTIONS_RPCKEY
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: orgId
-      - name: TYK_GW_SLAVEOPTIONS_APIKEY
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: userApiKey
-      - name: TYK_GW_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: APISecret
-      - name: TYK_GW_SLAVEOPTIONS_GROUPID
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: groupID
-      - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: rpcConnString
-      - name: TYK_GW_SLAVEOPTIONS_USESSL
-        valueFrom:
-          configMapKeyRef:
-            name: config-tyk-data-plane
-            key: rpcUseSSL
-      - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
-        valueFrom:
-          configMapKeyRef:
-            name: config-tyk-data-plane
-            key: rpcSslInsecureSkipVerify
-
     # used to decide whether to send the results back directly to Tyk without a hybrid pump
     # if you want to use a hybrid pump, please change "rpc" to ""
     analyticsConfigType: "rpc"
