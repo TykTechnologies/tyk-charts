@@ -32,7 +32,7 @@ spec:
         - name: TYK_GW_SECRET
           valueFrom:
             secretKeyRef:
-              name: secrets-tyk-data-plane
+              name: secrets-{{ include "tyk-data-plane.fullname" . }}
               key: APISecret
   volumes:
     - name: test-tyk-data-plane
