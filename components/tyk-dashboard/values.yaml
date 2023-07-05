@@ -177,6 +177,15 @@ dashboard:
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
 
+  tls:
+    # When true, it will install the certificate present in the templates folder, set to false when using
+    # a custom TLS certificate to avoid overwriting yours
+    useDefaultTykCertificate: true
+    # The name of the secret which should contain the TLS certificate you want to use with the dashboard deployment
+    secretName: tyk-default-tls-secret
+    # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
+    insecureSkipVerify: false
+
   # Dashboard admin information.
   adminUser:
     # First name of the admin user

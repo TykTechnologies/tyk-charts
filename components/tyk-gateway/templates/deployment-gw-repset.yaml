@@ -182,6 +182,8 @@ spec:
             value: "771"
           - name: TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
             value: '[{"domain_name": "*", "cert_file": "/etc/certs/tls.crt", "key_file": "/etc/certs/tls.key"}]'
+          - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
+            value: {{ default "false" .Values.gateway.tls.insecureSkipVerify | quote }}
           - name: TYK_GW_ALLOWINSECURECONFIGS
             value: "true"
           - name: TYK_GW_COPROCESSOPTIONS_ENABLECOPROCESS

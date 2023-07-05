@@ -155,6 +155,12 @@ spec:
             
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.global.tls.dashboard }}"
+          - name: TYK_DB_HTTPSERVEROPTIONS_MINVERSION
+            value: "771"
+          - name: TYK_DB_HTTPSERVEROPTIONS_CERTIFICATES
+            value: '[{"domain_name": "*", "cert_file": "/etc/certs/tls.crt", "key_file": "/etc/certs/tls.key"}]'
+          - name: TYK_DB_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
+            value: {{ default "false" .Values.dashboard.tls.insecureSkipVerify | quote}}
 
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dashboard.hostName }}"
@@ -205,6 +211,10 @@ spec:
         ports:
         - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
+          {{ if .Values.global.tls.dashboard }}
+          - name: {{ .Values.dashboard.tls.secretName }}
+            mountPath: /etc/certs
+          {{ end }}
           {{- if .Values.dashboard.mounts }}
           {{- range $secret := .Values.dashboard.mounts }}
           - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
@@ -237,6 +247,11 @@ spec:
       {{- toYaml .Values.dashboard.securityContext | nindent 10 }}
       {{- end }}
       volumes:
+        {{ if .Values.global.tls.dashboard }}
+        - name: {{ .Values.dashboard.tls.secretName }}
+          secret:
+            secretName: {{ .Values.dashboard.tls.secretName }}
+        {{ end }}
         {{- if .Values.dashboard.mounts }}
         {{- range $secret := .Values.dashboard.mounts }}
         - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
