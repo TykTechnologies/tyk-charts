@@ -390,6 +390,7 @@ tyk-bootstrap:
     dashboard:
       enabled: true
       deploymentName: dashboard-tyk-single-dc-tyk-dashboard
+      sslInsecureSkipVerify: false
     portal:
       enabled: true
     gateway:

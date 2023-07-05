@@ -58,6 +58,8 @@ spec:
               {{- else }}
               value: "dashboard-svc-tyk-dashboard"
               {{- end }}
+            - name: TYK_DASHBOARD_INSECURE_SKIP_VERIFY
+              value: {{ default "false" .Values.bootstrap.dashboard.sslInsecureSkipVerify }}
             - name: TYK_DB_LISTENPORT
               value: "{{ .Values.global.servicePorts.dashboard }}"
             - name: TYK_DB_LICENSEKEY
