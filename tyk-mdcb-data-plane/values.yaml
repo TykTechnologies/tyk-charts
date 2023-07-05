@@ -107,6 +107,8 @@ tyk-gateway:
       useDefaultTykCertificate: true
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
       secretName: tyk-default-tls-secret
+      # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
+      insecureSkipVerify: false
 
     # kind is type of k8s object to be created for gateway.
     kind: Deployment
