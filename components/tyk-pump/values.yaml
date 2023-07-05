@@ -118,6 +118,15 @@ pump:
   # number for replicas for pump deployment
   replicaCount: 1
 
+  # podAnnotations is annotations to be added to Tyk Pump pod.
+  # It takes key-value pairs.
+  # There are no required annotation field for Tyk Pump.
+  #
+  # podAnnotations:
+  #   yourkey: value
+  #   image: yourhub
+  podAnnotations: {}
+
   image:
     # image repository for Tyk pump
     repository: docker.tyk.io/tyk-pump/tyk-pump
@@ -144,10 +153,10 @@ pump:
   hybridPump: 
     # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
     enableAggregateAnalytics: true
-    # Hybrid pump RPC calls timeout in seconds.
-    callTimeout: 30
-    # Hybrid pump connection pool size.
-    poolSize: 30
+    # Hybrid pump RPC calls timeout in seconds. If not specified, default value will be picked up by Tyk Pump.
+    callTimeout: 10
+    # Hybrid pump connection pool size. If not specified, default value will be picked up by Tyk Pump.
+    poolSize: 5
 
   # prometheusPump configures Tyk Pump to expose Prometheus metrics.
   # Please add "prometheus" to .Values.pump.backend in order to enable Prometheus Pump.
@@ -180,9 +189,6 @@ pump:
       #   kubectl describe prometheuses.monitoring.coreos.com <PROMETHEUS_POD>
       podMonitorSelector:
         release: prometheus-stack
-
-  # annotations for pump deployment  
-  annotations: {}
 
   # We usually recommend not to specify default resources and to leave this
   # as a conscious choice for the user. This also increases chances charts

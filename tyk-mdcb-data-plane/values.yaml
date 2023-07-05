@@ -111,6 +111,15 @@ tyk-gateway:
     # kind is type of k8s object to be created for gateway.
     kind: Deployment
 
+    # podAnnotations is annotations to be added to Tyk Gateway pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Gateway.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
+    podAnnotations: {}
+
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
@@ -284,6 +293,15 @@ tyk-pump:
     # number for replicas for pump deployment
     replicaCount: 1
 
+    # podAnnotations is annotations to be added to Tyk Pump pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Pump.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
+    podAnnotations: {}
+
     image:
       # image repository for Tyk pump
       repository: docker.tyk.io/tyk-pump/tyk-pump
@@ -311,9 +329,9 @@ tyk-pump:
     hybridPump:
       # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
       enableAggregateAnalytics: true
-      # Hybrid pump RPC calls timeout in seconds.
+      # Hybrid pump RPC calls timeout in seconds. If not specified, default value will be picked up by Tyk Pump.
       callTimeout: 10
-      # Hybrid pump connection pool size.
+      # Hybrid pump connection pool size. If not specified, default value will be picked up by Tyk Pump.
       poolSize: 5
 
     # prometheusPump configures Tyk Pump to expose Prometheus metrics.
