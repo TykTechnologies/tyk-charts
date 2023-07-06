@@ -151,7 +151,7 @@ jobs:
       - name: Install helm
         uses: Azure/setup-helm@v1.1
         with:
-          version: v3.5.3
+          version: v3.7.0
 
       - name: Deploy Tyk OSS and Dependencies
         run: |
