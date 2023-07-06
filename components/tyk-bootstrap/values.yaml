@@ -124,3 +124,17 @@ bootstrap:
   fullnameOverride: ""
   nameOverride: ""
 
+  # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
+  # It takes key-value pairs.
+  # There are no required annotations for Tyk Bootstrap.
+  #
+  # podAnnotations:
+  #   postInstallPodAnnotations:
+  #     key: value
+  #     post: install
+  #   preDeletePodAnnotations:
+  #     key: value
+  #     post: install
+  podAnnotations:
+    postInstallPodAnnotations: {}
+    preDeletePodAnnotations: {}
