@@ -58,7 +58,7 @@ This removes all the Kubernetes components associated with the chart and deletes
 ## Upgrading Chart
 
 ```bash
-helm upgrade tyk-single-dc tyk-helm/tyk-single-dc -n tyk
+helm upgrade tyk-single-dc tyk-helm/tyk-single-dc -n tyk --devel
 ```
 
 ## Configuration
