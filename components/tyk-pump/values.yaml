@@ -137,6 +137,27 @@ pump:
     # image pull policy
     pullPolicy: IfNotPresent
 
+  service:
+    # Tyk Pump svc is disabled by default. Set it to true to enable it.
+    enabled: false
+
+    # type specifies type of the service.
+    type: NodePort
+
+    # port specifies the port exposed by the service.
+    port: 9090
+
+    # externalTrafficPolicy denotes if this Service desires to route external traffic to node-local or
+    # cluster-wide endpoints, while using LoadBalancer type of service.
+    externalTrafficPolicy: Local
+
+    # annotations specifies annotations to be added Tyk Pump service.
+    annotations: {}
+
+  # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
+  # The default port is 9090.
+  containerPort: 9090
+
   # backend defines the pumps to be created by default, as an array of string.
   # Supported backends are ["mongo", "postgres", "prometheus","hybrid"]
   # If you would like to use other backends such as ElasticSearch, please
@@ -160,11 +181,11 @@ pump:
 
   # prometheusPump configures Tyk Pump to expose Prometheus metrics.
   # Please add "prometheus" to .Values.pump.backend in order to enable Prometheus Pump.
+  # The container port where Tyk Pump serves the metrics to Prometheus can be configured
+  # via .pump.containerPort field.
   prometheusPump:
     # host represents the host without port, where Tyk Pump serve the metrics for Prometheus.
     host: ""
-    # port represents the port where Tyk Pump serve the metrics for Prometheus.
-    port: 9090
     # path represents the path to the Prometheus collection. For example /metrics.
     path: /metrics
     # customMetrics allows defining custom Prometheus metrics for Tyk Pump.
