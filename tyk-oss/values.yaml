@@ -3,6 +3,10 @@ global:
     # Determines whether the pump component should be installed.
     pump: false
 
+  servicePorts:
+    # The port at which the gateway service can be found at
+    gateway: 8080
+
   tls:
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
@@ -101,6 +105,15 @@ tyk-gateway:
 
     # kind is type of k8s object to be created for gateway.
     kind: Deployment
+
+    # podAnnotations is annotations to be added to Tyk Gateway pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Gateway.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
+    podAnnotations: {}
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
@@ -241,6 +254,15 @@ tyk-pump:
   pump:
     # number for replicas for pump deployment
     replicaCount: 1
+
+    # podAnnotations is annotations to be added to Tyk Pump pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Pump.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
+    podAnnotations: {}
 
     image:
       # image repository for Tyk pump
