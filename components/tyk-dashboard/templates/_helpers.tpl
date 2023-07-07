@@ -92,3 +92,11 @@ mongo
 mongo
 {{- end -}}
 {{- end -}}
+
+{{- define "tyk-dashboard.tplvalues.render" -}}
+    {{- if typeIs "string" .value }}
+        {{- tpl .value .context }}
+    {{- else }}
+        {{- tpl (.value | toYaml) .context }}
+    {{- end }}
+{{- end -}}

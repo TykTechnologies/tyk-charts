@@ -22,6 +22,9 @@ spec:
     metadata:
       annotations:
         sidecar.istio.io/inject: “false”
+        {{- if .Values.bootstrap.podAnnotations.postInstallPodAnnotations}}
+        {{ toYaml .Values.bootstrap.podAnnotations.postInstallPodAnnotations | nindent 8 }}
+        {{- end }}
     spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
