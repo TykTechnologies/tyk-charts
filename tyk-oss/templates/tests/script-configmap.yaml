@@ -4,5 +4,6 @@ metadata:
   name: test-tyk-oss-map
   annotations:
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+    "helm.sh/hook": test
 data:
 {{ (.Files.Glob "scripts/tests/oss-test.sh").AsConfig | indent 2 }}

@@ -165,6 +165,18 @@ spec:
             value: "true"
           - name: TYK_GW_AUTHOVERRIDE_AUTHPROVIDER_STORAGEENGINE
             value: "rpc"
+          - name: TYK_GW_SLAVEOPTIONS_RPCKEY
+            value: "{{ .Values.global.remoteControlPlane.orgId }}"
+          - name: TYK_GW_SLAVEOPTIONS_APIKEY
+            value: "{{  .Values.global.remoteControlPlane.userApiKey }}"
+          - name: TYK_GW_SLAVEOPTIONS_GROUPID
+            value: "{{ .Values.global.remoteControlPlane.groupID}}"
+          - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
+            value: "{{ .Values.global.remoteControlPlane.connectionString }}"
+          - name: TYK_GW_SLAVEOPTIONS_USESSL
+            value: "{{ .Values.global.remoteControlPlane.useSSL}}"
+          - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
+            value: "{{ .Values.global.remoteControlPlane.sslInsecureSkipVerify}}"
         {{- end}}
           - name: TYK_GW_POLICIES_POLICYRECORDNAME
         {{- if .Values.global.remoteControlPlane.enabled }}
