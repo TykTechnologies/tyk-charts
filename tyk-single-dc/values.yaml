@@ -28,19 +28,19 @@ global:
     gateway: false
 
   remoteControlPlane:
-      enabled: false
-      # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
-      connectionString: ""
-      # orgID of your dashboard user
-      orgId: ""
-      # API key of your dashboard user
-      userApiKey: ""
-      # needed in case you want to have multiple single-dcs connected to the same redis instance
-      groupID: ""
-      # enable/disable ssl
-      useSSL: false
-      # Disables SSL certificate verification
-      sslInsecureSkipVerify: true
+    enabled: false
+    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+    connectionString: ""
+    # orgID of your dashboard user
+    orgId: ""
+    # API key of your dashboard user
+    userApiKey: ""
+    # needed in case you want to have multiple single-dcs connected to the same redis instance
+    groupID: ""
+    # enable/disable ssl
+    useSSL: false
+    # Disables SSL certificate verification
+    sslInsecureSkipVerify: true
 
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
