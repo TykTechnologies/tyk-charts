@@ -15,6 +15,9 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      {{- if .Values.pump.podAnnotations }}
+      annotations: {{ toYaml .Values.pump.podAnnotations | nindent 8 }}
+      {{- end }}
       labels:
         app: pump-{{ include "tyk-pump.fullname" . }}
         release: {{ .Release.Name }}
@@ -36,11 +39,9 @@ spec:
         image: "{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
         imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
         workingDir: "/opt/tyk-pump"
-        {{- if has "prometheus" .Values.pump.backend }}
         ports:
-          - name: prom-metrics
-            containerPort: {{ .Values.pump.prometheusPump.port }}
-        {{ end }}
+          - name: tyk-pump-port
+            containerPort: {{ .Values.pump.containerPort }}
         securityContext:
           runAsNonRoot: true
           allowPrivilegeEscalation: false
@@ -71,17 +72,22 @@ spec:
             value: "{{ .Values.global.remoteControlPlane.sslInsecureSkipVerify }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_AGGREGATED
             value: "{{ .Values.pump.hybridPump.enableAggregateAnalytics }}"
+            {{ if .Values.pump.hybridPump.callTimeout }}
           - name: TYK_PMP_PUMPS_HYBRID_META_CALLTIMEOUT
             value: "{{ .Values.pump.hybridPump.callTimeout }}"
+            {{ end }}
+            {{ if .Values.pump.hybridPump.poolSize }}
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCPOOLSIZE
             value: "{{ .Values.pump.hybridPump.poolSize }}"
+            {{ end }}
           {{ end }}
           {{ if has "prometheus" .Values.pump.backend }}
           # Configure Prometheus Pump for Tyk Pump
           - name: TYK_PMP_PUMPS_PROMETHEUS_TYPE
             value: prometheus
+          # Since PodMonitor is in use, please use containerPort of Tyk Pump pod.
           - name: TYK_PMP_PUMPS_PROMETHEUS_META_ADDR
-            value: "{{ .Values.pump.prometheusPump.host }}:{{ .Values.pump.prometheusPump.port }}"
+            value: "{{ .Values.pump.prometheusPump.host }}:{{ .Values.pump.containerPort }}"
           - name: TYK_PMP_PUMPS_PROMETHEUS_META_PATH
             value: "{{ .Values.pump.prometheusPump.path }}"
             {{ if .Values.pump.prometheusPump.customMetrics }}
