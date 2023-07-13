@@ -402,7 +402,6 @@ tyk-bootstrap:
   # Default values for tyk-bootstrap.
   # This is a YAML-formatted file.
   # Declare variables to be passed into your templates.
-
   bootstrap:
     dashboard:
       enabled: true
@@ -421,14 +420,10 @@ tyk-bootstrap:
     # Set a password or a random one will be assigned.
     password: "123456"
 
-
   org:
     name: Default Org
     # The hostname to bind the Portal to.
     cname: tyk-portal.local
-
-  secrets:
-    AdminSecret: "12345"
 
   operatorSecret: true
 

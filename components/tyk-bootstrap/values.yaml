@@ -27,8 +27,18 @@ global:
     dashboard: false
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
-  
-  
+
+  secrets:
+    # tyk_analytics.conf admin_secret
+    # tib.conf TykAPISettings.GatewayConfig.AdminSecret
+    # tib.conf TykAPISettings.DashboardConfig.AdminSecret
+    AdminSecret: "12345"
+    # If you don't want to store plaintext secrets in the Helm value file and would
+    # rather provide the k8s Secret externally please populate the value below
+    # You can set following fields in the secret
+    # AdminSecret - Admin user secret key
+    useSecretName: ""
+
 bootstrap:
   dashboard:
     # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
@@ -58,10 +68,6 @@ bootstrap:
     name: Default Org
     # The hostname to bind the Portal to.
     cname: tyk-portal.local
-
-  secrets:
-    # Secret needed for the admin user. Please change it to a more secure value.
-    AdminSecret: "12345"
 
   # Trigger to control if we want to create the tyk-operator secret
   operatorSecret: true
