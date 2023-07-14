@@ -96,8 +96,8 @@ global:
     database: tyk_analytics
     sslmode:
 
-  # Choose the backend for Tyk. [ "mongo", "postgres" ]
-  backend: &globalBackend postgres
+  # Choose the storageType for Tyk. [ "mongo", "postgres" ]
+  storageType: &globalBackend postgres
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.

@@ -81,11 +81,11 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 
-{{- define "tyk-dashboard.backend" -}}
-{{- if .Values.global.backend -}}
-{{- if eq "postgres" .Values.global.backend -}}
+{{- define "tyk-dashboard.storageType" -}}
+{{- if .Values.global.storageType -}}
+{{- if eq "postgres" .Values.global.storageType -}}
 postgres
-{{- else if eq "mongo" .Values.global.backend -}}
+{{- else if eq "mongo" .Values.global.storageType -}}
 mongo
 {{- end -}}
 {{- else -}}
