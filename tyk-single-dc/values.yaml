@@ -10,7 +10,7 @@ global:
 
   license:
     dashboard: ""
-  
+
   servicePorts:
     # The port at which the dashboard service can be found at
     dashboard: 3000
@@ -106,7 +106,7 @@ global:
     # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
 
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-    # Default value: false  
+    # Default value: false
     # mongoURL: ""
 
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
