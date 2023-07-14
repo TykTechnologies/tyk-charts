@@ -46,7 +46,6 @@ global:
     # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME
 
-
   redis:
     # The addrs value will allow you to set your Redis addresses. If you are
     # using a redis cluster, you can list the endpoints of the redis instances
@@ -56,7 +55,6 @@ global:
       - redis.tyk.svc.cluster.local:6379
       #   This is the DNS name of the redis as set when using Bitnami
       # - "tyk-redis-master.tyk.svc.cluster.local:6379"
-
 
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
@@ -99,7 +97,7 @@ global:
     sslmode:
 
   # Choose the backend for Tyk. [ "mongo", "postgres" ]
-  backend: mongo
+  backend: &globalBackend postgres
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
@@ -311,6 +309,7 @@ tyk-pump:
     # By default, Tyk Pump uses Prometheus.
     backend:
       - "prometheus"
+      - *globalBackend
 
     # uptimePumpBackend configures uptime Tyk Pump. ["", "mongo", "postgres"].
     # Set it to "" for disabling uptime Tyk Pump. By default, uptime pump is disabled.
