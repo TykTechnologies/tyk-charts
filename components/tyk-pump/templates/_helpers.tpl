@@ -33,9 +33,6 @@ Create chart name and version as used by the chart label.
 {{- define "tyk-pump.redis_url" -}}
 {{- if .Values.global.redis.addrs -}}
 {{ join "," .Values.global.redis.addrs }}
-{{- /* Adds support for older charts with the host and port options */}}
-{{- else if and .Values.global.redis.host .Values.global.redis.port -}}
-{{ .Values.global.redis.host }}:{{ .Values.global.redis.port }}
 {{- else -}}
 redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
