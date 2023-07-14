@@ -3,14 +3,14 @@
 # Declare variables to be passed into your templates.
 
 global:
-  license:
-    dashboard: ""
   components:
     # Determines whether or not the pump component should be installed.
     pump: true
-
     dashboard: true
 
+  license:
+    dashboard: ""
+  
   servicePorts:
     # The port at which the dashboard service can be found at
     dashboard: 3000
@@ -47,18 +47,40 @@ global:
     APISecret: CHANGEME
 
   redis:
-    # The addrs value will allow you to set your Redis addresses. If you are
-    # using a redis cluster, you can list the endpoints of the redis instances
-    # or use the cluster configuration endpoint.
+    # The addrs value will allow you to set your Redis addresses.
+    #
+    # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
+    # endpoint. If using sentinel connection mode for Redis, please update the port number (typically 26379).
+    #
+    # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
+    # the endpoints of the redis instances or use the cluster configuration endpoint.
+    #
     # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
-    addrs:
-      - redis.tyk.svc.cluster.local:6379
-      #   This is the DNS name of the redis as set when using Bitnami
-      # - "tyk-redis-master.tyk.svc.cluster.local:6379"
+    # addrs:
+    #   Example using tyk simple redis chart
+    #   - redis.tyk.svc.cluster.local:6379
+    #   Example using bitnami/redis
+    #   - tyk-redis-master.tyk.svc.cluster.local:6379
+    #   Example using bitnami/redis with sentinel
+    #   - tyk-redis.tyk.svc.cluster.local:26379
+    #   Example using bitnami/redis-cluster
+    #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
 
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
-    pass: ""
+    # pass: ""
+
+    # Enables sentinel connection mode for Redis. If enabled, provide both
+    # mandatory values for sentinelPass and masterName.
+    # enableSentinel: false
+
+    # Redis sentinel password, only required while enableSentinel is true.
+    # For bitnami/redis the same password as Redis above
+    # sentinelPass: ""
+
+    # Redis sentinel master name, only required while enableSentinel is true.
+    # For bitnami/redis typically redis-master
+    # masterName: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -81,6 +103,10 @@ global:
     # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
 
     # If your MongoDB has a password you can add the username and password to the url
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+
+    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+    # Default value: false  
     # mongoURL: ""
 
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
