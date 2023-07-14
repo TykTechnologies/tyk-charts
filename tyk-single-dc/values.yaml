@@ -97,7 +97,7 @@ global:
     sslmode:
 
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
-  storageType: &globalBackend postgres
+  storageType: &globalStorageType postgres
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
@@ -309,7 +309,7 @@ tyk-pump:
     # By default, Tyk Pump uses Prometheus.
     backend:
       - "prometheus"
-      - *globalBackend
+      - *globalStorageType
 
     # uptimePumpBackend configures uptime Tyk Pump. ["", "mongo", "postgres"].
     # Set it to "" for disabling uptime Tyk Pump. By default, uptime pump is disabled.
