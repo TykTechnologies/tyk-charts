@@ -1,6 +1,6 @@
 apiVersion: v2
-name: tyk-single-dc
-description: A Helm chart for deploying an instance of Tyk Single Datacenter composed of Tyk Gateway, Tyk Pump and Tyk Dashboard
+name: tyk-enterprise-portal
+description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -17,21 +17,8 @@ type: application
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
 version: 1.0.0-beta4
 
-dependencies:
-  - name: tyk-gateway
-    version: 1.0.0-beta4
-    repository: file://../components/tyk-gateway
-  - name: tyk-pump
-    version: 1.0.0-beta4
-    repository: file://../components/tyk-pump
-    condition: global.components.pump
-  - name: tyk-dashboard
-    version: 1.0.0-beta4
-    repository: file://../components/tyk-dashboard
-  - name: tyk-bootstrap
-    version: 1.0.0-beta4
-    repository: file://../components/tyk-bootstrap
-  - name: tyk-enterprise-portal
-    version: 1.0.0-beta4
-    repository: file://../components/tyk-enterprise-portal
-
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "5.0.0"

@@ -1,0 +1,116 @@
+# Default values for tyk-enterprise-portal.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Enterprise Portal will only bootstrap if the tyk-enterprise-portal-conf secret
+# is present. The secret is created during the dashboard bootstrapping and
+# be turned on and off using the dash.enterprisePortalSecret bool.
+
+
+# The hostname to bind the Enterprise Portal to.
+hostName: tyk-enterprise-portal.local
+# Enterprise Portal license.
+license: ""
+# Enterprise Portal admin information.
+adminUser:
+  email: default@example.com
+  password: A8vMlXSWY3
+storage:
+  database:
+    type: "sqlite3"
+    connectionString: "db/portal.db"
+  persistence:
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+    annotations: {}
+    labels: {}
+    selector: {}
+replicaCount: 1
+containerPort: 3001
+image:
+  repository: tykio/portal
+  # Enterprise portal < v1.2 is not supported
+  tag: v1.2.0
+  pullPolicy: Always
+service:
+  type: NodePort
+  port: 3001
+  externalTrafficPolicy: Local
+  annotations: {}
+# Creates an ingress object in k8s. Will require an ingress-controller and
+# annotation to that ingress controller.
+ingress:
+  enabled: false
+  # specify your ingress controller class name below
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+#  - secretName: chart-example-tls
+#    hosts:
+#      - chart-example.local
+resources: {}
+  # We usually recommend not to specify default resources and to leave this
+  # as a conscious choice for the user. This also increases chances charts
+  # run on environments with little resources, such as Minikube. If you do
+  # want to specify resources, uncomment the following lines, adjust them
+  # as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+#  memory: 128Mi
+securityContext:
+  runAsUser: 1000
+  fsGroup: 2000
+nodeSelector: {}
+tolerations: []
+affinity: {}
+extraEnvs: []
+## extraVolumes A list of volumes to be added to the pod
+## extraVolumes:
+##   - name: ca-certs
+##     secret:
+##       defaultMode: 420
+##       secretName: ca-certs
+extraVolumes: []
+## extraVolumeMounts A list of volume mounts to be added to the pod
+## extraVolumeMounts:
+##   - name: ca-certs
+##     mountPath: /etc/ssl/certs/ca-certs.crt
+##     readOnly: true
+extraVolumeMounts: []
+mounts: []
+
+
+secrets:
+  # If you don't want to store plaintext secrets in the Helm value file and would
+  # rather provide the k8s Secret externally please populate the value below
+  useSecretName: ""
+
+livenessProbe:
+  initialDelaySeconds: 60
+
+readinessProbe:
+  initialDelaySeconds: 60
+
+
+global:
+  tls:
+    dashboard: false
+    enterprisePortal: false
+  servicePorts:
+    dashboard: 3000
+  bootstrap:
+    enterprisePortal: true
+  secrets:
+    enterprisePortal: tyk-enterprise-portal-conf

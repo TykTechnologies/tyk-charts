@@ -6,6 +6,13 @@ global:
     # The license key needed for the Tyk Dashboard.
     dashboard: ""
 
+  secrets:
+    enterprisePortal: tyk-enterprise-portal-conf
+
+  bootstrap:
+    enterprisePortal: true
+    dashboard: true
+
   servicePorts:
     # The port at which the dashboard service can be found at
     dashboard: 3000
@@ -16,6 +23,7 @@ global:
     # Enables/disables the dashboard component and also used to detect when the bootstrapping needs to be done
     # for a separate Tyk Dashboard installation or for an umbrella chart installation
     dashboard: false
+    enterprisePortal: false
 
   tls:
     # If set to true the Dashboard will use SSL connection.
@@ -27,6 +35,7 @@ global:
     dashboard: false
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
+    enterprisePortal: false
   redis:
     # The addrs value will allow you to set your Redis addresses. If you are
     # using a redis cluster, you can list the endpoints of the redis instances
@@ -118,8 +127,7 @@ bootstrap:
   # Trigger to control if we want to create the tyk-operator secret
   operatorSecret: true
 
-  # Trigger to control if we want to create the tyk-enterprise-portal secret
-  enterprisePortalSecret: true
+
 
   fullnameOverride: ""
   nameOverride: ""
