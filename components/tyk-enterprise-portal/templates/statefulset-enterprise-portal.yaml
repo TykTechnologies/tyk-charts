@@ -68,7 +68,7 @@ spec:
           - name: PORTAL_HOST_PORT
             value: "{{ .Values.containerPort }}"
           - name: ADMIN_EMAIL
-            value: "{{ .Values.adminUser.email }}"
+            value: "{{ .Values.global.adminUser.email }}"
           - name: ADMIN_PASSWORD
             valueFrom:
               secretKeyRef:

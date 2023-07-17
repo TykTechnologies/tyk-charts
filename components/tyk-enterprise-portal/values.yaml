@@ -12,9 +12,7 @@ hostName: tyk-enterprise-portal.local
 # Enterprise Portal license.
 license: ""
 # Enterprise Portal admin information.
-adminUser:
-  email: default@example.com
-  password: A8vMlXSWY3
+
 storage:
   database:
     type: "sqlite3"
@@ -105,6 +103,9 @@ readinessProbe:
 
 
 global:
+  adminUser:
+    email: default@example.com
+    password: A8vMlXSWY3
   tls:
     dashboard: false
     enterprisePortal: false

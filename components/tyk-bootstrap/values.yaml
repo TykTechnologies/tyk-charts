@@ -5,7 +5,12 @@ global:
   license:
     # The license key needed for the Tyk Dashboard.
     dashboard: ""
-
+  adminUser:
+    firstName: admin
+    lastName: user
+    email: default@example.com
+    # Set a password or a random one will be assigned. Admin user password must have at least 6 characters.
+    password: "123456"
   secrets:
     enterprisePortal: tyk-enterprise-portal-conf
 
@@ -107,12 +112,7 @@ bootstrap:
     # Name of bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
     bootstrapJobName: bootstrap-post-install
 
-  adminUser:
-    firstName: admin
-    lastName: user
-    email: default@example.com
-    # Set a password or a random one will be assigned. Admin user password must have at least 6 characters.
-    password: "123456"
+
 
   org:
     # The name for your organization inside Tyk

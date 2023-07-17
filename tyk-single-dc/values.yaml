@@ -5,6 +5,13 @@
 global:
   license:
     dashboard: ""
+
+  adminUser:
+    firstName: admin
+    lastName: user
+    email: default@example.com
+    # Set a password or a random one will be assigned.
+    password: "123456"
   components:
     # Determines whether or not the pump component should be installed.
     pump: true
@@ -420,12 +427,7 @@ tyk-bootstrap:
   jobs:
     bootstrapJobName: bootstrap-post-install
 
-  adminUser:
-    firstName: admin
-    lastName: user
-    email: default@example.com
-    # Set a password or a random one will be assigned.
-    password: "123456"
+
 
 
   org:
@@ -557,15 +559,6 @@ tyk-dashboard:
     # variables in extraEnvs object array to define your SSL cert and key files.
     tls: false
 
-    # Dashboard admin information.
-    adminUser:
-      firstName: admin
-      lastName: user
-      email: default@example.com
-      # Set a password or a random one will be assigned.
-      password: "123456"
-    # Dashboard Organisation information.
-
 tyk-enterprise-portal:
   # Default values for tyk-enterprise-portal.
   # This is a YAML-formatted file.
@@ -581,9 +574,6 @@ tyk-enterprise-portal:
   # Enterprise Portal license.
   license: ""
   # Enterprise Portal admin information.
-  adminUser:
-    email: default@example.com
-    password: A8vMlXSWY3
   storage:
     database:
       type: "sqlite3"

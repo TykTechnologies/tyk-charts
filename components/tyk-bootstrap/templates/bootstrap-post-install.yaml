@@ -37,11 +37,11 @@ spec:
             - name: TYK_DB_OMITCONFIGFILE
               value: "true"
             - name: TYK_ADMIN_FIRST_NAME
-              value: {{ .Values.bootstrap.adminUser.firstName | quote }}
+              value: {{ .Values.global.adminUser.firstName | quote }}
             - name: TYK_ADMIN_LAST_NAME
-              value: {{ .Values.bootstrap.adminUser.lastName | quote }}
+              value: {{ .Values.global.adminUser.lastName | quote }}
             - name: TYK_ADMIN_EMAIL
-              value: {{ .Values.bootstrap.adminUser.email | quote }}
+              value: {{ .Values.global.adminUser.email | quote }}
             - name: TYK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
