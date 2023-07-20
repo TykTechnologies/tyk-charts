@@ -177,11 +177,7 @@ spec:
           {{ end }}
 
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
-            {{- if and .Values.global.redis.host .Values.global.redis.port }}
-            value: "{{ .Values.global.redis.host }}:{{ .Values.global.redis.port }}"
-            {{- else }}
-            value: "{{ join "," .Values.global.redis.addrs }}"
-            {{- end }}
+            value: {{ include "tyk-pump.redis_url" . | quote }}
           {{ if .Values.global.redis.enableSentinel }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SENTINELPASSWORD
             valueFrom:
