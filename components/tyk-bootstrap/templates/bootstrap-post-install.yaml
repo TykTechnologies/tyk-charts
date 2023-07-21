@@ -63,7 +63,14 @@ spec:
             - name: TYK_DB_LICENSEKEY
               value: {{ .Values.global.license.dashboard | quote }}
             - name: TYK_ADMIN_SECRET
-              value: {{ .Values.bootstrap.secrets.AdminSecret | quote }}
+              {{- if not .Values.global.secrets.useSecretName }}
+              value: {{ .Values.global.secrets.AdminSecret | quote }}
+              {{- else }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.secrets.useSecretName | quote }}
+                  key: AdminSecret
+              {{- end }}
             - name: TYK_ORG_NAME
               value: {{ .Values.bootstrap.org.name | quote }}
             - name: TYK_ORG_CNAME

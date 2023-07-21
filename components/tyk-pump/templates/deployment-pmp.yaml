@@ -104,8 +104,8 @@ spec:
           - name: TYK_PMP_PUMPS_SQL_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end }}
-                key: pgConnectionString
+                name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
             
           # SQL Aggregate Pump
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_TYPE
@@ -115,8 +115,8 @@ spec:
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end }}
-                key: pgConnectionString
+                name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
           {{ end }}
           {{ if has "mongo" .Values.pump.backend }}
           # Mongo Pump
@@ -127,8 +127,8 @@ spec:
           - name: TYK_PMP_PUMPS_MONGO_META_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end }}
-                key: mongoURL
+                name: {{ include "tyk-pump.mongo_url_secret_name" . }}
+                key: {{ include "tyk-pump.mongo_url_secret_key" . }}
           
           # Mongo Aggregate Pump
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_TYPE
@@ -138,8 +138,8 @@ spec:
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end }}
-                key: mongoURL
+                name: {{ include "tyk-pump.mongo_url_secret_name" . }}
+                key: {{ include "tyk-pump.mongo_url_secret_key" . }}
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_COLLECTIONNAME
             value: "tyk_analytics_pump"
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
@@ -162,15 +162,15 @@ spec:
           - name: TYK_PMP_UPTIMEPUMPCONFIG_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end }}
-                key: pgConnectionString
+                name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
           {{ else if eq "mongo" (include "tyk-pump.uptimePump" .) }}
           # Mongo Uptime Pump
           - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end }}
-                key: mongoURL
+                name: {{ include "tyk-pump.mongo_url_secret_name" . }}
+                key: {{ include "tyk-pump.mongo_url_secret_key" . }}
           - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOUSESSL
             value: "{{ default "false" .Values.mongo.useSSL }}"
           {{ end }}
@@ -182,8 +182,8 @@ spec:
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SENTINELPASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end }}
-                key: redisSentinelPass
+                name: {{ include "tyk-pump.redis_secret_name" . }}
+                key: {{ include "tyk-pump.redis_secret_key" . }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MASTERNAME
             value: "{{- .Values.global.redis.masterName -}}"
           {{ else if .Values.global.redis.enableCluster }}
@@ -198,8 +198,8 @@ spec:
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end}}
-                key: redisPass
+               name: {{ include "tyk-pump.redis_secret_name" . }}
+               key: {{ include "tyk-pump.redis_secret_key" . }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
 
