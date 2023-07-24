@@ -13,6 +13,6 @@ spec:
     matchLabels:
       app: pump-{{ include "tyk-pump.fullname" . }}
   podMetricsEndpoints:
-    - port: prom-metrics
+    - port: tyk-pump-port
 {{ end }}
 {{ end }}

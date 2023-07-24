@@ -14,16 +14,6 @@ nameOverride: ""
 fullnameOverride: ""
 
 global:
-  secrets:
-    # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
-    # rather provide the k8s Secret externally.
-    # Can set following fields in the secret:
-    # - redisPass: Sets redis password
-    # - redisSentinelPass: Set if you  are using Redis Sentinel. Used to set Redis password
-    # - mongoURL: Sets mongo connection url
-    # - pgConnectionString: Sets postgres connection details
-    useSecretName: ""
-
   redis:
     # The addrs value will allow you to set your Redis addresses.
     #
@@ -49,6 +39,11 @@ global:
     # your password in the field below
     # pass: ""
 
+    # Redis password can also be provided via a secret. Provide the name of the secret and key below.
+    # passSecret:
+    #   name: ""
+    #   keyName: ""
+
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
     # useSSL: true
@@ -60,10 +55,6 @@ global:
     # Enables sentinel connection mode for Redis. If enabled, provide both
     # mandatory values for sentinelPass and masterName.
     # enableSentinel: false
-
-    # Redis sentinel password, only required while enableSentinel is true.
-    # For bitnami/redis the same password as Redis above
-    # sentinelPass: ""
 
     # Redis sentinel master name, only required while enableSentinel is true.
     # For bitnami/redis typically redis-master
@@ -83,6 +74,11 @@ global:
     # If your MongoDB has a password you can add the username and password to the url
     # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
 
+    # Connection URL can also be set using a secret. Provide the name of the secret and key below.
+    # connectionURLSecret:
+    #   name: ""
+    #   keyName: ""
+
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
     useSSL: false
@@ -95,6 +91,11 @@ global:
     password:
     database: tyk_analytics
     sslmode: disable
+
+    # Connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
 
   remoteControlPlane:
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
@@ -118,6 +119,15 @@ pump:
   # number for replicas for pump deployment
   replicaCount: 1
 
+  # podAnnotations is annotations to be added to Tyk Pump pod.
+  # It takes key-value pairs.
+  # There are no required annotation field for Tyk Pump.
+  #
+  # podAnnotations:
+  #   yourkey: value
+  #   image: yourhub
+  podAnnotations: {}
+
   image:
     # image repository for Tyk pump
     repository: docker.tyk.io/tyk-pump/tyk-pump
@@ -127,6 +137,27 @@ pump:
 
     # image pull policy
     pullPolicy: IfNotPresent
+
+  service:
+    # Tyk Pump svc is disabled by default. Set it to true to enable it.
+    enabled: false
+
+    # type specifies type of the service.
+    type: NodePort
+
+    # port specifies the port exposed by the service.
+    port: 9090
+
+    # externalTrafficPolicy denotes if this Service desires to route external traffic to node-local or
+    # cluster-wide endpoints, while using LoadBalancer type of service.
+    externalTrafficPolicy: Local
+
+    # annotations specifies annotations to be added Tyk Pump service.
+    annotations: {}
+
+  # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
+  # The default port is 9090.
+  containerPort: 9090
 
   # backend defines the pumps to be created by default, as an array of string.
   # Supported backends are ["mongo", "postgres", "prometheus","hybrid"]
@@ -144,18 +175,18 @@ pump:
   hybridPump: 
     # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
     enableAggregateAnalytics: true
-    # Hybrid pump RPC calls timeout in seconds.
-    callTimeout: 30
-    # Hybrid pump connection pool size.
-    poolSize: 30
+    # Hybrid pump RPC calls timeout in seconds. If not specified, default value will be picked up by Tyk Pump.
+    callTimeout: 10
+    # Hybrid pump connection pool size. If not specified, default value will be picked up by Tyk Pump.
+    poolSize: 5
 
   # prometheusPump configures Tyk Pump to expose Prometheus metrics.
   # Please add "prometheus" to .Values.pump.backend in order to enable Prometheus Pump.
+  # The container port where Tyk Pump serves the metrics to Prometheus can be configured
+  # via .pump.containerPort field.
   prometheusPump:
     # host represents the host without port, where Tyk Pump serve the metrics for Prometheus.
     host: ""
-    # port represents the port where Tyk Pump serve the metrics for Prometheus.
-    port: 9090
     # path represents the path to the Prometheus collection. For example /metrics.
     path: /metrics
     # customMetrics allows defining custom Prometheus metrics for Tyk Pump.
@@ -180,9 +211,6 @@ pump:
       #   kubectl describe prometheuses.monitoring.coreos.com <PROMETHEUS_POD>
       podMonitorSelector:
         release: prometheus-stack
-
-  # annotations for pump deployment  
-  annotations: {}
 
   # We usually recommend not to specify default resources and to leave this
   # as a conscious choice for the user. This also increases chances charts

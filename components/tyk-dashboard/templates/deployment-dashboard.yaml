@@ -26,6 +26,9 @@ spec:
         app: dashboard-{{ include "tyk-dashboard.fullname" . }}
         release: {{ .Release.Name }}
       annotations:
+      {{- if .Values.dashboard.podAnnotations }}
+      {{ toYaml .Values.dashboard.podAnnotations | nindent 8 }}
+      {{- end }}
       {{- if .Values.dashboard.enableIstioIngress }}
         traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.global.servicePorts.dashboard }}"
         traffic.sidecar.istio.io/includeInboundPorts: ""
@@ -143,8 +146,8 @@ spec:
           - name: TYK_DB_REDISPASSWORD
             valueFrom:
               secretKeyRef:
-                name:{{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
-                key: redisPass
+                name: {{ include "tyk-dashboard.redis_secret_name" . }}
+                key: {{ include "tyk-dashboard.redis_secret_key" . }}
           - name: TYK_DB_REDISUSESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
@@ -164,32 +167,32 @@ spec:
           - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end }}
-                key: pgConnectionString
+                name: {{ include "tyk-dashboard.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-dashboard.pg_connection_string_secret_key" . }}
 
           - name: TYK_DB_STORAGE_ANALYTICS_TYPE
             value: "postgres"
           - name: TYK_DB_STORAGE_ANALYTICS_CONNECTIONSTRING
             valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end }}
-                key: pgConnectionString
+             secretKeyRef:
+                name: {{ include "tyk-dashboard.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-dashboard.pg_connection_string_secret_key" . }}
 
           - name: TYK_DB_STORAGE_UPTIME_TYPE
             value: "postgres"
           - name: TYK_DB_STORAGE_UPTIME_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end }}
-                key: pgConnectionString
+                name: {{ include "tyk-dashboard.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-dashboard.pg_connection_string_secret_key" . }}
           {{ else }}
           - name: TYK_DB_STORAGE_MAIN_TYPE
             value: "mongo"
           - name: TYK_DB_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
-                key: mongoURL
+                name: {{ include "tyk-dashboard.mongo_url_secret_name" . }}
+                key: {{ include "tyk-dashboard.mongo_url_secret_key" . }}
           - name: TYK_DB_MONGOUSESSL
             value: "{{ default "false" .Values.global.mongo.useSSL }}"
           {{ end }}

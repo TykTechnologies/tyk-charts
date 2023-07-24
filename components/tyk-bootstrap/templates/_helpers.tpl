@@ -54,37 +54,3 @@ http
 {{- define "tyk-bootstrap.gateway_url" -}}
 {{ include "tyk-bootstrap.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}
 {{- end -}}
-
-{{- define "tyk-bootstrap.redis_url" -}}
-{{- if .Values.global.redis.addrs -}}
-{{ join "," .Values.global.redis.addrs }}
-{{- else -}}
-redis.{{ .Release.Namespace }}.svc.cluster.local:6379
-{{- end -}}
-{{- end -}}
-
-{{- define "tyk-bootstrap.mongo_url" -}}
-{{- if .Values.global.mongo.mongoURL -}}
-{{ .Values.global.mongo.mongoURL }}
-{{- else -}}
-mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-{{- end -}}
-{{- end -}}
-
-{{- define "tyk-bootstrap.pg_connection_string" -}}
-{{- if .Values.global.postgres -}}
-{{- range $key, $value := .Values.global.postgres }}{{ print $key "=" $value " " }}{{- end }}
-{{- end -}}
-{{- end -}}
-
-{{- define "tyk-bootstrap.backend" -}}
-{{- if .Values.global.backend -}}
-{{- if eq "postgres" .Values.global.backend -}}
-postgres
-{{- else if eq "mongo" .Values.global.backend -}}
-mongo
-{{- end -}}
-{{- else -}}
-mongo
-{{- end -}}
-{{- end -}}

@@ -12,7 +12,9 @@ global:
     dashboard: true
 
   servicePorts:
+    # The port at which the dashboard service can be found at
     dashboard: 3000
+    # The port at which the gateway service can be found at
     gateway: 8080
 
   tls:
@@ -42,8 +44,20 @@ global:
 
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
+    # tyk_analytics.conf tyk_api_config.secret
+    # tyk_analytics.conf shared_node_secret
     APISecret: CHANGEME
-
+    # tyk_analytics.conf admin_secret
+    # tib.conf TykAPISettings.GatewayConfig.AdminSecret
+    # tib.conf TykAPISettings.DashboardConfig.AdminSecret
+    AdminSecret: "12345"
+    # If you don't want to store plaintext secrets in the Helm value file and would
+    # rather provide the k8s Secret externally please populate the value below
+    # You can set following fields in the secret
+    # APISecret - Sets node secret in both dashboard and tyk config
+    # AdminSecret - Admin user secret key
+    # DashLicense - Tyk Dashboard license key
+    useSecretName: ""
 
   redis:
     # The addrs value will allow you to set your Redis addresses. If you are
@@ -55,10 +69,14 @@ global:
       #   This is the DNS name of the redis as set when using Bitnami
       # - "tyk-redis-master.tyk.svc.cluster.local:6379"
 
-
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
     pass: ""
+
+    # Redis password can also be provided via a secret. Provide the name of the secret and key below.
+    # passSecret:
+    #   name: ""
+    #   keyName: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -83,6 +101,11 @@ global:
     # If your MongoDB has a password you can add the username and password to the url
     # mongoURL: ""
 
+    # Connection URL can also be set using a secret. Provide the name of the secret and key below.
+    # connectionURLSecret:
+    #   name: ""
+    #   keyName: ""
+
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
     useSSL: false
@@ -95,6 +118,11 @@ global:
     password:
     database: tyk_analytics
     sslmode:
+
+    # Connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
 
   # Choose the backend for Tyk. [ "mongo", "postgres" ]
   backend: mongo
@@ -262,6 +290,15 @@ tyk-pump:
     # number for replicas for pump deployment
     replicaCount: 1
 
+    # podAnnotations is annotations to be added to Tyk Pump pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Pump.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
+    podAnnotations: {}
+
     image:
       # image repository for Tyk pump
       repository: docker.tyk.io/tyk-pump/tyk-pump
@@ -271,6 +308,27 @@ tyk-pump:
 
       # image pull policy
       pullPolicy: IfNotPresent
+
+    service:
+      # Tyk Pump svc is disabled by default. Set it to true to enable it.
+      enabled: false
+
+      # type specifies type of the service.
+      type: NodePort
+
+      # port specifies the port exposed by the service.
+      port: 9090
+
+      # externalTrafficPolicy denotes if this Service desires to route external traffic to node-local or
+      # cluster-wide endpoints, while using LoadBalancer type of service.
+      externalTrafficPolicy: Local
+
+      # annotations specifies annotations to be added Tyk Pump service.
+      annotations: {}
+
+    # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
+    # The default port is 9090.
+    containerPort: 9090
 
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are ["mongo", "postgres", "prometheus"]
@@ -286,11 +344,11 @@ tyk-pump:
 
     # prometheusPump configures Tyk Pump to expose Prometheus metrics.
     # Please add "prometheus" to .Values.pump.backend in order to enable Prometheus Pump.
+    # The container port where Tyk Pump serves the metrics to Prometheus can be configured
+    # via .pump.containerPort field.
     prometheusPump:
       # host represents the host without port, where Tyk Pump serve the metrics for Prometheus.
       host: ""
-      # port represents the port where Tyk Pump serve the metrics for Prometheus.
-      port: 9090
       # path represents the path to the Prometheus collection. For example /metrics.
       path: /metrics
       # customMetrics allows defining custom Prometheus metrics for Tyk Pump.
@@ -315,9 +373,6 @@ tyk-pump:
         #   kubectl describe prometheuses.monitoring.coreos.com <PROMETHEUS_POD>
         podMonitorSelector:
           release: prometheus-stack
-
-    # annotations for pump deployment
-    annotations: {}
 
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -376,7 +431,6 @@ tyk-bootstrap:
   # Default values for tyk-bootstrap.
   # This is a YAML-formatted file.
   # Declare variables to be passed into your templates.
-
   bootstrap:
     dashboard:
       enabled: true
@@ -395,14 +449,10 @@ tyk-bootstrap:
     # Set a password or a random one will be assigned.
     password: "123456"
 
-
   org:
     name: Default Org
     # The hostname to bind the Portal to.
     cname: tyk-portal.local
-
-  secrets:
-    AdminSecret: "12345"
 
   operatorSecret: true
 
@@ -410,6 +460,21 @@ tyk-bootstrap:
 
   fullnameOverride: ""
   nameOverride: ""
+
+  # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
+  # It takes key-value pairs.
+  # There are no required annotations for Tyk Bootstrap.
+  #
+  # podAnnotations:
+  #   postInstallPodAnnotations:
+  #     key: value
+  #     post: install
+  #   preDeletePodAnnotations:
+  #     key: value
+  #     post: install
+  podAnnotations:
+    postInstallPodAnnotations: {}
+    preDeletePodAnnotations: {}
 
 tyk-dashboard:
   dashboard:
@@ -440,9 +505,24 @@ tyk-dashboard:
 
     enableIstioIngress: false
     replicaCount: 1
+
+    # podAnnotations is annotations to be added to Tyk Dashboard pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Dashboard.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
+    podAnnotations: {}
+
     image:
+      # image repository for Tyk Dashboard.
       repository: tykio/tyk-dashboard
+
+      # tag for Tyk Dashboard
       tag: v5.0.0
+
+      # image pull policy
       pullPolicy: Always
     service:
       type: NodePort
