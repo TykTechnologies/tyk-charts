@@ -1,3 +1,9 @@
+# nameOverride overrides the Chart name. It is truncated to 63 characters.
+nameOverride: ""
+
+# fullnameOverride overrides App name. It is truncated to 63 characters.
+fullnameOverride: ""
+
 global:
   license:
     # The license key needed by Tyk Dashboard to work

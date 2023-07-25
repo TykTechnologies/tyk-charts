@@ -1,9 +1,16 @@
 # Default values for tyk-mdcb-data-plane.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+
+# nameOverride overrides the Chart name. It is truncated to 63 characters.
+nameOverride: ""
+
+# fullnameOverride overrides App name. It is truncated to 63 characters.
+fullnameOverride: ""
+
 global:
   components:
-    # Determines whether or not the pump component should be installed.
+    # Determines whether the pump component should be installed.
     pump: true
 
   servicePorts:
