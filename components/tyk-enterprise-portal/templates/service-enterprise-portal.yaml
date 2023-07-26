@@ -21,7 +21,7 @@ spec:
     name: http
   type: {{ .Values.service.type }}
   selector:
-    app: enterprise-portal-{{ include "tyk-enterprise-portal.fullname" . }}
+    app: {{ include "tyk-enterprise-portal.fullname" . }}
     release: {{ .Release.Name }}
 {{- if eq .Values.service.type "LoadBalancer" }}
   externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy }}

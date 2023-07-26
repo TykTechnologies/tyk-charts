@@ -81,7 +81,7 @@ spec:
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
             {{- end }}
-            {{- if .Values.global.components.enterprisePortal }}
+            {{- if .Values.global.bootstrap.enterprisePortal }}
             - name: ENTERPRISE_PORTAL_SECRET_ENABLED
               value: "true"
             - name: ENTERPRISE_PORTAL_SECRET_NAME

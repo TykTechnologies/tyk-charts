@@ -4,7 +4,7 @@
 
 global:
   license:
-    dashboard: ""
+    dashboard: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGxvd2VkX25vZGVzIjoiNmZlZWE5MGYtNGRkNy00MjgzLTY2MDctYjA4OGU4NzU5MzAwLDY5MmZkZTI0LWEyMjQtNGUzNS02ZDhkLTIzYzI0YzlhNGMxZCwyODhkYjJmYS00NDdkLTQ4NmYtNjM0OC1kYzk4OTI2M2FlMTAsMjk3NDdmOTktYzI5NC00NGZhLTcxNWUtY2ZmNjBjZGEzNWE3LDMxNDE0ODIzLTNjYmMtNDNmNi03ZGYzLWIzMGEwNjg5MDM0Yiw1Y2ZhZjVhYS0wNDY2LTQzODEtNzRjNS1kMjFlODAxZDNmN2QsNWM1NTE1ZjktYzE1NC00NGI4LTcwMGQtOGVjMjc2MmQ4Y2Y1LDljOGQ3M2MxLTI3YjQtNDU3ZS00MWU0LWRmNDAxMGQwNWE2ZCxjMzI4MzU4OS02YmFkLTQyZWItNmNkOS1mMzAyMGExNWU5MmIsZTlhMjRhOTItZGYzMC00YjA5LTUyMjAtMGQxOGQzZjlmZWRlIiwiZXhwIjoxNjkyNzQ4ODAwLCJpYXQiOjE2OTAxODU5NTksIm93bmVyIjoiNjFjY2U2MmMxMjFjYTEwMDAxOGJiMTkwIiwic2NvcGUiOiJtdWx0aV90ZWFtLHJiYWMsZ3JhcGgsZmVkZXJhdGlvbiIsInYiOiIyIn0.dRVwMfsBq6QrdwYMrlOY1qkni6cX1Bt_mI5D5rE8bg2JL6dVIIqEy9TIweNAVGEm7Cc5WbEQWPxdAXvnk7dM_Xyyw0aXT81cP0bjvSvNdqnwb0vqRiAzgLjFVsZxjdWWWl4aIJDMjCSUEqc7OiHFAIkR1oeWzosFRksE_xiopIaUkrrb1xRVRuAoI0gbjVKzfV72h9FKDK54R1fKEanYrJg8jC13eCkdUSyuN4p7-zmNs9fcUITkFDm9_UoQbfFAk-FYFS0NvEkyb3mI2h0a_rnUBhgpLrDL2rzIQnuFdjuL2WW2_HFQlOsZOKswHy0867Wk0EEFQFoBXLh4mFKitw"
 
   adminUser:
     firstName: admin
@@ -15,7 +15,7 @@ global:
   components:
     # Determines whether or not the pump component should be installed.
     pump: true
-    enterprisePortal: true
+    enterprisePortal: false
     dashboard: true
 
   bootstrap:
@@ -572,8 +572,7 @@ tyk-enterprise-portal:
   # The hostname to bind the Enterprise Portal to.
   hostName: tyk-enterprise-portal.local
   # Enterprise Portal license.
-  license: ""
-  # Enterprise Portal admin information.
+  license: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGxvd2VkX25vZGVzIjoiNmZlZWE5MGYtNGRkNy00MjgzLTY2MDctYjA4OGU4NzU5MzAwLDY5MmZkZTI0LWEyMjQtNGUzNS02ZDhkLTIzYzI0YzlhNGMxZCwyODhkYjJmYS00NDdkLTQ4NmYtNjM0OC1kYzk4OTI2M2FlMTAsMjk3NDdmOTktYzI5NC00NGZhLTcxNWUtY2ZmNjBjZGEzNWE3LDMxNDE0ODIzLTNjYmMtNDNmNi03ZGYzLWIzMGEwNjg5MDM0Yiw1Y2ZhZjVhYS0wNDY2LTQzODEtNzRjNS1kMjFlODAxZDNmN2QsNWM1NTE1ZjktYzE1NC00NGI4LTcwMGQtOGVjMjc2MmQ4Y2Y1LDljOGQ3M2MxLTI3YjQtNDU3ZS00MWU0LWRmNDAxMGQwNWE2ZCxjMzI4MzU4OS02YmFkLTQyZWItNmNkOS1mMzAyMGExNWU5MmIsZTlhMjRhOTItZGYzMC00YjA5LTUyMjAtMGQxOGQzZjlmZWRlIiwiZXhwIjoxNjkyNzQ4ODAwLCJpYXQiOjE2OTAxODU5NTksIm93bmVyIjoiNjFjY2U2MmMxMjFjYTEwMDAxOGJiMTkwIiwic2NvcGUiOiJtdWx0aV90ZWFtLHJiYWMsZ3JhcGgsZmVkZXJhdGlvbiIsInYiOiIyIn0.dRVwMfsBq6QrdwYMrlOY1qkni6cX1Bt_mI5D5rE8bg2JL6dVIIqEy9TIweNAVGEm7Cc5WbEQWPxdAXvnk7dM_Xyyw0aXT81cP0bjvSvNdqnwb0vqRiAzgLjFVsZxjdWWWl4aIJDMjCSUEqc7OiHFAIkR1oeWzosFRksE_xiopIaUkrrb1xRVRuAoI0gbjVKzfV72h9FKDK54R1fKEanYrJg8jC13eCkdUSyuN4p7-zmNs9fcUITkFDm9_UoQbfFAk-FYFS0NvEkyb3mI2h0a_rnUBhgpLrDL2rzIQnuFdjuL2WW2_HFQlOsZOKswHy0867Wk0EEFQFoBXLh4mFKitw"
   storage:
     database:
       type: "sqlite3"
@@ -648,13 +647,6 @@ tyk-enterprise-portal:
   ##     mountPath: /etc/ssl/certs/ca-certs.crt
   ##     readOnly: true
   extraVolumeMounts: []
-  mounts: []
-
-
-  secrets:
-    # If you don't want to store plaintext secrets in the Helm value file and would
-    # rather provide the k8s Secret externally please populate the value below
-    useSecretName: ""
 
   livenessProbe:
     initialDelaySeconds: 60

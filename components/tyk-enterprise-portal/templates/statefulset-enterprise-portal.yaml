@@ -8,7 +8,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  serviceName: service-{{ include "tyk-enterprise-portal.fullname" . }}
+  serviceName: enterprise-portal-svc-{{ include "tyk-enterprise-portal.fullname" . }}
   replicas: {{ .Values.replicaCount }}
   updateStrategy:
     # indicate which strategy we want for rolling update
@@ -24,11 +24,6 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/secrets: "{{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}"
-        {{- if .Values.mounts }}
-        {{- range $secret := .Values.mounts }}
-        "checksum/secret-{{ $secret.name }}": {{ include (print "mounts/%s" $secret.filename) . | sha256sum }}
-        {{- end }}
-        {{- end }}
     spec:
 {{- if .Values.nodeSelector }}
       nodeSelector:
@@ -63,7 +58,6 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
-
                 key: EnterprisePortalLicense
           - name: PORTAL_HOST_PORT
             value: "{{ .Values.containerPort }}"
@@ -96,16 +90,14 @@ spec:
           - name: PROVIDER_NAME
             value: "tyk"
           - name: TYK_URL
-            value: "http{{ if .Values.global.tls.enterprisePortal }}s{{ end }}://dashboard-svc-{{ .Release.Name }}.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}"
+            value: "http{{ if .Values.global.tls.dashboard }}s{{ end }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}"
           - name: TYK_AUTH
             valueFrom:
               secretKeyRef:
                 {{ if .Values.secrets.useSecretName }}
                 name: {{ .Values.secrets.useSecretName }}
-                {{ else if .Values.global.bootstrap.enterprisePortal}}
-                name: {{ .Values.global.secrets.enterprisePortal}}
                 {{ else }}
-                name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
+                name: {{ .Values.global.secrets.enterprisePortal}}
                 {{ end }}
                 key: TYK_AUTH
           - name: TYK_ORG
@@ -113,10 +105,8 @@ spec:
               secretKeyRef:
                 {{ if .Values.secrets.useSecretName }}
                 name: {{ .Values.secrets.useSecretName }}
-                {{ else if .Values.global.bootstrap.enterprisePortal}}
-                name: {{ .Values.global.secrets.enterprisePortal}}
                 {{ else }}
-                name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
+                name: {{ .Values.global.secrets.enterprisePortal}}
                 {{ end }}
                 key: TYK_ORG
         {{- if .Values.extraEnvs }}
@@ -167,12 +157,6 @@ spec:
             mountPath: /opt/portal/db
             subPath: db
           {{- end }}
-          {{- if .Values.mounts }}
-          {{- range $secret := .Values.mounts }}
-          - name: {{ $.Release.Name }}-enterprise-portal-secret-{{ $secret.name }}
-            mountPath: {{ $secret.mountPath }}
-          {{- end }}
-          {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.enterprisePortal }}S{{ end }}"
@@ -195,14 +179,6 @@ spec:
       securityContext:
       {{- toYaml .Values.securityContext | nindent 8 }}
       {{- end}}
-      volumes:
-        {{- if .Values.mounts }}
-        {{- range $secret := .Values.mounts }}
-        - name: {{ $.Release.Name }}-enterprise-portal-secret-{{ $secret.name }}
-          secret:
-            secretName: {{ $.Release.Name }}-enterprise-portal-secret-{{ $secret.name }}
-        {{- end }}
-        {{- end }}
   volumeClaimTemplates:
   - metadata:
       name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
