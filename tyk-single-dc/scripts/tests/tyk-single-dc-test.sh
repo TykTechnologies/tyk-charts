@@ -5,7 +5,7 @@ TYK_GW_SECRET=${TYK_GW_SECRET}
 
 checkGateway() {
   count=0
-  while [ $count -le 10 ]
+  while [ $count -le 20 ]
   do
     healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello)"
 

@@ -67,6 +67,30 @@ redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 {{- end -}}
 
+{{- define "tyk-dashboard.redis_secret_name" -}}
+{{- if .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.name -}}
+{{ .Values.global.redis.passSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-dashboard.redis_secret_key" -}}
+{{- if .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.keyName -}}
+{{ .Values.global.redis.passSecret.keyName }}
+{{- else -}}
+redisPass
+{{- end -}}
+{{- else -}}
+redisPass
+{{- end -}}
+{{- end -}}
+
 {{- define "tyk-dashboard.mongo_url" -}}
 {{- if .Values.global.mongo.mongoURL -}}
 {{ .Values.global.mongo.mongoURL }}
@@ -75,9 +99,57 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 
+{{- define "tyk-dashboard.mongo_url_secret_name" -}}
+{{- if .Values.global.mongo.connectionURLSecret -}}
+{{- if .Values.global.mongo.connectionURLSecret.name -}}
+{{ .Values.global.mongo.connectionURLSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-dashboard.mongo_url_secret_key" -}}
+{{- if .Values.global.mongo.connectionURLSecret -}}
+{{- if .Values.global.mongo.connectionURLSecret.keyName -}}
+{{ .Values.global.mongo.connectionURLSecret.keyName }}
+{{- else -}}
+mongoURL
+{{- end -}}
+{{- else -}}
+mongoURL
+{{- end -}}
+{{- end -}}
+
 {{- define "tyk-dashboard.pg_connection_string" -}}
 {{- if .Values.global.postgres -}}
 {{- range $key, $value := .Values.global.postgres }}{{ print $key "=" $value " " }}{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-dashboard.pg_connection_string_secret_name" -}}
+{{- if .Values.global.postgres.connectionStringSecret -}}
+{{- if .Values.global.postgres.connectionStringSecret.name -}}
+{{ .Values.global.postgres.connectionStringSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-dashboard.pg_connection_string_secret_key" -}}
+{{- if .Values.global.postgres.connectionStringSecret -}}
+{{- if .Values.global.postgres.connectionStringSecret.keyName -}}
+{{ .Values.global.postgres.connectionStringSecret.keyName }}
+{{- else -}}
+pgConnectionString
+{{- end -}}
+{{- else -}}
+pgConnectionString
 {{- end -}}
 {{- end -}}
 

@@ -18,8 +18,6 @@ global:
     # rather provide the k8s Secret externally.
     # You can set following fields in the secret
     # - APISecret - Sets node_secret and secret in tyk.conf
-    # - redisPass - Sets Redis password
-    # - redisSentinelPass - Sets Redis Password. Set it only if you are using Redis Sentinel
     useSecretName: ""
 
   redis:
@@ -46,6 +44,11 @@ global:
     # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
     # your password in the field below
     # pass: ""
+
+    # Redis password can also be provided via a secret. Provide the name of the secret and key below.
+    # passSecret:
+    #   name: ""
+    #   keyName: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false

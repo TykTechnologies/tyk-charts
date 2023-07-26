@@ -21,8 +21,6 @@ global:
   secrets:
     # tyk_analytics.conf tyk_api_config.secret
     # tyk_analytics.conf shared_node_secret
-    # tyk.conf node_secret
-    # tyk.conf secret
     APISecret: CHANGEME
     # tyk_analytics.conf admin_secret
     # tib.conf TykAPISettings.GatewayConfig.AdminSecret
@@ -30,6 +28,10 @@ global:
     AdminSecret: "12345"
     # If you don't want to store plaintext secrets in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below
+    # You can set following fields in the secret
+    # APISecret - Sets tyk_api_config.Secret and shared_node_secret in Dashboard config file
+    # AdminSecret - Admin user secret key
+    # DashLicense - Tyk Dashboard license key
     useSecretName: ""
 
   tls:
@@ -53,6 +55,11 @@ global:
     database: tyk_analytics
     sslmode:
 
+    # connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
+
   redis:
     # The addrs value will allow you to set your Redis addresses. If you are
     # using a redis cluster, you can list the endpoints of the redis instances
@@ -63,10 +70,14 @@ global:
     #   This is the DNS name of the redis as set when using Bitnami
     #   - "tyk-redis-master.tyk.svc.cluster.local:6379"
 
-
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
     pass: ""
+
+    # Redis password can also be provided via a secret. Provide the name of the secret and key below.
+    # passSecret:
+    #   name: ""
+    #   keyName: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -88,6 +99,11 @@ global:
     # For tyk-simple-mongo (no auth)
     # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
     mongoURL: ""
+
+    # Connection URL can also be set using a secret. Provide the name of the secret and key below.
+    # connectionURLSecret:
+    #   name: ""
+    #   keyName: ""
 
 dashboard:
   enableOwnership: true

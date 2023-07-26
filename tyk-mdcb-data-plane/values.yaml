@@ -32,6 +32,11 @@ global:
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME
+    # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
+    # rather provide the k8s Secret externally.
+    # You can set following fields in the secret
+    # - APISecret - Sets node_secret and secret in tyk.conf
+    useSecretName: ""
 
   redis:
     # The addrs value will allow you to set your Redis addresses.
@@ -58,6 +63,11 @@ global:
     # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
     # your password in the field below
     pass: ""
+
+    # Redis password can also be provided via a secret. Provide the name of the secret and key below.
+    # passSecret:
+    #   name: ""
+    #   keyName: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -230,43 +240,6 @@ tyk-gateway:
     sharding:
       enabled: false
       tags: ""
-
-    extraEnvs:
-      - name: TYK_GW_SLAVEOPTIONS_RPCKEY
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: orgId
-      - name: TYK_GW_SLAVEOPTIONS_APIKEY
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: userApiKey
-      - name: TYK_GW_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: APISecret
-      - name: TYK_GW_SLAVEOPTIONS_GROUPID
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: groupID
-      - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-data-plane
-            key: rpcConnString
-      - name: TYK_GW_SLAVEOPTIONS_USESSL
-        valueFrom:
-          configMapKeyRef:
-            name: config-tyk-data-plane
-            key: rpcUseSSL
-      - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
-        valueFrom:
-          configMapKeyRef:
-            name: config-tyk-data-plane
-            key: rpcSslInsecureSkipVerify
 
     # used to decide whether to send the results back directly to Tyk without a hybrid pump
     # if you want to use a hybrid pump, please change "rpc" to ""
