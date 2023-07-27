@@ -38,7 +38,6 @@ global:
     dashboard: false
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
-    key: EnterprisePortalLicense
 
   secrets:
     # tyk_analytics.conf admin_secret
