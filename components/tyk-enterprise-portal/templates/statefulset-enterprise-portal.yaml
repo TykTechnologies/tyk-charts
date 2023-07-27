@@ -22,8 +22,6 @@ spec:
       labels:
         app: {{ include "tyk-enterprise-portal.fullname" . }}
         release: {{ .Release.Name }}
-      annotations:
-        checksum/secrets: "{{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}"
     spec:
 {{- if .Values.nodeSelector }}
       nodeSelector:
@@ -53,8 +51,8 @@ spec:
           - name: PORTAL_LICENSEKEY
             valueFrom:
               secretKeyRef:
-                {{ if .Values.secrets.useSecretName }}
-                name: {{ .Values.secrets.useSecretName }}
+                {{ if .Values.global.secrets.useSecretName }}
+                name: {{ .Values.global.secrets.useSecretName }}
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
@@ -66,8 +64,8 @@ spec:
           - name: ADMIN_PASSWORD
             valueFrom:
               secretKeyRef:
-                {{ if .Values.secrets.useSecretName }}
-                name: {{ .Values.secrets.useSecretName }}
+                {{ if .Values.global.secrets.useSecretName }}
+                name: {{ .Values.global.secrets.useSecretName }}
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
@@ -77,8 +75,8 @@ spec:
           - name: PORTAL_DATABASE_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                {{ if .Values.secrets.useSecretName }}
-                name: {{ .Values.secrets.useSecretName }}
+                {{ if .Values.global.secrets.useSecretName }}
+                name: {{ .Values.global.secrets.useSecretName }}
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
@@ -94,8 +92,8 @@ spec:
           - name: TYK_AUTH
             valueFrom:
               secretKeyRef:
-                {{ if .Values.secrets.useSecretName }}
-                name: {{ .Values.secrets.useSecretName }}
+                {{ if .Values.global.secrets.useSecretName }}
+                name: {{ .Values.global.secrets.useSecretName }}
                 {{ else }}
                 name: {{ .Values.global.secrets.enterprisePortal}}
                 {{ end }}
@@ -103,8 +101,8 @@ spec:
           - name: TYK_ORG
             valueFrom:
               secretKeyRef:
-                {{ if .Values.secrets.useSecretName }}
-                name: {{ .Values.secrets.useSecretName }}
+                {{ if .Values.global.secrets.useSecretName }}
+                name: {{ .Values.global.secrets.useSecretName }}
                 {{ else }}
                 name: {{ .Values.global.secrets.enterprisePortal}}
                 {{ end }}

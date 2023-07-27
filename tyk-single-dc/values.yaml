@@ -452,8 +452,6 @@ tyk-bootstrap:
   jobs:
     bootstrapJobName: bootstrap-post-install
 
-
-
   org:
     name: Default Org
     # The hostname to bind the Portal to.
@@ -674,6 +672,3 @@ tyk-enterprise-portal:
 
   readinessProbe:
     initialDelaySeconds: 60
-
-
-

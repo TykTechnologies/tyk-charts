@@ -34,4 +34,3 @@ dependencies:
   - name: tyk-enterprise-portal
     version: 1.0.0-beta4
     repository: file://../components/tyk-enterprise-portal
-
