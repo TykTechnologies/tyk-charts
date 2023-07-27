@@ -27,60 +27,18 @@ global:
     dashboard: false
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
-  redis:
-    # The addrs value will allow you to set your Redis addresses. If you are
-    # using a redis cluster, you can list the endpoints of the redis instances
-    # or use the cluster configuration endpoint.
-    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
-    addrs:
-      #   - redis.tyk.svc.cluster.local:6379
-      #   This is the DNS name of the redis as set when using Bitnami
-      #   - "tyk-redis-master.tyk.svc.cluster.local:6379"
 
+  secrets:
+    # tyk_analytics.conf admin_secret
+    # tib.conf TykAPISettings.GatewayConfig.AdminSecret
+    # tib.conf TykAPISettings.DashboardConfig.AdminSecret
+    AdminSecret: "12345"
+    # If you don't want to store plaintext secrets in the Helm value file and would
+    # rather provide the k8s Secret externally please populate the value below
+    # You can set following fields in the secret
+    # AdminSecret - Admin user secret key
+    useSecretName: ""
 
-    # Redis password
-    # If you're using Bitnami Redis chart please input your password in the field below
-    pass: ""
-
-    # Enables SSL for Redis connection. Redis instance will have to support that.
-    # Default value: false
-    # useSSL: true
-
-    # The enableCluster value will allow you to indicate to Tyk whether you are
-    # running a Redis cluster or not.
-    # Default value: false
-    # enableCluster: true
-
-    # By default the database index is 0. Setting the database index is not
-    # supported with redis cluster. As such, if you have enableCluster: true,
-    # then this value should be omitted or explicitly set to 0.
-    storage:
-      database: 0
-
-  mongo:
-    # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-
-    # If your MongoDB has a password you can add the username and password to the url
-    mongoURL: ""
-
-    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-    # Default value: false
-    useSSL: false
-
-  # Postgres connection string parameters.
-  postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
-    port: 5432
-    user: postgres
-    password:
-    database: tyk_analytics
-    sslmode:
-
-  # Choose the backend for Tyk. [ "mongo", "postgres" ]
-  backend: mongo
-  
 bootstrap:
   dashboard:
     # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
@@ -112,10 +70,6 @@ bootstrap:
     name: Default Org
     # The hostname to bind the Portal to.
     cname: tyk-portal.local
-
-  secrets:
-    # Secret needed for the admin user. Please change it to a more secure value.
-    AdminSecret: "12345"
 
   # Trigger to control if we want to create the tyk-operator secret
   operatorSecret: true

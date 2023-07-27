@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: config-tyk-data-plane
+  name: config-{{ include "tyk-data-plane.fullname" .}}
   namespace: {{ .Release.Namespace}}
   labels:
     app: secrets-tyk-data-plane

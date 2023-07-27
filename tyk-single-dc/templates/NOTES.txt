@@ -1,5 +1,7 @@
-Thank you for installing Tyk Data Plane Chart {{ .Chart.Name }}. Your release is named {{ .Release.Name }}. At this point, Tyk Data Plane is fully installed and should be accessible.
+Thank you for installing Tyk Single DC Chart {{ .Chart.Name }}. Your release is named {{ .Release.Name }}. At this point, Tyk Single DC is fully installed and should be accessible.
 
-Manage Ingress resources and APIs
+=====================================
+  Manage Ingress resources and APIs
+=====================================
 You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
 [Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)
