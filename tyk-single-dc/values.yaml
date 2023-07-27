@@ -431,12 +431,6 @@ tyk-pump:
     ##     readOnly: true
     extraVolumeMounts: []
 
-    # mounts can be used to mount files on pump container
-    # - name: test
-    #   filename: test.csv
-    #   mountPath: /opt/test
-    mounts: []
-
 tyk-bootstrap:
   # Default values for tyk-bootstrap.
   # This is a YAML-formatted file.
