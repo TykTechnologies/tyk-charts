@@ -156,7 +156,7 @@ spec:
           - name: TYK_DB_HTTPSERVEROPTIONS_MINVERSION
             value: "771"
           - name: TYK_DB_HTTPSERVEROPTIONS_CERTIFICATES
-            value: '[{"domain_name": "*", "cert_file": "/etc/certs/tls.crt", "key_file": "/etc/certs/tls.key"}]'
+            value: '{{ .Values.dashboard.tls.certificates | toJson }}'
           - name: TYK_DB_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
             value: {{ default "false" .Values.dashboard.tls.insecureSkipVerify | quote }}
 
@@ -213,7 +213,7 @@ spec:
         volumeMounts:
           {{ if .Values.global.tls.dashboard }}
           - name: {{ .Values.dashboard.tls.secretName }}
-            mountPath: /etc/certs
+            mountPath: {{ .Values.dashboard.tls.certificatesMountPath }}
           {{ end }}
           {{- if .Values.dashboard.mounts }}
           {{- range $secret := .Values.dashboard.mounts }}
