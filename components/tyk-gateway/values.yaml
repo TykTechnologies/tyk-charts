@@ -84,7 +84,7 @@ global:
     # Redis sentinel master name, only required while enableSentinel is true.
     # masterName: ""
 
-    # By default the database index is 0. Setting the database index is not
+    # By default, the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
     # then this value should be omitted or explicitly set to 0.
     storage:

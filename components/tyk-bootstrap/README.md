@@ -6,7 +6,7 @@ This chart helps with the bootstrapping of the Tyk Dashboard by creating a job w
 The chart provides little benefits by itself and should only be used in conjunction with other charts that also use the dashboard component.
 
 ## Prerequisites
-* Kuberentes 1.19+
+* Kubernetes 1.19+
 * Helm 3+
 
 ## Installing the Chart
