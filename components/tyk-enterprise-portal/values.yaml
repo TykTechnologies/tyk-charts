@@ -29,6 +29,10 @@ hostName: tyk-enterprise-portal.local
 # Enterprise Portal license.
 license: ""
 
+#In case you want to deploy enterprise portal as a standalone app, you can configure a different dashboard URL using
+#the parameter bellow
+overrideTykDashUrl: ""
+
 storage:
   database:
     type: "sqlite3"

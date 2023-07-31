@@ -88,7 +88,11 @@ spec:
           - name: PROVIDER_NAME
             value: "tyk"
           - name: TYK_URL
+          {{ if ne .Values.overrideTykDashUrl ""}}
+            value: {{ .Values.overrideTykDashUrl}}
+          {{ else}}
             value: "http{{ if .Values.global.tls.dashboard }}s{{ end }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}"
+          {{- end }}
           - name: TYK_AUTH
             valueFrom:
               secretKeyRef:
