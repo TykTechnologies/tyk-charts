@@ -18,7 +18,7 @@ Also, you can set the version of each component through `image.tag`. You could f
 
 ## Prerequisites
 
-* Kuberentes 1.19+
+* Kubernetes 1.19+
 * Helm 3+
 * Redis should already be installed or accessible by the gateway. For Redis installation instruction, please see [https://tyk.io/docs/tyk-oss/ce-helm-chart/#recommended-via-bitnami-chart](https://tyk.io/docs/tyk-oss/ce-helm-chart/#recommended-via-bitnami-chart).
 
@@ -116,14 +116,14 @@ To enable Pump, set `global.components.pump` to true, and configure below inside
 
 <!-- BEGIN import from pump doc -->
 
-| Pump                      | Configuration                                                                                              |
-|---------------------------|------------------------------------------------------------------------------------------------------------| 
-| Prometheus Pump (Default) | Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. |
-| Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.mongo`.                        |
-| SQL Pump                  | Add `postgres` to `pump.backend`, and add connection details for postgres under `.postgres`.               |
-| Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                          |
-| Hybrid Pump               | Add `hybrid` to `pump.backend`, and setup `.remoteControlPlane` section with the required adresses and tokens |
-| Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                 |
+| Pump                      | Configuration                                                                                                   |
+|---------------------------|-----------------------------------------------------------------------------------------------------------------| 
+| Prometheus Pump (Default) | Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`.      |
+| Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.mongo`.                             |
+| SQL Pump                  | Add `postgres` to `pump.backend`, and add connection details for postgres under `.postgres`.                    |
+| Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                               |
+| Hybrid Pump               | Add `hybrid` to `pump.backend`, and setup `.remoteControlPlane` section with the required adresses and tokens   |
+| Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                      |
 
 #### Prometheus Pump
 Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. 
@@ -185,7 +185,7 @@ postgres:
 ```
 
 #### Uptime Pump
-Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It support the following values
+Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It supports the following values
 1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
 2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
 3. empty: Used to disable uptime analytics.
@@ -222,7 +222,7 @@ Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml
 ```
 
 #### Other Pumps
-To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
+To set up other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
 
 <!-- END import from pump doc -->
 

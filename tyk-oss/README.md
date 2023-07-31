@@ -17,7 +17,7 @@ Also, you can set the version of each component through `image.tag`. You could f
 
 ## Prerequisites
 
-* Kuberentes 1.19+
+* Kubernetes 1.19+
 * Helm 3+
 * Redis should already be installed or accessible by the gateway. For Redis installation instruction, please see [https://tyk.io/docs/tyk-oss/ce-helm-chart/#recommended-via-bitnami-chart](https://tyk.io/docs/tyk-oss/ce-helm-chart/#recommended-via-bitnami-chart).
 
@@ -171,13 +171,13 @@ Add following under the `global` section in `values.yaml`:
 ```
 
 #### Uptime Pump
-Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It support the following values
+Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It supports the following values
 1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
 2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
 3. empty: Used to disable uptime analytics.
 
 #### Other Pumps
-To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
+To set up other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
 
 <!-- END import from pump doc -->
 
