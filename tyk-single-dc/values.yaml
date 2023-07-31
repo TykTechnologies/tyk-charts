@@ -2,12 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# nameOverride overrides the Chart name. It is truncated to 63 characters.
-nameOverride: ""
-
-# fullnameOverride overrides App name. It is truncated to 63 characters.
-fullnameOverride: ""
-
 global:
   license:
     dashboard: ""
@@ -440,7 +434,9 @@ tyk-bootstrap:
   bootstrap:
     dashboard:
       enabled: true
-      deploymentName: dashboard-tyk-single-dc-tyk-dashboard
+      deploymentName: dashboard-tyk-single-dc
+      # Specify if dashboard has custom service name.
+      serviceName: ""
     portal:
       enabled: true
     gateway:
