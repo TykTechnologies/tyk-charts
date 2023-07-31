@@ -434,7 +434,7 @@ tyk-bootstrap:
   bootstrap:
     dashboard:
       enabled: true
-      deploymentName: dashboard-tyk-single-dc
+      deploymentName: dashboard-tyk-single-dc-tyk-dashboard
       # Specify if dashboard has custom service name.
       serviceName: ""
     portal:
