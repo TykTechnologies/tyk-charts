@@ -260,11 +260,21 @@ tyk-gateway:
           secretKeyRef:
             name: secrets-tyk-single-dc
             key: APISecret
-    # used to mount files to the gateway containers
-    #  - name: test
-    #    filename: test.txt
-    #    mountPath: /opt/test
-    mounts: []
+
+    ## extraVolumes is a list of volumes to be added to the pod
+    ## extraVolumes:
+    ##   - name: ca-certs
+    ##     secret:
+    ##       defaultMode: 420
+    ##       secretName: ca-certs
+    extraVolumes: []
+
+    ## extraVolumeMounts is a list of volume mounts to be added to the pod
+    ## extraVolumeMounts:
+    ##   - name: ca-certs
+    ##     mountPath: /etc/ssl/certs/ca-certs.crt
+    ##     readOnly: true
+    extraVolumeMounts: []
 
 tyk-pump:
   ## Default values for tyk-pump chart.
@@ -421,12 +431,6 @@ tyk-pump:
     ##     readOnly: true
     extraVolumeMounts: []
 
-    # mounts can be used to mount files on pump container
-    # - name: test
-    #   filename: test.csv
-    #   mountPath: /opt/test
-    mounts: []
-
 tyk-bootstrap:
   # Default values for tyk-bootstrap.
   # This is a YAML-formatted file.
@@ -555,7 +559,9 @@ tyk-dashboard:
     nodeSelector: {}
     tolerations: []
     affinity: {}
+
     extraEnvs: []
+
     ## extraVolumes A list of volumes to be added to the pod
     ## extraVolumes:
     ##   - name: ca-certs
@@ -563,13 +569,13 @@ tyk-dashboard:
     ##       defaultMode: 420
     ##       secretName: ca-certs
     extraVolumes: []
+
     ## extraVolumeMounts A list of volume mounts to be added to the pod
     ## extraVolumeMounts:
     ##   - name: ca-certs
     ##     mountPath: /etc/ssl/certs/ca-certs.crt
     ##     readOnly: true
     extraVolumeMounts: []
-    mounts: []
 
     # Dashboard will only bootstrap if the master bootstrap option is set to true.
     bootstrap: true

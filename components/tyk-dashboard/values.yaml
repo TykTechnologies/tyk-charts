@@ -191,7 +191,6 @@ dashboard:
   ##     mountPath: /etc/ssl/certs/ca-certs.crt
   ##     readOnly: true
   extraVolumeMounts: []
-  mounts: []
 
   # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true

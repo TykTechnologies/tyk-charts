@@ -252,6 +252,20 @@ tyk-gateway:
     # if you want to use a hybrid pump, please change "rpc" to ""
     analyticsConfigType: "rpc"
 
+    ## extraVolumes is a list of volumes to be added to the pod
+    ## extraVolumes:
+    ##   - name: ca-certs
+    ##     secret:
+    ##       defaultMode: 420
+    ##       secretName: ca-certs
+    extraVolumes: []
+
+    ## extraVolumeMounts is a list of volume mounts to be added to the pod
+    ## extraVolumeMounts:
+    ##   - name: ca-certs
+    ##     mountPath: /etc/ssl/certs/ca-certs.crt
+    ##     readOnly: true
+    extraVolumeMounts: []
 
 tyk-pump:
   ## Default values for tyk-pump chart.
