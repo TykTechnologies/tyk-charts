@@ -1,3 +1,9 @@
+# nameOverride overrides the Chart name. It is truncated to 63 characters.
+nameOverride: ""
+
+# fullnameOverride overrides App name. It is truncated to 63 characters.
+fullnameOverride: ""
+
 global:
   license:
     # The license key needed by Tyk Dashboard to work
@@ -79,7 +85,7 @@ global:
     # Default value: false
     # enableCluster: true
 
-    # By default the database index is 0. Setting the database index is not
+    # By default, the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
     # then this value should be omitted or explicitly set to 0.
     storage:

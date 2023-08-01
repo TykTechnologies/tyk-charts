@@ -13,7 +13,7 @@ For typical usage, we recommend using following umbrella charts:
 [Learn more about Tyk Licensing and Deployment models](https://tyk.io/docs/tyk-on-premises/licensing/)
 
 ## Prerequisites
-* Kuberentes 1.19+
+* Kubernetes 1.19+
 * Helm 3+
 * [Redis](https://tyk.io/docs/planning-for-production/redis/) should already be installed or accessible by the dashboard 
 * [Mongo](https://tyk.io/docs/planning-for-production/database-settings/mongodb/) or [PostgreSQL](https://tyk.io/docs/planning-for-production/database-settings/postgresql/) should already be installed or accessible by the dashboard

@@ -6,7 +6,7 @@ global:
   license:
     dashboard: ""
   components:
-    # Determines whether or not the pump component should be installed.
+    # Determines whether the pump component should be installed.
     pump: true
 
     dashboard: true
@@ -87,7 +87,7 @@ global:
     # Default value: false
     # enableCluster: true
 
-    # By default the database index is 0. Setting the database index is not
+    # By default, the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
     # then this value should be omitted or explicitly set to 0.
     storage:
@@ -439,6 +439,8 @@ tyk-bootstrap:
     dashboard:
       enabled: true
       deploymentName: dashboard-tyk-single-dc-tyk-dashboard
+      # Specify if dashboard has custom service name.
+      serviceName: ""
     portal:
       enabled: true
     gateway:
@@ -481,6 +483,12 @@ tyk-bootstrap:
     preDeletePodAnnotations: {}
 
 tyk-dashboard:
+  # nameOverride overrides the Chart name. It is truncated to 63 characters.
+  nameOverride: ""
+
+  # fullnameOverride overrides App name. It is truncated to 63 characters.
+  fullnameOverride: ""
+
   dashboard:
     enableOwnership: true
     defaultPageSize: 10
