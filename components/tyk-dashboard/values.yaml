@@ -12,7 +12,7 @@ global:
   servicePorts:
     # The port at which the dashboard service can be found
     dashboard: 3000
-    # The port at which the dashboard service can be found
+    # The port at which the gateway service can be found
     gateway: 8080
 
   secrets:
