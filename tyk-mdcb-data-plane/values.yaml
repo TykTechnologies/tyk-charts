@@ -158,9 +158,6 @@ tyk-gateway:
       # type of service
       type: NodePort
 
-      # service port
-      port: 443
-
       # external traffic policy of the service. Set it only if you are using LoadBalancer service type
       externalTrafficPolicy: Local
 
