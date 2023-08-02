@@ -74,8 +74,6 @@ spec:
             drop:
               - all
         env:
-          - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
-            value : "false"
           - name: TYK_GW_LISTENPORT
             value: "{{ .Values.global.servicePorts.gateway }}"
           {{ if .Values.global.components.dashboard}}
@@ -224,6 +222,9 @@ spec:
             value: "{{ .Values.gateway.sharding.enabled }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
             value: "{{ .Values.gateway.sharding.tags }}"
+        {{- else }}
+          - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
+            value: "false"
         {{- end }}
 
         {{- if .Values.gateway.extraEnvs }}
