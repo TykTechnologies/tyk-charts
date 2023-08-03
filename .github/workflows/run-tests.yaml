@@ -107,7 +107,7 @@ jobs:
 
       - if: failure()
         name: Check logs in case of failure
-        run: kubectl logs -n ${{ env.TYK_SINGLE_DC_NS }} tyk-single-dc-test-tyk-oss
+        run: kubectl logs -n ${{ env.TYK_SINGLE_DC_NS }} tyk-single-dc-test-tyk-single-dc
 
       - name: Uninstall Tyk Single DC Dependencies
         run: |
@@ -136,7 +136,7 @@ jobs:
 
       - if: failure()
         name: Check logs in case of failure
-        run: kubectl logs -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane-test-tyk-oss
+        run: kubectl logs -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane-test-tyk-data-plane
 
       - name: Uninstall Tyk MDCB Data Plane Dependencies
         run: |
