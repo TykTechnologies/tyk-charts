@@ -5,14 +5,14 @@ TYK_GW_SECRET=${TYK_GW_SECRET}
 
 checkGateway() {
   count=0
-  while [ $count -le 20 ]
+  while [ $count -le 30 ]
   do
-    healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello)"
+    healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello --connect-timeout 5)"
 
     redisStatus=$(echo "${healthCheck}" | jq -r '.details.redis.status')
     if [[ "${redisStatus}" != "pass" ]]
     then
-      echo "Redis is not ready"
+      echo "Redis is not ready, healthCheck: ${healthCheck}."
       echo "${healthCheck}"
       count=$((count+1))
       sleep 2
@@ -32,7 +32,7 @@ checkGateway() {
     break
   done
 
-  if [[ $count -ge 10 ]]
+  if [[ $count -ge 30 ]]
   then
     echo "All components required for the Tyk single dc to work are NOT available"
     exit 1

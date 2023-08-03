@@ -68,3 +68,7 @@ https
 http
 {{- end -}}
 {{- end -}}
+
+{{- define "tyk-data-plane.gwServicePort" -}}
+{{ .Values.global.servicePorts.gateway }}
+{{- end -}}
