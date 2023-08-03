@@ -74,6 +74,7 @@ jobs:
         run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true"
 
       - if: failure()
+        name: Check logs in case of failure
         run: kubectl logs -n ${{ env.TYK_OSS_NS}} tyk-oss-test-tyk-oss
 
       - name: Uninstall Tyk OSS Dependencies
@@ -105,6 +106,7 @@ jobs:
         run: helm test -n ${{ env.TYK_SINGLE_DC_NS }} tyk-single-dc
 
       - if: failure()
+        name: Check logs in case of failure
         run: kubectl logs -n ${{ env.TYK_SINGLE_DC_NS }} tyk-single-dc-test-tyk-oss
 
       - name: Uninstall Tyk Single DC Dependencies
@@ -133,6 +135,7 @@ jobs:
         run: helm test -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane
 
       - if: failure()
+        name: Check logs in case of failure
         run: kubectl logs -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane-test-tyk-oss
 
       - name: Uninstall Tyk MDCB Data Plane Dependencies
@@ -141,66 +144,64 @@ jobs:
           helm uninstall redis -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
           kubectl delete namespace ${{ env.TYK_MDCB_DATAPLANE_NS }}
 
+  smoke-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        k8s_version: ["v1.26.3", "v1.25.2","v1.24.6","v1.23.12","v1.22.15","v1.21.14","v1.20.15"]
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
 
+      - name: Create Kind Cluster
+        uses: helm/kind-action@v1.4.0
+        with:
+          node_image: "kindest/node:${{ matrix.k8s_version }}"
 
-#  smoke-tests:
-#    runs-on: ubuntu-latest
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        k8s_version: ["v1.26.3", "v1.25.2","v1.24.6","v1.23.12","v1.22.15","v1.21.14","v1.20.15"]
-#    steps:
-#      - name: Git Checkout
-#        uses: actions/checkout@v3
-#
-#      - name: Create Kind Cluster
-#        uses: helm/kind-action@v1.4.0
-#        with:
-#          node_image: "kindest/node:${{ matrix.k8s_version }}"
-#
-#      - name: Install helm
-#        uses: azure/setup-helm@v3
-#        with:
-#          version: v3.11.2
-#
-#      - name: Deploy Tyk OSS and Dependencies
-#        run: |
-#          kubectl create namespace tyk-oss
-#
-#          # Do not change the name
-#          helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-oss --timeout ${{ env.TIMEOUT }}
-#
-#          helm dependency update ./tyk-oss
-#          helm install tyk-oss ./tyk-oss -n tyk-oss --timeout ${{ env.TIMEOUT }}
-#
-#      - name: Upgrade Tyk OSS
-#        run: |
-#          helm upgrade -n tyk-oss tyk-oss ./tyk-oss --set tyk-gateway.gateway.kind=DaemonSet
-#
-#      - name: Uninstall Tyk OSS
-#        run: |
-#          helm uninstall tyk-oss -n tyk-oss --timeout ${{ env.TIMEOUT }}
-#          kubectl delete namespace tyk-oss
-#
-#      - name: Deploy Tyk MDCB Data Plane
-#        run: |
-#          kubectl create namespace ${{ env.TYK_MDCB_DATAPLANE_NS }}
-#
-#          # Do not change the name
-#          helm install redis simple-redis --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
-#
-#          helm dependency update ./tyk-mdcb-data-plane
-#
-#          helm install --namespace ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane --wait \
-#            --set global.remoteControlPlane.orgId=${{ secrets.HYBRID_RPC_KEY }} \
-#            --set global.remoteControlPlane.userApiKey=${{ secrets.HYBRID_API_KEY }} \
-#            --set global.remoteControlPlane.connectionString=${{ secrets.HYBRID_MDCB_HOST }}
-#
-#      - name: Upgrade Tyk MDCB Data Plane
-#        run: |
-#          helm upgrade -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane --set tyk-gateway.gateway.kind=DaemonSet
-#
-#      - name: Uninstall Tyk MDCB Data Plane
-#        run: |
-#          helm uninstall tyk-mdcb-data-plane -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
-#          kubectl delete namespace ${{ env.TYK_MDCB_DATAPLANE_NS }}
+      - name: Install helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.11.2
+
+      - name: Deploy Tyk OSS and Dependencies
+        run: |
+          kubectl create namespace tyk-oss
+
+          # Do not change the name
+          helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-oss --timeout ${{ env.TIMEOUT }}
+
+          helm dependency update ./tyk-oss
+          helm install tyk-oss ./tyk-oss -n tyk-oss --timeout ${{ env.TIMEOUT }}
+
+      - name: Upgrade Tyk OSS
+        run: |
+          helm upgrade -n tyk-oss tyk-oss ./tyk-oss --set tyk-gateway.gateway.kind=DaemonSet
+
+      - name: Uninstall Tyk OSS
+        run: |
+          helm uninstall tyk-oss -n tyk-oss --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace tyk-oss
+
+      - name: Deploy Tyk MDCB Data Plane
+        run: |
+          kubectl create namespace ${{ env.TYK_MDCB_DATAPLANE_NS }}
+
+          # Do not change the name
+          helm install redis simple-redis --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
+
+          helm dependency update ./tyk-mdcb-data-plane
+
+          helm install --namespace ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane --wait \
+            --set global.remoteControlPlane.orgId=${{ secrets.HYBRID_RPC_KEY }} \
+            --set global.remoteControlPlane.userApiKey=${{ secrets.HYBRID_API_KEY }} \
+            --set global.remoteControlPlane.connectionString=${{ secrets.HYBRID_MDCB_HOST }}
+
+      - name: Upgrade Tyk MDCB Data Plane
+        run: |
+          helm upgrade -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane --set tyk-gateway.gateway.kind=DaemonSet
+
+      - name: Uninstall Tyk MDCB Data Plane
+        run: |
+          helm uninstall tyk-mdcb-data-plane -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace ${{ env.TYK_MDCB_DATAPLANE_NS }}
