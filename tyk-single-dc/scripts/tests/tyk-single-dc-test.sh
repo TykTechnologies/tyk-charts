@@ -7,12 +7,12 @@ checkGateway() {
   count=0
   while [ $count -le 20 ]
   do
-    healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello)"
+    healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello --connect-timeout 5)"
 
     redisStatus=$(echo "${healthCheck}" | jq -r '.details.redis.status')
     if [[ "${redisStatus}" != "pass" ]]
     then
-      echo "Redis is not ready"
+      echo "Redis is not ready, healthCheck: ${healthCheck}."
       echo "${healthCheck}"
       count=$((count+1))
       sleep 2

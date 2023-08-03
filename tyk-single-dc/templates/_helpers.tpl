@@ -68,3 +68,7 @@ https
 http
 {{- end -}}
 {{- end -}}
+
+{{- define "tyk-single-dc.gwServicePort" -}}
+{{ .Values.global.servicePorts.gateway }}
+{{- end -}}
