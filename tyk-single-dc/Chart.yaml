@@ -19,15 +19,15 @@ version: 1.0.0-beta4
 
 dependencies:
   - name: tyk-gateway
-    version: 1.0.0-beta4
+    version: 1.0.0-beta6
     repository: file://../components/tyk-gateway
   - name: tyk-pump
-    version: 1.0.0-beta4
+    version: 1.0.0-beta6
     repository: file://../components/tyk-pump
     condition: global.components.pump
   - name: tyk-dashboard
-    version: 1.0.0-beta4
+    version: 1.0.0-beta5
     repository: file://../components/tyk-dashboard
   - name: tyk-bootstrap
-    version: 1.0.0-beta4
+    version: 1.0.0-beta5
     repository: file://../components/tyk-bootstrap
