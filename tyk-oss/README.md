@@ -342,7 +342,7 @@ Add following under the `global` section in `values.yaml`:
 ```
 
 #### Uptime Pump
-Uptime Pump can be configured by setting `tyk-pump.pump.uptimePumpBackend` in values.yaml file. It support the following values
+Uptime Pump can be configured by setting `tyk-pump.pump.uptimePumpBackend` in values.yaml file. It supports the following values
 1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
 2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
 3. empty: Used to disable uptime analytics.
