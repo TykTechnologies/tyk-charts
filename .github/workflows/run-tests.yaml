@@ -73,6 +73,9 @@ jobs:
       - name: Run chart-testing (install)
         run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true"
 
+      - if: failure()
+        run: kubectl logs -n ${{ env.TYK_OSS_NS}} tyk-oss-test-tyk-oss
+
       - name: Uninstall Tyk OSS Dependencies
         run: |
           helm uninstall redis -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
@@ -101,6 +104,9 @@ jobs:
       - name: Run integration tests for Tyk Single DC
         run: helm test -n ${{ env.TYK_SINGLE_DC_NS }} tyk-single-dc
 
+      - if: failure()
+        run: kubectl logs -n ${{ env.TYK_SINGLE_DC_NS }} tyk-oss-test-tyk-oss
+
       - name: Uninstall Tyk Single DC Dependencies
         run: |
           helm uninstall redis -n ${{ env.TYK_SINGLE_DC_NS }} --timeout ${{ env.TIMEOUT }}
@@ -125,6 +131,9 @@ jobs:
 
       - name: Run integration tests for Tyk MDCB Data Plane
         run: helm test -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane
+
+      - if: failure()
+        run: kubectl logs -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-oss-test-tyk-oss
 
       - name: Uninstall Tyk MDCB Data Plane Dependencies
         run: |
