@@ -1,15 +1,15 @@
 dependencies:
 - name: tyk-gateway
   repository: file://../components/tyk-gateway
-  version: 1.0.0-beta6
+  version: 1.0.0
 - name: tyk-pump
   repository: file://../components/tyk-pump
-  version: 1.0.0-beta6
+  version: 1.0.0
 - name: tyk-dashboard
   repository: file://../components/tyk-dashboard
   version: 1.0.0-beta5
 - name: tyk-bootstrap
   repository: file://../components/tyk-bootstrap
   version: 1.0.0-beta5
-digest: sha256:aea49b485fc3e6a6a19562241acd0abb70453c1e3f68b92dd3c37fc332e9ede3
-generated: "2023-08-03T17:16:46.002948+03:00"
+digest: sha256:ad7a94e349a3061f2f0af9e1f697565734ef6ffa9cacd4cd79608720050c8e79
+generated: "2023-08-04T10:52:47.416883+03:00"
