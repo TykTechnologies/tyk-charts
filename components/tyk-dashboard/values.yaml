@@ -1,3 +1,9 @@
+# nameOverride overrides the Chart name. It is truncated to 63 characters.
+nameOverride: ""
+
+# fullnameOverride overrides App name. It is truncated to 63 characters.
+fullnameOverride: ""
+
 global:
   license:
     # The license key needed by Tyk Dashboard to work
@@ -15,7 +21,7 @@ global:
   servicePorts:
     # The port at which the dashboard service can be found
     dashboard: 3000
-    # The port at which the dashboard service can be found
+    # The port at which the gateway service can be found
     gateway: 8080
 
   secrets:
@@ -88,7 +94,7 @@ global:
     # Default value: false
     # enableCluster: true
 
-    # By default the database index is 0. Setting the database index is not
+    # By default, the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
     # then this value should be omitted or explicitly set to 0.
     storage:
@@ -150,7 +156,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.0.0
+    tag: v5.1.0
 
     # image pull policy
     pullPolicy: Always
@@ -194,7 +200,6 @@ dashboard:
   ##     mountPath: /etc/ssl/certs/ca-certs.crt
   ##     readOnly: true
   extraVolumeMounts: []
-  mounts: []
 
   # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true

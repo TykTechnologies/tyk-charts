@@ -13,7 +13,7 @@ global:
     # Set a password or a random one will be assigned.
     password: "123456"
   components:
-    # Determines whether or not the pump component should be installed.
+    # Determines whether the pump component should be installed.
     pump: true
     enterprisePortal: false
     dashboard: true
@@ -97,7 +97,7 @@ global:
     # Default value: false
     # enableCluster: true
 
-    # By default the database index is 0. Setting the database index is not
+    # By default, the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
     # then this value should be omitted or explicitly set to 0.
     storage:
@@ -175,7 +175,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.0.0
+      tag: v5.1.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -270,11 +270,21 @@ tyk-gateway:
           secretKeyRef:
             name: secrets-tyk-single-dc
             key: APISecret
-    # used to mount files to the gateway containers
-    #  - name: test
-    #    filename: test.txt
-    #    mountPath: /opt/test
-    mounts: []
+
+    ## extraVolumes is a list of volumes to be added to the pod
+    ## extraVolumes:
+    ##   - name: ca-certs
+    ##     secret:
+    ##       defaultMode: 420
+    ##       secretName: ca-certs
+    extraVolumes: []
+
+    ## extraVolumeMounts is a list of volume mounts to be added to the pod
+    ## extraVolumeMounts:
+    ##   - name: ca-certs
+    ##     mountPath: /etc/ssl/certs/ca-certs.crt
+    ##     readOnly: true
+    extraVolumeMounts: []
 
 tyk-pump:
   ## Default values for tyk-pump chart.
@@ -314,7 +324,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.7.0
+      tag: v1.8.1
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -431,12 +441,6 @@ tyk-pump:
     ##     readOnly: true
     extraVolumeMounts: []
 
-    # mounts can be used to mount files on pump container
-    # - name: test
-    #   filename: test.csv
-    #   mountPath: /opt/test
-    mounts: []
-
 tyk-bootstrap:
   # Default values for tyk-bootstrap.
   # This is a YAML-formatted file.
@@ -445,6 +449,8 @@ tyk-bootstrap:
     dashboard:
       enabled: true
       deploymentName: dashboard-tyk-single-dc-tyk-dashboard
+      # Specify if dashboard has custom service name.
+      serviceName: ""
     portal:
       enabled: true
     gateway:
@@ -480,6 +486,12 @@ tyk-bootstrap:
     preDeletePodAnnotations: {}
 
 tyk-dashboard:
+  # nameOverride overrides the Chart name. It is truncated to 63 characters.
+  nameOverride: ""
+
+  # fullnameOverride overrides App name. It is truncated to 63 characters.
+  fullnameOverride: ""
+
   dashboard:
     enableOwnership: true
     defaultPageSize: 10
@@ -523,7 +535,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.0.0
+      tag: v5.1.0
 
       # image pull policy
       pullPolicy: Always
@@ -550,7 +562,9 @@ tyk-dashboard:
     nodeSelector: {}
     tolerations: []
     affinity: {}
+
     extraEnvs: []
+
     ## extraVolumes A list of volumes to be added to the pod
     ## extraVolumes:
     ##   - name: ca-certs
@@ -558,13 +572,13 @@ tyk-dashboard:
     ##       defaultMode: 420
     ##       secretName: ca-certs
     extraVolumes: []
+
     ## extraVolumeMounts A list of volume mounts to be added to the pod
     ## extraVolumeMounts:
     ##   - name: ca-certs
     ##     mountPath: /etc/ssl/certs/ca-certs.crt
     ##     readOnly: true
     extraVolumeMounts: []
-    mounts: []
 
     # Dashboard will only bootstrap if the master bootstrap option is set to true.
     bootstrap: true

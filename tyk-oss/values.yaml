@@ -1,3 +1,9 @@
+# nameOverride overrides the Chart name. It is truncated to 63 characters.
+nameOverride: ""
+
+# fullnameOverride overrides App name. It is truncated to 63 characters.
+fullnameOverride: ""
+
 global:
   components:
     # Determines whether the pump component should be installed.
@@ -70,7 +76,7 @@ global:
     # For bitnami/redis typically redis-master
     # masterName: ""
 
-    # By default the database index is 0. Setting the database index is not
+    # By default, the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
     # then this value should be omitted or explicitly set to 0.
     storage:
@@ -126,7 +132,7 @@ tyk-gateway:
       repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.0.0
+      tag: v5.1.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -134,9 +140,6 @@ tyk-gateway:
     service:
       # type of service
       type: NodePort
-
-      # service port
-      port: 443
 
       # external traffic policy of the service. Set it only if you are using LoadBalancer service type
       externalTrafficPolicy: Local
@@ -272,7 +275,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.8.0
+      tag: v1.8.1
 
       # image pull policy
       pullPolicy: IfNotPresent

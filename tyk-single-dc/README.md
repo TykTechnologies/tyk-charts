@@ -1,4 +1,4 @@
-## Tyk Tyk single dc
+## Tyk single dc
 
 `tyk-single-dc` provides the default deployment of Tyk Pro on single data center. It will deploy all required Tyk components with the settings provided in the values.yaml file.
 
@@ -22,7 +22,7 @@ Also, you can set the version of each component through `image.tag`. You could f
 
 ## Prerequisites
 
-* Kuberentes 1.19+
+* Kubernetes 1.19+
 * Helm 3+
 * Redis should already be installed or accessible by the gateway. For Redis installation instruction, please see https://tyk.io/docs/tyk-oss/ce-helm-chart/#recommended-via-bitnami-chart.
 
@@ -86,7 +86,7 @@ If you do not already have redis installed, you may use these charts provided by
 
 ```bash
 helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install tyk-redis bitnami/redis -n tyk --create-namespace
+helm install tyk-redis bitnami/redis -n tyk --create-namespace --set image.tag=6.2.13
 ```
 
 Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is 
@@ -204,13 +204,13 @@ postgres:
 ```
 
 #### Uptime Pump
-Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It support following values
+Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It supports following values
 1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
 2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
 3. empty: Used to disable uptime analytics.
 
 #### Other Pumps
-To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
+To set up other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
 
 <!-- END import from pump doc -->
 

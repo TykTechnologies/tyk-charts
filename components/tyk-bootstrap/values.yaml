@@ -57,6 +57,9 @@ bootstrap:
     enabled: true
     # Name of the deployment that we want to bootstrap
     deploymentName: dashboard-tyk-dashboard
+
+    # Specify if dashboard has custom service name.
+    serviceName: ""
   portal:
     # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
     enabled: true

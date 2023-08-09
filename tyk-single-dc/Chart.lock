@@ -1,16 +1,16 @@
 dependencies:
 - name: tyk-gateway
   repository: file://../components/tyk-gateway
-  version: 1.0.0-beta4
+  version: 1.0.0
 - name: tyk-pump
   repository: file://../components/tyk-pump
-  version: 1.0.0-beta4
+  version: 1.0.0
 - name: tyk-dashboard
   repository: file://../components/tyk-dashboard
-  version: 1.0.0-beta4
+  version: 1.0.0-beta5
 - name: tyk-bootstrap
   repository: file://../components/tyk-bootstrap
-  version: 1.0.0-beta4
+  version: 1.0.0-beta5
 - name: tyk-enterprise-portal
   repository: file://../components/tyk-enterprise-portal
   version: 1.0.0-beta4
