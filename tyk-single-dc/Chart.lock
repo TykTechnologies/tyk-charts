@@ -14,5 +14,5 @@ dependencies:
 - name: tyk-enterprise-portal
   repository: file://../components/tyk-enterprise-portal
   version: 1.0.0-beta4
-digest: sha256:52873ada83a653673cbec8f70a6b2233d97824f13cef4a2255f6dc7aa3441f31
-generated: "2023-07-17T21:01:39.315974+03:00"
+digest: sha256:e5a1b2e6cdc7f7bd845b52b47f38160e39660a1392e3cad20c77cc3565579ab8
+generated: "2023-08-09T13:25:28.047391+03:00"
