@@ -183,6 +183,9 @@ dashboard:
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
+  containerSecurityContext:
+    runAsUser: 999
+    runAsGroup: 999
   nodeSelector: {}
   tolerations: []
   affinity: {}
