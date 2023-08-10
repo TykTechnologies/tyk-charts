@@ -8,7 +8,16 @@ global:
   license:
     # The license key needed by Tyk Dashboard to work
     dashboard: ""
-
+  # Dashboard admin information.
+  adminUser:
+    # First name of the admin user
+    firstName: admin
+    # Last name of the admin user
+    lastName: user
+    # Email address of the admin user
+    email: default@example.com
+    # Set a password or a random one will be assigned.
+    password: "123456"
   servicePorts:
     # The port at which the dashboard service can be found
     dashboard: 3000
@@ -198,14 +207,4 @@ dashboard:
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
 
-  # Dashboard admin information.
-  adminUser:
-    # First name of the admin user
-    firstName: admin
-    # Last name of the admin user
-    lastName: user
-    # Email address of the admin user
-    email: default@example.com
-    # Set a password or a random one will be assigned.
-    password: "123456"
   # Dashboard Organisation information.

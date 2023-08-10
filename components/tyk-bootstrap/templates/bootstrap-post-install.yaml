@@ -36,11 +36,11 @@ spec:
             - name: TYK_DB_OMITCONFIGFILE
               value: "true"
             - name: TYK_ADMIN_FIRST_NAME
-              value: {{ .Values.bootstrap.adminUser.firstName | quote }}
+              value: {{ .Values.global.adminUser.firstName | quote }}
             - name: TYK_ADMIN_LAST_NAME
-              value: {{ .Values.bootstrap.adminUser.lastName | quote }}
+              value: {{ .Values.global.adminUser.lastName | quote }}
             - name: TYK_ADMIN_EMAIL
-              value: {{ .Values.bootstrap.adminUser.email | quote }}
+              value: {{ .Values.global.adminUser.email | quote }}
             - name: TYK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -89,11 +89,11 @@ spec:
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
             {{- end }}
-            {{- if .Values.bootstrap.enterprisePortalSecret }}
+            {{- if .Values.global.bootstrap.enterprisePortal }}
             - name: ENTERPRISE_PORTAL_SECRET_ENABLED
               value: "true"
             - name: ENTERPRISE_PORTAL_SECRET_NAME
-              value: "tyk-enterprise-portal-conf"
+              value: {{ .Values.global.secrets.enterprisePortal}}
             {{- end }}
             - name: GATEWAY_ADDRESS
               value: "{{ include "tyk-bootstrap.gateway_url" . }}"

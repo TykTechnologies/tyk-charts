@@ -5,6 +5,16 @@ global:
   license:
     # The license key needed for the Tyk Dashboard.
     dashboard: ""
+  adminUser:
+    firstName: admin
+    lastName: user
+    email: default@example.com
+    # Set a password or a random one will be assigned. Admin user password must have at least 6 characters.
+    password: "123456"
+
+  bootstrap:
+    enterprisePortal: true
+    dashboard: true
 
   servicePorts:
     # The port at which the dashboard service can be found at
@@ -16,6 +26,7 @@ global:
     # Enables/disables the dashboard component and also used to detect when the bootstrapping needs to be done
     # for a separate Tyk Dashboard installation or for an umbrella chart installation
     dashboard: false
+    enterprisePortal: false
 
   tls:
     # If set to true the Dashboard will use SSL connection.
@@ -38,6 +49,7 @@ global:
     # You can set following fields in the secret
     # AdminSecret - Admin user secret key
     useSecretName: ""
+    enterprisePortal: tyk-enterprise-portal-conf
 
 bootstrap:
   dashboard:
@@ -59,12 +71,7 @@ bootstrap:
     # Name of bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
     bootstrapJobName: bootstrap-post-install
 
-  adminUser:
-    firstName: admin
-    lastName: user
-    email: default@example.com
-    # Set a password or a random one will be assigned. Admin user password must have at least 6 characters.
-    password: "123456"
+
 
   org:
     # The name for your organization inside Tyk
@@ -75,8 +82,7 @@ bootstrap:
   # Trigger to control if we want to create the tyk-operator secret
   operatorSecret: true
 
-  # Trigger to control if we want to create the tyk-enterprise-portal secret
-  enterprisePortalSecret: true
+
 
   fullnameOverride: ""
   nameOverride: ""
