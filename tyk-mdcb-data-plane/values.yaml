@@ -154,6 +154,9 @@ tyk-gateway:
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
 
+    # image pull secrets to use when pulling images from repository
+    imagePullSecrets: []
+
     service:
       # type of service
       type: NodePort
@@ -306,6 +309,9 @@ tyk-pump:
 
       # image pull policy
       pullPolicy: IfNotPresent
+
+    # image pull secrets to use when pulling images from repository
+    imagePullSecrets: []
 
     service:
       # Tyk Pump svc is disabled by default. Set it to true to enable it.

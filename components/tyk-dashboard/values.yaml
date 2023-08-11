@@ -160,6 +160,10 @@ dashboard:
 
     # image pull policy
     pullPolicy: Always
+
+  # image pull secrets to use when pulling images from repository
+  imagePullSecrets: []
+
   service:
     type: NodePort
     externalTrafficPolicy: Local
