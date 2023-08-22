@@ -609,6 +609,8 @@ tyk-enterprise-portal:
   # Enterprise portal can be deployed as StatefulSet or as Deployment
   kind : StatefulSet
   storage:
+    # User can set the storage type for portal.
+    # Supported types: fs, s3, db
     type: "fs"
     database:
       type: "sqlite3"
