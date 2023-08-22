@@ -135,6 +135,7 @@ spec:
         workingDir: /opt/portal
         ports:
         - containerPort: {{ .Values.containerPort }}
+        {{ if eq .Values.storage.type "fs" }}
         volumeMounts:
           - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
             mountPath: /opt/portal/public/system/api_details
@@ -168,11 +169,6 @@ spec:
             mountPath: /opt/portal/db
             subPath: db
           {{- end }}
-        {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
-        volumes: 
-        - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
-          perisitentVolumeClaim:
-            claimName: {{ .Values.storage.persistence.mountExistingPVC }}   
         {{- end }}
         livenessProbe:
           httpGet:
@@ -192,11 +188,19 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+
+      {{- if and (eq .Values.kind "Deployment") (eq .Values.storage.type "fs") .Values.storage.persistence.mountExistingPVC }}
+      volumes: 
+      - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+        perisitentVolumeClaim:
+          claimName: {{ .Values.storage.persistence.mountExistingPVC }}   
+      {{- end }}
+
       {{- if .Values.securityContext }}
       securityContext:
       {{- toYaml .Values.securityContext | nindent 8 }}
       {{- end}}
-  {{ if eq .Values.kind "StatefulSet" }}
+  {{ if and (eq .Values.kind "StatefulSet") (eq .Values.storage.type "fs") }}
   volumeClaimTemplates:
   - metadata:
       name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
