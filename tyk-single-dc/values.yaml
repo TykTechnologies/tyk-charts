@@ -606,11 +606,14 @@ tyk-enterprise-portal:
   hostName: tyk-enterprise-portal.local
   # Enterprise Portal license.
   license: ""
+  # Enterprise portal can be deployed as StatefulSet or as Deployment
+  kind : StatefulSet
   storage:
     database:
       type: "sqlite3"
       connectionString: "db/portal.db"
     persistence:
+      mountExistingPVC: ""
       storageClass: ""
       accessModes:
         - ReadWriteOnce

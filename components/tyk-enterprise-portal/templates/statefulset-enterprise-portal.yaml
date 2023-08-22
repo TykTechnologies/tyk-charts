@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: {{ .Values.kind }}
 metadata:
   name: {{ include "tyk-enterprise-portal.fullname" . }}
   labels:
@@ -8,11 +8,18 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  {{- if eq .Values.kind "StatefulSet"}}
   serviceName: enterprise-portal-svc-{{ include "tyk-enterprise-portal.fullname" . }}
-  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  {{- if eq .Values.kind "StatefulSet"}}
   updateStrategy:
+  {{- else }}
+  strategy:
     # indicate which strategy we want for rolling update
     type: RollingUpdate
+  {{- end }}
+  replicas: {{ .Values.replicaCount }}
+  
   selector:
     matchLabels:
       app: {{ include "tyk-enterprise-portal.fullname" . }}
@@ -159,6 +166,12 @@ spec:
             mountPath: /opt/portal/db
             subPath: db
           {{- end }}
+        {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
+        volumes: 
+        - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+          perisitentVolumeClaim:
+            claimName: {{ .Values.storage.persistence.mountExistingPVC }}   
+        {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.enterprisePortal }}S{{ end }}"
@@ -181,6 +194,7 @@ spec:
       securityContext:
       {{- toYaml .Values.securityContext | nindent 8 }}
       {{- end}}
+  {{ if eq .Values.kind "StatefulSet" }}
   volumeClaimTemplates:
   - metadata:
       name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
@@ -211,3 +225,4 @@ spec:
         {{ $key }}: {{ $value | quote }}
       {{- end }}
       {{- end }}
+  {{- end }}
