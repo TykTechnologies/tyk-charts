@@ -77,6 +77,8 @@ spec:
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
                 key: EnterprisePortalAdminPassword
+          - name: PORTAL_STORAGE
+            value: "{{ .Values.storage.type }}"
           - name: PORTAL_DATABASE_DIALECT
             value: "{{ .Values.storage.database.type }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING

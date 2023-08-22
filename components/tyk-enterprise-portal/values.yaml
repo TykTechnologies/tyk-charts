@@ -35,6 +35,7 @@ overrideTykDashUrl: ""
 # Enterprise portal can be deployed as StatefulSet or as Deployment
 kind: StatefulSet
 storage:
+  type: "fs"
   database:
     type: "sqlite3"
     connectionString: "db/portal.db"
