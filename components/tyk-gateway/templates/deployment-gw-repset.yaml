@@ -164,11 +164,32 @@ spec:
           - name: TYK_GW_AUTHOVERRIDE_AUTHPROVIDER_STORAGEENGINE
             value: "rpc"
           - name: TYK_GW_SLAVEOPTIONS_RPCKEY
+            {{ if .Values.global.remoteControlPlane.useSecretName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.remoteControlPlane.useSecretName }}
+                key: orgId
+            {{ else }}
             value: "{{ .Values.global.remoteControlPlane.orgId }}"
+            {{ end }}
           - name: TYK_GW_SLAVEOPTIONS_APIKEY
+            {{ if .Values.global.remoteControlPlane.useSecretName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.remoteControlPlane.useSecretName }}
+                key: userApiKey
+            {{ else }}
             value: "{{  .Values.global.remoteControlPlane.userApiKey }}"
+            {{ end }}
           - name: TYK_GW_SLAVEOPTIONS_GROUPID
+            {{ if .Values.global.remoteControlPlane.useSecretName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.remoteControlPlane.useSecretName }}
+                key: groupID
+            {{ else }}
             value: "{{ .Values.global.remoteControlPlane.groupID}}"
+            {{ end }}
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
             value: "{{ .Values.global.remoteControlPlane.connectionString }}"
           - name: TYK_GW_SLAVEOPTIONS_USESSL
