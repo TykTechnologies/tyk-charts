@@ -36,15 +36,36 @@ spec:
             - name: TYK_DB_OMITCONFIGFILE
               value: "true"
             - name: TYK_ADMIN_FIRST_NAME
+              {{ if .Values.global.adminUser.useSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.adminUser.useSecretName }}
+                  key: TYK_ADMIN_FIRST_NAME
+              {{ else }}
               value: {{ .Values.global.adminUser.firstName | quote }}
+              {{ end }}
             - name: TYK_ADMIN_LAST_NAME
+              {{ if .Values.global.adminUser.useSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.adminUser.useSecretName }}
+                  key: TYK_ADMIN_LAST_NAME
+              {{ else }}
               value: {{ .Values.global.adminUser.lastName | quote }}
+              {{ end }}
             - name: TYK_ADMIN_EMAIL
+              {{ if .Values.global.adminUser.useSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.adminUser.useSecretName }}
+                  key: TYK_ADMIN_EMAIL
+              {{ else }}
               value: {{ .Values.global.adminUser.email | quote }}
+              {{ end }}
             - name: TYK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: tyk-dashboard-login-details
+                  name: {{ if .Values.global.adminUser.useSecretName }} {{ .Values.global.adminUser.useSecretName }} {{ else }} tyk-dashboard-login-details {{ end }}
                   key: TYK_PASS
             - name: TYK_POD_NAMESPACE
               valueFrom:

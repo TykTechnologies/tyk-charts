@@ -4,11 +4,31 @@
 
 global:
   license:
+    # The license key needed by Tyk Dashboard to work.
+    #
+    # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
+    # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
 
+  # adminUser specifies credentials for Tyk Dashboard admin user while bootstrapping Tyk Dashboard.
+  # Dashboard admin information.
   adminUser:
+    # If you don't want to store plaintext secrets for admin user in the Helm value file and would
+    # rather provide the k8s Secret externally please populate the value below.
+    # You can set following fields in the secret:
+    # - TYK_ADMIN_FIRST_NAME - sets .global.adminUser.firstName
+    # - TYK_ADMIN_LAST_NAME - sets .global.adminUser.lastName
+    # - TYK_ADMIN_EMAIL - sets .global.adminUser.email
+    # - TYK_PASS - sets .global.adminUser.password
+    useSecretName: ""
+
+    # First name of the admin user
     firstName: admin
+
+    # Last name of the admin user
     lastName: user
+
+    # Email address of the admin user
     email: default@example.com
     # Set a password or a random one will be assigned.
     password: "123456"

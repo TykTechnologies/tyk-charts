@@ -6,11 +6,17 @@ global:
     # The license key needed for the Tyk Dashboard.
     dashboard: ""
   adminUser:
+    # If you don't want to store plaintext secrets for admin user in the Helm value file and would
+    # rather provide the k8s Secret externally please populate the value below
+    # You can set following fields in the secret
+    # TYK_ADMIN_FIRST_NAME - sets .global.adminUser.firstName
+    # TYK_ADMIN_LAST_NAME - sets .global.adminUser.lastName
+    # TYK_ADMIN_EMAIL - sets .global.adminUser.email
+    useSecretName: ""
+
     firstName: admin
     lastName: user
     email: default@example.com
-    # Set a password or a random one will be assigned. Admin user password must have at least 6 characters.
-    password: "123456"
 
   bootstrap:
     enterprisePortal: true
@@ -71,8 +77,6 @@ bootstrap:
     # Name of bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
     bootstrapJobName: bootstrap-post-install
 
-
-
   org:
     # The name for your organization inside Tyk
     name: Default Org
@@ -81,8 +85,6 @@ bootstrap:
 
   # Trigger to control if we want to create the tyk-operator secret
   operatorSecret: true
-
-
 
   fullnameOverride: ""
   nameOverride: ""
