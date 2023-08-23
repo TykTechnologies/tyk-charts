@@ -6,8 +6,12 @@ fullnameOverride: ""
 
 global:
   license:
-    # The license key needed by Tyk Dashboard to work
+    # The license key needed by Tyk Dashboard to work.
+    #
+    # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
+    # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
+
   # Dashboard admin information.
   adminUser:
     # First name of the admin user

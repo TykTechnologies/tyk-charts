@@ -80,7 +80,7 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
-                key: EnterprisePortalStorgeConnectionString
+                key: EnterprisePortalStorageConnectionString
           - name: PORTAL_THEMING_THEME
             value: "default"
           - name: PORTAL_THEMING_PATH

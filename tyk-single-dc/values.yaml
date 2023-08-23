@@ -12,6 +12,7 @@ global:
     email: default@example.com
     # Set a password or a random one will be assigned.
     password: "123456"
+
   components:
     # Determines whether the pump component should be installed.
     pump: true
@@ -75,6 +76,9 @@ global:
     # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
+    # EnterprisePortalLicense - Tyk Enterprise Portal License
+    # EnterprisePortalAdminPassword - Tyk Enterprise Portal Admin Password
+    # EnterprisePortalStorageConnectionString - Tyk Enterprise Portal connection string to the selected database.
     useSecretName: ""
 
   redis:

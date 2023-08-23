@@ -20,17 +20,22 @@ global:
   secrets:
     enterprisePortal: tyk-enterprise-portal-conf
 
-    # If you don't want to store plaintext secrets in the Helm value file and would
-    # rather provide the k8s Secret externally please populate the value below
+    # useSecretName can be used if you don't want to store plaintext values for Enterprise Portal license in
+    # the Helm value file and would rather provide the k8s Secret externally.
+    # You should set following fields in the secret
+    # - EnterprisePortalLicense - Sets LicenseKey for Enterprise Portal
+    # - EnterprisePortalAdminPassword - Sets admin password for Enterprise Portal
+    # - EnterprisePortalStorageConnectionString - Sets Database.ConnectionString for Enterprise Portal
     useSecretName: ""
 
 # The hostname to bind the Enterprise Portal to.
 hostName: tyk-enterprise-portal.local
+
 # Enterprise Portal license.
 license: ""
 
-#In case you want to deploy enterprise portal as a standalone app, you can configure a different dashboard URL using
-#the parameter bellow
+# In case you want to deploy enterprise portal as a standalone app, you can configure a different dashboard URL using
+# the parameter bellow.
 overrideTykDashUrl: ""
 
 storage:
@@ -45,13 +50,16 @@ storage:
     annotations: {}
     labels: {}
     selector: {}
+
 replicaCount: 1
 containerPort: 3001
+
 image:
   repository: tykio/portal
   # Enterprise portal < v1.2 is not supported
   tag: v1.5.0
   pullPolicy: Always
+
 service:
   type: NodePort
   port: 3001
@@ -59,6 +67,7 @@ service:
   annotations: {}
 # Creates an ingress object in k8s. Will require an ingress-controller and
 # annotation to that ingress controller.
+
 ingress:
   enabled: false
   # specify your ingress controller class name below
@@ -75,6 +84,7 @@ ingress:
 #  - secretName: chart-example-tls
 #    hosts:
 #      - chart-example.local
+
 resources: {}
   # We usually recommend not to specify default resources and to leave this
   # as a conscious choice for the user. This also increases chances charts
@@ -87,6 +97,7 @@ resources: {}
   # requests:
   #  cpu: 100m
 #  memory: 128Mi
+
 securityContext:
   runAsUser: 1000
   fsGroup: 2000
@@ -94,6 +105,7 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 extraEnvs: []
+
 ## extraVolumes A list of volumes to be added to the pod
 ## extraVolumes:
 ##   - name: ca-certs
@@ -101,6 +113,7 @@ extraEnvs: []
 ##       defaultMode: 420
 ##       secretName: ca-certs
 extraVolumes: []
+
 ## extraVolumeMounts A list of volume mounts to be added to the pod
 ## extraVolumeMounts:
 ##   - name: ca-certs
