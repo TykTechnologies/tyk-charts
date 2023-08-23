@@ -8,7 +8,16 @@
 
 global:
   adminUser:
+    # If you don't want to store plaintext secrets for admin user in the Helm value file and would
+    # rather provide the k8s Secret externally please populate the value below
+    # You can set following fields in the secret:
+    # - EnterprisePortalAdminEmail sets .global.adminUser.email
+    # - EnterprisePortalAdminPassword sets .global.adminUser.password
+    useSecretName: ""
+
+    # email of Enterprise Portal admin
     email: default@example.com
+    # password of Enterprise Portal admin
     password: 123456
   tls:
     dashboard: false
@@ -17,14 +26,18 @@ global:
     dashboard: 3000
   bootstrap:
     enterprisePortal: false
+
   secrets:
+    # enterprisePortal secret stands for secret including Tyk Dashboard credentials.
+    # It should include the followings:
+    # - TYK_ORG: Tyk Dashboard Organisation ID
+    # - TYK_AUTH: Tyk Dashboard API Access Credentials
     enterprisePortal: tyk-enterprise-portal-conf
 
     # useSecretName can be used if you don't want to store plaintext values for Enterprise Portal license in
     # the Helm value file and would rather provide the k8s Secret externally.
     # You should set following fields in the secret
     # - EnterprisePortalLicense - Sets LicenseKey for Enterprise Portal
-    # - EnterprisePortalAdminPassword - Sets admin password for Enterprise Portal
     # - EnterprisePortalStorageConnectionString - Sets Database.ConnectionString for Enterprise Portal
     useSecretName: ""
 
