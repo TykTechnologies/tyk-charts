@@ -90,6 +90,22 @@ spec:
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
                 key: EnterprisePortalStorgeConnectionString
+          {{ if eq .Values.storage.type "s3" }}
+          - name: PORTAL_S3_AWS_ACCESS_KEY_ID
+            value: {{ .Values.storage.s3.awsAccessKeyid }}
+          - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
+            value: {{ .Values.storage.s3.awsSecretAccessKey }}
+          - name: PORTAL_S3_REGION
+            value: {{ .Values.storage.s3.region }}
+          - name: PORTAL_S3_ENDPOINT
+            value: {{ .Values.storage.s3.endpoint }}
+          - name: PORTAL_S3_BUCKET
+            value: {{ .Values.storage.s3.bucket }}
+          - name: PORTAL_S3_ACL
+            value: {{ .Values.storage.s3.acl }}
+          - name: PORTAL_S3_PRESIGN_URLS
+            value: {{ .Values.storage.s3.presign_urls }}
+          {{ end }}}
           - name: PORTAL_THEMING_THEME
             value: "default"
           - name: PORTAL_THEMING_PATH

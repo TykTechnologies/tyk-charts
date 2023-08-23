@@ -41,6 +41,15 @@ storage:
   database:
     type: "sqlite3"
     connectionString: "db/portal.db"
+  s3:
+    type: "s3"
+    awsAccessKeyid: your-access-key
+    awsSecretAccessKey: your-secret-key
+    region: sa-east-1
+    endpoint: your-portal-bucket
+    bucket: https://s3.sa-east-1.amazonaws.com
+    acl: private
+    presign_urls: true
   persistence:
     # User can mount existing PVC to enterprise portal
     # Make sure to change the kind to Deployment if you are mounting existing PVC 
