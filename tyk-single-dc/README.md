@@ -228,6 +228,41 @@ Kubernetes secrets can be referenced, and Kubernetes by itself configures values
 
 This section describes how to use Kubernetes secrets to declare confidential fields.
 
+#### Tyk Dashboard Admin
+
+If Tyk Dashboard bootstrapping is enabled, Tyk Dashboard admin will be bootstrapped according to `global.adminUser` field.
+
+All admin credentials can also be set through Kubernetes secret.
+
+> [!NOTE]
+> Once `global.adminUser.useSecretName` is declared, it takes precedence over `global.adminUser.firstName`, 
+> `global.adminUser.lastName`, `global.adminUser.email` and `global.adminUser.password`.
+
+> [!WARNING]
+> If `global.adminUser.useSecretName` is in use, please add all keys mentioned below to the secret.
+
+##### Admin First Name
+
+It can be configured via `global.adminUser.firstName` as a plain text or Kubernetes secret which includes `TYK_ADMIN_FIRST_NAME` key
+in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
+
+
+##### Admin Last Name
+
+It can be configured via `global.adminUser.lastName` as a plain text or Kubernetes secret which includes `TYK_ADMIN_LAST_NAME` key
+in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
+
+##### Admin Email
+
+It can be configured via `global.adminUser.email` as a plain text or Kubernetes secret which includes `TYK_ADMIN_EMAIL` key
+in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
+
+
+##### Admin Password
+
+It can be configured via `global.adminUser.password` as a plain text or Kubernetes secret which includes `TYK_PASS` key
+in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
+
 #### APISecret
 
 [`APISecret`](https://tyk.io/docs/tyk-oss-gateway/configuration/#secret) field configures a header value used in every
