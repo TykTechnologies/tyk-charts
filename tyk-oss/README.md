@@ -216,7 +216,7 @@ Set `tyk-gateway.gateway.control.enabled` to true will allow you to run the [Gat
 
 #### Mounting APIs, Policies, and Middlewares
 
-By default, Gateway stores API configurations at `/mnt/tyk-gateway/apps` inside the Gateway container. There are a a few challenges:
+By default, Gateway stores API configurations at `/mnt/tyk-gateway/apps` inside the Gateway container. There are a few challenges:
 * Multiple gateways do not share app configs
 * The configuration is not persistent. It got lost whenever pod restart
 
@@ -246,9 +246,7 @@ You can configure persistent volume for APIs, Policies, and middlewares using `e
       mountPath: /mnt/tyk-gateway/middleware
 ```
 
-<!--
-See [Running multiple instances of Tyk Gateway](https://tyk.io/docs/tyk-oss/setup-multiple-gateways) for a step-by-step guide on scaling Tyk Gateway on Kubernetes.
--->
+> See [Running multiple instances of Tyk Gateway](https://tyk.io/docs/deployment-and-operations/tyk-open-source-api-gateway/setup-multiple-gateways/) for a step-by-step guide on scaling Tyk Gateway on Kubernetes.
 
 #### Setting Environment Variable
 
@@ -349,3 +347,41 @@ Uptime Pump can be configured by setting `tyk-pump.pump.uptimePumpBackend` in va
 
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `tyk-pump.pump.extraEnvs`
+
+### Protect Confidential Fields with Kubernetes Secrets
+
+In the `values.yaml` file, some fields are considered confidential, such as `APISecret`, connection strings, etc. 
+Declaring values for such fields as plain text might not be desired for all use cases. Instead, for certain fields, 
+Kubernetes secrets can be referenced, and Kubernetes by itself configures values based on the referred secret.
+
+This section describes how to use Kubernetes secrets to declare confidential fields.
+
+#### APISecret
+
+[`APISecret`](https://tyk.io/docs/tyk-oss-gateway/configuration/#secret) field configures a header value used in every 
+interaction with Tyk Gateway API.
+
+It can be configured via `global.secrets.APISecret` as a plain text or Kubernetes secret which includes `APISecret` key
+in it. Then, this secret must be referenced via `global.secrets.useSecretName`.
+
+```yaml
+global:
+    secrets:
+        APISecret: CHANGEME
+        useSecretName: "mysecret" # where mysecret includes `APISecret` key with the desired value.
+```
+
+**Note**: Once `global.secrets.useSecretName` is declared, it takes precedence over `global.secrets.APISecret`.
+
+#### Redis Password
+
+Redis password can also be provided via a secret. Store Redis password in Kubernetes secret and refer to this secret
+via `global.redis.passSecret.name` and `global.redis.passSecret.keyName` field, as follows:
+
+```yaml
+global:  
+  redis:
+     passSecret:
+       name: "yourSecret"
+       keyName: "redisPassKey"
+```

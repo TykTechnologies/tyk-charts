@@ -29,7 +29,7 @@ spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
         - name: bootstrap-tyk-post-install
-          image: tykio/tyk-k8s-bootstrap-post:latest
+          image: tykio/tyk-k8s-bootstrap-post:v1.4.0
           command: [ './app/bin/bootstrap-app-post' ]
           imagePullPolicy: IfNotPresent
           env:
@@ -84,7 +84,14 @@ spec:
             - name: TYK_DB_LISTENPORT
               value: "{{ .Values.global.servicePorts.dashboard }}"
             - name: TYK_DB_LICENSEKEY
+              {{ if .Values.global.secrets.useSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  key: DashLicense
+                  name: {{ .Values.global.secrets.useSecretName }}
+              {{ else }}
               value: {{ .Values.global.license.dashboard | quote }}
+              {{ end }}
             - name: TYK_ADMIN_SECRET
               {{- if not .Values.global.secrets.useSecretName }}
               value: {{ .Values.global.secrets.AdminSecret | quote }}
