@@ -6,6 +6,6 @@ tyk-oss/Chart.lock
 tyk-mdcb-data-plane/charts/*
 tyk-mdcb-data-plane/Chart.lock
 
-tyk-single-dc/charts/*
-tyk-single-dc/Chart.lock
+tyk-stack/charts/*
+tyk-stack/Chart.lock
 

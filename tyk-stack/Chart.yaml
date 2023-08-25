@@ -1,5 +1,5 @@
 apiVersion: v2
-name: tyk-single-dc
+name: tyk-stack
 description: A Helm chart for deploying an instance of Tyk Single Datacenter composed of Tyk Gateway, Tyk Pump and Tyk Dashboard
 
 # A chart can be either an 'application' or a 'library' chart.

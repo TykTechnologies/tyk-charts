@@ -1,4 +1,4 @@
-# Default values for tyk-single-dc.
+# Default values for tyk-stack.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -268,7 +268,7 @@ tyk-gateway:
       - name: TYK_GW_SECRET
         valueFrom:
           secretKeyRef:
-            name: secrets-tyk-single-dc
+            name: secrets-tyk-stack
             key: APISecret
 
     ## extraVolumes is a list of volumes to be added to the pod
@@ -448,13 +448,13 @@ tyk-bootstrap:
   bootstrap:
     dashboard:
       enabled: true
-      deploymentName: dashboard-tyk-single-dc-tyk-dashboard
+      deploymentName: dashboard-tyk-stack-tyk-dashboard
       # Specify if dashboard has custom service name.
       serviceName: ""
     portal:
       enabled: true
     gateway:
-      deploymentName: gateway-tyk-single-dc-tyk-gateway
+      deploymentName: gateway-tyk-stack-tyk-gateway
   jobs:
     bootstrapJobName: bootstrap-post-install
 

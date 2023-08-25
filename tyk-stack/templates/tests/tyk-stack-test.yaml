@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "tyk-single-dc.fullname" . }}-test-tyk-single-dc"
+  name: "{{ include "tyk-stack.fullname" . }}-test-tyk-stack"
   labels:
-    chart: {{ include "tyk-single-dc.chart" . }}
+    chart: {{ include "tyk-stack.chart" . }}
   annotations:
     "helm.sh/hook": test
 spec:
@@ -14,17 +14,17 @@ spec:
       command:
         - /bin/sh
         - -c
-        - /tests/tyk-single-dc-test.sh
+        - /tests/tyk-stack-test.sh
       volumeMounts:
         - mountPath: "/tests"
-          name: test-tyk-single-dc
+          name: test-tyk-stack
       env:
         - name: TYK_GW_PROTO
-          value: {{ include "tyk-single-dc.gwproto" . }}
+          value: {{ include "tyk-stack.gwproto" . }}
         - name: TYK_GW_SVC
-          value: gateway-svc-{{ include "tyk-single-dc.fullname" . }}-tyk-gateway
+          value: gateway-svc-{{ include "tyk-stack.fullname" . }}-tyk-gateway
         - name: TYK_GW_LISTENPORT
-          value: {{ include "tyk-single-dc.gwServicePort" . | quote }}
+          value: {{ include "tyk-stack.gwServicePort" . | quote }}
         - name: TYK_POD_NAMESPACE
           valueFrom:
             fieldRef:
@@ -32,10 +32,10 @@ spec:
         - name: TYK_DB_SECRET
           valueFrom:
             secretKeyRef:
-              name: secrets-tyk-single-dc
+              name: secrets-tyk-stack
               key: APISecret
   volumes:
-    - name: test-tyk-single-dc
+    - name: test-tyk-stack
       configMap:
-        name: test-tyk-single-dc-map
+        name: test-tyk-stack-map
         defaultMode: 0777
