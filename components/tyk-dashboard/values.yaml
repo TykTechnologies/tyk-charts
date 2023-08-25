@@ -1,19 +1,32 @@
+# nameOverride overrides the Chart name. It is truncated to 63 characters.
+nameOverride: ""
+
+# fullnameOverride overrides App name. It is truncated to 63 characters.
+fullnameOverride: ""
+
 global:
   license:
     # The license key needed by Tyk Dashboard to work
     dashboard: ""
-
+  # Dashboard admin information.
+  adminUser:
+    # First name of the admin user
+    firstName: admin
+    # Last name of the admin user
+    lastName: user
+    # Email address of the admin user
+    email: default@example.com
+    # Set a password or a random one will be assigned.
+    password: "123456"
   servicePorts:
     # The port at which the dashboard service can be found
     dashboard: 3000
-    # The port at which the dashboard service can be found
+    # The port at which the gateway service can be found
     gateway: 8080
 
   secrets:
     # tyk_analytics.conf tyk_api_config.secret
     # tyk_analytics.conf shared_node_secret
-    # tyk.conf node_secret
-    # tyk.conf secret
     APISecret: CHANGEME
     # tyk_analytics.conf admin_secret
     # tib.conf TykAPISettings.GatewayConfig.AdminSecret
@@ -21,6 +34,10 @@ global:
     AdminSecret: "12345"
     # If you don't want to store plaintext secrets in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below
+    # You can set following fields in the secret
+    # APISecret - Sets tyk_api_config.Secret and shared_node_secret in Dashboard config file
+    # AdminSecret - Admin user secret key
+    # DashLicense - Tyk Dashboard license key
     useSecretName: ""
 
   tls:
@@ -44,6 +61,11 @@ global:
     database: tyk_analytics
     sslmode:
 
+    # connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
+
   redis:
     # The addrs value will allow you to set your Redis addresses. If you are
     # using a redis cluster, you can list the endpoints of the redis instances
@@ -54,10 +76,14 @@ global:
     #   This is the DNS name of the redis as set when using Bitnami
     #   - "tyk-redis-master.tyk.svc.cluster.local:6379"
 
-
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
     pass: ""
+
+    # Redis password can also be provided via a secret. Provide the name of the secret and key below.
+    # passSecret:
+    #   name: ""
+    #   keyName: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -68,7 +94,7 @@ global:
     # Default value: false
     # enableCluster: true
 
-    # By default the database index is 0. Setting the database index is not
+    # By default, the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
     # then this value should be omitted or explicitly set to 0.
     storage:
@@ -79,6 +105,11 @@ global:
     # For tyk-simple-mongo (no auth)
     # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
     mongoURL: ""
+
+    # Connection URL can also be set using a secret. Provide the name of the secret and key below.
+    # connectionURLSecret:
+    #   name: ""
+    #   keyName: ""
 
 dashboard:
   enableOwnership: true
@@ -125,7 +156,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.0.0
+    tag: v5.1.0
 
     # image pull policy
     pullPolicy: Always
@@ -169,7 +200,6 @@ dashboard:
   ##     mountPath: /etc/ssl/certs/ca-certs.crt
   ##     readOnly: true
   extraVolumeMounts: []
-  mounts: []
 
   # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true
@@ -177,14 +207,4 @@ dashboard:
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
 
-  # Dashboard admin information.
-  adminUser:
-    # First name of the admin user
-    firstName: admin
-    # Last name of the admin user
-    lastName: user
-    # Email address of the admin user
-    email: default@example.com
-    # Set a password or a random one will be assigned.
-    password: "123456"
   # Dashboard Organisation information.

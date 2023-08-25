@@ -1,6 +1,6 @@
 {{- if .Values.gateway.ingress.enabled -}}
 {{- $fullName := include "tyk-gateway.fullname" . -}}
-{{- $svcPort := .Values.gateway.service.port -}}
+{{- $svcPort := .Values.global.servicePorts.gateway -}}
 {{- if and .Values.gateway.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.gateway.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.gateway.ingress.annotations "kubernetes.io/ingress.class" .Values.gateway.ingress.className}}

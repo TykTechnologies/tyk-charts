@@ -14,16 +14,6 @@ nameOverride: ""
 fullnameOverride: ""
 
 global:
-  secrets:
-    # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
-    # rather provide the k8s Secret externally.
-    # Can set following fields in the secret:
-    # - redisPass: Sets redis password
-    # - redisSentinelPass: Set if you  are using Redis Sentinel. Used to set Redis password
-    # - mongoURL: Sets mongo connection url
-    # - pgConnectionString: Sets postgres connection details
-    useSecretName: ""
-
   redis:
     # The addrs value will allow you to set your Redis addresses.
     #
@@ -49,6 +39,11 @@ global:
     # your password in the field below
     # pass: ""
 
+    # Redis password can also be provided via a secret. Provide the name of the secret and key below.
+    # passSecret:
+    #   name: ""
+    #   keyName: ""
+
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
     # useSSL: true
@@ -61,15 +56,11 @@ global:
     # mandatory values for sentinelPass and masterName.
     # enableSentinel: false
 
-    # Redis sentinel password, only required while enableSentinel is true.
-    # For bitnami/redis the same password as Redis above
-    # sentinelPass: ""
-
     # Redis sentinel master name, only required while enableSentinel is true.
     # For bitnami/redis typically redis-master
     # masterName: ""
 
-    # By default the database index is 0. Setting the database index is not
+    # By default, the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
     # then this value should be omitted or explicitly set to 0.
     storage:
@@ -83,6 +74,11 @@ global:
     # If your MongoDB has a password you can add the username and password to the url
     # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
 
+    # Connection URL can also be set using a secret. Provide the name of the secret and key below.
+    # connectionURLSecret:
+    #   name: ""
+    #   keyName: ""
+
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
     useSSL: false
@@ -95,6 +91,11 @@ global:
     password:
     database: tyk_analytics
     sslmode: disable
+
+    # Connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
 
   remoteControlPlane:
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
@@ -132,7 +133,7 @@ pump:
     repository: docker.tyk.io/tyk-pump/tyk-pump
 
     # tag for Tyk pump
-    tag: v1.8.0
+    tag: v1.8.1
 
     # image pull policy
     pullPolicy: IfNotPresent

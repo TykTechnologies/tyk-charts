@@ -37,8 +37,6 @@ global:
     # rather provide the k8s Secret externally.
     # You can set following fields in the secret
     # - APISecret - Sets node_secret and secret in tyk.conf
-    # - redisPass - Sets Redis password
-    # - redisSentinelPass - Sets Redis Password. Set it only if you are using Redis Sentinel
     useSecretName: ""
 
   redis:
@@ -66,6 +64,11 @@ global:
     # your password in the field below
     # pass: ""
 
+    # Redis password can also be provided via a secret. Provide the name of the secret and key below.
+    # passSecret:
+    #   name: ""
+    #   keyName: ""
+
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
     # useSSL: true
@@ -78,15 +81,10 @@ global:
     # mandatory values for sentinelPass and masterName.
     # enableSentinel: false
 
-    # Redis sentinel password, only required while enableSentinel is true.
-    # For bitnami/redis the same password as Redis above
-    # sentinelPass: ""
-
     # Redis sentinel master name, only required while enableSentinel is true.
-    # For bitnami/redis typically redis-master
     # masterName: ""
 
-    # By default the database index is 0. Setting the database index is not
+    # By default, the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
     # then this value should be omitted or explicitly set to 0.
     storage:
@@ -139,7 +137,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.0.0
+    tag: v5.1.0
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
@@ -147,9 +145,6 @@ gateway:
   service:
     # type of service
     type: NodePort
-
-    # service port
-    port: 443
 
     # external traffic policy of the service. Set it only if you are using LoadBalancer service type
     externalTrafficPolicy: Local

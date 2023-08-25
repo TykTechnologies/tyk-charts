@@ -16,7 +16,7 @@ metadata:
 spec:
   type: {{ .Values.gateway.service.type }}
   ports:
-  - port: {{ .Values.gateway.service.port }}
+  - port: {{ .Values.global.servicePorts.gateway }}
     targetPort: {{ .Values.global.servicePorts.gateway }}
     protocol: TCP
   selector:

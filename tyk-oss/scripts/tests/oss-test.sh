@@ -7,12 +7,12 @@ checkGateway() {
   count=0
   while [ $count -le 10 ]
   do
-    healthCheck="$(curl --fail-with-body -sS ${TYK_GW_ADDR}/hello)"
+    healthCheck="$(curl -sS ${TYK_GW_ADDR}/hello --connect-timeout 5)"
     result=$(echo "${healthCheck}" | jq -r '.details.redis.status')
 
     if [[ "${result}" != "pass" ]]
     then
-      echo "Redis is not ready."
+      echo "Redis is not ready, healthCheck: ${healthCheck}."
       echo "${healthCheck}"
       count=$((count+1))
       sleep 2
@@ -122,6 +122,7 @@ clean() {
     count=$((count+1))
 
     sleep 2
+    reloadGateway
   done
 
   echo "API deleted successfully"
