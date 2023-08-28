@@ -14,7 +14,7 @@ spec:
       command:
         - /bin/sh
         - -c
-        - /tests/mdcb-data-plane-test.sh
+        - /tests/data-plane-test.sh
       volumeMounts:
         - mountPath: "/tests"
           name: test-tyk-data-plane
@@ -37,5 +37,5 @@ spec:
   volumes:
     - name: test-tyk-data-plane
       configMap:
-        name: test-tyk-mdcb-data-plane-map
+        name: test-tyk-data-plane-map
         defaultMode: 0777

@@ -3,8 +3,8 @@ tyk-oss/Chart.lock
 
 /.idea
 
-tyk-mdcb-data-plane/charts/*
-tyk-mdcb-data-plane/Chart.lock
+tyk-data-plane/charts/*
+tyk-data-plane/Chart.lock
 
 tyk-stack/charts/*
 tyk-stack/Chart.lock

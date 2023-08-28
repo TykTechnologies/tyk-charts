@@ -124,23 +124,23 @@ jobs:
           # Do not change the name
           helm install redis simple-redis --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
           
-          helm dependency update ./tyk-mdcb-data-plane
+          helm dependency update ./tyk-data-plane
           
-          helm install --namespace ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane --wait \
+          helm install --namespace ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait \
             --set global.remoteControlPlane.orgId=${{ secrets.HYBRID_RPC_KEY }} \
             --set global.remoteControlPlane.userApiKey=${{ secrets.HYBRID_API_KEY }} \
             --set global.remoteControlPlane.connectionString=${{ secrets.HYBRID_MDCB_HOST }}
 
       - name: Run integration tests for Tyk MDCB Data Plane
-        run: helm test -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane
+        run: helm test -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-data-plane
 
       - if: failure()
         name: Check logs in case of failure
-        run: kubectl logs -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane-test-tyk-data-plane
+        run: kubectl logs -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-data-plane-test-tyk-data-plane
 
       - name: Uninstall Tyk MDCB Data Plane Dependencies
         run: |
-          helm uninstall tyk-mdcb-data-plane -n ${{ env.TYK_MDCB_DATAPLANE_NS }}
+          helm uninstall tyk-data-plane -n ${{ env.TYK_MDCB_DATAPLANE_NS }}
           helm uninstall redis -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
           kubectl delete namespace ${{ env.TYK_MDCB_DATAPLANE_NS }}
 
@@ -190,18 +190,18 @@ jobs:
           # Do not change the name
           helm install redis simple-redis --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
 
-          helm dependency update ./tyk-mdcb-data-plane
+          helm dependency update ./tyk-data-plane
 
-          helm install --namespace ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane --wait \
+          helm install --namespace ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait \
             --set global.remoteControlPlane.orgId=${{ secrets.HYBRID_RPC_KEY }} \
             --set global.remoteControlPlane.userApiKey=${{ secrets.HYBRID_API_KEY }} \
             --set global.remoteControlPlane.connectionString=${{ secrets.HYBRID_MDCB_HOST }}
 
       - name: Upgrade Tyk MDCB Data Plane
         run: |
-          helm upgrade -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane --set tyk-gateway.gateway.kind=DaemonSet
+          helm upgrade -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --set tyk-gateway.gateway.kind=DaemonSet
 
       - name: Uninstall Tyk MDCB Data Plane
         run: |
-          helm uninstall tyk-mdcb-data-plane -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
+          helm uninstall tyk-data-plane -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
           kubectl delete namespace ${{ env.TYK_MDCB_DATAPLANE_NS }}

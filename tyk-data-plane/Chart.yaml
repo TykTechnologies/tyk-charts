@@ -1,5 +1,5 @@
 apiVersion: v2
-name: tyk-mdcb-data-plane
+name: tyk-data-plane
 description: A Helm chart for deploy a Tyk Multi Data Center Bridge composed on Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
