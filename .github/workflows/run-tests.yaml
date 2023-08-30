@@ -73,6 +73,10 @@ jobs:
       - name: Run chart-testing (install)
         run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true"
 
+      - if: failure()
+        name: Check logs in case of failure
+        run: kubectl logs -n ${{ env.TYK_OSS_NS}} tyk-oss-test-tyk-oss
+
       - name: Uninstall Tyk OSS Dependencies
         run: |
           helm uninstall redis -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
@@ -92,14 +96,19 @@ jobs:
 
           helm dependency update ./tyk-single-dc
 
-           helm install --namespace tyk-single-dc tyk-single-dc ./tyk-single-dc --wait \
+          helm install --namespace tyk-single-dc tyk-single-dc ./tyk-single-dc \
             --set "global.mongo.mongoURL=mongodb://mongo.tyk-single-dc.svc.cluster.local:27017/tyk_analytics" \
             --set "global.redis.addrs[0]=redis.tyk-single-dc.svc.cluster.local:6379" \
             --set "global.license.dashboard=${{ secrets.DASH_LICENSE }}" \
+            --set "global.storageType=mongo" \
             --timeout=${{ env.TIMEOUT }}
 
       - name: Run integration tests for Tyk Single DC
         run: helm test -n ${{ env.TYK_SINGLE_DC_NS }} tyk-single-dc
+
+      - if: failure()
+        name: Check logs in case of failure
+        run: kubectl logs -n ${{ env.TYK_SINGLE_DC_NS }} tyk-single-dc-test-tyk-single-dc
 
       - name: Uninstall Tyk Single DC Dependencies
         run: |
@@ -126,12 +135,15 @@ jobs:
       - name: Run integration tests for Tyk MDCB Data Plane
         run: helm test -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane
 
+      - if: failure()
+        name: Check logs in case of failure
+        run: kubectl logs -n ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane-test-tyk-data-plane
+
       - name: Uninstall Tyk MDCB Data Plane Dependencies
         run: |
           helm uninstall tyk-mdcb-data-plane -n ${{ env.TYK_MDCB_DATAPLANE_NS }}
           helm uninstall redis -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
           kubectl delete namespace ${{ env.TYK_MDCB_DATAPLANE_NS }}
-
 
   smoke-tests:
     runs-on: ubuntu-latest
@@ -156,7 +168,7 @@ jobs:
       - name: Deploy Tyk OSS and Dependencies
         run: |
           kubectl create namespace tyk-oss
-          
+
           # Do not change the name
           helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-oss --timeout ${{ env.TIMEOUT }}
 
@@ -175,12 +187,12 @@ jobs:
       - name: Deploy Tyk MDCB Data Plane
         run: |
           kubectl create namespace ${{ env.TYK_MDCB_DATAPLANE_NS }}
-          
+
           # Do not change the name
           helm install redis simple-redis --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_MDCB_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
-          
+
           helm dependency update ./tyk-mdcb-data-plane
-          
+
           helm install --namespace ${{ env.TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane --wait \
             --set global.remoteControlPlane.orgId=${{ secrets.HYBRID_RPC_KEY }} \
             --set global.remoteControlPlane.userApiKey=${{ secrets.HYBRID_API_KEY }} \

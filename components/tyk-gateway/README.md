@@ -16,7 +16,7 @@ For typical usage, we recommend using following umbrella charts:
 [Learn more about different deployment options](https://tyk.io/docs/apim/)
 
 ## Prerequisites
-* Kuberentes 1.19+
+* Kubernetes 1.19+
 * Helm 3+
 * [Redis](https://tyk.io/docs/planning-for-production/redis/) should already be installed or accessible by the gateway 
 

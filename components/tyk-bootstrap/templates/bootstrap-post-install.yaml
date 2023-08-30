@@ -36,11 +36,11 @@ spec:
             - name: TYK_DB_OMITCONFIGFILE
               value: "true"
             - name: TYK_ADMIN_FIRST_NAME
-              value: {{ .Values.bootstrap.adminUser.firstName | quote }}
+              value: {{ .Values.global.adminUser.firstName | quote }}
             - name: TYK_ADMIN_LAST_NAME
-              value: {{ .Values.bootstrap.adminUser.lastName | quote }}
+              value: {{ .Values.global.adminUser.lastName | quote }}
             - name: TYK_ADMIN_EMAIL
-              value: {{ .Values.bootstrap.adminUser.email | quote }}
+              value: {{ .Values.global.adminUser.email | quote }}
             - name: TYK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -53,7 +53,9 @@ spec:
             - name: TYK_DASHBOARD_PROTO
               value: "{{ include "tyk-bootstrap.dash_proto" . }}"
             - name: TYK_DASHBOARD_SVC
-              {{- if .Values.global.components.dashboard }}
+              {{- if .Values.bootstrap.dashboard.serviceName }}
+              value: {{ .Values.bootstrap.dashboard.serviceName | quote }}
+              {{- else if .Values.global.components.dashboard }}
               value: "dashboard-svc-{{.Release.Name}}-tyk-dashboard"
               {{- else }}
               value: "dashboard-svc-tyk-dashboard"
@@ -89,11 +91,11 @@ spec:
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
             {{- end }}
-            {{- if .Values.bootstrap.enterprisePortalSecret }}
+            {{- if .Values.global.bootstrap.enterprisePortal }}
             - name: ENTERPRISE_PORTAL_SECRET_ENABLED
               value: "true"
             - name: ENTERPRISE_PORTAL_SECRET_NAME
-              value: "tyk-enterprise-portal-conf"
+              value: {{ .Values.global.secrets.enterprisePortal}}
             {{- end }}
             - name: GATEWAY_ADDRESS
               value: "{{ include "tyk-bootstrap.gateway_url" . }}"
@@ -102,11 +104,7 @@ spec:
               value: "true"
             {{- end }}
             - name: TYK_DASHBOARD_DEPLOY
-            {{- if .Values.global.components.dashboard }}
-              value: "dashboard-{{.Release.Name}}-tyk-dashboard"
-            {{- else }}
               value: {{ .Values.bootstrap.dashboard.deploymentName }}
-            {{- end }}
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}

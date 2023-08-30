@@ -1,12 +1,27 @@
+# nameOverride overrides the Chart name. It is truncated to 63 characters.
+nameOverride: ""
+
+# fullnameOverride overrides App name. It is truncated to 63 characters.
+fullnameOverride: ""
+
 global:
   license:
     # The license key needed by Tyk Dashboard to work
     dashboard: ""
-
+  # Dashboard admin information.
+  adminUser:
+    # First name of the admin user
+    firstName: admin
+    # Last name of the admin user
+    lastName: user
+    # Email address of the admin user
+    email: default@example.com
+    # Set a password or a random one will be assigned.
+    password: "123456"
   servicePorts:
     # The port at which the dashboard service can be found
     dashboard: 3000
-    # The port at which the dashboard service can be found
+    # The port at which the gateway service can be found
     gateway: 8080
 
   secrets:
@@ -39,8 +54,8 @@ global:
     # a custom TLS certificate to avoid overwriting yours
     useDefaultTykCertificate: true
 
-  # Choose the backend for Tyk. [ "mongo", "postgres" ]
-  backend: mongo
+  # Choose the storageType for Tyk. [ "mongo", "postgres" ]
+  storageType: mongo
 
   postgres:
     host: tyk-postgres-postgresql.tyk.svc.cluster.local
@@ -83,7 +98,7 @@ global:
     # Default value: false
     # enableCluster: true
 
-    # By default the database index is 0. Setting the database index is not
+    # By default, the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
     # then this value should be omitted or explicitly set to 0.
     storage:
@@ -145,7 +160,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.0.0
+    tag: v5.1.0
 
     # image pull policy
     pullPolicy: Always
@@ -189,7 +204,6 @@ dashboard:
   ##     mountPath: /etc/ssl/certs/ca-certs.crt
   ##     readOnly: true
   extraVolumeMounts: []
-  mounts: []
 
   # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true

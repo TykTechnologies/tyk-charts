@@ -1,24 +1,24 @@
-# New Tyk Helm Charts (WIP)
-This is a WIP repository for new Tyk helm charts. We will roll out new component charts and umbrella charts here as they are ready. Please visit the respective pages for each chart to learn how to install the chart and find out all the information relevant to that chart.
+# New Tyk Helm Charts
+This is a repository for new Tyk helm charts. We will roll out new component charts and umbrella charts here as they are ready. Please visit the respective pages for each chart to learn how to install the chart and find out all the information relevant to that chart.
 
-> **Note**
-> Breaking changes may be introduced before stable release.
+## Umbrella Charts
+Helm umbrella chart (chart of charts) is an easy and really flexible way of installing multiple components as a single one. We have following umbrella charts that help you to install group of related tyk components based on your deployment need.
+
+| Umbrella Charts | Description | Status |
+|-----------------|-------------|--------|
+| [tyk-oss](./tyk-oss)                | Tyk Open Source | Stable              |
+| [tyk-single-dc](./tyk-single-dc)          | Tyk Self Managed (Single DC) | Beta            |
+| tyk-mdcb-control-plane | Tyk Self Managed (MDCB) Control Plane | Coming Soon     |
+| [tyk-mdcb-data-plane](./tyk-mdcb-data-plane)    | Tyk Self Managed (MDCB) Data Plane <br> Tyk Hybrid Data Plane | Stable              |
 
 ## Component Charts
 * [tyk-gateway](./components/tyk-gateway)
 * [tyk-pump](./components/tyk-pump)
 * [tyk-dashboard](./components/tyk-dashboard)
+* [tyk-enterprise-portal](./components/tyk-enterprise-portal)
 * tyk-mdcb (Coming soon!)
-* tyk-portal (Coming soon!)
 * tyk-tib (Coming soon!)
 * tyk-operator (Coming soon!)
-
-## Umbrella Charts
-Helm umbrella chart (chart of charts) is an easy and really flexible way of installing multiple components as a single one. We have following umbrella charts that help you to install group of related tyk components based on your deployment need.
-* [tyk-oss](./tyk-oss)
-* [tyk-mdcb-data-plane](./tyk-mdcb-data-plane)
-* [tyk-single-dc](./tyk-single-dc)
-* tyk-mdcb-control-plane (Coming soon!)
 
 ## External Dependencies - Redis and MongoDB/PostgreSQL
 - Redis is required for all of the Tyk installations it must be installed in the cluster or reachable from inside K8s.
