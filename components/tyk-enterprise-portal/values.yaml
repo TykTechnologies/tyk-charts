@@ -39,8 +39,11 @@ storage:
   # Supported types: fs, s3, db
   type: "fs"
   database:
-    type: "sqlite3"
+    dialect: "sqlite3"
     connectionString: "db/portal.db"
+    enableLogs: true
+    maxRetries: 3
+    retryDelay: 5000
   persistence:
     # User can mount existing PVC to enterprise portal
     # Make sure to change the kind to Deployment if you are mounting existing PVC 

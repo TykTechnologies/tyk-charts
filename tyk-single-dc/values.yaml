@@ -612,8 +612,11 @@ tyk-enterprise-portal:
     # Supported types: fs, s3, db
     type: "fs"
     database:
-      type: "sqlite3"
+      dialect: "sqlite3"
       connectionString: "db/portal.db"
+      enableLogs: true
+      maxRetries: 3
+      retryDelay: 5000
     persistence:
       mountExistingPVC: ""
       storageClass: ""
