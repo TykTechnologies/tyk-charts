@@ -79,6 +79,9 @@ spec:
                 key: EnterprisePortalAdminPassword
           - name: PORTAL_STORAGE
             value: "{{ .Values.storage.type }}"
+          {{ if eq .Values.storage.type "db" }}
+          - name: PORTAL_DATABASE_DIALECT
+            value: .Values.storage.database.dialect
           - name: PORTAL_DATABASE_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
@@ -88,11 +91,6 @@ spec:
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
                 key: EnterprisePortalStorgeConnectionString
-          {{ if eq .Values.storage.type "db" }}
-          - name: PORTAL_DATABASE_DIALECT
-            value: .Values.storage.database.dialect
-          - name: PORTAL_DATABASE_CONNECTIONSTRING
-            value: .Values.storage.database.connectionString
           - name: PORTAL_DATABASE_ENABLELOGS
             value: .Values.storage.database.enableLogs
           - name: PORTAL_DATABASE_MAXRETRIES
