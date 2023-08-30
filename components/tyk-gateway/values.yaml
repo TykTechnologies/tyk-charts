@@ -156,6 +156,9 @@ gateway:
   # The port which will be exposed on the container for tyk-gateway
   containerPort: 8080
 
+  scratch:
+    enabled: true
+
   service:
     # type of service
     type: NodePort
