@@ -637,7 +637,6 @@ tyk-enterprise-portal:
       type: "sqlite3"
       connectionString: "db/portal.db"
     s3:
-      type: "s3"
       awsAccessKeyid: your-access-key
       awsSecretAccessKey: your-secret-key
       region: sa-east-1

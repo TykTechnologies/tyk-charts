@@ -92,9 +92,23 @@ spec:
                 key: EnterprisePortalStorgeConnectionString
           {{ if eq .Values.storage.type "s3" }}
           - name: PORTAL_S3_AWS_ACCESS_KEY_ID
-            value: {{ .Values.storage.s3.awsAccessKeyid }}
+            valueFrom:
+              secretKeyRef:
+                {{ if .Values.global.secrets.useSecretName }}
+                name: {{ .Values.global.secrets.useSecretName }}
+                {{ else }}
+                name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
+                {{ end }}
+                key: EnterprisePortalAwsAccessKeyId
           - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
-            value: {{ .Values.storage.s3.awsSecretAccessKey }}
+            valueFrom:
+              secretKeyRef:
+                {{ if .Values.global.secrets.useSecretName }}
+                name: {{ .Values.global.secrets.useSecretName }}
+                {{ else }}
+                name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
+                {{ end }}
+                key: EnterprisePortalAwsSecretAccessKey
           - name: PORTAL_S3_REGION
             value: {{ .Values.storage.s3.region }}
           - name: PORTAL_S3_ENDPOINT
