@@ -563,7 +563,7 @@ tyk-dashboard:
     tolerations: []
     affinity: {}
 
-    extraEnvs: 
+    extraEnvs:
     - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
       value: *gwHostName
 
