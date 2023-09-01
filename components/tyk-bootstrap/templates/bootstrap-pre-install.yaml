@@ -29,8 +29,11 @@ spec:
       containers:
         - name: bootstrap-tyk-pre-install
           image: tykio/tyk-k8s-bootstrap-pre-install:latest
-          command: [ './app/bin/bootstrap-pre-install' ]
+          command: ['/app/bin/bootstrap-app-pre-install']
           imagePullPolicy: IfNotPresent
+          env:
+            - name: TYK_DB_LICENSEKEY
+              value: {{ .Values.global.license.dashboard | quote }}
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}
