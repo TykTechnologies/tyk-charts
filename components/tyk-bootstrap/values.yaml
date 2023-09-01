@@ -70,8 +70,7 @@ bootstrap:
   jobs:
     # Name of bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
     bootstrapJobName: bootstrap-post-install
-
-
+    bootstrapPreInstallJobName: bootstrap-pre-install
 
   org:
     # The name for your organization inside Tyk
@@ -99,5 +98,6 @@ bootstrap:
   #     key: value
   #     post: install
   podAnnotations:
+    preInstallPodAnnotations: {}
     postInstallPodAnnotations: {}
     preDeletePodAnnotations: {}
