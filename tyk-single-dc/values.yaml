@@ -602,8 +602,13 @@ tyk-dashboard:
       runAsUser: 1000
       fsGroup: 2000
     containerSecurityContext:
-      runAsUser: 999
-      runAsGroup: 999
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+        - all
     nodeSelector: {}
     tolerations: []
     affinity: {}
