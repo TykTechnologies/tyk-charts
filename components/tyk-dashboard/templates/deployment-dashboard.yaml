@@ -77,8 +77,6 @@ spec:
             value: "{{ .Values.dashboard.hostConfig.enableHostNames }}"
           - name: "TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX"
             value: "{{ .Values.dashboard.hostConfig.disableOrgSlugPrefix }}"
-          - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
-            value: "{{ include "tyk-dashboard.gateway_url" . }}"
           - name: "TYK_DB_HOMEDIR"
             value: "{{ .Values.dashboard.homeDir }}"
           - name: "TYK_DB_USESHARDEDANALYTICS"
@@ -115,7 +113,7 @@ spec:
             value: "128"
           - name: TYK_DB_TYKAPI_HOST
             # this needs to be setup from values
-            value: {{ include "tyk-dashboard.gateway_host" .}}
+            value: {{ include "tyk-dashboard.gateway_url" .}}
           - name: TYK_DB_TYKAPI_PORT
             value: "{{ .Values.global.servicePorts.dashboard }}"
           - name: TYK_DB_TYKAPI_SECRET
