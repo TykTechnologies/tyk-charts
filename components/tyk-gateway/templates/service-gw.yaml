@@ -17,7 +17,7 @@ spec:
   type: {{ .Values.gateway.service.type }}
   ports:
   - port: {{ .Values.global.servicePorts.gateway }}
-    targetPort: {{ .Values.global.servicePorts.gateway }}
+    targetPort: {{ .Values.global.containerPorts.gateway }}
     protocol: TCP
   selector:
     app: gateway-{{ include "tyk-gateway.fullname" . }}
