@@ -154,11 +154,11 @@ spec:
         {{- else}}
             value: "file"
         {{- end}}
-        {{- if .Values.global.remoteControlPlane.enabled }}
           - name: TYK_GW_ENABLEANALYTICS
             value: "{{.Values.gateway.analyticsEnabled}}"
           - name: TYK_GW_ANALYTICSCONFIG_TYPE
             value: "{{.Values.gateway.analyticsConfigType}}"
+        {{- if .Values.global.remoteControlPlane.enabled }}
           - name: TYK_GW_SLAVEOPTIONS_USERPC
             value: "true"
           - name: TYK_GW_AUTHOVERRIDE_FORCEAUTHPROVIDER
