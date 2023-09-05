@@ -176,7 +176,7 @@ tyk-gateway:
 
   gateway:
     # The hostname to bind the Gateway to.
-    hostName: tyk-gw.local
+    hostName: &gwHostName tyk-gw.local
 
     tls:
       # When true, it will install the certificate present in the templates folder, set to false when using
@@ -613,7 +613,9 @@ tyk-dashboard:
     tolerations: []
     affinity: {}
 
-    extraEnvs: []
+    extraEnvs:
+    - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
+      value: *gwHostName
 
     ## extraVolumes A list of volumes to be added to the pod
     ## extraVolumes:
