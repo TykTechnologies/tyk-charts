@@ -28,7 +28,7 @@ spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
         - name: bootstrap-tyk-pre-install
-          image: tykio/tyk-k8s-bootstrap-pre-install:latest
+          image: buraksekili/tyk-k8s-bootstrap-pre-install:latest
           command: ['/app/bin/bootstrap-app-pre-install']
           imagePullPolicy: IfNotPresent
           env:
