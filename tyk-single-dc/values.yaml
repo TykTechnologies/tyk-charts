@@ -191,6 +191,9 @@ tyk-gateway:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
+    # analyticsEnabled property is used to enable or disable sending analytics to Control Plane.
+    analyticsEnabled: "true"
+
     image:
       # image repository for Tyk Gateway
       repository: tykio/tyk-gateway

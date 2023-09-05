@@ -250,7 +250,7 @@ gateway:
   extraVolumeMounts: []
 
   # analyticsEnabled property is used to enable or disable sending analytics to Control Plane.
-  analyticsEnabled: "true"
+  analyticsEnabled: "false"
 
   # used to decide whether to send the results back directly to Tyk without a hybrid pump
   # if you want to use a hybrid pump, please change "rpc" to ""
