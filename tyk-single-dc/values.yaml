@@ -70,18 +70,40 @@ global:
     useSecretName: ""
 
   redis:
-    # The addrs value will allow you to set your Redis addresses. If you are
-    # using a redis cluster, you can list the endpoints of the redis instances
-    # or use the cluster configuration endpoint.
+    # The addrs value will allow you to set your Redis addresses.
+    #
+    # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
+    # endpoint. If using sentinel connection mode for Redis, please update the port number (typically 26379).
+    #
+    # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
+    # the endpoints of the redis instances or use the cluster configuration endpoint.
+    #
     # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
-    addrs:
-      - redis.tyk.svc.cluster.local:6379
-      #   This is the DNS name of the redis as set when using Bitnami
-      # - "tyk-redis-master.tyk.svc.cluster.local:6379"
+    # addrs:
+    #   Example using tyk simple redis chart
+    #   - redis.tyk.svc.cluster.local:6379
+    #   Example using bitnami/redis
+    #   - tyk-redis-master.tyk.svc.cluster.local:6379
+    #   Example using bitnami/redis with sentinel
+    #   - tyk-redis.tyk.svc.cluster.local:26379
+    #   Example using bitnami/redis-cluster
+    #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
 
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
-    pass: ""
+    # pass: ""
+
+    # Enables sentinel connection mode for Redis. If enabled, provide both
+    # mandatory values for sentinelPass and masterName.
+    # enableSentinel: false
+
+    # Redis sentinel password, only required while enableSentinel is true.
+    # For bitnami/redis the same password as Redis above
+    # sentinelPass: ""
+
+    # Redis sentinel master name, only required while enableSentinel is true.
+    # For bitnami/redis typically redis-master
+    # masterName: ""
 
     # Redis password can also be provided via a secret. Provide the name of the secret and key below.
     # passSecret:
@@ -109,6 +131,10 @@ global:
     # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
 
     # If your MongoDB has a password you can add the username and password to the url
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+
+    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+    # Default value: false
     # mongoURL: ""
 
     # Connection URL can also be set using a secret. Provide the name of the secret and key below.
@@ -129,13 +155,8 @@ global:
     database: tyk_analytics
     sslmode:
 
-    # Connection string can also be set using a secret. Provide the name of the secret and key below.
-    # connectionStringSecret:
-    #   name: ""
-    #   keyName: ""
-
-  # Choose the backend for Tyk. [ "mongo", "postgres" ]
-  backend: mongo
+  # Choose the storageType for Tyk. [ "mongo", "postgres" ]
+  storageType: &globalStorageType postgres
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
@@ -155,7 +176,7 @@ tyk-gateway:
 
   gateway:
     # The hostname to bind the Gateway to.
-    hostName: tyk-gw.local
+    hostName: &gwHostName tyk-gw.local
 
     tls:
       # When true, it will install the certificate present in the templates folder, set to false when using
@@ -357,6 +378,7 @@ tyk-pump:
     # By default, Tyk Pump uses Prometheus.
     backend:
       - "prometheus"
+      - *globalStorageType
 
     # uptimePumpBackend configures uptime Tyk Pump. ["", "mongo", "postgres"].
     # Set it to "" for disabling uptime Tyk Pump. By default, uptime pump is disabled.
@@ -563,7 +585,9 @@ tyk-dashboard:
     tolerations: []
     affinity: {}
 
-    extraEnvs: []
+    extraEnvs:
+    - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
+      value: *gwHostName
 
     ## extraVolumes A list of volumes to be added to the pod
     ## extraVolumes:
