@@ -50,8 +50,8 @@ global:
     # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
 
-  # Choose the backend for Tyk. [ "mongo", "postgres" ]
-  backend: mongo
+  # Choose the storageType for Tyk. [ "mongo", "postgres" ]
+  storageType: mongo
 
   postgres:
     host: tyk-postgres-postgresql.tyk.svc.cluster.local
