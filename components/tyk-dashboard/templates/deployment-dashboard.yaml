@@ -52,6 +52,9 @@ spec:
       affinity:
 {{ toYaml .Values.dashboard.affinity | indent 8 }}
 {{- end }}
+      {{- with .Values.dashboard.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
         imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
@@ -77,8 +80,6 @@ spec:
             value: "{{ .Values.dashboard.hostConfig.enableHostNames }}"
           - name: "TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX"
             value: "{{ .Values.dashboard.hostConfig.disableOrgSlugPrefix }}"
-          - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
-            value: "{{ include "tyk-dashboard.gateway_url" . }}"
           - name: "TYK_DB_HOMEDIR"
             value: "{{ .Values.dashboard.homeDir }}"
           - name: "TYK_DB_USESHARDEDANALYTICS"
@@ -115,7 +116,7 @@ spec:
             value: "128"
           - name: TYK_DB_TYKAPI_HOST
             # this needs to be setup from values
-            value: {{ include "tyk-dashboard.gateway_host" .}}
+            value: {{ include "tyk-dashboard.gateway_url" .}}
           - name: TYK_DB_TYKAPI_PORT
             value: "{{ .Values.global.servicePorts.dashboard }}"
           - name: TYK_DB_TYKAPI_SECRET
@@ -138,7 +139,7 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-dashboard.fullname" . }} {{ end}}
                 key: DashLicense
-            
+
           - name: TYK_DB_REDISADDRS
             value: {{ include "tyk-dashboard.redis_url" . | quote }}
           - name: TYK_DB_ENABLECLUSTER
@@ -152,7 +153,7 @@ spec:
             value: "{{ default "false" .Values.global.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
             value: "true"
-            
+
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.global.tls.dashboard }}"
 

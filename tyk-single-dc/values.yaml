@@ -208,7 +208,7 @@ tyk-gateway:
 
   gateway:
     # The hostname to bind the Gateway to.
-    hostName: tyk-gw.local
+    hostName: &gwHostName tyk-gw.local
 
     tls:
       # When true, it will install the certificate present in the templates folder, set to false when using
@@ -232,6 +232,9 @@ tyk-gateway:
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
+
+    # image pull secrets to use when pulling images from repository
+    imagePullSecrets: []
 
     service:
       # type of service
@@ -381,6 +384,9 @@ tyk-pump:
 
       # image pull policy
       pullPolicy: IfNotPresent
+
+    # image pull secrets to use when pulling images from repository
+    imagePullSecrets: []
 
     service:
       # Tyk Pump svc is disabled by default. Set it to true to enable it.
@@ -593,6 +599,10 @@ tyk-dashboard:
 
       # image pull policy
       pullPolicy: Always
+
+    # image pull secrets to use when pulling images from repository
+    imagePullSecrets: []
+
     service:
       type: NodePort
       externalTrafficPolicy: Local
@@ -617,7 +627,9 @@ tyk-dashboard:
     tolerations: []
     affinity: {}
 
-    extraEnvs: []
+    extraEnvs:
+    - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
+      value: *gwHostName
 
     ## extraVolumes A list of volumes to be added to the pod
     ## extraVolumes:
@@ -679,6 +691,10 @@ tyk-enterprise-portal:
     # Enterprise portal < v1.2 is not supported
     tag: v1.2.0
     pullPolicy: Always
+
+  # image pull secrets to use when pulling images from repository
+  imagePullSecrets: []
+
   service:
     type: NodePort
     port: 3001
