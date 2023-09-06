@@ -245,7 +245,7 @@ tyk-gateway:
       enabled: false
       tags: ""
 
-    # analyticsEnabled property is used to enable or disable sending analytics to Control Plane.
+    # analyticsEnabled property is used to enable or disable analytics.
     analyticsEnabled: "true"
 
     # used to decide whether to send the results back directly to Tyk without a hybrid pump
