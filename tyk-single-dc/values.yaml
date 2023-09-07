@@ -642,7 +642,7 @@ tyk-enterprise-portal:
     database:
       dialect: "sqlite3"
       connectionString: "db/portal.db"
-      enableLogs: true
+      enableLogs: false
       maxRetries: 3
       retryDelay: 5000
     persistence:
