@@ -16,9 +16,6 @@ global:
   servicePorts:
     # The port at which the gateway service can be found at
     gateway: 8080
-  containerPorts:
-    # The port which will be exposed on the container for tyk-gateway
-    gateway: 8080
 
   remoteControlPlane:
     enabled: true
@@ -156,6 +153,9 @@ tyk-gateway:
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
+
+    # The port which will be exposed on the container for tyk-gateway
+    containerPort: 8080
 
     service:
       # type of service

@@ -15,9 +15,6 @@ global:
     enterprisePortal: false
   servicePorts:
     dashboard: 3000
-  containerPorts:
-    # The port which will be exposed on the container for tyk-gateway
-    gateway: 8080
   bootstrap:
     enterprisePortal: false
   secrets:
