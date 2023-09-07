@@ -154,6 +154,9 @@ tyk-gateway:
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
 
+    # image pull secrets to use when pulling images from repository
+    imagePullSecrets: []
+
     # The port which will be exposed on the container for tyk-gateway
     containerPort: 8080
 
