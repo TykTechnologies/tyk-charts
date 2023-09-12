@@ -680,7 +680,7 @@ tyk-enterprise-portal:
   image:
     repository: tykio/portal
     # Enterprise portal < v1.2 is not supported
-    tag: v1.2.0
+    tag: v1.6.0
     pullPolicy: Always
 
   # image pull secrets to use when pulling images from repository

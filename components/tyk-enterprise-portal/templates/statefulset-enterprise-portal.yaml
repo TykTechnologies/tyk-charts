@@ -84,26 +84,25 @@ spec:
             value: "{{ .Values.storage.type }}"
           {{ if eq .Values.storage.type "db" }}
           - name: PORTAL_DATABASE_DIALECT
-            value: .Values.storage.database.dialect
+            value: "{{ .Values.storage.database.dialect }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
                 {{ if .Values.global.secrets.useSecretName }}
-                name: {{ .Values.global.secrets.useSecretName }}
+                name: "{{ .Values.global.secrets.useSecretName }}"
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
-                key: EnterprisePortalStorgeConnectionString
+                key: EnterprisePortalStorageConnectionString
           - name: PORTAL_DATABASE_ENABLELOGS
-            value: .Values.storage.database.enableLogs
+            value: "{{ .Values.storage.database.enableLogs }}"
           - name: PORTAL_DATABASE_MAXRETRIES
-            value: .Values.storage.database.maxRetries
+            value: "{{.Values.storage.database.maxRetries }}"
           - name: PORTAL_DATABASE_RETRYDELAY
-            value: .Values.storage.database.retryDelay
+            value: "{{ .Values.storage.database.retryDelay }}"
           {{ end }}
           - name: PORTAL_THEMING_THEME
             value: "default"
-                key: "EnterprisePortalStorageConnectionString"
           {{ if eq .Values.storage.type "s3" }}
           - name: PORTAL_S3_AWS_ACCESS_KEY_ID
             valueFrom:
@@ -182,7 +181,6 @@ spec:
         workingDir: /opt/portal
         ports:
         - containerPort: {{ .Values.containerPort }}
-        {{ if eq .Values.storage.type "fs" }}
         volumeMounts:
           {{ if eq .Values.storage.type "fs" }}
           - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
@@ -213,12 +211,11 @@ spec:
             mountPath: /opt/portal/themes
             subPath: themes
           {{- end }}
-          {{- if eq .Values.storage.database.type "sqlite3" }}
+          {{- if eq .Values.storage.database.dialect "sqlite3" }}
           - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
             mountPath: /opt/portal/db
             subPath: db
           {{- end }}
-        {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.enterprisePortal }}S{{ end }}"

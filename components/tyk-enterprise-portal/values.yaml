@@ -35,9 +35,6 @@ overrideTykDashUrl: ""
 # Enterprise portal can be deployed as StatefulSet or as Deployment
 kind: StatefulSet
 storage:
-  # User can set the storage type for portal.
-  # Supported types: fs, s3, db
-  type: "fs"
   # Configuration values for using an SQL database as storage for Tyk Enterprise Portal
   # In case you want to provide the connection string via secrets please
   # refer to the existing secret inside the helmchart or the
