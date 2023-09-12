@@ -126,11 +126,11 @@ gateway:
       cert_file: "/etc/certs/tyk-gateway/tls.crt"
       key_file: "/etc/certs/tyk-gateway/tls.key"
 
-  # kind is type of k8s object to be created for gateway. 
+  # kind is type of k8s object to be created for gateway.
   kind: Deployment
 
   # podAnnotations is annotations to be added to Tyk Gateway pod.
-  # It takes key-value pairs. 
+  # It takes key-value pairs.
   # There are no required annotation field for Tyk Gateway.
   #
   # podAnnotations:
@@ -150,6 +150,9 @@ gateway:
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
+
+  # image pull secrets to use when pulling images from repository
+  imagePullSecrets: []
 
   service:
     # type of service
@@ -259,5 +262,5 @@ gateway:
   extraVolumeMounts: []
 
   # used to decide whether to send the results back directly to Tyk without a hybrid pump
-  # if you want to use a hybrid pump, please change "rpc" to ""
+  # if you want to send analytics to control plane instead of pump, change analyticsConfigType to "rpc"
   analyticsConfigType: ""
