@@ -191,6 +191,9 @@ tyk-gateway:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
+    # analyticsEnabled property is used to enable or disable analytics.
+    analyticsEnabled: "true"
+
     image:
       # image repository for Tyk Gateway
       repository: tykio/tyk-gateway
@@ -645,10 +648,6 @@ tyk-enterprise-portal:
     # User can set the storage type for portal.
     # Supported types: fs, s3, db
     type: "fs"
-    # Configuration values for using an SQL database as storage for Tyk Enterprise Portal
-    # In case you want to provide the connection string via secrets please
-    # refer to the existing secret inside the helmchart or the
-    # .Values.global.secrets.useSecretName variable
     database:
       dialect: "sqlite3"
       connectionString: "db/portal.db"

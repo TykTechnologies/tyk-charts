@@ -1,0 +1,40 @@
+{{- if .Values.bootstrap.dashboard.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name:  {{ .Values.bootstrap.jobs.bootstrapPreInstallJobName }}
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+
+    # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
+    # when every app will have its own a chart
+    # app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.bootstrap.podAnnotations.preInstallPodAnnotations }}
+        {{ toYaml .Values.bootstrap.podAnnotations.preInstallPodAnnotations | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: k8s-bootstrap-role
+      containers:
+        - name: bootstrap-tyk-pre-install
+          image: tykio/tyk-k8s-bootstrap-pre-install:latest
+          command: ['/app/bin/bootstrap-app-pre-install']
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TYK_DB_LICENSEKEY
+              value: {{ .Values.global.license.dashboard | quote }}
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+{{- end }}
+      

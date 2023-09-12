@@ -42,6 +42,9 @@ storage:
   # In case you want to provide the connection string via secrets please
   # refer to the existing secret inside the helmchart or the
   # .Values.global.secrets.useSecretName variable
+  # User can set the storage type for portal.
+  # Supported types: fs, s3, db
+  type: "fs"
   database:
     dialect: "sqlite3"
     connectionString: "db/portal.db"

@@ -19,7 +19,7 @@ spec:
     type: RollingUpdate
   {{- end }}
   replicas: {{ .Values.replicaCount }}
-  
+
   selector:
     matchLabels:
       app: {{ include "tyk-enterprise-portal.fullname" . }}
@@ -201,10 +201,10 @@ spec:
           failureThreshold: 3
 
       {{- if and (eq .Values.kind "Deployment") (eq .Values.storage.type "fs") .Values.storage.persistence.mountExistingPVC }}
-      volumes: 
+      volumes:
       - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
-        perisitentVolumeClaim:
-          claimName: {{ .Values.storage.persistence.mountExistingPVC }}   
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.persistence.mountExistingPVC }}
       {{- end }}
 
       {{- if .Values.securityContext }}
