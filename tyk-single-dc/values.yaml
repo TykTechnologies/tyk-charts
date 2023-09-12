@@ -638,16 +638,21 @@ tyk-enterprise-portal:
   # is present. The secret is created during the dashboard bootstrapping and
   # be turned on and off using the dash.enterprisePortalSecret bool.
 
-
   # The hostname to bind the Enterprise Portal to.
   hostName: tyk-enterprise-portal.local
   # Enterprise Portal license.
   license: ""
+  # Enterprise portal can be deployed as StatefulSet or as Deployment
+  kind: StatefulSet
   storage:
+    # User can set the storage type for portal.
+    # Supported types: fs, s3, db
+    type: "fs"
     database:
       type: "sqlite3"
       connectionString: "db/portal.db"
     persistence:
+      mountExistingPVC: ""
       storageClass: ""
       accessModes:
         - ReadWriteOnce

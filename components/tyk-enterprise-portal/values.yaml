@@ -32,12 +32,19 @@ license: ""
 #In case you want to deploy enterprise portal as a standalone app, you can configure a different dashboard URL using
 #the parameter bellow
 overrideTykDashUrl: ""
-
+# Enterprise portal can be deployed as StatefulSet or as Deployment
+kind: StatefulSet
 storage:
+  # User can set the storage type for portal.
+  # Supported types: fs, s3, db
+  type: "fs"
   database:
     type: "sqlite3"
     connectionString: "db/portal.db"
   persistence:
+    # User can mount existing PVC to enterprise portal
+    # Make sure to change the kind to Deployment if you are mounting existing PVC 
+    mountExistingPVC: ""
     storageClass: ""
     accessModes:
       - ReadWriteOnce
@@ -109,9 +116,6 @@ extraVolumes: []
 ##     mountPath: /etc/ssl/certs/ca-certs.crt
 ##     readOnly: true
 extraVolumeMounts: []
-
-
-
 
 livenessProbe:
   initialDelaySeconds: 60
