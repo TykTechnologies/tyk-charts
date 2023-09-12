@@ -40,7 +40,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.global.adminUser.useSecretName }}
-                  key: TYK_ADMIN_FIRST_NAME
+                  key: adminUserFirstName
               {{ else }}
               value: {{ .Values.global.adminUser.firstName | quote }}
               {{ end }}
@@ -49,7 +49,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.global.adminUser.useSecretName }}
-                  key: TYK_ADMIN_LAST_NAME
+                  key: adminUserLastName
               {{ else }}
               value: {{ .Values.global.adminUser.lastName | quote }}
               {{ end }}
@@ -58,7 +58,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.global.adminUser.useSecretName }}
-                  key: TYK_ADMIN_EMAIL
+                  key: adminUserEmail
               {{ else }}
               value: {{ .Values.global.adminUser.email | quote }}
               {{ end }}
@@ -66,7 +66,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ if .Values.global.adminUser.useSecretName }} {{ .Values.global.adminUser.useSecretName }} {{ else }} tyk-dashboard-login-details {{ end }}
-                  key: TYK_PASS
+                  key: adminUserPassword
             - name: TYK_POD_NAMESPACE
               valueFrom:
                 fieldRef:

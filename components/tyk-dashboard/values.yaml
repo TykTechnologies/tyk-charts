@@ -17,10 +17,10 @@ global:
     # If you don't want to store plaintext secrets for admin user in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below
     # You can set following fields in the secret
-    # TYK_ADMIN_FIRST_NAME - sets .global.adminUser.firstName
-    # TYK_ADMIN_LAST_NAME - sets .global.adminUser.lastName
-    # TYK_ADMIN_EMAIL - sets .global.adminUser.email
-    # TYK_PASS - sets .global.adminUser.password
+    # adminUserFirstName - sets .global.adminUser.firstName
+    # adminUserLastName - sets .global.adminUser.lastName
+    # adminUserEmail - sets .global.adminUser.email
+    # adminUserPassword - sets .global.adminUser.password
     useSecretName: ""
 
     # First name of the admin user

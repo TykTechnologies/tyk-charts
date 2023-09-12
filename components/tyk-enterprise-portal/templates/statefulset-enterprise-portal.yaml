@@ -63,7 +63,7 @@ spec:
             {{ if .Values.global.adminUser.useSecretName }}
             valueFrom:
               secretKeyRef:
-                key: EnterprisePortalAdminEmail
+                key: adminUserEmail
                 name: {{ .Values.global.adminUser.useSecretName }}
             {{ else }}
             value: "{{ .Values.global.adminUser.email }}"
@@ -76,7 +76,7 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
-                key: EnterprisePortalAdminPassword
+                key: adminUserPassword
           - name: PORTAL_DATABASE_DIALECT
             value: "{{ .Values.storage.database.type }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING

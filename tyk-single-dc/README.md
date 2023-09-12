@@ -243,24 +243,24 @@ All admin credentials can also be set through Kubernetes secret.
 
 ##### Admin First Name
 
-It can be configured via `global.adminUser.firstName` as a plain text or Kubernetes secret which includes `TYK_ADMIN_FIRST_NAME` key
+It can be configured via `global.adminUser.firstName` as a plain text or Kubernetes secret which includes `adminUserFirstName` key
 in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
 
 
 ##### Admin Last Name
 
-It can be configured via `global.adminUser.lastName` as a plain text or Kubernetes secret which includes `TYK_ADMIN_LAST_NAME` key
+It can be configured via `global.adminUser.lastName` as a plain text or Kubernetes secret which includes `adminUserLastName` key
 in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
 
 ##### Admin Email
 
-It can be configured via `global.adminUser.email` as a plain text or Kubernetes secret which includes `TYK_ADMIN_EMAIL` key
+It can be configured via `global.adminUser.email` as a plain text or Kubernetes secret which includes `adminUserEmail` key
 in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
 
 
 ##### Admin Password
 
-It can be configured via `global.adminUser.password` as a plain text or Kubernetes secret which includes `TYK_PASS` key
+It can be configured via `global.adminUser.password` as a plain text or Kubernetes secret which includes `adminUserPassword` key
 in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
 
 #### APISecret
@@ -307,7 +307,7 @@ where the secret should contain a key called `EnterprisePortalLicense`.
 #### Enterprise Portal Admin Password
 
 In order to refer Tyk Enterprise Portal's admin password through Kubernetes secret, 
-please use `global.secrets.useSecretName`, where the secret should contain a key called `EnterprisePortalAdminPassword`.
+please use `global.adminUser.useSecretName`, where the secret should contain a key called `adminUserPassword`.
 
 #### Enterprise Portal Storage Connection String
 
