@@ -92,7 +92,7 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
-                key: "EnterprisePortalStorgeConnectionString"
+                key: "EnterprisePortalStorageConnectionString"
           {{ if eq .Values.storage.type "s3" }}
           - name: PORTAL_S3_AWS_ACCESS_KEY_ID
             valueFrom:

@@ -44,7 +44,9 @@ storage:
   # Configuration values for using s3 as storage for Tyk Enterprise Portal
   # In case you want to provide the key ID and access key via secrets please
   # refer to the existing secret inside the helmchart or the
-  # .Values.global.secrets.useSecretName variable
+  # .Values.global.secrets.useSecretName variable and a secret containing
+  # the keys EnterprisePortalAwsAccessKeyId and respectively,
+  # EnterprisePortalAwsSecretAccessKey
   s3:
     awsAccessKeyid: your-access-key
     awsSecretAccessKey: your-secret-key
