@@ -73,6 +73,9 @@ image:
   tag: v1.5.0
   pullPolicy: Always
 
+# image pull secrets to use when pulling images from repository
+imagePullSecrets: []
+
 service:
   type: NodePort
   port: 3001
@@ -142,5 +145,3 @@ livenessProbe:
 
 readinessProbe:
   initialDelaySeconds: 60
-
-

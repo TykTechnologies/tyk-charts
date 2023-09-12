@@ -52,7 +52,7 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_host" -}}
-{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local
+gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_url" -}}
@@ -153,11 +153,11 @@ pgConnectionString
 {{- end -}}
 {{- end -}}
 
-{{- define "tyk-dashboard.backend" -}}
-{{- if .Values.global.backend -}}
-{{- if eq "postgres" .Values.global.backend -}}
+{{- define "tyk-dashboard.storageType" -}}
+{{- if .Values.global.storageType -}}
+{{- if eq "postgres" .Values.global.storageType -}}
 postgres
-{{- else if eq "mongo" .Values.global.backend -}}
+{{- else if eq "mongo" .Values.global.storageType -}}
 mongo
 {{- end -}}
 {{- else -}}
