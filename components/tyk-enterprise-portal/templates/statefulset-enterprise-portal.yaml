@@ -195,7 +195,7 @@ spec:
       {{- if and (eq .Values.kind "Deployment") (eq .Values.storage.type "fs") .Values.storage.persistence.mountExistingPVC }}
       volumes: 
       - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
-        perisitentVolumeClaim:
+        persistentVolumeClaim:
           claimName: {{ .Values.storage.persistence.mountExistingPVC }}   
       {{- end }}
 
