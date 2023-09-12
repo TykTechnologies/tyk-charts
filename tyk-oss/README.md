@@ -218,7 +218,7 @@ Set `tyk-gateway.gateway.control.enabled` to true will allow you to run the [Gat
 
 By default, Gateway stores API configurations at `/mnt/tyk-gateway/apps` inside the Gateway container. There are a few challenges:
 * Multiple gateways do not share app configs
-* The configuration is not persistent. It got lost whenever pod restart
+* The configuration is not persistent. It will get lost whenever pod restarts.
 
 The same applies to security policies and middleware too which is stored at `/mnt/tyk-gateway/policies` and `/mnt/tyk-gateway/middleware` respectively.
 This can be solved by instantiating a Persistent Volume as shared storage for the gateway instances. As each gateway is reload, they would get the API configurations from the same storage, solving the synchronisation issue between gateways. Also, the storage is persistent and can be designed to be not impacted by cluster failure, your API configurations can be maintained after pod restart.
