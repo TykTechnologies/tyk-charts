@@ -167,7 +167,6 @@ spec:
         workingDir: /opt/portal
         ports:
         - containerPort: {{ .Values.containerPort }}
-        {{ if eq .Values.storage.type "fs" }}
         volumeMounts:
           {{ if eq .Values.storage.type "fs" }}
           - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
@@ -203,7 +202,6 @@ spec:
             mountPath: /opt/portal/db
             subPath: db
           {{- end }}
-        {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.enterprisePortal }}S{{ end }}"
