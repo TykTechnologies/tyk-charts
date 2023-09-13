@@ -677,8 +677,11 @@ tyk-enterprise-portal:
     # Supported types: fs, s3, db
     type: "fs"
     database:
-      type: "sqlite3"
+      dialect: "sqlite3"
       connectionString: "db/portal.db"
+      enableLogs: false
+      maxRetries: 3
+      retryDelay: 5000
     # Configuration values for using s3 as storage for Tyk Enterprise Portal
     # In case you want to provide the key ID and access key via secrets please
     # refer to the existing secret inside the helmchart or the
@@ -687,8 +690,8 @@ tyk-enterprise-portal:
       awsAccessKeyid: your-access-key
       awsSecretAccessKey: your-secret-key
       region: sa-east-1
-      endpoint: your-portal-bucket
-      bucket: https://s3.sa-east-1.amazonaws.com
+      endpoint: https://s3.sa-east-1.amazonaws.com
+      bucket: your-portal-bucket
       acl: private
       presign_urls: true
     persistence:
@@ -705,7 +708,7 @@ tyk-enterprise-portal:
   image:
     repository: tykio/portal
     # Enterprise portal < v1.2 is not supported
-    tag: v1.2.0
+    tag: v1.6.0
     pullPolicy: Always
 
   # image pull secrets to use when pulling images from repository
