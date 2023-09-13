@@ -154,6 +154,9 @@ tyk-gateway:
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
 
+    # image pull secrets to use when pulling images from repository
+    imagePullSecrets: []
+
     service:
       # type of service
       type: NodePort
@@ -255,9 +258,12 @@ tyk-gateway:
       enabled: false
       tags: ""
 
+    # analyticsEnabled property is used to enable or disable analytics.
+    analyticsEnabled: "true"
+
     # used to decide whether to send the results back directly to Tyk without a hybrid pump
-    # if you want to use a hybrid pump, please change "rpc" to ""
-    analyticsConfigType: "rpc"
+    # if you want to send analytics to control plane instead of pump, change value to "rpc"
+    analyticsConfigType: ""
 
     ## extraVolumes is a list of volumes to be added to the pod
     ## extraVolumes:
@@ -316,6 +322,9 @@ tyk-pump:
 
       # image pull policy
       pullPolicy: IfNotPresent
+
+    # image pull secrets to use when pulling images from repository
+    imagePullSecrets: []
 
     service:
       # Tyk Pump svc is disabled by default. Set it to true to enable it.

@@ -191,6 +191,9 @@ tyk-gateway:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
+    # analyticsEnabled property is used to enable or disable analytics.
+    analyticsEnabled: "true"
+
     image:
       # image repository for Tyk Gateway
       repository: tykio/tyk-gateway
@@ -200,6 +203,9 @@ tyk-gateway:
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
+
+    # image pull secrets to use when pulling images from repository
+    imagePullSecrets: []
 
     service:
       # type of service
@@ -359,6 +365,9 @@ tyk-pump:
 
       # image pull policy
       pullPolicy: IfNotPresent
+
+    # image pull secrets to use when pulling images from repository
+    imagePullSecrets: []
 
     service:
       # Tyk Pump svc is disabled by default. Set it to true to enable it.
@@ -581,6 +590,10 @@ tyk-dashboard:
 
       # image pull policy
       pullPolicy: Always
+
+    # image pull secrets to use when pulling images from repository
+    imagePullSecrets: []
+
     service:
       type: NodePort
       externalTrafficPolicy: Local
@@ -653,16 +666,21 @@ tyk-enterprise-portal:
   # is present. The secret is created during the dashboard bootstrapping and
   # be turned on and off using the dash.enterprisePortalSecret bool.
 
-
   # The hostname to bind the Enterprise Portal to.
   hostName: tyk-enterprise-portal.local
   # Enterprise Portal license.
   license: ""
+  # Enterprise portal can be deployed as StatefulSet or as Deployment
+  kind: StatefulSet
   storage:
+    # User can set the storage type for portal.
+    # Supported types: fs, s3, db
+    type: "fs"
     database:
       type: "sqlite3"
       connectionString: "db/portal.db"
     persistence:
+      mountExistingPVC: ""
       storageClass: ""
       accessModes:
         - ReadWriteOnce
@@ -677,6 +695,10 @@ tyk-enterprise-portal:
     # Enterprise portal < v1.2 is not supported
     tag: v1.2.0
     pullPolicy: Always
+
+  # image pull secrets to use when pulling images from repository
+  imagePullSecrets: []
+
   service:
     type: NodePort
     port: 3001

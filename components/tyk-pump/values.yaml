@@ -138,6 +138,9 @@ pump:
     # image pull policy
     pullPolicy: IfNotPresent
 
+  # image pull secrets to use when pulling images from repository
+  imagePullSecrets: []
+
   service:
     # Tyk Pump svc is disabled by default. Set it to true to enable it.
     enabled: false
@@ -172,7 +175,7 @@ pump:
 
   # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
   # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
-  hybridPump: 
+  hybridPump:
     # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
     enableAggregateAnalytics: true
     # Hybrid pump RPC calls timeout in seconds. If not specified, default value will be picked up by Tyk Pump.
@@ -224,8 +227,8 @@ pump:
   #  cpu: 100m
   #  memory: 128Mi
   resources: {}
-    
-  # securityContext values for pump pod 
+
+  # securityContext values for pump pod
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
