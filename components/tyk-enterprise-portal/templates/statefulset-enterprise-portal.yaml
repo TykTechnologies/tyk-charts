@@ -78,7 +78,6 @@ spec:
                 key: EnterprisePortalAdminPassword
           - name: PORTAL_STORAGE
             value: "{{ .Values.storage.type }}"
-          {{ if eq .Values.storage.type "db" }}
           - name: PORTAL_DATABASE_DIALECT
             value: "{{ .Values.storage.database.dialect }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING
@@ -89,7 +88,8 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
-                key: EnterprisePortalStorageConnectionString
+                key: "EnterprisePortalStorageConnectionString"
+          {{ if eq .Values.storage.type "db" }}
           - name: PORTAL_DATABASE_ENABLELOGS
             value: "{{ .Values.storage.database.enableLogs }}"
           - name: PORTAL_DATABASE_MAXRETRIES
@@ -97,8 +97,6 @@ spec:
           - name: PORTAL_DATABASE_RETRYDELAY
             value: "{{ .Values.storage.database.retryDelay }}"
           {{ end }}
-          - name: PORTAL_THEMING_THEME
-            value: "default"
           {{ if eq .Values.storage.type "s3" }}
           - name: PORTAL_S3_AWS_ACCESS_KEY_ID
             valueFrom:

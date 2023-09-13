@@ -690,8 +690,8 @@ tyk-enterprise-portal:
       awsAccessKeyid: your-access-key
       awsSecretAccessKey: your-secret-key
       region: sa-east-1
-      endpoint: your-portal-bucket
-      bucket: https://s3.sa-east-1.amazonaws.com
+      endpoint: https://s3.sa-east-1.amazonaws.com
+      bucket: your-portal-bucket
       acl: private
       presign_urls: true
     persistence:
