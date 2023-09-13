@@ -221,6 +221,16 @@ gateway:
     runAsUser: 1000
     fsGroup: 2000
 
+  # containerSecurityContext values for gateway container
+  containerSecurityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    privileged: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+
   # node labels for gateway pod assignment
   nodeSelector: {}
 
