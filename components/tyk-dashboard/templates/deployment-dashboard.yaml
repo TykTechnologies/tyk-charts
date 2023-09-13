@@ -59,9 +59,10 @@ spec:
       - image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
         imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
+        {{- if .Values.dashboard.containerSecurityContext }}
         securityContext:
-          runAsUser: 999
-          runAsGroup: 999
+        {{- toYaml .Values.dashboard.containerSecurityContext | nindent 12 }}
+        {{- end }}
         env:
           ## DEFAULT TYK DASHBOARD CONFIGURATION
           - name: "TYK_DB_ENABLEOWNERSHIP"
