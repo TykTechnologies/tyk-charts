@@ -62,8 +62,6 @@ spec:
               {{- end }}
             - name: TYK_DB_LISTENPORT
               value: "{{ .Values.global.servicePorts.dashboard }}"
-            - name: TYK_DB_LICENSEKEY
-              value: {{ .Values.global.license.dashboard | quote }}
             - name: TYK_ADMIN_SECRET
               {{- if not .Values.global.secrets.useSecretName }}
               value: {{ .Values.global.secrets.AdminSecret | quote }}

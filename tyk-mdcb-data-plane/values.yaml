@@ -229,6 +229,16 @@ tyk-gateway:
       runAsUser: 1000
       fsGroup: 2000
 
+    # containerSecurityContext values for gateway container
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - all
+
     # node labels for gateway pod assignment
     nodeSelector: {}
 
@@ -250,6 +260,9 @@ tyk-gateway:
     sharding:
       enabled: false
       tags: ""
+
+    # analyticsEnabled property is used to enable or disable analytics.
+    analyticsEnabled: "true"
 
     # used to decide whether to send the results back directly to Tyk without a hybrid pump
     # if you want to use a hybrid pump, please change "rpc" to ""
@@ -405,6 +418,16 @@ tyk-pump:
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
+
+    # containerSecurityContext values for pump container
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - all
 
     # node labels for pump pod assignment
     nodeSelector: {}
