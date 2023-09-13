@@ -201,6 +201,14 @@ dashboard:
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
+  containerSecurityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    privileged: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+      - all
   nodeSelector: {}
   tolerations: []
   affinity: {}

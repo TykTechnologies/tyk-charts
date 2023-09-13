@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: {{ .Values.kind }}
 metadata:
   name: {{ include "tyk-enterprise-portal.fullname" . }}
   labels:
@@ -8,11 +8,18 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  {{- if eq .Values.kind "StatefulSet"}}
   serviceName: enterprise-portal-svc-{{ include "tyk-enterprise-portal.fullname" . }}
-  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  {{- if eq .Values.kind "StatefulSet"}}
   updateStrategy:
+  {{- else }}
+  strategy:
     # indicate which strategy we want for rolling update
     type: RollingUpdate
+  {{- end }}
+  replicas: {{ .Values.replicaCount }}
+
   selector:
     matchLabels:
       app: {{ include "tyk-enterprise-portal.fullname" . }}
@@ -42,14 +49,10 @@ spec:
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: enterprise-portal-{{ .Chart.Name }}
+        {{- if .Values.containerSecurityContext }}
         securityContext:
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-          privileged: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - all
+        {{- toYaml .Values.containerSecurityContext | nindent 10 }}
+        {{- end}}
         env:
           - name: PORTAL_LICENSEKEY
             valueFrom:
@@ -80,6 +83,8 @@ spec:
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
                 key: adminUserPassword
+          - name: PORTAL_STORAGE
+            value: "{{ .Values.storage.type }}"
           - name: PORTAL_DATABASE_DIALECT
             value: "{{ .Values.storage.database.type }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING
@@ -128,6 +133,7 @@ spec:
         workingDir: /opt/portal
         ports:
         - containerPort: {{ .Values.containerPort }}
+        {{ if eq .Values.storage.type "fs" }}
         volumeMounts:
           - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
             mountPath: /opt/portal/public/system/api_details
@@ -161,6 +167,7 @@ spec:
             mountPath: /opt/portal/db
             subPath: db
           {{- end }}
+        {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.enterprisePortal }}S{{ end }}"
@@ -179,10 +186,19 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+
+      {{- if and (eq .Values.kind "Deployment") (eq .Values.storage.type "fs") .Values.storage.persistence.mountExistingPVC }}
+      volumes:
+      - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.persistence.mountExistingPVC }}
+      {{- end }}
+
       {{- if .Values.securityContext }}
       securityContext:
       {{- toYaml .Values.securityContext | nindent 8 }}
       {{- end}}
+  {{ if and (eq .Values.kind "StatefulSet") (eq .Values.storage.type "fs") }}
   volumeClaimTemplates:
   - metadata:
       name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
@@ -213,3 +229,4 @@ spec:
         {{ $key }}: {{ $value | quote }}
       {{- end }}
       {{- end }}
+  {{- end }}

@@ -68,14 +68,10 @@ spec:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+        {{- if .Values.gateway.containerSecurityContext }}
         securityContext:
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-          privileged: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - all
+        {{- toYaml .Values.gateway.containerSecurityContext | nindent 12 }}
+        {{- end }}
         env:
           - name: TYK_GW_LISTENPORT
             value: "{{ .Values.global.servicePorts.gateway }}"
