@@ -45,14 +45,10 @@ spec:
         ports:
           - name: tyk-pump-port
             containerPort: {{ .Values.pump.containerPort }}
+        {{- if .Values.pump.containerSecurityContext }}
         securityContext:
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-          privileged: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - all
+        {{- toYaml .Values.pump.containerSecurityContext | nindent 12 }}
+        {{- end }}
         env:
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT

@@ -49,14 +49,10 @@ spec:
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: enterprise-portal-{{ .Chart.Name }}
+        {{- if .Values.containerSecurityContext }}
         securityContext:
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-          privileged: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - all
+        {{- toYaml .Values.containerSecurityContext | nindent 10 }}
+        {{- end}}
         env:
           - name: PORTAL_LICENSEKEY
             valueFrom:
