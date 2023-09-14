@@ -113,7 +113,6 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
-                key: EnterprisePortalStorageConnectionString
                 key: "EnterprisePortalAwsAccessKeyId"
           - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
             valueFrom:
