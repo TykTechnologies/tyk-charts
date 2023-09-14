@@ -219,3 +219,154 @@ To set up other backends for pump, refer to this [document](https://github.com/T
 The Tyk Dashboard can be configured by modifying the values under "tyk-dashboard" section of the values.yaml file
 The chart is provided with sane defaults such that the only hard requirement is the license which needs to be put under
 .Values.global.license.dashboard in order for the bootstrapping process to work.
+
+### Protect Confidential Fields with Kubernetes Secrets
+
+In the `values.yaml` file, some fields are considered confidential, such as `APISecret`, connection strings, etc.
+Declaring values for such fields as plain text might not be desired for all use cases. Instead, for certain fields,
+Kubernetes secrets can be referenced, and Kubernetes by itself configures values based on the referred secret.
+
+This section describes how to use Kubernetes secrets to declare confidential fields.
+
+#### Tyk Dashboard Admin
+
+If Tyk Dashboard bootstrapping is enabled, Tyk Dashboard admin will be bootstrapped according to `global.adminUser` field.
+
+All admin credentials can also be set through Kubernetes secret.
+
+> [!NOTE]
+> Once `global.adminUser.useSecretName` is declared, it takes precedence over `global.adminUser.firstName`, 
+> `global.adminUser.lastName`, `global.adminUser.email` and `global.adminUser.password`.
+
+> [!WARNING]
+> If `global.adminUser.useSecretName` is in use, please add all keys mentioned below to the secret.
+
+##### Admin First Name
+
+It can be configured via `global.adminUser.firstName` as a plain text or Kubernetes secret which includes `adminUserFirstName` key
+in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
+
+
+##### Admin Last Name
+
+It can be configured via `global.adminUser.lastName` as a plain text or Kubernetes secret which includes `adminUserLastName` key
+in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
+
+##### Admin Email
+
+It can be configured via `global.adminUser.email` as a plain text or Kubernetes secret which includes `adminUserEmail` key
+in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
+
+
+##### Admin Password
+
+It can be configured via `global.adminUser.password` as a plain text or Kubernetes secret which includes `adminUserPassword` key
+in it. Then, this secret must be referenced via `global.adminUser.useSecretName`.
+
+#### APISecret
+
+[`APISecret`](https://tyk.io/docs/tyk-oss-gateway/configuration/#secret) field configures a header value used in every
+interaction with Tyk Gateway API.
+
+It can be configured via `global.secrets.APISecret` as a plain text or Kubernetes secret which includes `APISecret` key
+in it. Then, this secret must be referenced via `global.secrets.useSecretName`.
+
+```yaml
+global:
+    secrets:
+        APISecret: CHANGEME
+        useSecretName: "mysecret" # where mysecret includes `APISecret` key with the desired value.
+```
+
+#### AdminSecret
+
+[`AdminSecret](https://tyk.io/docs/tyk-dashboard/configuration/#admin_secret) sets a secret for Admin API.
+
+It can be configured via `global.secrets.AdminSecret` as a plain text or Kubernetes secret which includes `AdminSecret` 
+key in it. Then, this secret must be referenced via `global.secrets.useSecretName`.
+
+```yaml
+global:
+    secrets:
+        useSecretName: "mysecret" # where mysecret includes `useSecretName` key with the desired value.
+```
+
+> [!NOTE]
+> Once `global.secrets.useSecretName` is declared, it takes precedence over `global.secrets.APISecret` and `global.secrets.AdminSecret`.
+
+#### Dashboard License
+
+In order to refer Tyk Dashboard license through Kubernetes secret, please use `global.secrets.useSecretName`, where 
+the secret should contain a key called `DashLicense`.
+
+#### Enterprise Portal License
+
+In order to refer Tyk Enterprise Portal license through Kubernetes secret, please use `global.secrets.useSecretName`, 
+where the secret should contain a key called `EnterprisePortalLicense`.
+
+#### Enterprise Portal Admin Password
+
+In order to refer Tyk Enterprise Portal's admin password through Kubernetes secret, 
+please use `global.adminUser.useSecretName`, where the secret should contain a key called `adminUserPassword`.
+
+#### Enterprise Portal Storage Connection String
+
+In order to refer Tyk Enterprise Portal connection string to the selected database through Kubernetes secret,
+please use `global.secrets.useSecretName`, where the secret should contain a key called 
+`EnterprisePortalStorageConnectionString`.
+
+> [!WARNING]
+> If `global.secrets.useSecretName` is in use, please add all keys mentioned above to the secret. 
+
+#### Remote Control Plane Configuration
+
+All configurations regarding remote control plane (`orgId`, `userApiKey`, and `groupID`) can be set via
+Kubernetes secret.
+
+Instead of explicitly setting them in the values file, just create a Kubernetes secret including `orgId`, `userApiKey`
+and `groupID` keys and refer to it in `global.remoteControlPlane.useSecretName`.
+
+```yaml
+global:
+  remoteControlPlane:
+    useSecretName: "foo-secret"
+```
+
+where `foo-secret` should contain `orgId`, `userApiKey` and `groupID` keys in it.
+
+#### Redis Password
+
+Redis password can also be provided via a secret. Store Redis password in Kubernetes secret and refer to this secret
+via `global.redis.passSecret.name` and `global.redis.passSecret.keyName` field, as follows:
+
+```yaml
+global:  
+  redis:
+     passSecret:
+       name: "yourSecret"
+       keyName: "redisPassKey"
+```
+
+#### MongoDB or Postgres connection strings
+
+Storage connection strings can also be provided via a secret. Store the connection string in Kubernetes secret and 
+refer to this secret via `global.{mongo,postgres}.connectionURLSecret.name` and `global.{mongo,postgres}.connectionURLSecret.keyName` field, 
+as follows:
+
+- MongoDB:
+```yaml
+global:  
+  mongo:
+    connectionURLSecret:
+       name: "yourSecret"
+       keyName: "redisPassKey"
+```
+
+- Postgres:
+```yaml
+global:
+  postgres:
+    connectionURLSecret:
+       name: "yourSecret"
+       keyName: "redisPassKey"
+```

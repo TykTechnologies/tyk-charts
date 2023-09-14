@@ -91,6 +91,14 @@ global:
       database: 0
 
   remoteControlPlane:
+    # useSecretName can be used if you don't want to store plaintext values for remote control plane configurations in
+    # the Helm value file and would rather provide the k8s Secret externally.
+    # You should set following fields in the secret
+    # - orgId - Sets slave_options.rpc_key of Tyk Gateway
+    # - userApiKey - Sets slave_options.api_key of Tyk Gateway
+    # - groupID - Sets slave_options.group_id of Tyk Gateway
+    useSecretName: ""
+
     enabled: false
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
     connectionString: ""
