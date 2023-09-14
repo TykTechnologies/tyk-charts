@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: {{ .Values.kind }}
 metadata:
   name: {{ include "tyk-enterprise-portal.fullname" . }}
   labels:
@@ -8,11 +8,18 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  {{- if eq .Values.kind "StatefulSet"}}
   serviceName: enterprise-portal-svc-{{ include "tyk-enterprise-portal.fullname" . }}
-  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  {{- if eq .Values.kind "StatefulSet"}}
   updateStrategy:
+  {{- else }}
+  strategy:
     # indicate which strategy we want for rolling update
     type: RollingUpdate
+  {{- end }}
+  replicas: {{ .Values.replicaCount }}
+
   selector:
     matchLabels:
       app: {{ include "tyk-enterprise-portal.fullname" . }}
@@ -42,14 +49,10 @@ spec:
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: enterprise-portal-{{ .Chart.Name }}
+        {{- if .Values.containerSecurityContext }}
         securityContext:
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-          privileged: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - all
+        {{- toYaml .Values.containerSecurityContext | nindent 10 }}
+        {{- end}}
         env:
           - name: PORTAL_LICENSEKEY
             valueFrom:
@@ -73,9 +76,29 @@ spec:
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
                 key: EnterprisePortalAdminPassword
+          - name: PORTAL_STORAGE
+            value: "{{ .Values.storage.type }}"
           - name: PORTAL_DATABASE_DIALECT
-            value: "{{ .Values.storage.database.type }}"
+            value: "{{ .Values.storage.database.dialect }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                {{ if .Values.global.secrets.useSecretName }}
+                name: "{{ .Values.global.secrets.useSecretName }}"
+                {{ else }}
+                name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
+                {{ end }}
+                key: "EnterprisePortalStorageConnectionString"
+          {{ if eq .Values.storage.type "db" }}
+          - name: PORTAL_DATABASE_ENABLELOGS
+            value: "{{ .Values.storage.database.enableLogs }}"
+          - name: PORTAL_DATABASE_MAXRETRIES
+            value: "{{.Values.storage.database.maxRetries }}"
+          - name: PORTAL_DATABASE_RETRYDELAY
+            value: "{{ .Values.storage.database.retryDelay }}"
+          {{ end }}
+          {{ if eq .Values.storage.type "s3" }}
+          - name: PORTAL_S3_AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
                 {{ if .Values.global.secrets.useSecretName }}
@@ -83,11 +106,34 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
-                key: EnterprisePortalStorgeConnectionString
-          - name: PORTAL_THEMING_THEME
-            value: "default"
+                key: "EnterprisePortalAwsAccessKeyId"
+          - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                {{ if .Values.global.secrets.useSecretName }}
+                name: {{ .Values.global.secrets.useSecretName }}
+                {{ else }}
+                name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
+                {{ end }}
+                key: "EnterprisePortalAwsSecretAccessKey"
+          - name: PORTAL_S3_REGION
+            value: "{{ .Values.storage.s3.region }}"
+          - name: PORTAL_S3_ENDPOINT
+            value: "{{ .Values.storage.s3.endpoint }}"
+          - name: PORTAL_S3_BUCKET
+            value: "{{ .Values.storage.s3.bucket }}"
+          - name: PORTAL_S3_ACL
+            value: "{{ .Values.storage.s3.acl }}"
+          - name: PORTAL_S3_PRESIGN_URLS
+            value: "{{ .Values.storage.s3.presign_urls }}"
+          - name: PORTAL_THEMING_PATH
+            value: "/themes"
+          {{ else }}
           - name: PORTAL_THEMING_PATH
             value: "./themes"
+          {{ end }}
+          - name: PORTAL_THEMING_THEME
+            value: "default"
           - name: PROVIDER_NAME
             value: "tyk"
           - name: TYK_URL
@@ -130,6 +176,7 @@ spec:
         ports:
         - containerPort: {{ .Values.containerPort }}
         volumeMounts:
+          {{ if eq .Values.storage.type "fs" }}
           - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
             mountPath: /opt/portal/public/system/api_details
             subPath: api_details
@@ -157,7 +204,8 @@ spec:
           - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
             mountPath: /opt/portal/themes
             subPath: themes
-          {{- if eq .Values.storage.database.type "sqlite3" }}
+          {{- end }}
+          {{- if eq .Values.storage.database.dialect "sqlite3" }}
           - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
             mountPath: /opt/portal/db
             subPath: db
@@ -180,10 +228,19 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+
+      {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
+      volumes:
+      - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.persistence.mountExistingPVC }}
+      {{- end }}
+
       {{- if .Values.securityContext }}
       securityContext:
       {{- toYaml .Values.securityContext | nindent 8 }}
       {{- end}}
+  {{ if and (eq .Values.kind "StatefulSet") }}
   volumeClaimTemplates:
   - metadata:
       name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
@@ -214,3 +271,4 @@ spec:
         {{ $key }}: {{ $value | quote }}
       {{- end }}
       {{- end }}
+  {{- end }}

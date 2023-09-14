@@ -68,14 +68,10 @@ spec:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+        {{- if .Values.gateway.containerSecurityContext }}
         securityContext:
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-          privileged: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - all
+        {{- toYaml .Values.gateway.containerSecurityContext | nindent 12 }}
+        {{- end }}
         env:
           - name: TYK_GW_LISTENPORT
             value: "{{ .Values.global.servicePorts.gateway }}"
@@ -157,9 +153,11 @@ spec:
         {{- else}}
             value: "file"
         {{- end}}
-        {{- if .Values.global.remoteControlPlane.enabled }}
+          - name: TYK_GW_ENABLEANALYTICS
+            value: "{{.Values.gateway.analyticsEnabled}}"
           - name: TYK_GW_ANALYTICSCONFIG_TYPE
             value: "{{.Values.gateway.analyticsConfigType}}"
+        {{- if .Values.global.remoteControlPlane.enabled }}
           - name: TYK_GW_SLAVEOPTIONS_USERPC
             value: "true"
           - name: TYK_GW_AUTHOVERRIDE_FORCEAUTHPROVIDER
@@ -214,13 +212,6 @@ spec:
             value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.dashboard}}"
           - name: TYK_GW_POLICIES_POLICYCONNECTIONSTRING
             value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.dashboard }}"
-
-        {{- if .Values.global.components }}
-        {{- if .Values.global.components.pump }}
-          - name: TYK_GW_ENABLEANALYTICS
-            value: "true"
-        {{- end }}
-        {{- end }}
 
         {{- if .Values.gateway.sharding.enabled }}
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED

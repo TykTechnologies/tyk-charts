@@ -166,6 +166,9 @@ tyk-gateway:
     # image pull secrets to use when pulling images from repository
     imagePullSecrets: []
 
+    # The port which will be exposed on the container for tyk-gateway
+    containerPort: 8080
+
     service:
       # type of service
       type: NodePort
@@ -235,6 +238,16 @@ tyk-gateway:
       runAsUser: 1000
       fsGroup: 2000
 
+    # containerSecurityContext values for gateway container
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - all
+
     # node labels for gateway pod assignment
     nodeSelector: {}
 
@@ -256,6 +269,9 @@ tyk-gateway:
     sharding:
       enabled: false
       tags: ""
+
+    # analyticsEnabled property is used to enable or disable analytics.
+    analyticsEnabled: "true"
 
     # used to decide whether to send the results back directly to Tyk without a hybrid pump
     # if you want to send analytics to control plane instead of pump, change value to "rpc"
@@ -414,6 +430,16 @@ tyk-pump:
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
+
+    # containerSecurityContext values for pump container
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - all
 
     # node labels for pump pod assignment
     nodeSelector: {}

@@ -200,6 +200,9 @@ tyk-gateway:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
+    # analyticsEnabled property is used to enable or disable analytics.
+    analyticsEnabled: "true"
+
     image:
       # image repository for Tyk Gateway
       repository: tykio/tyk-gateway
@@ -212,6 +215,9 @@ tyk-gateway:
 
     # image pull secrets to use when pulling images from repository
     imagePullSecrets: []
+
+    # The port which will be exposed on the container for tyk-gateway
+    containerPort: 8080
 
     service:
       # type of service
@@ -282,6 +288,16 @@ tyk-gateway:
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
+
+    # containerSecurityContext values for gateway container
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - all
 
     # node labels for gateway pod assignment
     nodeSelector: {}
@@ -449,6 +465,16 @@ tyk-pump:
       runAsUser: 1000
       fsGroup: 2000
 
+    # containerSecurityContext values for pump container
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - all
+
     # node labels for pump pod assignment
     nodeSelector: {}
 
@@ -601,6 +627,14 @@ tyk-dashboard:
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+        - all
     nodeSelector: {}
     tolerations: []
     affinity: {}
@@ -656,16 +690,36 @@ tyk-enterprise-portal:
   # is present. The secret is created during the dashboard bootstrapping and
   # be turned on and off using the dash.enterprisePortalSecret bool.
 
-
   # The hostname to bind the Enterprise Portal to.
   hostName: tyk-enterprise-portal.local
   # Enterprise Portal license.
   license: ""
+  # Enterprise portal can be deployed as StatefulSet or as Deployment
+  kind: StatefulSet
   storage:
+    # User can set the storage type for portal.
+    # Supported types: fs, s3, db
+    type: "fs"
     database:
-      type: "sqlite3"
+      dialect: "sqlite3"
       connectionString: "db/portal.db"
+      enableLogs: false
+      maxRetries: 3
+      retryDelay: 5000
+    # Configuration values for using s3 as storage for Tyk Enterprise Portal
+    # In case you want to provide the key ID and access key via secrets please
+    # refer to the existing secret inside the helmchart or the
+    # .Values.global.secrets.useSecretName variable
+    s3:
+      awsAccessKeyid: your-access-key
+      awsSecretAccessKey: your-secret-key
+      region: sa-east-1
+      endpoint: https://s3.sa-east-1.amazonaws.com
+      bucket: your-portal-bucket
+      acl: private
+      presign_urls: true
     persistence:
+      mountExistingPVC: ""
       storageClass: ""
       accessModes:
         - ReadWriteOnce
@@ -678,7 +732,7 @@ tyk-enterprise-portal:
   image:
     repository: tykio/portal
     # Enterprise portal < v1.2 is not supported
-    tag: v1.2.0
+    tag: v1.6.0
     pullPolicy: Always
 
   # image pull secrets to use when pulling images from repository
@@ -722,6 +776,14 @@ tyk-enterprise-portal:
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
+  containerSecurityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    privileged: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
   nodeSelector: {}
   tolerations: []
   affinity: {}

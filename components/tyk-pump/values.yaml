@@ -233,6 +233,16 @@ pump:
     runAsUser: 1000
     fsGroup: 2000
 
+  # containerSecurityContext values for pump container
+  containerSecurityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    privileged: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+
   # node labels for pump pod assignment
   nodeSelector: {}
 
