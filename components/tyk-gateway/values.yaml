@@ -153,6 +153,9 @@ gateway:
   # image pull secrets to use when pulling images from repository
   imagePullSecrets: []
 
+  # The port which will be exposed on the container for tyk-gateway
+  containerPort: 8080
+
   service:
     # type of service
     type: NodePort
