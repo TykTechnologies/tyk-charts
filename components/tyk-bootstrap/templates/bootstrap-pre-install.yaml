@@ -33,7 +33,14 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: TYK_DB_LICENSEKEY
+              {{ if .Values.global.secrets.useSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  key: DashLicense
+                  name: {{ .Values.global.secrets.useSecretName }}
+              {{ else }}
               value: {{ .Values.global.license.dashboard | quote }}
+              {{ end }}
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}
