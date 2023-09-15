@@ -66,16 +66,23 @@ spec:
           - name: PORTAL_HOST_PORT
             value: "{{ .Values.containerPort }}"
           - name: ADMIN_EMAIL
+            {{ if .Values.global.adminUser.useSecretName }}
+            valueFrom:
+              secretKeyRef:
+                key: adminUserEmail
+                name: {{ .Values.global.adminUser.useSecretName }}
+            {{ else }}
             value: "{{ .Values.global.adminUser.email }}"
+            {{ end }}
           - name: ADMIN_PASSWORD
             valueFrom:
               secretKeyRef:
-                {{ if .Values.global.secrets.useSecretName }}
-                name: {{ .Values.global.secrets.useSecretName }}
+                {{ if .Values.global.adminUser.useSecretName }}
+                name: {{ .Values.global.adminUser.useSecretName }}
                 {{ else }}
                 name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
                 {{ end }}
-                key: EnterprisePortalAdminPassword
+                key: adminUserPassword
           - name: PORTAL_STORAGE
             value: "{{ .Values.storage.type }}"
           - name: PORTAL_DATABASE_DIALECT
@@ -145,20 +152,12 @@ spec:
           - name: TYK_AUTH
             valueFrom:
               secretKeyRef:
-                {{ if .Values.global.secrets.useSecretName }}
-                name: {{ .Values.global.secrets.useSecretName }}
-                {{ else }}
                 name: {{ .Values.global.secrets.enterprisePortal}}
-                {{ end }}
                 key: TYK_AUTH
           - name: TYK_ORG
             valueFrom:
               secretKeyRef:
-                {{ if .Values.global.secrets.useSecretName }}
-                name: {{ .Values.global.secrets.useSecretName }}
-                {{ else }}
                 name: {{ .Values.global.secrets.enterprisePortal}}
-                {{ end }}
                 key: TYK_ORG
         {{- if .Values.extraEnvs }}
         {{- range $env := .Values.extraEnvs }}

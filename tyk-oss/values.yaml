@@ -86,9 +86,6 @@ global:
     storage:
       database: 0
 
-  remoteControlPlane:
-    enabled: false
-
 tyk-gateway:
   ## Default values for tyk-gateway chart.
   ## This is a YAML-formatted file.

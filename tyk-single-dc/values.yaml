@@ -4,14 +4,35 @@
 
 global:
   license:
+    # The license key needed by Tyk Dashboard to work.
+    #
+    # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
+    # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
 
+  # adminUser specifies credentials for Tyk Dashboard admin user while bootstrapping Tyk Dashboard.
+  # Dashboard admin information.
   adminUser:
+    # If you don't want to store plaintext secrets for admin user in the Helm value file and would
+    # rather provide the k8s Secret externally please populate the value below.
+    # You can set following fields in the secret:
+    # - adminUserFirstName - sets .global.adminUser.firstName
+    # - adminUserLastName - sets .global.adminUser.lastName
+    # - adminUserEmail- sets .global.adminUser.email
+    # - adminUserPassword - sets .global.adminUser.password
+    useSecretName: ""
+
+    # First name of the admin user
     firstName: admin
+
+    # Last name of the admin user
     lastName: user
+
+    # Email address of the admin user
     email: default@example.com
     # Set a password or a random one will be assigned.
     password: "123456"
+
   components:
     # Determines whether the pump component should be installed.
     pump: true
@@ -42,6 +63,14 @@ global:
     useDefaultTykCertificate: true
 
   remoteControlPlane:
+    # useSecretName can be used if you don't want to store plaintext values for remote control plane configurations in
+    # the Helm value file and would rather provide the k8s Secret externally.
+    # You should set following fields in the secret
+    # - orgId - Sets slave_options.rpc_key of Tyk Gateway
+    # - userApiKey - Sets slave_options.api_key of Tyk Gateway
+    # - groupID - Sets slave_options.group_id of Tyk Gateway
+    useSecretName: ""
+
     enabled: false
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
     connectionString: ""
@@ -71,6 +100,8 @@ global:
     # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
+    # EnterprisePortalLicense - Tyk Enterprise Portal License
+    # EnterprisePortalStorageConnectionString - Tyk Enterprise Portal connection string to the selected database.
     useSecretName: ""
 
   redis:

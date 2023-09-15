@@ -316,3 +316,57 @@ Add `hybrid` to `tyk-pump.pump.backend`, and add remoteControlPlane details unde
 
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `tyk-pump.pump.extraEnvs`
+
+### Protect Confidential Fields with Kubernetes Secrets
+
+In the `values.yaml` file, some fields are considered confidential, such as `APISecret`, connection strings, etc.
+Declaring values for such fields as plain text might not be desired for all use cases. Instead, for certain fields,
+Kubernetes secrets can be referenced, and Kubernetes by itself configures values based on the referred secret.
+
+This section describes how to use Kubernetes secrets to declare confidential fields.
+
+#### APISecret
+
+[`APISecret`](https://tyk.io/docs/tyk-oss-gateway/configuration/#secret) field configures a header value used in every
+interaction with Tyk Gateway API.
+
+It can be configured via `global.secrets.APISecret` as a plain text or Kubernetes secret which includes `APISecret` key
+in it. Then, this secret must be referenced via `global.secrets.useSecretName`.
+
+```yaml
+global:
+    secrets:
+        APISecret: CHANGEME
+        useSecretName: "mysecret" # where mysecret includes `APISecret` key with the desired value.
+```
+
+**Note**: Once `global.secrets.useSecretName` is declared, it takes precedence over `global.secrets.APISecret`.
+
+#### Remote Control Plane Configuration
+
+All configurations regarding remote control plane (`orgId`, `userApiKey`, and `groupID`) can be set via 
+Kubernetes secret.
+
+Instead of explicitly setting them in the values file, just create a Kubernetes secret including `orgId`, `userApiKey` 
+and `groupID` keys and refer to it in `global.remoteControlPlane.useSecretName`.
+
+```yaml
+global:
+  remoteControlPlane:
+    useSecretName: "foo-secret"
+```
+
+where `foo-secret` should contain `orgId`, `userApiKey` and `groupID` keys in it.
+
+#### Redis Password
+
+Redis password can also be provided via a secret. Store Redis password in Kubernetes secret and refer to this secret
+via `global.redis.passSecret.name` and `global.redis.passSecret.keyName` field, as follows:
+
+```yaml
+global:  
+  redis:
+     passSecret:
+       name: "yourSecret"
+       keyName: "redisPassKey"
+```

@@ -29,23 +29,44 @@ spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
         - name: bootstrap-tyk-post-install
-          image: tykio/tyk-k8s-bootstrap-post:latest
+          image: tykio/tyk-k8s-bootstrap-post:v1.5.0
           command: [ './app/bin/bootstrap-app-post' ]
           imagePullPolicy: IfNotPresent
           env:
             - name: TYK_DB_OMITCONFIGFILE
               value: "true"
             - name: TYK_ADMIN_FIRST_NAME
+              {{ if .Values.global.adminUser.useSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.adminUser.useSecretName }}
+                  key: adminUserFirstName
+              {{ else }}
               value: {{ .Values.global.adminUser.firstName | quote }}
+              {{ end }}
             - name: TYK_ADMIN_LAST_NAME
+              {{ if .Values.global.adminUser.useSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.adminUser.useSecretName }}
+                  key: adminUserLastName
+              {{ else }}
               value: {{ .Values.global.adminUser.lastName | quote }}
+              {{ end }}
             - name: TYK_ADMIN_EMAIL
+              {{ if .Values.global.adminUser.useSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.adminUser.useSecretName }}
+                  key: adminUserEmail
+              {{ else }}
               value: {{ .Values.global.adminUser.email | quote }}
+              {{ end }}
             - name: TYK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: tyk-dashboard-login-details
-                  key: TYK_PASS
+                  name: {{ if .Values.global.adminUser.useSecretName }} {{ .Values.global.adminUser.useSecretName }} {{ else }} tyk-dashboard-login-details {{ end }}
+                  key: adminUserPassword
             - name: TYK_POD_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -64,6 +85,15 @@ spec:
               value: {{ default "false" .Values.bootstrap.dashboard.sslInsecureSkipVerify | quote }}
             - name: TYK_DB_LISTENPORT
               value: "{{ .Values.global.servicePorts.dashboard }}"
+            - name: TYK_DB_LICENSEKEY
+              {{ if .Values.global.secrets.useSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  key: DashLicense
+                  name: {{ .Values.global.secrets.useSecretName }}
+              {{ else }}
+              value: {{ .Values.global.license.dashboard | quote }}
+              {{ end }}
             - name: TYK_ADMIN_SECRET
               {{- if not .Values.global.secrets.useSecretName }}
               value: {{ .Values.global.secrets.AdminSecret | quote }}

@@ -6,10 +6,23 @@ fullnameOverride: ""
 
 global:
   license:
-    # The license key needed by Tyk Dashboard to work
+    # The license key needed by Tyk Dashboard to work.
+    #
+    # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
+    # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
+
   # Dashboard admin information.
   adminUser:
+    # If you don't want to store plaintext secrets for admin user in the Helm value file and would
+    # rather provide the k8s Secret externally please populate the value below
+    # You can set following fields in the secret
+    # adminUserFirstName - sets .global.adminUser.firstName
+    # adminUserLastName - sets .global.adminUser.lastName
+    # adminUserEmail - sets .global.adminUser.email
+    # adminUserPassword - sets .global.adminUser.password
+    useSecretName: ""
+
     # First name of the admin user
     firstName: admin
     # Last name of the admin user
@@ -18,6 +31,7 @@ global:
     email: default@example.com
     # Set a password or a random one will be assigned.
     password: "123456"
+
   servicePorts:
     # The port at which the dashboard service can be found
     dashboard: 3000
