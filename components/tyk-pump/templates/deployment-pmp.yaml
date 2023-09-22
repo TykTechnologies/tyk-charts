@@ -223,7 +223,7 @@ spec:
           {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.pump.resources | indent 12 }}
       {{- if .Values.pump.securityContext }}
       securityContext:
       {{- toYaml .Values.pump.securityContext | nindent 10 }}
