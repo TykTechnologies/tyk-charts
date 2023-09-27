@@ -156,8 +156,10 @@ gateway:
   # The port which will be exposed on the container for tyk-gateway
   containerPort: 8080
 
-  scratch:
-    enabled: true
+  # By default, APIs, policies, and middleware are stored on a volume mount,
+  # enable to instead store them in the container's filesystem
+  detachInitContainer:
+    enabled: false
 
   service:
     # type of service
