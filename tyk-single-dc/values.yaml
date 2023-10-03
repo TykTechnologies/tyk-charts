@@ -540,8 +540,38 @@ tyk-bootstrap:
       enabled: true
     gateway:
       deploymentName: gateway-tyk-single-dc-tyk-gateway
+  # jobs field includes configurations for Helm Hooks.
   jobs:
-    bootstrapJobName: bootstrap-post-install
+    # preInstall configures pre-install Helm hook
+    preInstall:
+      # Name of the pre-install bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
+      name: bootstrap-pre-install
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of pre-install job.
+        repository: tykio/tyk-k8s-bootstrap-pre-install
+        # tag specifies image tag of pre-install job.
+        tag: latest
+
+    # postInstall configures post-install Helm hook
+    postInstall:
+      # Name of the post-install bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
+      name: bootstrap-post-install
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of post-install job.
+        repository: tykio/tyk-k8s-bootstrap-post
+        # tag specifies image tag of post-install job.
+        tag: latest
+
+    # preDelete configures pre-delete Helm hook
+    preDelete:
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of pre-delete job.
+        repository: tykio/tyk-k8s-bootstrap-pre-delete
+        # tag specifies image tag of pre-delete job.
+        tag: latest
 
   org:
     name: Default Org
