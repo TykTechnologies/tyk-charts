@@ -56,7 +56,7 @@ spec:
       {{- with .Values.gateway.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- if not .Values.gateway.detachInitContainer.enabled }}
+      {{- if not .Values.gateway.disableInitContainer }}
       initContainers:
       - name: "setup-directories"
         image: busybox:1.32
@@ -137,7 +137,7 @@ spec:
             value: "/opt/tyk-gateway/templates"
           - name: TYK_GW_TYKJSPATH
             value: "/opt/tyk-gateway/js/tyk.js"
-        {{- if not .Values.gateway.detachInitContainer.enabled }}
+        {{- if not .Values.gateway.disableInitContainer }}
           - name: TYK_GW_MIDDLEWAREPATH
             value: "/mnt/tyk-gateway/middleware"
           - name: TYK_GW_APPPATH
@@ -211,7 +211,7 @@ spec:
         {{- if .Values.global.remoteControlPlane.enabled }}
             value: "tyk_policies"
         {{- else}}
-          {{- if not .Values.gateway.detachInitContainer.enabled }}
+          {{- if not .Values.gateway.disableInitContainer }}
             value: "/mnt/tyk-gateway/policies/policies.json"
           {{- else}}
             value: "/opt/tyk-gateway/policies/policies.json"

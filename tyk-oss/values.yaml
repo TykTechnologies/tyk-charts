@@ -141,9 +141,9 @@ tyk-gateway:
     containerPort: 8080
 
     # By default, APIs, policies, and middleware are stored on a volume mount,
-    # enable to instead store them in the container's filesystem
-    detachInitContainer:
-      enabled: false
+    # set to true to instead store them in the container's filesystem
+    # (policies will be stored in a single json file)
+    disableInitContainer: false
 
     service:
       # type of service
