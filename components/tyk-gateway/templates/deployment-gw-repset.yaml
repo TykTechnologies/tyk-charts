@@ -155,7 +155,7 @@ spec:
         {{- end}}
 
         # Set this environment variable only if either analyticsEnabled or global.components.pump is set
-        {{ if or .Values.gateway.analyticsEnabled ((.Values.global.components).pump)}}
+        {{ if or .Values.gateway.analyticsEnabled ((.Values.global.components).pump) }}
           - name: TYK_GW_ENABLEANALYTICS
           {{- if .Values.gateway.analyticsEnabled }}
             value: "{{ .Values.gateway.analyticsEnabled }}"
