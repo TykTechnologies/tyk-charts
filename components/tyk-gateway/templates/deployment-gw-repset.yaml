@@ -205,7 +205,7 @@ spec:
           - name: TYK_GW_HASHKEYS
             value: "true"
           - name: TYK_GW_HASHKEYFUNCTION
-            value: "murmur128"
+            value: "{{ .Values.gateway.hashKeyFunction }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEWEBSOCKETS
             value: "true"
           - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
