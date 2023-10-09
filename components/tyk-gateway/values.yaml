@@ -216,6 +216,8 @@ gateway:
     #      - chart-example.local
     tls: []
 
+  hashKeyFunction: murmur128
+
   # Sharding gateway allows you to selectively load APIs to specific gateways.
   # If enabled make sure you have at least one gateway that is not sharded.
   # Also be sure to match API segmentation tags with the tags selected below.
