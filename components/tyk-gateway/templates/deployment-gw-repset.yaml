@@ -143,8 +143,6 @@ spec:
             value: "/mnt/tyk-gateway/policies"
           - name: TYK_GW_STORAGE_MAXIDLE
             value: "1000"
-          - name: TYK_GW_OPTIMISATIONSUSEASYNCSESSIONWRITE
-            value: "true"
           - name: TYK_GW_ENABLENONTRANSACTIONALRATELIMITER
             value: "true"
           - name: TYK_GW_POLICIES_POLICYSOURCE
