@@ -105,7 +105,8 @@ spec:
               secretKeyRef:
                 name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
                 key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
-
+          {{ end }}
+          {{ if or (has "postgres" .Values.pump.backend) (has "postgres-aggregate" .Values.pump.backend) }}
           # SQL Aggregate Pump
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_TYPE
             value: "sql_aggregate"
