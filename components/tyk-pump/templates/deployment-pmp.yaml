@@ -94,6 +94,7 @@ spec:
             value: {{ toYaml .Values.pump.prometheusPump.customMetrics }}
             {{ end }}
           {{ end }}
+
           {{ if has "postgres" .Values.pump.backend }}
           # SQL Pump
           - name: TYK_PMP_PUMPS_SQL_TYPE
@@ -105,13 +106,25 @@ spec:
               secretKeyRef:
                 name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
                 key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
-
+          {{ end }}
+          {{ if or (has "postgres" .Values.pump.backend) (has "postgres-aggregate" .Values.pump.backend) }}
           # SQL Aggregate Pump
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_TYPE
             value: "sql_aggregate"
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_TYPE
             value: "postgres"
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
+          {{ end }}
+          {{ if has "postgres-pump" .Values.pump.backend }}
+          - name: TYK_PMP_PUMPS_SQL_TYPE
+            value: "sql"
+          - name: TYK_PMP_PUMPS_SQL_META_TYPE
+            value: "postgres"
+          - name: TYK_PMP_PUMPS_SQL_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
                 name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
@@ -128,7 +141,8 @@ spec:
               secretKeyRef:
                 name: {{ include "tyk-pump.mongo_url_secret_name" . }}
                 key: {{ include "tyk-pump.mongo_url_secret_key" . }}
-
+          {{ end }}
+          {{ if or (has "mongo" .Values.pump.backend) (has "mongo-aggregate" .Values.pump.backend) }}
           # Mongo Aggregate Pump
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_TYPE
             value: "mongo-pump-aggregate"
@@ -143,6 +157,17 @@ spec:
             value: "tyk_analytics_pump"
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
             value: "true"
+          {{ end }}
+          {{ if has "mongo-selective" .Values.pump.backend }}
+          - name: TYK_PMP_PUMPS_MONGOSELECTIVE_TYPE
+            value: "mongo-pump-selective"
+          - name: TYK_PMP_PUMPS_MONGOSELECTIVE_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-pump.mongo_url_secret_name" . }}
+                key: {{ include "tyk-pump.mongo_url_secret_key" . }}
+          - name: TYK_PMP_PUMPS_MONGOSELECTIVE_META_MONGOUSESSL
+            value: "{{ default "false" .Values.global.mongo.useSSL }}"
           {{ end }}
 
           # Uptime Pump configurations
