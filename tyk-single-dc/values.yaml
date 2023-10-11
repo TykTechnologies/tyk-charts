@@ -230,7 +230,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.1.0
+      tag: v5.2.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -395,7 +395,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.8.1
+      tag: v1.8.3
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -627,7 +627,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.1.0
+      tag: v5.2.0
 
       # image pull policy
       pullPolicy: Always
@@ -749,7 +749,7 @@ tyk-enterprise-portal:
   image:
     repository: tykio/portal
     # Enterprise portal < v1.2 is not supported
-    tag: v1.6.0
+    tag: v1.7.0
     pullPolicy: Always
 
   # image pull secrets to use when pulling images from repository
