@@ -141,7 +141,7 @@ pump:
     repository: docker.tyk.io/tyk-pump/tyk-pump
 
     # tag for Tyk pump
-    tag: v1.8.1
+    tag: v1.8.3
 
     # image pull policy
     pullPolicy: IfNotPresent
@@ -171,7 +171,7 @@ pump:
   containerPort: 9090
 
   # backend defines the pumps to be created by default, as an array of string.
-  # Supported backends are ["mongo", "postgres", "prometheus","hybrid"]
+  # Supported backends are ["mongo", "postgres", "postgres-aggregate", "prometheus","hybrid"]
   # If you would like to use other backends such as ElasticSearch, please
   # configure the backend via environment variables.
   backend:
