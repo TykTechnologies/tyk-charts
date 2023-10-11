@@ -363,7 +363,7 @@ tyk-pump:
     #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
     #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
     #   - "mongo-selective": Enables ONLY Mongo Selective
-    #   - "postgres": Enables Mongo Aggregate and Mongo Selective Pump
+    #   - "postgres": Enables Postgres Aggregate and SQL Pump
     #   - "postgres-aggregate": Enables ONLY SQL Aggregate
     #   - "postgres-pump": Enables ONLY SQL Pump
     #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
