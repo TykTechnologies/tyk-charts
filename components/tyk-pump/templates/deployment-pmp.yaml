@@ -218,7 +218,6 @@ spec:
         {{- include "tyk-pump.tplvalues.render" ( dict "value" .Values.pump.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
 
-        command: ["/opt/tyk-pump/tyk-pump"]
         volumeMounts:
           {{- if .Values.pump.extraVolumeMounts }}
           {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumeMounts "context" $) | nindent 10 }}
