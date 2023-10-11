@@ -243,7 +243,6 @@ spec:
         {{- if .Values.gateway.extraEnvs }}
         {{- include "tyk-gateway.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
-        command: ["/opt/tyk-gateway/tyk"]
         workingDir: /opt/tyk-gateway
         ports:
         - containerPort: {{ .Values.global.servicePorts.gateway }}
