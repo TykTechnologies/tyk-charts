@@ -231,8 +231,8 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
 
-      {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
       volumes:
+      {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
       - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
         persistentVolumeClaim:
           claimName: {{ .Values.storage.persistence.mountExistingPVC }}
