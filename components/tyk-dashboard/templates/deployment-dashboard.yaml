@@ -34,11 +34,6 @@ spec:
         traffic.sidecar.istio.io/includeInboundPorts: ""
       {{- end }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
-        {{- if .Values.mounts }}
-        {{- range $secret := .Values.mounts }}
-        "checksum/secret-{{ $secret.name }}": {{ include (print "mounts/%s" $secret.filename) . | sha256sum }}
-        {{- end }}
-        {{- end }}
     spec:
 {{- if .Values.dashboard.nodeSelector }}
       nodeSelector:
@@ -207,12 +202,6 @@ spec:
         ports:
         - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
-          {{- if .Values.dashboard.mounts }}
-          {{- range $secret := .Values.dashboard.mounts }}
-          - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
-            mountPath: {{ $secret.mountPath }}
-          {{- end }}
-          {{- end }}
           {{- if .Values.dashboard.extraVolumeMounts }}
           {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
@@ -239,13 +228,6 @@ spec:
       {{- toYaml .Values.dashboard.securityContext | nindent 10 }}
       {{- end }}
       volumes:
-        {{- if .Values.dashboard.mounts }}
-        {{- range $secret := .Values.dashboard.mounts }}
-        - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
-          secret:
-            secretName: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
-        {{- end }}
-        {{- end }}
         {{- if .Values.dashboard.extraVolumes }}
         {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
