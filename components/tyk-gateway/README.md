@@ -64,7 +64,7 @@ Follow the notes from the installation output to get connection details and pass
 
 ### Enable autoscaling
 
-This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling it's enough to add `--set gateway.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances). To customize those values you can add `--set gateway.autoscaling.averageCpuUtilization 75` or use `values.yaml` file:
+This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling it's enough to add `--set gateway.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances). To customize those values you can add `--set gateway.autoscaling.averageCpuUtilization=75` or use `values.yaml` file:
 
 ```yaml
 gateway:
