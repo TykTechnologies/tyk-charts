@@ -54,6 +54,9 @@ global:
     enterprisePortal: tyk-enterprise-portal-conf
 
 bootstrap:
+  fullnameOverride: ""
+  nameOverride: ""
+
   # Trigger to control if we want to bootstrap the Enterprise Portal component using tyk-bootstrap
   enterprisePortal: true
 
@@ -71,9 +74,6 @@ bootstrap:
     name: Default Org
     # The hostname to bind the Portal to.
     cname: tyk-portal.local
-
-  fullnameOverride: ""
-  nameOverride: ""
 
   # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
   # It takes key-value pairs.
