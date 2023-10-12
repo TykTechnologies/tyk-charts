@@ -140,7 +140,10 @@ To enable Pump, set `global.components.pump` to true, and configure below inside
 |---------------------------|------------------------------------------------------------------------------------------------------------| 
 | Prometheus Pump (Default) | Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. |
 | Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.mongo`.                        |
+| Mongo Selective Pump      | Add `mongo-selective` to `pump.backend`, and add connection details for mongo under `.global.mongo`.  |
+| Mongo Aggregate Pump      | Add `mongo-aggregate` to `pump.backend`, and add connection details for mongo under `.global.mongo`.              |
 | SQL Pump                  | Add `postgres` to `pump.backend`, and add connection details for postgres under `.postgres`.               |
+| SQL Aggregate Pump        | Add `postgres-aggregate` to `.pump.backend`, and add connection details for postgres under `.global.postgres`.    |
 | Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                          |
 | Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                 |
 
