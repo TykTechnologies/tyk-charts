@@ -63,19 +63,14 @@ bootstrap:
   # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
   portal: true
 
-  jobs:
-    # Name of bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
-    bootstrapJobName: bootstrap-post-install
-    bootstrapPreInstallJobName: bootstrap-pre-install
+  # Trigger to control if we want to create the tyk-operator secret
+  operatorSecret: true
 
   org:
     # The name for your organization inside Tyk
     name: Default Org
     # The hostname to bind the Portal to.
     cname: tyk-portal.local
-
-  # Trigger to control if we want to create the tyk-operator secret
-  operatorSecret: true
 
   fullnameOverride: ""
   nameOverride: ""
