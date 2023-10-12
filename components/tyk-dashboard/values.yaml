@@ -227,10 +227,5 @@ dashboard:
   ##     readOnly: true
   extraVolumeMounts: []
 
-  # Dashboard will only bootstrap if the master bootstrap option is set to true.
-  bootstrap: true
-
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
-
-  # Dashboard Organisation information.
