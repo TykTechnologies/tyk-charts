@@ -129,7 +129,7 @@ tyk-gateway:
       repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.1.0
+      tag: v5.2.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -292,7 +292,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.8.1
+      tag: v1.8.3
 
       # image pull policy
       pullPolicy: IfNotPresent
