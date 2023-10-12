@@ -73,14 +73,6 @@ spec:
                   fieldPath: metadata.namespace
             - name: TYK_DASHBOARD_PROTO
               value: "{{ include "tyk-bootstrap.dash_proto" . }}"
-            - name: TYK_DASHBOARD_SVC
-              {{- if .Values.bootstrap.dashboard.serviceName }}
-              value: {{ .Values.bootstrap.dashboard.serviceName | quote }}
-              {{- else if .Values.global.components.dashboard }}
-              value: "dashboard-svc-{{.Release.Name}}-tyk-dashboard"
-              {{- else }}
-              value: "dashboard-svc-tyk-dashboard"
-              {{- end }}
             - name: TYK_DB_LISTENPORT
               value: "{{ .Values.global.servicePorts.dashboard }}"
             - name: TYK_DB_LICENSEKEY
@@ -105,7 +97,7 @@ spec:
               value: {{ .Values.bootstrap.org.name | quote }}
             - name: TYK_ORG_CNAME
               value: {{ .Values.bootstrap.org.cname | quote }}
-            {{- if .Values.bootstrap.dashboard.enabled }}
+            {{- if .Values.bootstrap.dashboard }}
             - name: DASHBOARD_ENABLED
               value: "true"
             - name: BOOTSTRAP_DASHBOARD
@@ -117,7 +109,7 @@ spec:
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
             {{- end }}
-            {{- if .Values.global.bootstrap.enterprisePortal }}
+            {{- if .Values.bootstrap.enterprisePortal }}
             - name: ENTERPRISE_PORTAL_SECRET_ENABLED
               value: "true"
             - name: ENTERPRISE_PORTAL_SECRET_NAME
@@ -125,12 +117,12 @@ spec:
             {{- end }}
             - name: GATEWAY_ADDRESS
               value: "{{ include "tyk-bootstrap.gateway_url" . }}"
-            {{- if .Values.bootstrap.portal.enabled }}
+            {{- if .Values.bootstrap.portal }}
             - name: BOOTSTRAP_PORTAL
               value: "true"
             {{- end }}
-            - name: TYK_DASHBOARD_DEPLOY
-              value: {{ .Values.bootstrap.dashboard.deploymentName }}
+            - name: RELEASE_NAME
+              value: {{ .Release.Name }}
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}

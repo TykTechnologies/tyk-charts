@@ -1,4 +1,4 @@
-{{- if .Values.bootstrap.dashboard.enabled -}}
+{{- if .Values.bootstrap.dashboard -}}
 apiVersion: batch/v1
 kind: Job
 metadata:

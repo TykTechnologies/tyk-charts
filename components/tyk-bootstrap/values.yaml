@@ -18,10 +18,6 @@ global:
     lastName: user
     email: default@example.com
 
-  bootstrap:
-    enterprisePortal: true
-    dashboard: true
-
   servicePorts:
     # The port at which the dashboard service can be found at
     dashboard: 3000
@@ -58,20 +54,14 @@ global:
     enterprisePortal: tyk-enterprise-portal-conf
 
 bootstrap:
-  dashboard:
-    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
-    enabled: true
-    # Name of the deployment that we want to bootstrap
-    deploymentName: dashboard-tyk-dashboard
+  # Trigger to control if we want to bootstrap the Enterprise Portal component using tyk-bootstrap
+  enterprisePortal: true
 
-    # Specify if dashboard has custom service name.
-    serviceName: ""
-  portal:
-    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
-    enabled: true
-  gateway:
-    # Name of the gateway deployment
-    deploymentName: gateway-tyk-gateway
+  # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+  dashboard: true
+
+  # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+  portal: true
 
   jobs:
     # Name of bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
