@@ -76,6 +76,8 @@ spec:
             value: "{{ .Values.dashboard.hostConfig.enableHostNames }}"
           - name: "TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX"
             value: "{{ .Values.dashboard.hostConfig.disableOrgSlugPrefix }}"
+          - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
+            value: "{{ .Values.dashboard.hostConfig.overrideHostname}}"
           - name: "TYK_DB_HOMEDIR"
             value: "{{ .Values.dashboard.homeDir }}"
           - name: "TYK_DB_USESHARDEDANALYTICS"
