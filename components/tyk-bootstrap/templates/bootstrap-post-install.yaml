@@ -30,7 +30,7 @@ spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
         - name: bootstrap-tyk-post-install
-          image: tykio/tyk-k8s-bootstrap-post:v1.5.0
+          image: tykio/tyk-k8s-bootstrap-post:testing
           command: [ './app/bin/bootstrap-app-post' ]
           imagePullPolicy: IfNotPresent
           env:

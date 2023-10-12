@@ -36,5 +36,9 @@ rules:
   - list
 - apiGroups: ["apps"]
   resources: ["deployments"]
-  verbs: ["get","update","patch"]
+  verbs:
+  - get
+  - update
+  - patch
+  - list
 {{- end }}
