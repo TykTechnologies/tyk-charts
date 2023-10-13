@@ -530,6 +530,10 @@ tyk-bootstrap:
   # Default values for tyk-bootstrap.
   # This is a YAML-formatted file.
   # Declare variables to be passed into your templates.
+
+  fullnameOverride: ""
+  nameOverride: ""
+
   bootstrap:
     dashboard:
       enabled: true
@@ -540,35 +544,31 @@ tyk-bootstrap:
       enabled: true
     gateway:
       deploymentName: gateway-tyk-single-dc-tyk-gateway
-  jobs:
-    bootstrapJobName: bootstrap-post-install
+    jobs:
+      bootstrapJobName: bootstrap-post-install
 
-  org:
-    name: Default Org
-    # The hostname to bind the Portal to.
-    cname: tyk-portal.local
+    org:
+      name: Default Org
+      # The hostname to bind the Portal to.
+      cname: tyk-portal.local
 
-  operatorSecret: true
+    operatorSecret: true
+    enterprisePortalSecret: true
 
-  enterprisePortalSecret: true
-
-  fullnameOverride: ""
-  nameOverride: ""
-
-  # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
-  # It takes key-value pairs.
-  # There are no required annotations for Tyk Bootstrap.
-  #
-  # podAnnotations:
-  #   postInstallPodAnnotations:
-  #     key: value
-  #     post: install
-  #   preDeletePodAnnotations:
-  #     key: value
-  #     post: install
-  podAnnotations:
-    postInstallPodAnnotations: {}
-    preDeletePodAnnotations: {}
+    # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
+    # It takes key-value pairs.
+    # There are no required annotations for Tyk Bootstrap.
+    #
+    # podAnnotations:
+    #   postInstallPodAnnotations:
+    #     key: value
+    #     post: install
+    #   preDeletePodAnnotations:
+    #     key: value
+    #     post: install
+    podAnnotations:
+      postInstallPodAnnotations: {}
+      preDeletePodAnnotations: {}
 
 tyk-dashboard:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
