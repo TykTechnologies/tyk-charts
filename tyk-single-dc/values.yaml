@@ -553,7 +553,6 @@ tyk-bootstrap:
       cname: tyk-portal.local
 
     operatorSecret: true
-    enterprisePortalSecret: true
 
     # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
     # It takes key-value pairs.
