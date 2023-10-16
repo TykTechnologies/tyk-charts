@@ -151,8 +151,17 @@ spec:
         {{- else}}
             value: "file"
         {{- end}}
+
+        # Set this environment variable only if either analyticsEnabled or global.components.pump is set
+        {{ if or .Values.gateway.analyticsEnabled ((.Values.global.components).pump) }}
           - name: TYK_GW_ENABLEANALYTICS
-            value: "{{.Values.gateway.analyticsEnabled}}"
+          {{- if .Values.gateway.analyticsEnabled }}
+            value: "{{ .Values.gateway.analyticsEnabled }}"
+          {{- else }}
+            value: "{{ .Values.global.components.pump }}"
+          {{- end}}
+        {{- end}}
+
           - name: TYK_GW_ANALYTICSCONFIG_TYPE
             value: "{{.Values.gateway.analyticsConfigType}}"
         {{- if .Values.global.remoteControlPlane.enabled }}

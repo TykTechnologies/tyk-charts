@@ -231,8 +231,9 @@ tyk-gateway:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
-    # analyticsEnabled property is used to enable or disable analytics.
-    analyticsEnabled: "true"
+    # analyticsEnabled property is used to enable/disable analytics.
+    # If set to empty or nil, analytics will be enabled/disabled based on `global.components.pump`.
+    analyticsEnabled: ""
 
     image:
       # image repository for Tyk Gateway
