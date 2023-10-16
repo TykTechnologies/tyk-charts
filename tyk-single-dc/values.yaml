@@ -577,7 +577,7 @@ tyk-bootstrap:
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
           tag: latest
-          
+
     org:
       name: Default Org
       # The hostname to bind the Portal to.
