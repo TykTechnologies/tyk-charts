@@ -545,7 +545,6 @@ tyk-bootstrap:
       enabled: true
     gateway:
       deploymentName: gateway-tyk-single-dc-tyk-gateway
-      
     # jobs field includes configurations for Helm Hooks.
     jobs:
       # preInstall configures pre-install Helm hook
@@ -577,18 +576,11 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: latest
-          
+          tag: latest       
     org:
       name: Default Org
       # The hostname to bind the Portal to.
       cname: tyk-portal.local
-
-    org:
-      name: Default Org
-      # The hostname to bind the Portal to.
-      cname: tyk-portal.local
-
     operatorSecret: true
 
     # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
