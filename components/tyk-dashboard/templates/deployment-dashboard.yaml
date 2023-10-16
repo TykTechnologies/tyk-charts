@@ -210,7 +210,7 @@ spec:
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.dashboard }}S{{ end }}"
-            path: /
+            path: /hello
             port: {{ .Values.global.servicePorts.dashboard }}
           initialDelaySeconds: 10
           periodSeconds: 2
@@ -219,7 +219,7 @@ spec:
         readinessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.dashboard }}S{{ end }}"
-            path: /
+            path: /hello
             port: {{ .Values.global.servicePorts.dashboard }}
           initialDelaySeconds: 10
           periodSeconds: 10
