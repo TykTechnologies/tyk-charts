@@ -181,6 +181,12 @@ To add your custom Certificate Authority(CA) to your containers, you can mount y
 
 Default service port of gateway is 8080. You can change this at `global.servicePorts.gateway`.
 
+If you want to use your own key/cert pair, you must follow the following steps:
+1. Create a tls secret using your cert and key pair.
+2. Set `.Values.global.tls.gateway`  to true.
+3. Set `.Values.global.tls.useDefaultTykCertificate` to false.
+4. Set `.Values.tyk-gateway.tls.secretName` to the name of the newly created secret.
+
 *Ingress*
 
 An Ingress resource is created if `tyk-gateway.gateway.ingress.enabled` is set to true.

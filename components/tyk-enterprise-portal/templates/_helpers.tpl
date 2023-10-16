@@ -49,3 +49,11 @@ Selector labels
 app.kubernetes.io/name: {{ include "tyk-enterprise-portal.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{- define "tyk-enterprise-portal.tplvalues.render" -}}
+    {{- if typeIs "string" .value }}
+        {{- tpl .value .context }}
+    {{- else }}
+        {{- tpl (.value | toYaml) .context }}
+    {{- end }}
+{{- end -}}
