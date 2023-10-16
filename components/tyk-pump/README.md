@@ -73,6 +73,13 @@ You may set `global.redis.addr` and `global.redis.pass` with redis connection st
 | Hybrid Pump               | Add `hybrid` to `.pump.backend`, and setup `.global.remoteControlPlane` section with the required adresses and tokens |
 | Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                            |
 
+
+> [!NOTE] 
+> For additional information on Tyk Pump configurations, 
+refer to the [Setup Dashboard Analytics](https://tyk.io/docs/tyk-pump/tyk-pump-configuration/tyk-pump-dashboard-config/) documentation. 
+
+> To explore the list of supported backends for Tyk Pump, please visit https://tyk.io/docs/tyk-stack/tyk-pump/other-data-stores/.
+
 #### Prometheus Pump
 Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. 
 

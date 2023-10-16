@@ -275,6 +275,12 @@ To enable Pump, set `global.components.pump` to true, and configure below inside
 | Uptime Pump               | Set `tyk-pump.pump.uptimePumpBackend` to `'mongo'` or `'postgres'`                                                 |
 | Other Pumps               | Add the required environment variables in `tyk-pump.pump.extraEnvs`                                                |
 
+> [!NOTE]
+> For additional information on Tyk Pump configurations, refer to the 
+[Setup Dashboard Analytics](https://tyk.io/docs/tyk-pump/tyk-pump-configuration/tyk-pump-dashboard-config/) documentation.
+
+> To explore the list of supported backends for Tyk Pump, please visit https://tyk.io/docs/tyk-stack/tyk-pump/other-data-stores/.
+
 #### Prometheus Pump
 Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. 
 
