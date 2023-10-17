@@ -206,7 +206,7 @@ gateway:
       hosts:
         - host: chart-example.local
           paths:
-            - path: /control
+            - path: /tyk
               pathType: ImplementationSpecific
                 
       # tls configuration for ingress
