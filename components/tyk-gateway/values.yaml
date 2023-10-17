@@ -204,7 +204,7 @@ gateway:
 
       # ingress rules
       hosts:
-        - host: chart-example.local
+        - host: chart-example-control-api-domain.local
           paths:
             - path: /tyk
               pathType: ImplementationSpecific
@@ -212,7 +212,7 @@ gateway:
       # tls configuration for ingress
       #  - secretName: chart-example-tls
       #    hosts:
-      #      - chart-example.local
+      #      - chart-example-different-domain-possible.local
       tls: []
 
   # Creates an ingress object in k8s. Will require an ingress-controller and

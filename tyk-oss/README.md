@@ -219,6 +219,9 @@ An Ingress resource is created if `tyk-gateway.gateway.ingress.enabled` is set t
 *Control Port*
 
 Set `tyk-gateway.gateway.control.enabled` to true will allow you to run the [Gateway API](https://tyk.io/docs/tyk-gateway-api/) on a separate port and protect it behind a firewall if needed.
+You can expose if over ingress if needed. Set `tyk-gateway.gateway.control.ingress.enabled` to true to make it possible. The ingress configuration is similar to main tyk ingress mentioned above.
+If needed you can specify a different host name to use.
+
 
 #### Mounting APIs, Policies, and Middlewares
 
