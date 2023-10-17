@@ -1,10 +1,10 @@
-# Default values for tyk-enterprise-portal.
+# Default values for tyk-dev-portal.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Enterprise Portal will only bootstrap if the tyk-enterprise-portal-conf secret
+# Tyk Portal will only bootstrap if the tyk-dev-portal-conf secret
 # is present. The secret is created during the dashboard bootstrapping and
-# be turned on and off using the dash.enterprisePortalSecret bool.
+# be turned on and off using the dash.devPortalSecret bool.
 
 global:
   adminUser:
@@ -15,45 +15,45 @@ global:
     # - adminUserPassword sets .global.adminUser.password
     useSecretName: ""
 
-    # email of Enterprise Portal admin
+    # email of Tyk Portal admin
     email: default@example.com
-    # password of Enterprise Portal admin
+    # password of Tyk Portal admin
     password: 123456
   tls:
     dashboard: false
-    enterprisePortal: false
+    devPortal: false
   servicePorts:
     dashboard: 3000
   bootstrap:
-    enterprisePortal: false
+    devPortal: false
 
   secrets:
-    # enterprisePortal secret stands for secret including Tyk Dashboard credentials.
+    # devPortal secret stands for secret including Tyk Dashboard credentials.
     # It should include the followings:
     # - TYK_ORG: Tyk Dashboard Organisation ID
     # - TYK_AUTH: Tyk Dashboard API Access Credentials
-    enterprisePortal: tyk-enterprise-portal-conf
+    devPortal: tyk-dev-portal-conf
 
-    # useSecretName can be used if you don't want to store plaintext values for Enterprise Portal license in
+    # useSecretName can be used if you don't want to store plaintext values for Tyk Portal license in
     # the Helm value file and would rather provide the k8s Secret externally.
     # You should set following fields in the secret
-    # - EnterprisePortalLicense - Sets LicenseKey for Enterprise Portal
-    # - EnterprisePortalStorageConnectionString - Sets Database.ConnectionString for Enterprise Portal
+    # - DeveloperPortalLicense - Sets LicenseKey for Tyk Portal
+    # - DeveloeprPortalStorageConnectionString - Sets Database.ConnectionString for Tyk Portal
     useSecretName: ""
 
-# The hostname to bind the Enterprise Portal to.
-hostName: tyk-enterprise-portal.local
+# The hostname to bind the Tyk Portal to.
+hostName: tyk-dev-portal.local
 
-# Enterprise Portal license.
+# Tyk Portal license.
 license: ""
 
-# In case you want to deploy enterprise portal as a standalone app, you can configure a different dashboard URL using
+# In case you want to deploy the Tyk Portal as a standalone app, you can configure a different dashboard URL using
 # the parameter bellow.
 overrideTykDashUrl: ""
-# Enterprise portal can be deployed as StatefulSet or as Deployment
+# Tyk Portal can be deployed as StatefulSet or as Deployment
 kind: StatefulSet
 storage:
-  # Configuration values for using an SQL database as storage for Tyk Enterprise Portal
+  # Configuration values for using an SQL database as storage for Tyk Tyk Portal
   # In case you want to provide the connection string via secrets please
   # refer to the existing secret inside the helmchart or the
   # .Values.global.secrets.useSecretName variable
@@ -66,12 +66,12 @@ storage:
     enableLogs: false
     maxRetries: 3
     retryDelay: 5000
-  # Configuration values for using s3 as storage for Tyk Enterprise Portal
+  # Configuration values for using s3 as storage for Tyk Tyk Portal
   # In case you want to provide the key ID and access key via secrets please
   # refer to the existing secret inside the helmchart or the
   # .Values.global.secrets.useSecretName variable and a secret containing
-  # the keys EnterprisePortalAwsAccessKeyId and respectively,
-  # EnterprisePortalAwsSecretAccessKey
+  # the keys DeveloperPortalAwsAccessKeyId and respectively,
+  # DeveloperPortalAwsSecretAccessKey
   s3:
     awsAccessKeyid: your-access-key
     awsSecretAccessKey: your-secret-key
@@ -81,7 +81,7 @@ storage:
     acl: private
     presign_urls: true
   persistence:
-    # User can mount existing PVC to enterprise portal
+    # User can mount existing PVC to the Tyk Portal
     # Make sure to change the kind to Deployment if you are mounting existing PVC 
     mountExistingPVC: ""
     storageClass: ""
@@ -97,7 +97,7 @@ containerPort: 3001
 
 image:
   repository: tykio/portal
-  # Enterprise portal < v1.2 is not supported
+  # Tyk Portal < v1.2 is not supported
   tag: v1.7.0
   pullPolicy: Always
 

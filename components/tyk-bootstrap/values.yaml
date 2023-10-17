@@ -19,7 +19,7 @@ global:
     email: default@example.com
 
   bootstrap:
-    enterprisePortal: true
+    devPortal: true
     dashboard: true
 
   servicePorts:
@@ -32,7 +32,7 @@ global:
     # Enables/disables the dashboard component and also used to detect when the bootstrapping needs to be done
     # for a separate Tyk Dashboard installation or for an umbrella chart installation
     dashboard: false
-    enterprisePortal: false
+    devPortal: false
 
   tls:
     # If set to true the Dashboard will use SSL connection.
@@ -55,7 +55,7 @@ global:
     # You can set following fields in the secret
     # AdminSecret - Admin user secret key
     useSecretName: ""
-    enterprisePortal: tyk-enterprise-portal-conf
+    devPortal: tyk-dev-portal-conf
 
 bootstrap:
   dashboard:

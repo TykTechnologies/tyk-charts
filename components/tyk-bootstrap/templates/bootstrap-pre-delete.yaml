@@ -38,8 +38,8 @@ spec:
           env:
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
-            - name: ENTERPRISE_PORTAL_SECRET_NAME
-              value: "tyk-enterprise-portal-conf"
+            - name: DEVELOPER_PORTAL_SECRET_NAME
+              value: "tyk-dev-portal-conf"
             - name: TYK_POD_NAMESPACE
               valueFrom:
                 fieldRef:

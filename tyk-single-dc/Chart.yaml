@@ -15,7 +15,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 1.0.0-beta6
+version: 1.0.0-beta7
 
 dependencies:
   - name: tyk-gateway
@@ -31,7 +31,7 @@ dependencies:
   - name: tyk-bootstrap
     version: 1.0.0-beta5
     repository: file://../components/tyk-bootstrap
-  - name: tyk-enterprise-portal
-    version: 1.0.0-beta4
-    repository: file://../components/tyk-enterprise-portal
-    condition: global.components.enterprisePortal
+  - name: tyk-dev-portal
+    version: 1.0.0-beta1
+    repository: file://../components/tyk-dev-portal
+    condition: global.components.devPortal
