@@ -1,4 +1,4 @@
-{{- if .Values.gateway.control.ingress.enabled -}}
+{{- if and .Values.gateway.control.enabled .Values.gateway.control.ingress.enabled -}}
 {{- $fullName := "tyk-gateway-control" -}}
 {{- $svcPort := .Values.gateway.control.port -}}
 
