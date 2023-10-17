@@ -308,6 +308,11 @@ Add following under the `global` section in `values.yaml`:
     # If your MongoDB has a password you can add the username and password to the url
     # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
     mongoURL: <MongoDB address>
+    
+    # mongo-go driver is supported for Tyk 5.0.2+.
+    # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
+    # For MongoDB versions prior to 4.4, please use the mgo driver.
+    driver: mgo
 
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
