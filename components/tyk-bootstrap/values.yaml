@@ -63,7 +63,8 @@ bootstrap:
     enabled: true
     # Name of the deployment that we want to bootstrap
     deploymentName: dashboard-tyk-dashboard
-
+    # Skip validating the SSL certificates. Usually needed when using self-signed certs.
+    sslInsecureSkipVerify: false
     # Specify if dashboard has custom service name.
     serviceName: ""
   portal:
@@ -73,10 +74,38 @@ bootstrap:
     # Name of the gateway deployment
     deploymentName: gateway-tyk-gateway
 
+  # jobs field includes configurations for Helm Hooks.
   jobs:
-    # Name of bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
-    bootstrapJobName: bootstrap-post-install
-    bootstrapPreInstallJobName: bootstrap-pre-install
+    # preInstall configures pre-install Helm hook
+    preInstall:
+      # Name of the pre-install bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
+      name: bootstrap-pre-install
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of pre-install job.
+        repository: tykio/tyk-k8s-bootstrap-pre-install
+        # tag specifies image tag of pre-install job.
+        tag: latest
+
+    # postInstall configures post-install Helm hook
+    postInstall:
+      # Name of the post-install bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
+      name: bootstrap-post-install
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of post-install job.
+        repository: tykio/tyk-k8s-bootstrap-post
+        # tag specifies image tag of post-install job.
+        tag: latest
+
+    # preDelete configures pre-delete Helm hook
+    preDelete:
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of pre-delete job.
+        repository: tykio/tyk-k8s-bootstrap-pre-delete
+        # tag specifies image tag of pre-delete job.
+        tag: latest
 
   org:
     # The name for your organization inside Tyk

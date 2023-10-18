@@ -220,7 +220,9 @@ spec:
           - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
             value: "771"
           - name: TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
-            value: '[{"domain_name": "*", "cert_file": "/etc/certs/tls.crt", "key_file": "/etc/certs/tls.key"}]'
+            value: '{{ .Values.gateway.tls.certificates | toJson }}'
+          - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
+            value: {{ default "false" .Values.gateway.tls.insecureSkipVerify | quote }}
           - name: TYK_GW_ALLOWINSECURECONFIGS
             value: "true"
           - name: TYK_GW_COPROCESSOPTIONS_ENABLECOPROCESS
@@ -264,7 +266,7 @@ spec:
         volumeMounts:
           {{ if .Values.global.tls.gateway }}
           - name: {{ .Values.gateway.tls.secretName }}
-            mountPath: /etc/certs
+            mountPath: {{ .Values.gateway.tls.certificatesMountPath }}
           {{ end }}
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway

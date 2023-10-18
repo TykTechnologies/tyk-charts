@@ -85,8 +85,6 @@ spec:
             value: "{{ .Values.dashboard.homeDir }}"
           - name: "TYK_DB_USESHARDEDANALYTICS"
             value: "{{ .Values.dashboard.useShardedAnalytics }}"
-          - name: "TYK_DB_ENABLEAGGREGATELOOKUPS"
-            value: "{{ .Values.dashboard.enableAggregateLookups }}"
           - name: "TYK_DB_ENABLEANALYTICSCACHE"
             value: "{{ .Values.dashboard.enableAnalyticsCache }}"
           - name: "TYK_DB_ALLOWEXPLICITPOLICYID"
@@ -157,6 +155,12 @@ spec:
 
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.global.tls.dashboard }}"
+          - name: TYK_DB_HTTPSERVEROPTIONS_MINVERSION
+            value: "771"
+          - name: TYK_DB_HTTPSERVEROPTIONS_CERTIFICATES
+            value: '{{ .Values.dashboard.tls.certificates | toJson }}'
+          - name: TYK_DB_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
+            value: {{ default "false" .Values.dashboard.tls.insecureSkipVerify | quote }}
 
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dashboard.hostName }}"
@@ -197,9 +201,11 @@ spec:
                 key: {{ include "tyk-dashboard.mongo_url_secret_key" . }}
           - name: TYK_DB_MONGOUSESSL
             value: "{{ default "false" .Values.global.mongo.useSSL }}"
+          - name: "TYK_DB_ENABLEAGGREGATELOOKUPS"
+            value: "{{ .Values.dashboard.enableAggregateLookups }}"
           {{ end }}
           {{- if .Values.dashboard.extraEnvs }}
-          {{- include "tyk-dashboard.tplvalues.render" ( dict "value" .Values.dashboard.extraEnvs "context" $ ) | nindent 10 }}
+          {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraEnvs "context" $) | nindent 10 }}
           {{- end }}
         resources:
 {{ toYaml .Values.dashboard.resources | indent 12 }}
@@ -207,6 +213,10 @@ spec:
         ports:
         - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
+          {{ if .Values.global.tls.dashboard }}
+          - name: {{ .Values.dashboard.tls.secretName }}
+            mountPath: {{ .Values.dashboard.tls.certificatesMountPath }}
+          {{ end }}
           {{- if .Values.dashboard.mounts }}
           {{- range $secret := .Values.dashboard.mounts }}
           - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
@@ -239,6 +249,11 @@ spec:
       {{- toYaml .Values.dashboard.securityContext | nindent 10 }}
       {{- end }}
       volumes:
+        {{ if .Values.global.tls.dashboard }}
+        - name: {{ .Values.dashboard.tls.secretName }}
+          secret:
+            secretName: {{ .Values.dashboard.tls.secretName }}
+        {{ end }}
         {{- if .Values.dashboard.mounts }}
         {{- range $secret := .Values.dashboard.mounts }}
         - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
