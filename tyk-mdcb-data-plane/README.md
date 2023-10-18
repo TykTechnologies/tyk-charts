@@ -269,11 +269,11 @@ Here is a reference of all [Tyk Gateway Configuration Options](https://tyk.io/do
 
 To enable Pump, set `global.components.pump` to true, and configure below inside `tyk-pump` section.
 
-| Pump                      | Configuration                                                                                              |
-|---------------------------|------------------------------------------------------------------------------------------------------------| 
-| Prometheus Pump (Default) | Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. |
-| Hybrid Pump (Default)     | Add `hybrid` to `tyk-pump.pump.backend`, and add remoteControlPlane details under `global.remoteControlPlane`. Change `tyk-gateway.gateway.analyticsConfigType` to `""` (empty string) |
-| Other Pumps               | Add the required environment variables in `tyk-pump.pump.extraEnvs`                                                |
+| Pump                      | Configuration                                                                                                                                                                            |
+|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
+| Prometheus Pump (Default) | Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for Prometheus under `tyk-pump.pump.prometheusPump`.                                                         |
+| Hybrid Pump (Default)     | Add `hybrid` to `tyk-pump.pump.backend`, and add `remoteControlPlane` details under `global.remoteControlPlane`. Change `tyk-gateway.gateway.analyticsConfigType` to `""` (empty string) |
+| Other Pumps               | Add the required environment variables in `tyk-pump.pump.extraEnvs`                                                                                                                      |
 
 #### Prometheus Pump
 Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. 
