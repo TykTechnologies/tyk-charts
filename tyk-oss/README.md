@@ -270,16 +270,16 @@ Here is a reference of all [Tyk Gateway Configuration Options](https://tyk.io/do
 
 To enable Pump, set `global.components.pump` to true, and configure below inside `tyk-pump` section.
 
-| Pump                      | Configuration                                                                                              |
-|---------------------------|------------------------------------------------------------------------------------------------------------| 
-| Prometheus Pump (Default) | Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. |
-| Mongo Pump                | Add `mongo` to `tyk-pump.pump.backend`, and add connection details for mongo under `global.mongo`.                 |
-| Mongo Selective Pump      | Add `mongo-selective` to `pump.backend`, and add connection details for mongo under `.global.mongo`.                  |
-| Mongo Aggregate Pump      | Add `mongo-aggregate` to `pump.backend`, and add connection details for mongo under `.global.mongo`.                  |
-| Postgres Pump             | Add `postgres` to `tyk-pump.pump.backend`, and add connection details for postgres under `global.postgres`.        |
-| Postgres Aggregate Pump   | Add `postgres-aggregate` to `.pump.backend`, and add connection details for postgres under `.global.postgres`.        |
-| Uptime Pump               | Set `tyk-pump.pump.uptimePumpBackend` to `'mongo'` or `'postgres'`                                                 |
-| Other Pumps               | Add the required environment variables in `tyk-pump.pump.extraEnvs`                                                |
+| Pump                      | Configuration                                                                                                                 |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------| 
+| Prometheus Pump (Default) | Add the value `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. |
+| Mongo Pump                | Add `mongo` to `tyk-pump.pump.backend`, and add connection details for mongo under `global.mongo`.                            |
+| Mongo Selective Pump      | Add `mongo-selective` to `pump.backend`, and add connection details for mongo under `.global.mongo`.                          |
+| Mongo Aggregate Pump      | Add `mongo-aggregate` to `pump.backend`, and add connection details for mongo under `.global.mongo`.                          |
+| Postgres Pump             | Add `postgres` to `tyk-pump.pump.backend`, and add connection details for postgres under `global.postgres`.                   |
+| Postgres Aggregate Pump   | Add `postgres-aggregate` to `.pump.backend`, and add connection details for postgres under `.global.postgres`.                |
+| Uptime Pump               | Set `tyk-pump.pump.uptimePumpBackend` to `'mongo'` or `'postgres'`                                                            |
+| Other Pumps               | Add the required environment variables in `tyk-pump.pump.extraEnvs`                                                           |
 
 > [!NOTE]
 > For additional information on Tyk Pump configurations, refer to the 
