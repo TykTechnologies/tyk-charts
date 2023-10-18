@@ -1,6 +1,10 @@
 # Default values for tyk-bootstrap.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+
+fullnameOverride: ""
+nameOverride: ""
+
 global:
   license:
     # The license key needed for the Tyk Dashboard.
@@ -115,9 +119,6 @@ bootstrap:
 
   # Trigger to control if we want to create the tyk-operator secret
   operatorSecret: true
-
-  fullnameOverride: ""
-  nameOverride: ""
 
   # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
   # It takes key-value pairs.
