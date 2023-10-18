@@ -231,9 +231,6 @@ dashboard:
   ##     readOnly: true
   extraVolumeMounts: []
 
-  # Dashboard will only bootstrap if the master bootstrap option is set to true.
-  bootstrap: true
-
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
 
@@ -248,15 +245,3 @@ dashboard:
       - domain_name: "*"
         cert_file: "/etc/certs/tyk-dashboard/tls.crt"
         key_file: "/etc/certs/tyk-dashboard/tls.key"
-
-  # Dashboard admin information.
-  adminUser:
-    # First name of the admin user
-    firstName: admin
-    # Last name of the admin user
-    lastName: user
-    # Email address of the admin user
-    email: default@example.com
-    # Set a password or a random one will be assigned.
-    password: "123456"
-  # Dashboard Organisation information.

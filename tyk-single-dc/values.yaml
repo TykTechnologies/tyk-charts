@@ -538,10 +538,10 @@ tyk-pump:
     extraVolumeMounts: []
 
 tyk-bootstrap:
-  bootstrap:
-    fullnameOverride: ""
-    nameOverride: ""
+  fullnameOverride: ""
+  nameOverride: ""
 
+  bootstrap:
     # Trigger to control if we want to bootstrap the Enterprise Portal component using tyk-bootstrap
     enterprisePortal: true
 
@@ -717,11 +717,9 @@ tyk-dashboard:
     ##     readOnly: true
     extraVolumeMounts: []
 
-    # Dashboard will only bootstrap if the master bootstrap option is set to true.
-    bootstrap: true
-
     # The hostname to bind the Dashboard to.
     hostName: tyk-dashboard.local
+
     # If set to true the Dashboard will use SSL connection.
     # You will also need to set the:
     # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
