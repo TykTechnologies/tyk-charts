@@ -1,5 +1,5 @@
 {{- if and .Values.gateway.control.enabled .Values.gateway.control.ingress.enabled -}}
-{{- $fullName := "tyk-gateway-control" -}}
+{{- $fullName := include "tyk-gateway.fullname" . -}}
 {{- $svcPort := .Values.gateway.control.port -}}
 
 {{- if and .Values.gateway.control.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
@@ -18,9 +18,9 @@ apiVersion: extensions/v1beta1
 
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $fullName }}-control
   labels:
-    app: gateway-ing-{{ $fullName }} 
+    app: gateway-ing-{{ $fullName }}-control 
     chart: {{ include "tyk-gateway.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
