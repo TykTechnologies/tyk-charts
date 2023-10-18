@@ -67,6 +67,8 @@ bootstrap:
     enabled: true
     # Name of the deployment that we want to bootstrap
     deploymentName: dashboard-tyk-dashboard
+    # Skip validating the SSL certificates. Usually needed when using self-signed certs.
+    sslInsecureSkipVerify: false
     # Specify if dashboard has custom service name.
     serviceName: ""
   portal:
