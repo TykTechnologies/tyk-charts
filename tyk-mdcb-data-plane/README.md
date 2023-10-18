@@ -180,13 +180,14 @@ automatically enable TLS using the certificate provided under tyk-gateway/certs/
 
 *Configure TLS secret*
 
-If you want to use your own key/cert pair, please follow the following steps:
-1. Create a TLS secret using your cert and key pair.
-2. Set `global.tls.gateway` to true.
-3. Set `tyk-gateway.gateway.tls.useDefaultTykCertificate` to false.
-4. Set `tyk-gateway.gateway.tls.secretName` to the name of the newly created secret.
 
-*Add Custom Certificates*
+If you want to use your own key/cert pair, you must follow the following steps:
+1. Create a tls secret using your cert and key pair.
+2. Set `global.tls.gateway`  to true.
+3. Set `global.tls.useDefaultTykCertificate` to false.
+4. Set `gateway.tls.secretName` to the name of the newly created secret.
+
+5. *Add Custom Certificates*
 
 To add your custom Certificate Authority(CA) to your containers, you can mount your CA certificate directly into /etc/ssl/certs folder.
 

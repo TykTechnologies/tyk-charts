@@ -66,8 +66,40 @@ bootstrap:
   # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
   portal: true
 
+  # Skip validating the SSL certificates. Usually needed when using self-signed certs.
+  sslInsecureSkipVerify: false
+
   # Trigger to control if we want to create the tyk-operator secret
   operatorSecret: true
+
+  # jobs field includes configurations for Helm Hooks.
+  jobs:
+    # preInstall configures pre-install Helm hook
+    preInstall:
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of pre-install job.
+        repository: tykio/tyk-k8s-bootstrap-pre-install
+        # tag specifies image tag of pre-install job.
+        tag: testing
+
+    # postInstall configures post-install Helm hook
+    postInstall:
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of post-install job.
+        repository: tykio/tyk-k8s-bootstrap-post
+        # tag specifies image tag of post-install job.
+        tag: testing
+
+    # preDelete configures pre-delete Helm hook
+    preDelete:
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of pre-delete job.
+        repository: tykio/tyk-k8s-bootstrap-pre-delete
+        # tag specifies image tag of pre-delete job.
+        tag: testing
 
   org:
     # The name for your organization inside Tyk

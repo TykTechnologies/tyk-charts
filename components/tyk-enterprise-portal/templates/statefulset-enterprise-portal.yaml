@@ -209,6 +209,9 @@ spec:
             mountPath: /opt/portal/db
             subPath: db
           {{- end }}
+          {{- if .Values.extraVolumeMounts }}
+          {{- include "tyk-enterprise-portal.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 10 }}
+          {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.enterprisePortal }}S{{ end }}"
@@ -228,11 +231,14 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
 
-      {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
       volumes:
+      {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
       - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
         persistentVolumeClaim:
           claimName: {{ .Values.storage.persistence.mountExistingPVC }}
+      {{- end }}
+      {{- if .Values.extraVolumes }}
+      {{- include "tyk-enterprise-portal.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 6 }}
       {{- end }}
 
       {{- if .Values.securityContext }}

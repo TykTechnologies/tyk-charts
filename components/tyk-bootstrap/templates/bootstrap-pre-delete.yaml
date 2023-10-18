@@ -33,7 +33,7 @@ spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
         - name: bootstrap-tyk-pre-delete
-          image: tykio/tyk-k8s-bootstrap-pre-delete:testing
+          image: {{ .Values.bootstrap.jobs.preDelete.image.repository }}:{{ .Values.bootstrap.jobs.preDelete.image.tag }}
           command: [ './app/bin/bootstrap-app-pre-delete' ]
           imagePullPolicy: IfNotPresent
           env:

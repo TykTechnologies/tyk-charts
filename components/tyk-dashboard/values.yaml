@@ -64,6 +64,10 @@ global:
     # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
 
+    # When true, it will install the certificate present in the templates folder, set to false when using
+    # a custom TLS certificate to avoid overwriting yours
+    useDefaultTykCertificate: true
+
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
   storageType: mongo
 
@@ -233,4 +237,26 @@ dashboard:
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
 
+  tls:
+    # The name of the secret which should contain the TLS certificate you want to use with the dashboard deployment
+    secretName: tyk-default-tls-secret
+    # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
+    insecureSkipVerify: false
+
+    certificatesMountPath: "/etc/certs/tyk-dashboard"
+    certificates:
+      - domain_name: "*"
+        cert_file: "/etc/certs/tyk-dashboard/tls.crt"
+        key_file: "/etc/certs/tyk-dashboard/tls.key"
+
+  # Dashboard admin information.
+  adminUser:
+    # First name of the admin user
+    firstName: admin
+    # Last name of the admin user
+    lastName: user
+    # Email address of the admin user
+    email: default@example.com
+    # Set a password or a random one will be assigned.
+    password: "123456"
   # Dashboard Organisation information.

@@ -30,7 +30,7 @@ spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
         - name: bootstrap-tyk-post-install
-          image: tykio/tyk-k8s-bootstrap-post:testing
+          image: {{ .Values.bootstrap.jobs.postInstall.image.repository }}:{{ .Values.bootstrap.jobs.postInstall.image.tag }}
           command: [ './app/bin/bootstrap-app-post' ]
           imagePullPolicy: IfNotPresent
           env:
@@ -72,6 +72,8 @@ spec:
                   fieldPath: metadata.namespace
             - name: TYK_DASHBOARD_PROTO
               value: "{{ include "tyk-bootstrap.dash_proto" . }}"
+            - name: TYK_DASHBOARD_INSECURE_SKIP_VERIFY
+              value: {{ default "false" .Values.bootstrap.sslInsecureSkipVerify | quote }}
             - name: TYK_DB_LICENSEKEY
               {{ if .Values.global.secrets.useSecretName }}
               valueFrom:

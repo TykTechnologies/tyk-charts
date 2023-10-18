@@ -29,7 +29,7 @@ spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
         - name: bootstrap-tyk-pre-install
-          image: tykio/tyk-k8s-bootstrap-pre-install:testing
+          image: {{ .Values.bootstrap.jobs.preInstall.image.repository }}:{{ .Values.bootstrap.jobs.preInstall.image.tag }}
           command: ['/app/bin/bootstrap-app-pre-install']
           imagePullPolicy: IfNotPresent
           env:
