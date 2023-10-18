@@ -206,7 +206,7 @@ gateway:
       hosts:
         - host: chart-example-control-api-domain.local
           paths:
-            - path: /tyk
+            - path: /
               pathType: ImplementationSpecific
                 
       # tls configuration for ingress
