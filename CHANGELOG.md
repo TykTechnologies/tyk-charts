@@ -1,7 +1,10 @@
 # Changelog
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-charts/tree/HEAD)
-[Full Changelog](https://github.com/TykTechnologies/tyk-charts/compare/v1.0.0-rc3...HEAD)
+[Full Changelog](https://github.com/TykTechnologies/tyk-charts/compare/v1.0.0...HEAD)
+
+## [v1.0.0](https://github.com/TykTechnologies/tyk-charts/tree/v1.0.0)
+[Full Changelog](https://github.com/TykTechnologies/tyk-charts/compare/v1.0.0-rc3...v1.0.0)
 
 **Added:**
 - Added support of hybrid-pump
