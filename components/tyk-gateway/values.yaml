@@ -28,6 +28,10 @@ global:
     # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
     # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
+
+    # When true, it will install the certificate present in the templates folder, set to false when using
+    # a custom TLS certificate to avoid overwriting yours
+    useDefaultTykCertificate: true
   components:
     dashboard: false
   secrets:
@@ -119,11 +123,16 @@ gateway:
   hostName: tyk-gw.local
 
   tls:
-    # When true, it will install the certificate present in the templates folder, set to false when using
-    # a custom TLS certificate to avoid overwriting yours
-    useDefaultTykCertificate: true
     # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
     secretName: tyk-default-tls-secret
+    # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
+    insecureSkipVerify: false
+
+    certificatesMountPath: "/etc/certs/tyk-gateway"
+    certificates:
+    - domain_name: "*"
+      cert_file: "/etc/certs/tyk-gateway/tls.crt"
+      key_file: "/etc/certs/tyk-gateway/tls.key"
 
   # kind is type of k8s object to be created for gateway.
   kind: Deployment
@@ -145,7 +154,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.1.0
+    tag: v5.2.0
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
@@ -275,8 +284,9 @@ gateway:
   ##     readOnly: true
   extraVolumeMounts: []
 
-  # analyticsEnabled property is used to enable or disable analytics.
-  analyticsEnabled: "false"
+  # analyticsEnabled property is used to enable/disable analytics.
+  # If set to empty or nil, analytics will be enabled/disabled based on `global.components.pump`.
+  analyticsEnabled: ""
 
   # used to decide whether to send the results back directly to Tyk without a hybrid pump
   # if you want to send analytics to control plane instead of pump, change analyticsConfigType to "rpc"
