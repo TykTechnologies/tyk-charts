@@ -40,6 +40,7 @@ global:
     dashboard: true
 
   bootstrap:
+    # setting this to true bootstraps Tyk Enterprise Portal.
     enterprisePortal: true
 
   servicePorts:
@@ -537,47 +538,44 @@ tyk-pump:
     extraVolumeMounts: []
 
 tyk-bootstrap:
-  # Default values for tyk-bootstrap.
-  # This is a YAML-formatted file.
-  # Declare variables to be passed into your templates.
-
   fullnameOverride: ""
   nameOverride: ""
 
   bootstrap:
-    dashboard:
-      enabled: true
-      deploymentName: dashboard-tyk-single-dc-tyk-dashboard
-      sslInsecureSkipVerify: false
-      # Specify if dashboard has custom service name.
-      serviceName: ""
-    portal:
-      enabled: true
-    gateway:
-      deploymentName: gateway-tyk-single-dc-tyk-gateway
+    # Trigger to control if we want to bootstrap the Enterprise Portal component using tyk-bootstrap
+    enterprisePortal: true
+
+    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+    dashboard: true
+
+    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+    portal: true
+
+    # Skip validating the SSL certificates. Usually needed when using self-signed certs.
+    sslInsecureSkipVerify: false
+
+    # Trigger to control if we want to create the tyk-operator secret
+    operatorSecret: true
+
     # jobs field includes configurations for Helm Hooks.
     jobs:
       # preInstall configures pre-install Helm hook
       preInstall:
-        # Name of the pre-install bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
-        name: bootstrap-pre-install
         # image specifies image repository of bootstrap images
         image:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
-          tag: latest
+          tag: testing
 
       # postInstall configures post-install Helm hook
       postInstall:
-        # Name of the post-install bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
-        name: bootstrap-post-install
         # image specifies image repository of bootstrap images
         image:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
-          tag: latest
+          tag: testing
 
       # preDelete configures pre-delete Helm hook
       preDelete:
@@ -586,13 +584,13 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: latest
+          tag: testing
 
     org:
+      # The name for your organization inside Tyk
       name: Default Org
       # The hostname to bind the Portal to.
       cname: tyk-portal.local
-    operatorSecret: true
 
     # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
     # It takes key-value pairs.
@@ -606,6 +604,7 @@ tyk-bootstrap:
     #     key: value
     #     post: install
     podAnnotations:
+      preInstallPodAnnotations: {}
       postInstallPodAnnotations: {}
       preDeletePodAnnotations: {}
 
