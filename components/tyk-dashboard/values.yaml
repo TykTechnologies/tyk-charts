@@ -69,7 +69,7 @@ global:
     useDefaultTykCertificate: true
 
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
-  storageType: mongo
+  storageType: postgres
 
   postgres:
     host: tyk-postgres-postgresql.tyk.svc.cluster.local
