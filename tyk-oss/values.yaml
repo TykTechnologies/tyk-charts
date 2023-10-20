@@ -133,11 +133,14 @@ tyk-gateway:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
-    # minAvailable and maxUnavailable configure thresholds for PodDisruptionBudget resource
-    # per PodDisruptionBudget spec they are mutually exclusive, but this chart allows
-    # setting them both, in which case minAvailable will take precedence
-    minAvailable: ""
-    maxUnavailable: ""
+    # PodDisruptionBudget configuration
+    pdb:
+      enabled: false
+      # minAvailable and maxUnavailable configure thresholds for PodDisruptionBudget resource
+      # per PodDisruptionBudget spec they are mutually exclusive, but this chart allows
+      # setting them both, in which case minAvailable will take precedence
+      minAvailable: ""
+      maxUnavailable: ""
 
     # autoscaling configuration if kind IS NOT DaemonSet
     autoscaling: {}

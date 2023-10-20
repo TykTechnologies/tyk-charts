@@ -1,7 +1,7 @@
-{{- if and .Values.gateway.minAvailable .Values.gateway.maxUnavailable }}
-{{- print "If gateway.minAvailable and gateway.maxUnavailable are set at the same time, minAvailable takes precedence." }}
+{{- if and .Values.gateway.pdb .Values.gateway.pdb.enabled }}
+{{- if and .Values.gateway.pdb.minAvailable .Values.gateway.pdb.maxUnavailable }}
+{{- print "If gateway.pdb.minAvailable and gateway.pdb.maxUnavailable are set at the same time, minAvailable takes precedence." }}
 {{- end }}
-{{- if or .Values.gateway.minAvailable .Values.gateway.maxUnavailable }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
@@ -12,10 +12,10 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  {{- if .Values.gateway.minAvailable }}
-  minAvailable: {{ .Values.gateway.minAvailable }}
-  {{- else if .Values.gateway.maxUnavailable }}
-  maxUnavailable: {{ .Values.gateway.maxUnavailable }}
+  {{- if .Values.gateway.pdb.minAvailable }}
+  minAvailable: {{ .Values.gateway.pdb.minAvailable }}
+  {{- else if .Values.gateway.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.gateway.pdb.maxUnavailable }}
   {{- end }}
   selector:
     matchLabels:
