@@ -133,6 +133,24 @@ tyk-gateway:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
+    # autoscaling configuration if kind IS NOT DaemonSet
+    autoscaling: {}
+    #  enabled: true
+    #  minReplicas: 1
+    #  maxReplicas: 3
+    #  averageCpuUtilization: 60
+    #  averageMemoryUtilization: null
+    #  autoscalingTemplate:
+    #   Custom or additional autoscaling metrics
+    #   ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-custom-metrics
+    #    - type: Pods
+    #      pods:
+    #        metric:
+    #          name: nginx_ingress_controller_nginx_process_requests_total
+    #        target:
+    #          type: AverageValue
+    #          averageValue: 10000m
+
     image:
       # image repository for Tyk Gateway
       repository: docker.tyk.io/tyk-gateway/tyk-gateway
