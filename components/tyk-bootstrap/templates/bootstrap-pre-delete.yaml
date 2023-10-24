@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    tyk.tyk.io/k8s-bootstrap: tyk-k8s-bootstrap-pre-delete
 
     # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
     # when every app will have its own a chart
@@ -39,13 +40,11 @@ spec:
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
             - name: DEVELOPER_PORTAL_SECRET_NAME
-              value: "tyk-dev-portal-conf"
+              value: {{ .Values.global.secrets.devPortal }}
             - name: TYK_POD_NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: BOOTSTRAP_JOB_NAME
-              value: {{ .Values.bootstrap.jobs.bootstrapJobName }}
       terminationGracePeriodSeconds: 0
       restartPolicy: Never
 {{- end }}

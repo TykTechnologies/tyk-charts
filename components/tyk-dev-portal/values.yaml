@@ -2,9 +2,9 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Tyk Portal will only bootstrap if the tyk-dev-portal-conf secret
+# Enterprise Portal will only bootstrap if the tyk-enterprise-portal-conf secret
 # is present. The secret is created during the dashboard bootstrapping and
-# be turned on and off using the dash.devPortalSecret bool.
+# be turned on and off using the dash.enterprisePortalSecret bool.
 
 global:
   adminUser:
@@ -25,6 +25,7 @@ global:
   servicePorts:
     dashboard: 3000
   bootstrap:
+    # setting this to true bootstraps Tyk Developer Portal.
     devPortal: false
 
   secrets:

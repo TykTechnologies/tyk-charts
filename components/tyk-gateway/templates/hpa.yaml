@@ -1,0 +1,36 @@
+{{- if and (ne .Values.gateway.kind "DaemonSet") .Values.gateway.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: gateway-{{ include "tyk-gateway.fullname" . }}
+  labels:
+    app: gateway-{{ include "tyk-gateway.fullname" . }}
+    chart: {{ include "tyk-gateway.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: {{ .Values.gateway.kind }}
+    name: gateway-{{ include "tyk-gateway.fullname" . }}
+  minReplicas: {{ default 1 .Values.gateway.autoscaling.minReplicas }}
+  maxReplicas: {{ default 3 .Values.gateway.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ default 60 .Values.gateway.autoscaling.averageCpuUtilization }}
+{{- if .Values.gateway.autoscaling.averageMemoryUtilization }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.gateway.autoscaling.averageMemoryUtilization }}
+{{- end }}
+{{- with .Values.gateway.autoscaling.autoscalingTemplate }}
+{{ toYaml . | indent 4}}
+{{- end}}
+{{- end }}

@@ -83,7 +83,7 @@ To get all configurable options with detailed comments:
 helm show values tyk-helm/tyk-oss > values.yaml
 ```
 
-You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation. 
+You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation.
 Alternatively, you can use `--set` flag to set it in Tyk installation.
 
 ### Set Redis Connection Details (Required)
@@ -92,7 +92,7 @@ Tyk uses Redis for distributed rate-limiting and token storage. You may use the 
 
 Set the following values after installing Redis:
 
-| Name | Description | 
+| Name | Description |
 |------|-------------|
 | `global.redis.addrs` | Redis addresses |
 | `global.redis.pass` | Redis password in plain text |
@@ -137,6 +137,34 @@ helm install redis tyk-helm/simple-redis -n tyk
 
 The Tyk Helm Chart can connect to `simple-redis` in the same namespace by default. You do not need to set Redis address and password in `values.yaml`.
 
+### Enable gateway autoscaling
+
+This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling it's enough to add `--set tyk-gateway.gateway.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances). To customize those values you can add `--set tyk-gateway.gateway.autoscaling.averageCpuUtilization=75` or use `values.yaml` file:
+
+```yaml
+tyk-gateway:
+  gateway:
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 30
+```
+
+Built-in rules include `tyk-gateway.gateway.autoscaling.averageCpuUtilization` for CPU utilization (set by default at 60%) and `tyk-gateway.gateway.autoscaling.averageMemoryUtilization` for memory (disabled by default). In addition to that you can define rules for custom metrics using `tyk-gateway.gateway.autoscaling.autoscalingTemplate` list:
+
+```yaml
+tyk-gateway:
+  gateway:
+    autoscaling:
+      autoscalingTemplate:
+        - type: Pods
+          pods:
+            metric:
+              name: nginx_ingress_controller_nginx_process_requests_total
+            target:
+              type: AverageValue
+              averageValue: 10000m
+```
 
 ### Gateway Configurations
 
@@ -165,11 +193,11 @@ If you want to use your own key/cert pair, please follow the following steps:
 To add your custom Certificate Authority(CA) to your containers, you can mount your CA certificate directly into /etc/ssl/certs folder.
 
 ```yaml
-   extraVolumes: 
+   extraVolumes:
      - name: self-signed-ca
        secret:
          secretName: self-signed-ca-secret
-   extraVolumeMounts: 
+   extraVolumeMounts:
      - name: self-signed-ca
        mountPath: "/etc/ssl/certs/myCA.pem"
        subPath: myCA.pem
@@ -243,7 +271,7 @@ You can configure persistent volume for APIs, Policies, and middlewares using `e
       persistentVolumeClaim:
         claimName: tyk-middleware-claim
 
-    extraVolumeMounts: 
+    extraVolumeMounts:
     - name: tyk-app-storage
       mountPath: /mnt/tyk-gateway/apps
     - name: tyk-policies-storage
@@ -271,7 +299,7 @@ Here is a reference of all [Tyk Gateway Configuration Options](https://tyk.io/do
 To enable Pump, set `global.components.pump` to true, and configure below inside `tyk-pump` section.
 
 | Pump                      | Configuration                                                                                              |
-|---------------------------|------------------------------------------------------------------------------------------------------------| 
+|---------------------------|------------------------------------------------------------------------------------------------------------|
 | Prometheus Pump (Default) | Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. |
 | Mongo Pump                | Add `mongo` to `tyk-pump.pump.backend`, and add connection details for mongo under `global.mongo`.                 |
 | SQL Pump                  | Add `postgres` to `tyk-pump.pump.backend`, and add connection details for postgres under `global.postgres`.        |
@@ -279,7 +307,7 @@ To enable Pump, set `global.components.pump` to true, and configure below inside
 | Other Pumps               | Add the required environment variables in `tyk-pump.pump.extraEnvs`                                                |
 
 #### Prometheus Pump
-Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. 
+Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`.
 
 We also support monitoring using Prometheus Operator. All you have to do is set `tyk-pump.pump.prometheusPump.prometheusOperator.enabled` to true.
 This will create a *PodMonitor* resource for your Pump instance.
@@ -306,7 +334,7 @@ NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) 
 Add following under the `global` section in `values.yaml`:
 
 ```yaml
- # Set mongo connection details if you want to configure mongo pump.     
+ # Set mongo connection details if you want to configure mongo pump.
  mongo:
     # The mongoURL value will allow you to set your MongoDB address.
     # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
@@ -356,15 +384,15 @@ To setup other backends for pump, refer to this [document](https://github.com/Ty
 
 ### Protect Confidential Fields with Kubernetes Secrets
 
-In the `values.yaml` file, some fields are considered confidential, such as `APISecret`, connection strings, etc. 
-Declaring values for such fields as plain text might not be desired for all use cases. Instead, for certain fields, 
+In the `values.yaml` file, some fields are considered confidential, such as `APISecret`, connection strings, etc.
+Declaring values for such fields as plain text might not be desired for all use cases. Instead, for certain fields,
 Kubernetes secrets can be referenced, and Kubernetes by itself configures values based on the referred secret.
 
 This section describes how to use Kubernetes secrets to declare confidential fields.
 
 #### APISecret
 
-[`APISecret`](https://tyk.io/docs/tyk-oss-gateway/configuration/#secret) field configures a header value used in every 
+[`APISecret`](https://tyk.io/docs/tyk-oss-gateway/configuration/#secret) field configures a header value used in every
 interaction with Tyk Gateway API.
 
 It can be configured via `global.secrets.APISecret` as a plain text or Kubernetes secret which includes `APISecret` key
@@ -385,7 +413,7 @@ Redis password can also be provided via a secret. Store Redis password in Kubern
 via `global.redis.passSecret.name` and `global.redis.passSecret.keyName` field, as follows:
 
 ```yaml
-global:  
+global:
   redis:
      passSecret:
        name: "yourSecret"

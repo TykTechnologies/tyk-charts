@@ -6,6 +6,7 @@ metadata:
     app: dashboard-svc-{{ include "tyk-dashboard.fullname" . }}
     chart: {{ include "tyk-dashboard.chart" . }}
     release: {{ .Release.Name }}
+    tyk.tyk.io/k8s-bootstrap: tyk-dashboard
 {{- if .Values.dashboard.service.annotations }}
   annotations:
   {{- range $key, $value := .Values.dashboard.service.annotations }}

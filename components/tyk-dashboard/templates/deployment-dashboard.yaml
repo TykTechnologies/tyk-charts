@@ -7,6 +7,7 @@ metadata:
     chart: {{ include "tyk-dashboard.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    tyk.tyk.io/k8s-bootstrap: tyk-dashboard
 spec:
   replicas: {{ .Values.dashboard.replicaCount }}
   minReadySeconds: 5
@@ -34,11 +35,6 @@ spec:
         traffic.sidecar.istio.io/includeInboundPorts: ""
       {{- end }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
-        {{- if .Values.mounts }}
-        {{- range $secret := .Values.mounts }}
-        "checksum/secret-{{ $secret.name }}": {{ include (print "mounts/%s" $secret.filename) . | sha256sum }}
-        {{- end }}
-        {{- end }}
     spec:
 {{- if .Values.dashboard.nodeSelector }}
       nodeSelector:
@@ -81,6 +77,8 @@ spec:
             value: "{{ .Values.dashboard.hostConfig.enableHostNames }}"
           - name: "TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX"
             value: "{{ .Values.dashboard.hostConfig.disableOrgSlugPrefix }}"
+          - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
+            value: "{{ .Values.dashboard.hostConfig.overrideHostname}}"
           - name: "TYK_DB_HOMEDIR"
             value: "{{ .Values.dashboard.homeDir }}"
           - name: "TYK_DB_USESHARDEDANALYTICS"
@@ -217,12 +215,6 @@ spec:
           - name: {{ .Values.dashboard.tls.secretName }}
             mountPath: {{ .Values.dashboard.tls.certificatesMountPath }}
           {{ end }}
-          {{- if .Values.dashboard.mounts }}
-          {{- range $secret := .Values.dashboard.mounts }}
-          - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
-            mountPath: {{ $secret.mountPath }}
-          {{- end }}
-          {{- end }}
           {{- if .Values.dashboard.extraVolumeMounts }}
           {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
@@ -254,13 +246,6 @@ spec:
           secret:
             secretName: {{ .Values.dashboard.tls.secretName }}
         {{ end }}
-        {{- if .Values.dashboard.mounts }}
-        {{- range $secret := .Values.dashboard.mounts }}
-        - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
-          secret:
-            secretName: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
-        {{- end }}
-        {{- end }}
         {{- if .Values.dashboard.extraVolumes }}
         {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

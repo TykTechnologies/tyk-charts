@@ -2,10 +2,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name:  {{ .Values.bootstrap.jobs.postInstall.name }}
+  name: bootstrap-post-install-{{ include "tyk-bootstrap.fullname" . }}
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    tyk.tyk.io/k8s-bootstrap: tyk-k8s-bootstrap-post-install
 
     # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
     # when every app will have its own a chart
@@ -33,8 +34,6 @@ spec:
           command: [ './app/bin/bootstrap-app-post' ]
           imagePullPolicy: IfNotPresent
           env:
-            - name: TYK_DB_OMITCONFIGFILE
-              value: "true"
             - name: TYK_ADMIN_FIRST_NAME
               {{ if .Values.global.adminUser.useSecretName }}
               valueFrom:
@@ -73,18 +72,8 @@ spec:
                   fieldPath: metadata.namespace
             - name: TYK_DASHBOARD_PROTO
               value: "{{ include "tyk-bootstrap.dash_proto" . }}"
-            - name: TYK_DASHBOARD_SVC
-              {{- if .Values.bootstrap.dashboard.serviceName }}
-              value: {{ .Values.bootstrap.dashboard.serviceName | quote }}
-              {{- else if .Values.global.components.dashboard }}
-              value: "dashboard-svc-{{.Release.Name}}-tyk-dashboard"
-              {{- else }}
-              value: "dashboard-svc-tyk-dashboard"
-              {{- end }}
             - name: TYK_DASHBOARD_INSECURE_SKIP_VERIFY
-              value: {{ default "false" .Values.bootstrap.dashboard.sslInsecureSkipVerify | quote }}
-            - name: TYK_DB_LISTENPORT
-              value: "{{ .Values.global.servicePorts.dashboard }}"
+              value: {{ default "false" .Values.bootstrap.sslInsecureSkipVerify | quote }}
             - name: TYK_DB_LICENSEKEY
               {{ if .Values.global.secrets.useSecretName }}
               valueFrom:
@@ -107,7 +96,7 @@ spec:
               value: {{ .Values.bootstrap.org.name | quote }}
             - name: TYK_ORG_CNAME
               value: {{ .Values.bootstrap.org.cname | quote }}
-            {{- if .Values.bootstrap.dashboard.enabled }}
+            {{- if .Values.bootstrap.dashboard }}
             - name: DASHBOARD_ENABLED
               value: "true"
             - name: BOOTSTRAP_DASHBOARD
@@ -119,7 +108,7 @@ spec:
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
             {{- end }}
-            {{- if .Values.global.bootstrap.devPortal }}
+            {{- if .Values.bootstrap.devPortal }}
             - name: DEVELOPER_PORTAL_SECRET_ENABLED
               value: "true"
             - name: DEVELOPER_PORTAL_SECRET_NAME
@@ -127,12 +116,12 @@ spec:
             {{- end }}
             - name: GATEWAY_ADDRESS
               value: "{{ include "tyk-bootstrap.gateway_url" . }}"
-            {{- if .Values.bootstrap.portal.enabled }}
+            {{- if .Values.bootstrap.portal }}
             - name: BOOTSTRAP_PORTAL
               value: "true"
             {{- end }}
-            - name: TYK_DASHBOARD_DEPLOY
-              value: {{ .Values.bootstrap.dashboard.deploymentName }}
+            - name: RELEASE_NAME
+              value: {{ .Release.Name }}
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}
