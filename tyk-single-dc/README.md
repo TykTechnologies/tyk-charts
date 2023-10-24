@@ -342,7 +342,7 @@ please use `global.adminUser.useSecretName`, where the secret should contain a k
 
 In order to refer Tyk Tyk Portal connection string to the selected database through Kubernetes secret,
 please use `global.secrets.useSecretName`, where the secret should contain a key called 
-`DeveloeprPortalStorageConnectionString`.
+`DeveloperPortalStorageConnectionString`.
 
 > [!WARNING]
 > If `global.secrets.useSecretName` is in use, please add all keys mentioned above to the secret. 

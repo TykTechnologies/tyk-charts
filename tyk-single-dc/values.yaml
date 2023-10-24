@@ -102,7 +102,7 @@ global:
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
     # DeveloperPortalLicense - Tyk Tyk Portal License
-    # DeveloeprPortalStorageConnectionString - Tyk Tyk Portal connection string to the selected database.
+    # DeveloperPortalStorageConnectionString - Tyk Tyk Portal connection string to the selected database.
     useSecretName: ""
 
   redis:

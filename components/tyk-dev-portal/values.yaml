@@ -39,7 +39,7 @@ global:
     # the Helm value file and would rather provide the k8s Secret externally.
     # You should set following fields in the secret
     # - DeveloperPortalLicense - Sets LicenseKey for Tyk Portal
-    # - DeveloeprPortalStorageConnectionString - Sets Database.ConnectionString for Tyk Portal
+    # - DeveloperPortalStorageConnectionString - Sets Database.ConnectionString for Tyk Portal
     useSecretName: ""
 
 # The hostname to bind the Tyk Portal to.
