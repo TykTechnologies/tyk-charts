@@ -458,10 +458,17 @@ tyk-pump:
     containerPort: 9090
 
     # backend defines the pumps to be created by default, as an array of string.
-    # Supported backends are ["mongo", "postgres", "prometheus"]
+    # Supported backends are:
+    #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
+    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
+    #   - "mongo-selective": Enables ONLY Mongo Selective
+    #   - "postgres": Enables Postgres Aggregate and SQL Pump
+    #   - "postgres-aggregate": Enables ONLY SQL Aggregate
+    #   - "postgres-pump": Enables ONLY SQL Pump
+    #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
+    #   - "hybrid": Enables Hybrid Pump
     # If you would like to use other backends such as ElasticSearch, please
     # configure the backend via environment variables.
-    # By default, Tyk Pump uses Prometheus.
     backend:
       - "prometheus"
       - *globalStorageType
