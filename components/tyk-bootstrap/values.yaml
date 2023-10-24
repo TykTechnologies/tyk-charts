@@ -58,8 +58,8 @@ global:
     devPortal: tyk-dev-portal-conf
 
 bootstrap:
-  # Trigger to control if we want to bootstrap the Enterprise Portal component using tyk-bootstrap
-  enterprisePortal: true
+  # Trigger to control if we want to bootstrap the Developer Portal component using tyk-bootstrap
+  devPortal: true
 
   # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
   dashboard: true
