@@ -185,7 +185,7 @@ spec:
                 name: {{ include "tyk-pump.mongo_url_secret_name" . }}
                 key: {{ include "tyk-pump.mongo_url_secret_key" . }}
           - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
+            value: "{{ default "false" .Values.global.mongo.useSSL }}"
           {{ end }}
           {{ end }}
 
