@@ -35,7 +35,7 @@ global:
     # useSecretName can be used if you don't want to store plaintext values for Tyk Portal license in
     # the Helm value file and would rather provide the k8s Secret externally.
     # You should set following fields in the secret
-    # - DeveloperPortalLicense - Sets LicenseKey for Tyk Portal
+    # - DeveloperPortalLicense - Sets LicenseKey for Tyk Developer Portal
     # - DeveloperPortalStorageConnectionString - Sets Database.ConnectionString for Tyk Portal
     useSecretName: ""
 
