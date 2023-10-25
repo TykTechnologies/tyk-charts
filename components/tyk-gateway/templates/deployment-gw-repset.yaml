@@ -8,7 +8,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-{{- if eq .Values.gateway.kind "Deployment" }}
+{{- if and (eq .Values.gateway.kind "Deployment") (not .Values.gateway.autoscaling.enabled) }}
   replicas: {{ .Values.gateway.replicaCount }}
 {{- end }}
   minReadySeconds: 5

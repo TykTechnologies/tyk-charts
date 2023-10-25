@@ -197,6 +197,10 @@ global:
     password:
     database: tyk_analytics
     sslmode:
+    # Connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
 
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
   storageType: &globalStorageType postgres
@@ -238,6 +242,24 @@ tyk-gateway:
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
+
+    # autoscaling configuration if kind IS NOT DaemonSet
+    autoscaling: {}
+    #  enabled: true
+    #  minReplicas: 1
+    #  maxReplicas: 3
+    #  averageCpuUtilization: 60
+    #  averageMemoryUtilization: null
+    #  autoscalingTemplate:
+    #   Custom or additional autoscaling metrics
+    #   ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-custom-metrics
+    #    - type: Pods
+    #      pods:
+    #        metric:
+    #          name: nginx_ingress_controller_nginx_process_requests_total
+    #        target:
+    #          type: AverageValue
+    #          averageValue: 10000m
 
     # analyticsEnabled property is used to enable/disable analytics.
     # If set to empty or nil, analytics will be enabled/disabled based on `global.components.pump`.
@@ -443,10 +465,17 @@ tyk-pump:
     containerPort: 9090
 
     # backend defines the pumps to be created by default, as an array of string.
-    # Supported backends are ["mongo", "postgres", "prometheus"]
+    # Supported backends are:
+    #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
+    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
+    #   - "mongo-selective": Enables ONLY Mongo Selective
+    #   - "postgres": Enables Postgres Aggregate and SQL Pump
+    #   - "postgres-aggregate": Enables ONLY SQL Aggregate
+    #   - "postgres-pump": Enables ONLY SQL Pump
+    #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
+    #   - "hybrid": Enables Hybrid Pump
     # If you would like to use other backends such as ElasticSearch, please
     # configure the backend via environment variables.
-    # By default, Tyk Pump uses Prometheus.
     backend:
       - "prometheus"
       - *globalStorageType

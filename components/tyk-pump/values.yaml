@@ -9,7 +9,7 @@
 # Default value: tyk-pump.name
 nameOverride: ""
 
-# Overrides app name. IT is truncated to 63 characters.
+# Overrides app name. It is truncated to 63 characters.
 # Default value: tyk-pump.fullname
 fullnameOverride: ""
 
@@ -178,7 +178,15 @@ pump:
   containerPort: 9090
 
   # backend defines the pumps to be created by default, as an array of string.
-  # Supported backends are ["mongo", "postgres", "postgres-aggregate", "prometheus","hybrid"]
+  # Supported backends are:
+  #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
+  #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
+  #   - "mongo-selective": Enables ONLY Mongo Selective
+  #   - "postgres": Enables Postgres Aggregate and SQL Pump
+  #   - "postgres-aggregate": Enables ONLY SQL Aggregate
+  #   - "postgres-pump": Enables ONLY SQL Pump
+  #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
+  #   - "hybrid": Enables Hybrid Pump
   # If you would like to use other backends such as ElasticSearch, please
   # configure the backend via environment variables.
   backend:

@@ -94,7 +94,8 @@ spec:
             value: {{ toYaml .Values.pump.prometheusPump.customMetrics }}
             {{ end }}
           {{ end }}
-          {{ if has "postgres" .Values.pump.backend }}
+
+          {{ if or (has "postgres-pump" .Values.pump.backend) (has "postgres" .Values.pump.backend) }}
           # SQL Pump
           - name: TYK_PMP_PUMPS_SQL_TYPE
             value: "sql"
@@ -129,7 +130,8 @@ spec:
               secretKeyRef:
                 name: {{ include "tyk-pump.mongo_url_secret_name" . }}
                 key: {{ include "tyk-pump.mongo_url_secret_key" . }}
-
+          {{ end }}
+          {{ if or (has "mongo" .Values.pump.backend) (has "mongo-aggregate" .Values.pump.backend) }}
           # Mongo Aggregate Pump
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_TYPE
             value: "mongo-pump-aggregate"
@@ -144,6 +146,17 @@ spec:
             value: "tyk_analytics_pump"
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
             value: "true"
+          {{ end }}
+          {{ if or (has "mongo" .Values.pump.backend) (has "mongo-selective" .Values.pump.backend) }}
+          - name: TYK_PMP_PUMPS_MONGOSELECTIVE_TYPE
+            value: "mongo-pump-selective"
+          - name: TYK_PMP_PUMPS_MONGOSELECTIVE_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-pump.mongo_url_secret_name" . }}
+                key: {{ include "tyk-pump.mongo_url_secret_key" . }}
+          - name: TYK_PMP_PUMPS_MONGOSELECTIVE_META_MONGOUSESSL
+            value: "{{ default "false" .Values.global.mongo.useSSL }}"
           {{ end }}
 
           # Uptime Pump configurations
@@ -172,7 +185,7 @@ spec:
                 name: {{ include "tyk-pump.mongo_url_secret_name" . }}
                 key: {{ include "tyk-pump.mongo_url_secret_key" . }}
           - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
+            value: "{{ default "false" .Values.global.mongo.useSSL }}"
           {{ end }}
           {{ end }}
 

@@ -1,6 +1,6 @@
 ## Tyk MDCB Data Plane
 
-> [!WARNING]  
+> [!WARNING]
 > To be renamed to tyk-data-plane
 
 `tyk-mdcb-data-plane` provides the default deployment of a Tyk data plane for Tyk Self Managed MDCB or Tyk Cloud users. It will deploy the data plane components that remotely connect to a MDCB control plane.
@@ -110,7 +110,7 @@ To get all configurable options with detailed comments:
 helm show values tyk-helm/tyk-mdcb-data-plane > values.yaml
 ```
 
-You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation. 
+You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation.
 Alternatively, you can use `--set` flag to set it in Tyk installation.
 
 ### Set Redis Connection Details (Required)
@@ -119,7 +119,7 @@ Tyk uses Redis for distributed rate-limiting and token storage. You may use the 
 
 Set the following values after installing Redis:
 
-| Name | Description | 
+| Name | Description |
 |------|-------------|
 | `global.redis.addrs` | Redis addresses |
 | `global.redis.pass` | Redis password in plain text |
@@ -164,6 +164,35 @@ helm install redis tyk-helm/simple-redis -n tyk
 
 The Tyk Helm Chart can connect to `simple-redis` in the same namespace by default. You do not need to set Redis address and password in `values.yaml`.
 
+### Enable gateway autoscaling
+
+This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling it's enough to add `--set tyk-gateway.gateway.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances). To customize those values you can add `--set tyk-gateway.gateway.autoscaling.averageCpuUtilization=75` or use `values.yaml` file:
+
+```yaml
+tyk-gateway:
+  gateway:
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 30
+```
+
+Built-in rules include `tyk-gateway.gateway.autoscaling.averageCpuUtilization` for CPU utilization (set by default at 60%) and `tyk-gateway.gateway.autoscaling.averageMemoryUtilization` for memory (disabled by default). In addition to that you can define rules for custom metrics using `tyk-gateway.gateway.autoscaling.autoscalingTemplate` list:
+
+```yaml
+tyk-gateway:
+  gateway:
+    autoscaling:
+      autoscalingTemplate:
+        - type: Pods
+          pods:
+            metric:
+              name: nginx_ingress_controller_nginx_process_requests_total
+            target:
+              type: AverageValue
+              averageValue: 10000m
+```
+
 ### Gateway Configurations
 
 Configure below inside `tyk-gateway` section.
@@ -192,11 +221,11 @@ If you want to use your own key/cert pair, you must follow the following steps:
 To add your custom Certificate Authority(CA) to your containers, you can mount your CA certificate directly into /etc/ssl/certs folder.
 
 ```yaml
-   extraVolumes: 
+   extraVolumes:
      - name: self-signed-ca
        secret:
          secretName: self-signed-ca-secret
-   extraVolumeMounts: 
+   extraVolumeMounts:
      - name: self-signed-ca
        mountPath: "/etc/ssl/certs/myCA.pem"
        subPath: myCA.pem
@@ -270,14 +299,14 @@ Here is a reference of all [Tyk Gateway Configuration Options](https://tyk.io/do
 
 To enable Pump, set `global.components.pump` to true, and configure below inside `tyk-pump` section.
 
-| Pump                      | Configuration                                                                                              |
-|---------------------------|------------------------------------------------------------------------------------------------------------| 
-| Prometheus Pump (Default) | Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. |
+| Pump                      | Configuration                                                                                                                                                                          |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Prometheus Pump (Default) | Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`.                                                           |
 | Hybrid Pump (Default)     | Add `hybrid` to `tyk-pump.pump.backend`, and add remoteControlPlane details under `global.remoteControlPlane`. Change `tyk-gateway.gateway.analyticsConfigType` to `""` (empty string) |
-| Other Pumps               | Add the required environment variables in `tyk-pump.pump.extraEnvs`                                                |
+| Other Pumps               | Add the required environment variables in `tyk-pump.pump.extraEnvs`                                                                                                                    |
 
 #### Prometheus Pump
-Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`. 
+Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for prometheus under `tyk-pump.pump.prometheusPump`.
 
 We also support monitoring using Prometheus Operator. All you have to do is set `tyk-pump.pump.prometheusPump.prometheusOperator.enabled` to true.
 This will create a *PodMonitor* resource for your Pump instance.
@@ -305,7 +334,7 @@ Add `hybrid` to `tyk-pump.pump.backend`, and add remoteControlPlane details unde
 ```yaml
   # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
   # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
-  hybridPump: 
+  hybridPump:
     # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
     enableAggregateAnalytics: true
     # Hybrid pump RPC calls timeout in seconds.
