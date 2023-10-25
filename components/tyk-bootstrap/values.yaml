@@ -86,7 +86,7 @@ bootstrap:
         # repository specifies image repository of pre-install job.
         repository: tykio/tyk-k8s-bootstrap-pre-install
         # tag specifies image tag of pre-install job.
-        tag: testing
+        tag: 1.5.0
 
     # postInstall configures post-install Helm hook
     postInstall:
@@ -95,7 +95,7 @@ bootstrap:
         # repository specifies image repository of post-install job.
         repository: tykio/tyk-k8s-bootstrap-post
         # tag specifies image tag of post-install job.
-        tag: testing
+        tag: 1.5.0
 
     # preDelete configures pre-delete Helm hook
     preDelete:
@@ -104,7 +104,7 @@ bootstrap:
         # repository specifies image repository of pre-delete job.
         repository: tykio/tyk-k8s-bootstrap-pre-delete
         # tag specifies image tag of pre-delete job.
-        tag: testing
+        tag: 1.5.0
 
   org:
     # The name for your organization inside Tyk

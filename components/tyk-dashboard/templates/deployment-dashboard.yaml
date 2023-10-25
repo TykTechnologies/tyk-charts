@@ -201,6 +201,8 @@ spec:
             value: "{{ default "false" .Values.global.mongo.useSSL }}"
           - name: "TYK_DB_ENABLEAGGREGATELOOKUPS"
             value: "{{ .Values.dashboard.enableAggregateLookups }}"
+          - name: TYK_DB_MONGODRIVER
+            value: "{{ default "mgo" .Values.global.mongo.driver}}"
           {{ end }}
           {{- if .Values.dashboard.extraEnvs }}
           {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraEnvs "context" $) | nindent 10 }}
