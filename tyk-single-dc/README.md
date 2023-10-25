@@ -330,17 +330,17 @@ the secret should contain a key called `DashLicense`.
 
 #### Tyk Developer Portal License
 
-In order to refer Tyk Tyk Developer Portal license through Kubernetes secret, please use `global.secrets.useSecretName`, 
+In order to refer Tyk Developer Portal license through Kubernetes secret, please use `global.secrets.useSecretName`, 
 where the secret should contain a key called `DeveloperPortalLicense`.
 
 #### Tyk Developer Portal Admin Password
 
-In order to refer Tyk Tyk Developer Portal's admin password through Kubernetes secret, 
+In order to refer Tyk Developer Portal's admin password through Kubernetes secret, 
 please use `global.adminUser.useSecretName`, where the secret should contain a key called `adminUserPassword`.
 
 #### Tyk Developer Portal Storage Connection String
 
-In order to refer Tyk Tyk Developer Portal connection string to the selected database through Kubernetes secret,
+In order to refer Tyk Developer Portal connection string to the selected database through Kubernetes secret,
 please use `global.secrets.useSecretName`, where the secret should contain a key called 
 `DeveloperPortalStorageConnectionString`.
 
