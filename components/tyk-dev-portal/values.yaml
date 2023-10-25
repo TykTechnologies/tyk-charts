@@ -12,9 +12,9 @@ global:
     # - adminUserPassword sets .global.adminUser.password
     useSecretName: ""
 
-    # email of Tyk Portal admin
+    # email of Tyk Developer Portal admin
     email: default@example.com
-    # password of Tyk Portal admin
+    # password of Tyk Developer Portal admin
     password: 123456
   tls:
     dashboard: false
@@ -32,26 +32,26 @@ global:
     # - TYK_AUTH: Tyk Dashboard API Access Credentials
     devPortal: tyk-dev-portal-conf
 
-    # useSecretName can be used if you don't want to store plaintext values for Tyk Portal license in
+    # useSecretName can be used if you don't want to store plaintext values for Tyk Developer Portal license in
     # the Helm value file and would rather provide the k8s Secret externally.
     # You should set following fields in the secret
     # - DeveloperPortalLicense - Sets LicenseKey for Tyk Developer Portal
-    # - DeveloperPortalStorageConnectionString - Sets Database.ConnectionString for Tyk Portal
+    # - DeveloperPortalStorageConnectionString - Sets Database.ConnectionString for Tyk Developer Portal
     useSecretName: ""
 
-# The hostname to bind the Tyk Portal to.
+# The hostname to bind the Tyk Developer Portal to.
 hostName: tyk-dev-portal.local
 
-# Tyk Portal license.
+# Tyk Developer Portal license.
 license: ""
 
-# In case you want to deploy the Tyk Portal as a standalone app, you can configure a different dashboard URL using
+# In case you want to deploy the Tyk Developer Portal as a standalone app, you can configure a different dashboard URL using
 # the parameter bellow.
 overrideTykDashUrl: ""
-# Tyk Portal can be deployed as StatefulSet or as Deployment
+# Tyk Developer Portal can be deployed as StatefulSet or as Deployment
 kind: StatefulSet
 storage:
-  # Configuration values for using an SQL database as storage for Tyk Tyk Portal
+  # Configuration values for using an SQL database as storage for Tyk Tyk Developer Portal
   # In case you want to provide the connection string via secrets please
   # refer to the existing secret inside the helmchart or the
   # .Values.global.secrets.useSecretName variable
@@ -64,7 +64,7 @@ storage:
     enableLogs: false
     maxRetries: 3
     retryDelay: 5000
-  # Configuration values for using s3 as storage for Tyk Tyk Portal
+  # Configuration values for using s3 as storage for Tyk Tyk Developer Portal
   # In case you want to provide the key ID and access key via secrets please
   # refer to the existing secret inside the helmchart or the
   # .Values.global.secrets.useSecretName variable and a secret containing
@@ -79,7 +79,7 @@ storage:
     acl: private
     presign_urls: true
   persistence:
-    # User can mount existing PVC to the Tyk Portal
+    # User can mount existing PVC to the Tyk Developer Portal
     # Make sure to change the kind to Deployment if you are mounting existing PVC 
     mountExistingPVC: ""
     storageClass: ""
@@ -95,7 +95,7 @@ containerPort: 3001
 
 image:
   repository: tykio/portal
-  # Tyk Portal < v1.2 is not supported
+  # Tyk Developer Portal < v1.2 is not supported
   tag: v1.7.0
   pullPolicy: Always
 

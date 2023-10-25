@@ -328,19 +328,19 @@ global:
 In order to refer Tyk Dashboard license through Kubernetes secret, please use `global.secrets.useSecretName`, where 
 the secret should contain a key called `DashLicense`.
 
-#### Tyk Portal License
+#### Tyk Developer Portal License
 
-In order to refer Tyk Tyk Portal license through Kubernetes secret, please use `global.secrets.useSecretName`, 
+In order to refer Tyk Tyk Developer Portal license through Kubernetes secret, please use `global.secrets.useSecretName`, 
 where the secret should contain a key called `DeveloperPortalLicense`.
 
-#### Tyk Portal Admin Password
+#### Tyk Developer Portal Admin Password
 
-In order to refer Tyk Tyk Portal's admin password through Kubernetes secret, 
+In order to refer Tyk Tyk Developer Portal's admin password through Kubernetes secret, 
 please use `global.adminUser.useSecretName`, where the secret should contain a key called `adminUserPassword`.
 
-#### Tyk Portal Storage Connection String
+#### Tyk Developer Portal Storage Connection String
 
-In order to refer Tyk Tyk Portal connection string to the selected database through Kubernetes secret,
+In order to refer Tyk Tyk Developer Portal connection string to the selected database through Kubernetes secret,
 please use `global.secrets.useSecretName`, where the secret should contain a key called 
 `DeveloperPortalStorageConnectionString`.
 

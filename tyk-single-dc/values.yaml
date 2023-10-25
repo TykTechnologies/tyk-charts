@@ -101,8 +101,8 @@ global:
     # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
-    # DeveloperPortalLicense - Tyk Tyk Portal License
-    # DeveloperPortalStorageConnectionString - Tyk Tyk Portal connection string to the selected database.
+    # DeveloperPortalLicense - Tyk Tyk Developer Portal License
+    # DeveloperPortalStorageConnectionString - Tyk Tyk Developer Portal connection string to the selected database.
     useSecretName: ""
 
   redis:
@@ -765,15 +765,15 @@ tyk-dev-portal:
   # This is a YAML-formatted file.
   # Declare variables to be passed into your templates.
 
-  # Tyk Portal will only bootstrap if the tyk-dev-portal-conf secret
+  # Tyk Developer Portal will only bootstrap if the tyk-dev-portal-conf secret
   # is present. The secret is created during the dashboard bootstrapping and
   # be turned on and off using the dash.devPortalSecret bool.
 
-  # The hostname to bind the Tyk Portal to.
+  # The hostname to bind the Tyk Developer Portal to.
   hostName: tyk-dev-portal.local
-  # Tyk Portal license.
+  # Tyk Developer Portal license.
   license: ""
-  # Tyk Portal can be deployed as StatefulSet or as Deployment
+  # Tyk Developer Portal can be deployed as StatefulSet or as Deployment
   kind: StatefulSet
   storage:
     # User can set the storage type for portal.
@@ -785,7 +785,7 @@ tyk-dev-portal:
       enableLogs: false
       maxRetries: 3
       retryDelay: 5000
-    # Configuration values for using s3 as storage for Tyk Tyk Portal
+    # Configuration values for using s3 as storage for Tyk Tyk Developer Portal
     # In case you want to provide the key ID and access key via secrets please
     # refer to the existing secret inside the helmchart or the
     # .Values.global.secrets.useSecretName variable
@@ -810,7 +810,7 @@ tyk-dev-portal:
   containerPort: 3001
   image:
     repository: tykio/portal
-    # Tyk Portal < v1.2 is not supported
+    # Tyk Developer Portal < v1.2 is not supported
     tag: v1.7.0
     pullPolicy: Always
 
