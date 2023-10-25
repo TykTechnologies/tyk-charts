@@ -55,6 +55,10 @@ global:
     # You can set following fields in the secret
     # AdminSecret - Admin user secret key
     useSecretName: ""
+    # Used to identify the secret which contains the required credentials for Tyk Developer Portal to work
+    # It should include the followings:
+    # - TYK_ORG: Tyk Dashboard Organisation ID
+    # - TYK_AUTH: Tyk Dashboard API Access Credentials
     devPortal: tyk-dev-portal-conf
 
 bootstrap:
