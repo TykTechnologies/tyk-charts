@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "tyk-data-plane.fullname" . }}-test-tyk-data-plane"
+  labels:
+    chart: {{ include "tyk-data-plane.chart" . }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: health-check-container
+      image: alpine:3.17
+      command:
+        - /bin/sh
+        - -c
+        - /tests/data-plane-test.sh
+      volumeMounts:
+        - mountPath: "/tests"
+          name: test-tyk-data-plane
+      env:
+        - name: TYK_GW_PROTO
+          value: {{ include "tyk-data-plane.gwproto" . }}
+        - name: TYK_GW_SVC
+          value: gateway-svc-{{ .Release.Name }}-tyk-gateway
+        - name: TYK_GW_LISTENPORT
+          value: {{ include "tyk-data-plane.gwServicePort" . | quote }}
+        - name: TYK_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: TYK_GW_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: secrets-{{ include "tyk-data-plane.fullname" . }}
+              key: APISecret
+  volumes:
+    - name: test-tyk-data-plane
+      configMap:
+        name: test-tyk-data-plane-map
+        defaultMode: 0777
