@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: {{ .Values.kind }}
 metadata:
-  name: {{ include "tyk-enterprise-portal.fullname" . }}
+  name: {{ include "tyk-dev-portal.fullname" . }}
   labels:
-    app: {{ include "tyk-enterprise-portal.fullname" . }}
-    chart: {{ include "tyk-enterprise-portal.chart" . }}
+    app: {{ include "tyk-dev-portal.fullname" . }}
+    chart: {{ include "tyk-dev-portal.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   {{- if eq .Values.kind "StatefulSet"}}
-  serviceName: enterprise-portal-svc-{{ include "tyk-enterprise-portal.fullname" . }}
+  serviceName: dev-portal-svc-{{ include "tyk-dev-portal.fullname" . }}
   {{- end }}
   {{- if eq .Values.kind "StatefulSet"}}
   updateStrategy:
@@ -22,12 +22,12 @@ spec:
 
   selector:
     matchLabels:
-      app: {{ include "tyk-enterprise-portal.fullname" . }}
+      app: {{ include "tyk-dev-portal.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "tyk-enterprise-portal.fullname" . }}
+        app: {{ include "tyk-dev-portal.fullname" . }}
         release: {{ .Release.Name }}
     spec:
 {{- if .Values.nodeSelector }}
@@ -48,7 +48,7 @@ spec:
       containers:
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        name: enterprise-portal-{{ .Chart.Name }}
+        name: dev-portal-{{ .Chart.Name }}
         {{- if .Values.containerSecurityContext }}
         securityContext:
         {{- toYaml .Values.containerSecurityContext | nindent 10 }}
@@ -60,7 +60,7 @@ spec:
                 {{ if .Values.global.secrets.useSecretName }}
                 name: {{ .Values.global.secrets.useSecretName }}
                 {{ else }}
-                name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
+                name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
                 key: EnterprisePortalLicense
           - name: PORTAL_HOST_PORT
@@ -80,7 +80,7 @@ spec:
                 {{ if .Values.global.adminUser.useSecretName }}
                 name: {{ .Values.global.adminUser.useSecretName }}
                 {{ else }}
-                name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
+                name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
                 key: adminUserPassword
           - name: PORTAL_STORAGE
@@ -93,7 +93,7 @@ spec:
                 {{ if .Values.global.secrets.useSecretName }}
                 name: "{{ .Values.global.secrets.useSecretName }}"
                 {{ else }}
-                name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
+                name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
                 key: "EnterprisePortalStorageConnectionString"
           {{ if eq .Values.storage.type "db" }}
@@ -111,7 +111,7 @@ spec:
                 {{ if .Values.global.secrets.useSecretName }}
                 name: {{ .Values.global.secrets.useSecretName }}
                 {{ else }}
-                name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
+                name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
                 key: "EnterprisePortalAwsAccessKeyId"
           - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
@@ -120,7 +120,7 @@ spec:
                 {{ if .Values.global.secrets.useSecretName }}
                 name: {{ .Values.global.secrets.useSecretName }}
                 {{ else }}
-                name: secrets-{{ include "tyk-enterprise-portal.fullname" . }}
+                name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
                 key: "EnterprisePortalAwsSecretAccessKey"
           - name: PORTAL_S3_REGION
@@ -176,41 +176,41 @@ spec:
         - containerPort: {{ .Values.containerPort }}
         volumeMounts:
           {{ if eq .Values.storage.type "fs" }}
-          - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/public/system/api_details
             subPath: api_details
-          - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/public/system/versions
             subPath: versions
-          - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/public/system/products
             subPath: products
-          - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/public/system/posts
             subPath: posts
-          - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/public/system/media_libraries
             subPath: media_libraries
-          - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/public/system/image_blocks
             subPath: image_blocks
-          - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/public/system/assets
             subPath: assets
-          - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /tmp/tyk-portal
             subPath: tyk-portal
-          - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/themes
             subPath: themes
           {{- end }}
           {{- if eq .Values.storage.database.dialect "sqlite3" }}
-          - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/db
             subPath: db
           {{- end }}
           {{- if .Values.extraVolumeMounts }}
-          {{- include "tyk-enterprise-portal.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 10 }}
+          {{- include "tyk-dev-portal.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         livenessProbe:
           httpGet:
@@ -233,12 +233,12 @@ spec:
 
       volumes:
       {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
-      - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+      - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
         persistentVolumeClaim:
           claimName: {{ .Values.storage.persistence.mountExistingPVC }}
       {{- end }}
       {{- if .Values.extraVolumes }}
-      {{- include "tyk-enterprise-portal.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 6 }}
+      {{- include "tyk-dev-portal.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 6 }}
       {{- end }}
 
       {{- if .Values.securityContext }}
@@ -248,7 +248,7 @@ spec:
   {{ if and (eq .Values.kind "StatefulSet") }}
   volumeClaimTemplates:
   - metadata:
-      name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
+      name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
       {{- if .Values.storage.persistence.annotations }}
       annotations:
       {{- range $key, $value := .Values.storage.persistence.annotations }}

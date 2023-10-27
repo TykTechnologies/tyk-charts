@@ -1,4 +1,4 @@
-# Default values for tyk-enterprise-portal.
+# Default values for tyk-dev-portal.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -29,7 +29,7 @@ global:
     # It should include the followings:
     # - TYK_ORG: Tyk Dashboard Organisation ID
     # - TYK_AUTH: Tyk Dashboard API Access Credentials
-    enterprisePortal: tyk-enterprise-portal-conf
+    enterprisePortal: tyk-dev-portal-conf
 
     # useSecretName can be used if you don't want to store plaintext values for Enterprise Portal license in
     # the Helm value file and would rather provide the k8s Secret externally.
@@ -39,7 +39,7 @@ global:
     useSecretName: ""
 
 # The hostname to bind the Enterprise Portal to.
-hostName: tyk-enterprise-portal.local
+hostName: tyk-dev-portal.local
 
 # Enterprise Portal license.
 license: ""

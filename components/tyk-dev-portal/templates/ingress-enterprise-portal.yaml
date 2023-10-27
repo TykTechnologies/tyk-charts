@@ -1,10 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: enterprise-portal-ing-{{ include "tyk-enterprise-portal.fullname" . }}
+  name: dev-portal-ing-{{ include "tyk-dev-portal.fullname" . }}
   labels:
-    app: enterprise-portal-ing-{{ include "tyk-enterprise-portal.fullname" . }}
-    chart: {{ include "tyk-enterprise-portal.chart" . }}
+    app: dev-portal-ing-{{ include "tyk-dev-portal.fullname" . }}
+    chart: {{ include "tyk-dev-portal.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 {{- if .Values.ingress.annotations }}
@@ -35,7 +35,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: enterprise-portal-svc-{{ include "tyk-enterprise-portal.fullname" $ }}
+                name: dev-portal-svc-{{ include "tyk-dev-portal.fullname" $ }}
                 port:
                   number: {{ $.Values.service.port }}
           {{- end }}

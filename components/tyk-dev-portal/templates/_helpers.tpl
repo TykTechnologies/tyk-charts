@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "tyk-enterprise-portal.name" -}}
+{{- define "tyk-dev-portal.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "tyk-enterprise-portal.fullname" -}}
+{{- define "tyk-dev-portal.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "tyk-enterprise-portal.chart" -}}
+{{- define "tyk-dev-portal.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "tyk-enterprise-portal.labels" -}}
-helm.sh/chart: {{ include "tyk-enterprise-portal.chart" . }}
-{{ include "tyk-enterprise-portal.selectorLabels" . }}
+{{- define "tyk-dev-portal.labels" -}}
+helm.sh/chart: {{ include "tyk-dev-portal.chart" . }}
+{{ include "tyk-dev-portal.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,12 +45,12 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "tyk-enterprise-portal.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "tyk-enterprise-portal.name" . }}
+{{- define "tyk-dev-portal.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "tyk-dev-portal.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{- define "tyk-enterprise-portal.tplvalues.render" -}}
+{{- define "tyk-dev-portal.tplvalues.render" -}}
     {{- if typeIs "string" .value }}
         {{- tpl .value .context }}
     {{- else }}
