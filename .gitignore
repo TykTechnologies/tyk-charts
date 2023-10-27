@@ -9,3 +9,9 @@ tyk-mdcb-data-plane/Chart.lock
 tyk-single-dc/charts/*
 tyk-single-dc/Chart.lock
 
+tyk-stack/charts/*
+tyk-stack/Chart.lock
+
+tyk-data-plane/charts/*
+tyk-data-plane/Chart.lock
+
