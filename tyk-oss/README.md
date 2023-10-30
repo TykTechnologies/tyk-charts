@@ -137,33 +137,43 @@ helm install redis tyk-helm/simple-redis -n tyk
 
 The Tyk Helm Chart can connect to `simple-redis` in the same namespace by default. You do not need to set Redis address and password in `values.yaml`.
 
-### Enable gateway autoscaling
 
-This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling it's enough to add `--set tyk-gateway.gateway.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances). To customize those values you can add `--set tyk-gateway.gateway.autoscaling.averageCpuUtilization=75` or use `values.yaml` file:
+### Protect Confidential Fields with Kubernetes Secrets
+
+In the `values.yaml` file, some fields are considered confidential, such as `APISecret`, connection strings, etc.
+Declaring values for such fields as plain text might not be desired for all use cases. Instead, for certain fields,
+Kubernetes secrets can be referenced, and Kubernetes by itself configures values based on the referred secret.
+
+This section describes how to use Kubernetes secrets to declare confidential fields.
+
+#### APISecret
+
+[`APISecret`](https://tyk.io/docs/tyk-oss-gateway/configuration/#secret) field configures a header value used in every
+interaction with Tyk Gateway API.
+
+It can be configured via `global.secrets.APISecret` as a plain text or Kubernetes secret which includes `APISecret` key
+in it. Then, this secret must be referenced via `global.secrets.useSecretName`.
 
 ```yaml
-tyk-gateway:
-  gateway:
-    autoscaling:
-      enabled: true
-      minReplicas: 3
-      maxReplicas: 30
+global:
+    secrets:
+        APISecret: CHANGEME
+        useSecretName: "mysecret" # where mysecret includes `APISecret` key with the desired value.
 ```
 
-Built-in rules include `tyk-gateway.gateway.autoscaling.averageCpuUtilization` for CPU utilization (set by default at 60%) and `tyk-gateway.gateway.autoscaling.averageMemoryUtilization` for memory (disabled by default). In addition to that you can define rules for custom metrics using `tyk-gateway.gateway.autoscaling.autoscalingTemplate` list:
+**Note**: Once `global.secrets.useSecretName` is declared, it takes precedence over `global.secrets.APISecret`.
+
+#### Redis Password
+
+Redis password can also be provided via a secret. Store Redis password in Kubernetes secret and refer to this secret
+via `global.redis.passSecret.name` and `global.redis.passSecret.keyName` field, as follows:
 
 ```yaml
-tyk-gateway:
-  gateway:
-    autoscaling:
-      autoscalingTemplate:
-        - type: Pods
-          pods:
-            metric:
-              name: nginx_ingress_controller_nginx_process_requests_total
-            target:
-              type: AverageValue
-              averageValue: 10000m
+global:
+  redis:
+     passSecret:
+       name: "yourSecret"
+       keyName: "redisPassKey"
 ```
 
 ### Gateway Configurations
@@ -294,6 +304,35 @@ You can add environment variables for Tyk Gateway under `extraEnvs`. This can be
 
 Here is a reference of all [Tyk Gateway Configuration Options](https://tyk.io/docs/tyk-oss-gateway/configuration).
 
+#### Enable gateway autoscaling
+
+This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling it's enough to add `--set tyk-gateway.gateway.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances). To customize those values you can add `--set tyk-gateway.gateway.autoscaling.averageCpuUtilization=75` or use `values.yaml` file:
+
+```yaml
+tyk-gateway:
+  gateway:
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 30
+```
+
+Built-in rules include `tyk-gateway.gateway.autoscaling.averageCpuUtilization` for CPU utilization (set by default at 60%) and `tyk-gateway.gateway.autoscaling.averageMemoryUtilization` for memory (disabled by default). In addition to that you can define rules for custom metrics using `tyk-gateway.gateway.autoscaling.autoscalingTemplate` list:
+
+```yaml
+tyk-gateway:
+  gateway:
+    autoscaling:
+      autoscalingTemplate:
+        - type: Pods
+          pods:
+            metric:
+              name: nginx_ingress_controller_nginx_process_requests_total
+            target:
+              type: AverageValue
+              averageValue: 10000m
+```
+
 ### Pump Configurations
 
 To enable Pump, set `global.components.pump` to true, and configure below inside `tyk-pump` section.
@@ -396,41 +435,3 @@ Uptime Pump can be configured by setting `tyk-pump.pump.uptimePumpBackend` in va
 
 #### Other Pumps
 To setup other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `tyk-pump.pump.extraEnvs`
-
-### Protect Confidential Fields with Kubernetes Secrets
-
-In the `values.yaml` file, some fields are considered confidential, such as `APISecret`, connection strings, etc.
-Declaring values for such fields as plain text might not be desired for all use cases. Instead, for certain fields,
-Kubernetes secrets can be referenced, and Kubernetes by itself configures values based on the referred secret.
-
-This section describes how to use Kubernetes secrets to declare confidential fields.
-
-#### APISecret
-
-[`APISecret`](https://tyk.io/docs/tyk-oss-gateway/configuration/#secret) field configures a header value used in every
-interaction with Tyk Gateway API.
-
-It can be configured via `global.secrets.APISecret` as a plain text or Kubernetes secret which includes `APISecret` key
-in it. Then, this secret must be referenced via `global.secrets.useSecretName`.
-
-```yaml
-global:
-    secrets:
-        APISecret: CHANGEME
-        useSecretName: "mysecret" # where mysecret includes `APISecret` key with the desired value.
-```
-
-**Note**: Once `global.secrets.useSecretName` is declared, it takes precedence over `global.secrets.APISecret`.
-
-#### Redis Password
-
-Redis password can also be provided via a secret. Store Redis password in Kubernetes secret and refer to this secret
-via `global.redis.passSecret.name` and `global.redis.passSecret.keyName` field, as follows:
-
-```yaml
-global:
-  redis:
-     passSecret:
-       name: "yourSecret"
-       keyName: "redisPassKey"
-```
