@@ -1,4 +1,4 @@
-## Tyk single dc
+## Tyk Stack
 
 `tyk-stack` provides the default deployment of Tyk Self Managed on a cluster. It will deploy all required Tyk components with the settings provided in the values.yaml file.
 
