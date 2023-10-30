@@ -16,3 +16,11 @@ type: application
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
 version: 1.0.0-beta1
+home: https://tyk.io/
+sources:
+  - https://github.com/TykTechnologies/tyk-charts
+  - https://community.tyk.io/
+  - https://tyk.io/docs/
+keywords:
+  - developer portal
+  - api management
