@@ -13,6 +13,6 @@ dependencies:
   version: 1.0.0-beta5
 - name: tyk-dev-portal
   repository: file://../components/tyk-dev-portal
-  version: 1.0.0-beta4
-digest: sha256:a93afa286b23b7607e5cc373959540f055d003ac566a951283cb017e2c5de9b0
-generated: "2023-10-30T12:02:15.683154+05:30"
+  version: 1.0.0-beta1
+digest: sha256:4dd1208e0d2e4db2f0a441cc3fdf417262eb77303ceb9810a6240764c7cf589f
+generated: "2023-10-30T13:18:33.878319+05:30"
