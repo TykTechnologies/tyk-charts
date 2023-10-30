@@ -213,6 +213,11 @@ NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) 
     # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
     mongoURL: <MongoDB address>
 
+   # mongo-go driver is supported for Tyk 5.0.2+.
+   # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
+   # For MongoDB versions prior to 4.4, please use the mgo driver.
+    driver: mgo
+    
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
     # useSSL: false

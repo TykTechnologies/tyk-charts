@@ -130,6 +130,8 @@ spec:
               secretKeyRef:
                 name: {{ include "tyk-pump.mongo_url_secret_name" . }}
                 key: {{ include "tyk-pump.mongo_url_secret_key" . }}
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGODRIVERTYPE
+            value: "{{ default "mgo" .Values.global.mongo.driver}}"
           {{ end }}
           {{ if or (has "mongo" .Values.pump.backend) (has "mongo-aggregate" .Values.pump.backend) }}
           # Mongo Aggregate Pump
@@ -146,6 +148,8 @@ spec:
             value: "tyk_analytics_pump"
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
             value: "true"
+          - name : TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGODRIVERTYPE
+            value: "{{ default "mgo" .Values.global.mongo.driver}}"
           {{ end }}
           {{ if or (has "mongo" .Values.pump.backend) (has "mongo-selective" .Values.pump.backend) }}
           - name: TYK_PMP_PUMPS_MONGOSELECTIVE_TYPE
@@ -157,6 +161,8 @@ spec:
                 key: {{ include "tyk-pump.mongo_url_secret_key" . }}
           - name: TYK_PMP_PUMPS_MONGOSELECTIVE_META_MONGOUSESSL
             value: "{{ default "false" .Values.global.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_MONGOSELECTIVE_META_MONGODRIVERTYPE
+            value: "{{ default "mgo" .Values.global.mongo.driver}}"
           {{ end }}
 
           # Uptime Pump configurations
@@ -186,6 +192,8 @@ spec:
                 key: {{ include "tyk-pump.mongo_url_secret_key" . }}
           - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOUSESSL
             value: "{{ default "false" .Values.global.mongo.useSSL }}"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGODRIVERTYPE
+            value: "{{ default "mgo" .Values.global.mongo.driver}}"
           {{ end }}
           {{ end }}
 
