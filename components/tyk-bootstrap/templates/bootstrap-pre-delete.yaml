@@ -39,7 +39,7 @@ spec:
           env:
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
-            - name: ENTERPRISE_PORTAL_SECRET_NAME
+            - name: DEVELOPER_PORTAL_SECRET_NAME
               value: {{ .Values.global.secrets.devPortal }}
             - name: TYK_POD_NAMESPACE
               valueFrom:

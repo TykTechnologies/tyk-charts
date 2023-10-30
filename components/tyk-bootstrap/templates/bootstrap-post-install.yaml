@@ -109,9 +109,9 @@ spec:
               value: "tyk-operator-conf"
             {{- end }}
             {{- if .Values.bootstrap.devPortal }}
-            - name: ENTERPRISE_PORTAL_SECRET_ENABLED
+            - name: DEVELOPER_PORTAL_SECRET_ENABLED
               value: "true"
-            - name: ENTERPRISE_PORTAL_SECRET_NAME
+            - name: DEVELOPER_PORTAL_SECRET_NAME
               value: {{ .Values.global.secrets.devPortal}}
             {{- end }}
             - name: GATEWAY_ADDRESS
