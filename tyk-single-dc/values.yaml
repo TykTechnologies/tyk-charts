@@ -40,7 +40,7 @@ global:
     dashboard: true
 
   bootstrap:
-    # setting this to true bootstraps Tyk Enterprise Portal.
+    # setting this to true bootstraps Tyk Developer Portal.
     devPortal: true
 
   servicePorts:
@@ -101,8 +101,8 @@ global:
     # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
-    # DevPortalLicense - Tyk Enterprise Portal License
-    # DevPortalStorageConnectionString - Tyk Enterprise Portal connection string to the selected database.
+    # DevPortalLicense - Tyk Developer Portal License
+    # DevPortalStorageConnectionString - Tyk Developer Portal connection string to the selected database.
     useSecretName: ""
 
   redis:
@@ -578,7 +578,7 @@ tyk-bootstrap:
   nameOverride: ""
 
   bootstrap:
-    # Trigger to control if we want to bootstrap the Enterprise Portal component using tyk-bootstrap
+    # Trigger to control if we want to bootstrap the Developer Portal component using tyk-bootstrap
     devPortal: true
 
     # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
@@ -781,11 +781,11 @@ tyk-enterprise-portal:
 
   
 
-  # The hostname to bind the Enterprise Portal to.
+  # The hostname to bind the Developer Portal to.
   hostName: tyk-enterprise-portal.local
-  # Enterprise Portal license.
+  # Developer Portal license.
   license: ""
-  # Enterprise portal can be deployed as StatefulSet or as Deployment
+  # Developer portal can be deployed as StatefulSet or as Deployment
   kind: StatefulSet
   storage:
     # User can set the storage type for portal.
@@ -797,7 +797,7 @@ tyk-enterprise-portal:
       enableLogs: false
       maxRetries: 3
       retryDelay: 5000
-    # Configuration values for using s3 as storage for Tyk Enterprise Portal
+    # Configuration values for using s3 as storage for Tyk Developer Portal
     # In case you want to provide the key ID and access key via secrets please
     # refer to the existing secret inside the helmchart or the
     # .Values.global.secrets.useSecretName variable
@@ -822,7 +822,7 @@ tyk-enterprise-portal:
   containerPort: 3001
   image:
     repository: tykio/portal
-    # Enterprise portal < v1.2 is not supported
+    # Developer portal < v1.2 is not supported
     tag: v1.7.0
     pullPolicy: Always
 
