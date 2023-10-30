@@ -1,6 +1,6 @@
 ## Tyk single dc
 
-`tyk-single-dc` provides the default deployment of Tyk Pro on single data center. It will deploy all required Tyk components with the settings provided in the values.yaml file.
+`tyk-stack` provides the default deployment of Tyk Pro on single data center. It will deploy all required Tyk components with the settings provided in the values.yaml file.
 
 It includes:
 - the Tyk Gateway, an open source Enterprise API Gateway (supporting REST, GraphQL, TCP and gRPC protocols)
@@ -28,16 +28,16 @@ Also, you can set the version of each component through `image.tag`. You could f
 
 ## Installing the Chart
 
-To install the chart from Git repository in namespace `tyk` with the release name `tyk-single-dc`:
+To install the chart from Git repository in namespace `tyk` with the release name `tyk-stack`:
 ```bash
 helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
 helm repo update
-helm show values tyk-helm/tyk-single-dc > values-single-dc.yaml --devel
+helm show values tyk-helm/tyk-stack > values-stack.yaml --devel
 ```
 
 *If you use the Bitnami chart for Redis installation, the DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379`.
 
-You can update them in your local `values-single-dc.yaml` file under `global.redis.addr` and `global.redis.pass`.
+You can update them in your local `values-stack.yaml` file under `global.redis.addr` and `global.redis.pass`.
 
 Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
@@ -45,20 +45,20 @@ Alternatively, you can use `--set` flag to set it in Tyk installation. For examp
 
 Then just run:
 ```bash
-helm install tyk-single-dc tyk-helm/tyk-single-dc -n tyk --create-namespace -f values-single-dc.yaml --devel
+helm install tyk-stack tyk-helm/tyk-stack -n tyk --create-namespace -f values-stack.yaml --devel
 ```
 
 ## Uninstalling the Chart
 
 ```bash
-helm uninstall tyk-single-dc -n tyk
+helm uninstall tyk-stack -n tyk
 ```
 This removes all the Kubernetes components associated with the chart and deletes the release.
 
 ## Upgrading Chart
 
 ```bash
-helm upgrade tyk-single-dc tyk-helm/tyk-single-dc -n tyk --devel
+helm upgrade tyk-stack tyk-helm/tyk-stack -n tyk --devel
 ```
 
 ## Configuration
@@ -66,7 +66,7 @@ helm upgrade tyk-single-dc tyk-helm/tyk-single-dc -n tyk --devel
 To get all configurable options with detailed comments:
 
 ```bash
-helm show values tyk-helm/tyk-single-dc > values-single-dc.yaml --devel
+helm show values tyk-helm/tyk-stack > values-stack.yaml --devel
 ```
 
 You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation.

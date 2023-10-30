@@ -7,7 +7,7 @@ The Dashboard also provides the [API Developer Portal](https://tyk.io/docs/tyk-d
 This chart defines a standalone Tyk Dashboard component on a [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
 
 For typical usage, we recommend using following umbrella charts:
-* For single data centre deployment, please use [tyk-single-dc](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-single-dc)
+* For single data centre deployment, please use [tyk-stack](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-stack)
 * For multi data centre deployment, please use tyk-mdcb-control-plane (Coming soon!)
 
 [Learn more about Tyk Licensing and Deployment models](https://tyk.io/docs/tyk-on-premises/licensing/)

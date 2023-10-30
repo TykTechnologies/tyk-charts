@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-tyk-data-plane-map
+  annotations:
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+    "helm.sh/hook": test
+data:
+{{ (.Files.Glob "scripts/tests/data-plane-test.sh").AsConfig | indent 2 }}

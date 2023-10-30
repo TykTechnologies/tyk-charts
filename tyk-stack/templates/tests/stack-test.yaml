@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "tyk-stack.fullname" . }}-test-tyk-stack"
+  labels:
+    chart: {{ include "tyk-stack.chart" . }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: health-check-container
+      image: alpine:3.17
+      command:
+        - /bin/sh
+        - -c
+        - /tests/tyk-stack-test.sh
+      volumeMounts:
+        - mountPath: "/tests"
+          name: test-tyk-stack
+      env:
+        - name: TYK_GW_PROTO
+          value: {{ include "tyk-stack.gwproto" . }}
+        - name: TYK_GW_SVC
+          value: gateway-svc-{{ include "tyk-stack.fullname" . }}-tyk-gateway
+        - name: TYK_GW_LISTENPORT
+          value: {{ include "tyk-stack.gwServicePort" . | quote }}
+        - name: TYK_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: TYK_DB_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: secrets-tyk-stack
+              key: APISecret
+  volumes:
+    - name: test-tyk-stack
+      configMap:
+        name: test-tyk-stack-map
+        defaultMode: 0777
