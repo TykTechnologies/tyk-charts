@@ -24,3 +24,5 @@ sources:
 keywords:
   - developer portal
   - api management
+annotations:
+  artifacthub.io/category: networking

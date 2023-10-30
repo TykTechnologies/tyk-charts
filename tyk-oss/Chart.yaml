@@ -37,3 +37,5 @@ dependencies:
     version: 1.0.0
     repository: file://../components/tyk-pump
     condition: global.components.pump
+annotations:
+  artifacthub.io/category: networking

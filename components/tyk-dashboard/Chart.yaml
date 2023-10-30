@@ -23,3 +23,5 @@ sources:
   - https://tyk.io/docs/
 keywords:
   - api management
+annotations:
+  artifacthub.io/category: networking
