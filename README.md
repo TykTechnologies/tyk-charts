@@ -8,7 +8,7 @@ Helm umbrella chart (chart of charts) is an easy and really flexible way of inst
 |-----------------|-------------|--------|
 | [tyk-oss](./tyk-oss)                | Tyk Open Source | Stable              |
 | [tyk-stack](./tyk-stack)            | Tyk Self Managed (Single DC) | Beta            |
-| tyk-mdcb-control-plane | Tyk Self Managed (MDCB) Control Plane | Coming Soon     |
+| tyk-control-plane | Tyk Self Managed (MDCB) Control Plane | Coming Soon     |
 | [tyk-data-plane](./tyk-data-plane)    | Tyk Self Managed (MDCB) Data Plane <br> Tyk Hybrid Data Plane | Stable              |
 
 ## Component Charts
