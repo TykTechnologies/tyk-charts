@@ -305,7 +305,7 @@ Configure the gateways to load APIs with specific tags only by enabling `tyk-gat
       tags: "edge,dc1,product"
 ```
 
-### Enable gateway autoscaling
+#### Enable gateway autoscaling
 
 This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling it's enough to add `--set tyk-gateway.gateway.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances). To customize those values you can add `--set tyk-gateway.gateway.autoscaling.averageCpuUtilization=75` or use `values.yaml` file:
 
