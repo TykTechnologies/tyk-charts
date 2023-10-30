@@ -1,4 +1,4 @@
-# Default values for tyk-single-dc.
+# Default values for tyk-stack.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -379,7 +379,7 @@ tyk-gateway:
       - name: TYK_GW_SECRET
         valueFrom:
           secretKeyRef:
-            name: secrets-tyk-single-dc
+            name: secrets-tyk-stack
             key: APISecret
 
     ## extraVolumes is a list of volumes to be added to the pod
@@ -774,13 +774,9 @@ tyk-dashboard:
           cert_file: "/etc/certs/tyk-dashboard/tls.crt"
           key_file: "/etc/certs/tyk-dashboard/tls.key"
 
-tyk-enterprise-portal:
-  # Default values for tyk-enterprise-portal.
-  # This is a YAML-formatted file.
-  # Declare variables to be passed into your templates.
-
+tyk-dev-portal:
   # The hostname to bind the Developer Portal to.
-  hostName: tyk-enterprise-portal.local
+  hostName: tyk-dev-portal.local
   # Developer Portal license.
   license: ""
   # Developer portal can be deployed as StatefulSet or as Deployment

@@ -1,0 +1,279 @@
+apiVersion: apps/v1
+kind: {{ .Values.kind }}
+metadata:
+  name: {{ include "tyk-dev-portal.fullname" . }}
+  labels:
+    app: {{ include "tyk-dev-portal.fullname" . }}
+    chart: {{ include "tyk-dev-portal.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  {{- if eq .Values.kind "StatefulSet"}}
+  serviceName: dev-portal-svc-{{ include "tyk-dev-portal.fullname" . }}
+  {{- end }}
+  {{- if eq .Values.kind "StatefulSet"}}
+  updateStrategy:
+  {{- else }}
+  strategy:
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+  {{- end }}
+  replicas: {{ .Values.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ include "tyk-dev-portal.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "tyk-dev-portal.fullname" . }}
+        release: {{ .Release.Name }}
+    spec:
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+{{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: dev-portal-{{ .Chart.Name }}
+        {{- if .Values.containerSecurityContext }}
+        securityContext:
+        {{- toYaml .Values.containerSecurityContext | nindent 10 }}
+        {{- end}}
+        env:
+          - name: PORTAL_LICENSEKEY
+            valueFrom:
+              secretKeyRef:
+                {{ if .Values.global.secrets.useSecretName }}
+                name: {{ .Values.global.secrets.useSecretName }}
+                {{ else }}
+                name: secrets-{{ include "tyk-dev-portal.fullname" . }}
+                {{ end }}
+                key: DevPortalLicense
+          - name: PORTAL_HOST_PORT
+            value: "{{ .Values.containerPort }}"
+          - name: ADMIN_EMAIL
+            {{ if .Values.global.adminUser.useSecretName }}
+            valueFrom:
+              secretKeyRef:
+                key: adminUserEmail
+                name: {{ .Values.global.adminUser.useSecretName }}
+            {{ else }}
+            value: "{{ .Values.global.adminUser.email }}"
+            {{ end }}
+          - name: ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                {{ if .Values.global.adminUser.useSecretName }}
+                name: {{ .Values.global.adminUser.useSecretName }}
+                {{ else }}
+                name: secrets-{{ include "tyk-dev-portal.fullname" . }}
+                {{ end }}
+                key: adminUserPassword
+          - name: PORTAL_STORAGE
+            value: "{{ .Values.storage.type }}"
+          - name: PORTAL_DATABASE_DIALECT
+            value: "{{ .Values.storage.database.dialect }}"
+          - name: PORTAL_DATABASE_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                {{ if .Values.global.secrets.useSecretName }}
+                name: "{{ .Values.global.secrets.useSecretName }}"
+                {{ else }}
+                name: secrets-{{ include "tyk-dev-portal.fullname" . }}
+                {{ end }}
+                key: "DevPortalStorageConnectionString"
+          {{ if eq .Values.storage.type "db" }}
+          - name: PORTAL_DATABASE_ENABLELOGS
+            value: "{{ .Values.storage.database.enableLogs }}"
+          - name: PORTAL_DATABASE_MAXRETRIES
+            value: "{{.Values.storage.database.maxRetries }}"
+          - name: PORTAL_DATABASE_RETRYDELAY
+            value: "{{ .Values.storage.database.retryDelay }}"
+          {{ end }}
+          {{ if eq .Values.storage.type "s3" }}
+          - name: PORTAL_S3_AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                {{ if .Values.global.secrets.useSecretName }}
+                name: {{ .Values.global.secrets.useSecretName }}
+                {{ else }}
+                name: secrets-{{ include "tyk-dev-portal.fullname" . }}
+                {{ end }}
+                key: "DevPortalAwsAccessKeyId"
+          - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                {{ if .Values.global.secrets.useSecretName }}
+                name: {{ .Values.global.secrets.useSecretName }}
+                {{ else }}
+                name: secrets-{{ include "tyk-dev-portal.fullname" . }}
+                {{ end }}
+                key: "DevPortalAwsSecretAccessKey"
+          - name: PORTAL_S3_REGION
+            value: "{{ .Values.storage.s3.region }}"
+          - name: PORTAL_S3_ENDPOINT
+            value: "{{ .Values.storage.s3.endpoint }}"
+          - name: PORTAL_S3_BUCKET
+            value: "{{ .Values.storage.s3.bucket }}"
+          - name: PORTAL_S3_ACL
+            value: "{{ .Values.storage.s3.acl }}"
+          - name: PORTAL_S3_PRESIGN_URLS
+            value: "{{ .Values.storage.s3.presign_urls }}"
+          - name: PORTAL_THEMING_PATH
+            value: "/themes"
+          {{ else }}
+          - name: PORTAL_THEMING_PATH
+            value: "./themes"
+          {{ end }}
+          - name: PORTAL_THEMING_THEME
+            value: "default"
+          - name: PROVIDER_NAME
+            value: "tyk"
+          - name: TYK_URL
+          {{ if ne .Values.overrideTykDashUrl ""}}
+            value: {{ .Values.overrideTykDashUrl}}
+          {{ else}}
+            value: "http{{ if .Values.global.tls.dashboard }}s{{ end }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}"
+          {{- end }}
+          - name: TYK_AUTH
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.secrets.devPortal}}
+                key: TYK_AUTH
+          - name: TYK_ORG
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.secrets.devPortal}}
+                key: TYK_ORG
+        {{- if .Values.extraEnvs }}
+        {{- range $env := .Values.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        command: ["/opt/portal/dev-portal"]
+        {{- if .Values.global.bootstrap.devPortal }}
+        args: ["--bootstrap", "--provider-data={\"URL\":\"$(TYK_URL)\",\"Secret\":\"$(TYK_AUTH)\",\"OrgID\":\"$(TYK_ORG)\"}", "-user=$(ADMIN_EMAIL)", "-pass=$(ADMIN_PASSWORD)"]
+        {{- end }}
+        workingDir: /opt/portal
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+        volumeMounts:
+          {{ if eq .Values.storage.type "fs" }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+            mountPath: /opt/portal/public/system/api_details
+            subPath: api_details
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+            mountPath: /opt/portal/public/system/versions
+            subPath: versions
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+            mountPath: /opt/portal/public/system/products
+            subPath: products
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+            mountPath: /opt/portal/public/system/posts
+            subPath: posts
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+            mountPath: /opt/portal/public/system/media_libraries
+            subPath: media_libraries
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+            mountPath: /opt/portal/public/system/image_blocks
+            subPath: image_blocks
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+            mountPath: /opt/portal/public/system/assets
+            subPath: assets
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+            mountPath: /tmp/tyk-portal
+            subPath: tyk-portal
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+            mountPath: /opt/portal/themes
+            subPath: themes
+          {{- end }}
+          {{- if eq .Values.storage.database.dialect "sqlite3" }}
+          - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+            mountPath: /opt/portal/db
+            subPath: db
+          {{- end }}
+          {{- if .Values.extraVolumeMounts }}
+          {{- include "tyk-dev-portal.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 10 }}
+          {{- end }}
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
+            path: /
+            port: {{ .Values.containerPort }}
+          initialDelaySeconds: {{ default 60 .Values.livenessProbe.initialDelaySeconds}}
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
+            path: /
+            port: {{ .Values.containerPort }}
+          initialDelaySeconds: {{ default 60 .Values.readinessProbe.initialDelaySeconds}}
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+      volumes:
+      {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
+      - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.storage.persistence.mountExistingPVC }}
+      {{- end }}
+      {{- if .Values.extraVolumes }}
+      {{- include "tyk-dev-portal.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 6 }}
+      {{- end }}
+
+      {{- if .Values.securityContext }}
+      securityContext:
+      {{- toYaml .Values.securityContext | nindent 8 }}
+      {{- end}}
+  {{ if and (eq .Values.kind "StatefulSet") }}
+  volumeClaimTemplates:
+  - metadata:
+      name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
+      {{- if .Values.storage.persistence.annotations }}
+      annotations:
+      {{- range $key, $value := .Values.storage.persistence.annotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.storage.persistence.labels }}
+      labels:
+      {{- range $key, $value := .Values.storage.persistence.labels }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
+    spec:
+      accessModes:
+      {{- range .Values.storage.persistence.accessModes }}
+        - {{ . | quote }}
+      {{- end }}
+      storageClassName: {{ .Values.storage.persistence.storageClass }}
+      resources:
+        requests:
+          storage: {{ .Values.storage.persistence.size | quote }}
+      {{- if .Values.storage.persistence.selector }}
+      selector:
+      {{- range $key, $value := .Values.storage.persistence.selector }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
+  {{- end }}

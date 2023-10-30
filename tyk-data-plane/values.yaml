@@ -1,4 +1,4 @@
-# Default values for tyk-mdcb-data-plane.
+# Default values for tyk-data-plane.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
