@@ -37,7 +37,7 @@ helm repo update
 helm show values tyk-helm/tyk-stack > values-stack.yaml --devel
 ```
 
-At a minimum, modify values-tyk-stack.yaml for the following settings:
+At a minimum, modify values-stack.yaml for the following settings:
 1. [Set Redis connection details](#set-redis-connection-details-required)
 2. [Set Mongo or PostgresSQL connection details](#set-mongo-or-postgressql-connection-details-required)
 3. [Dashboard License](#dashboard-license)
@@ -69,10 +69,10 @@ If you were using `tyk-pro` chart for existing release, you cannot upgrade direc
 To get all configurable options with detailed comments:
 
 ```bash
-helm show values tyk-helm/tyk-stack > values-tyk-stack.yaml --devel
+helm show values tyk-helm/tyk-stack > values-stack.yaml --devel
 ```
 
-You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation. 
+You can update any value in your local `values-stack.yaml` file and use `-f [filename]` flag to override default values during installation. 
 Alternatively, you can use `--set` flag to set it in Tyk installation. See [Using Helm](https://helm.sh/docs/intro/using_helm/) for examples.
 
 ### Set Redis connection details (Required)
@@ -331,9 +331,9 @@ To enable Pump, set `global.components.pump` to true, and configure below inside
 > To explore the list of supported backends for Tyk Pump, please visit https://tyk.io/docs/tyk-stack/tyk-pump/other-data-stores/.
 
 #### Prometheus Pump
-Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. 
+Add `prometheus` to `tyk-pump.pump.backend`, and add connection details for Prometheus under `tyk-pump.pump.prometheusPump`. 
 
-We also support monitoring using Prometheus Operator. All you have to do is set `pump.prometheusPump.prometheusOperator.enabled` to true.
+We also support monitoring using Prometheus Operator. All you have to do is set `tyk-pump.pump.prometheusPump.prometheusOperator.enabled` to true.
 This will create a _PodMonitor_ resource for your Pump instance.
 
 ```yaml
@@ -545,7 +545,7 @@ To enable Tyk Developer Enterprise Portal, set `global.components.devPortal` to 
 
 #### Tyk Developer Enterprise Portal License (Required)
 
-Tyk Developer Enterprise Portal License is required. It can be set up in `tyk-dev-portal.license` or through secret `global.secrets.useSecretName`. The secret should contain a key called DeveloperPortalLicense.
+Tyk Developer Enterprise Portal License is required. It can be set up in `tyk-dev-portal.license` or through secret `global.secrets.useSecretName`. The secret should contain a key called `DevPortalLicense`.
 
 ```yaml
 tyk-dev-portal:
@@ -555,7 +555,7 @@ tyk-dev-portal:
 
 #### Storage Settings
 
-Tyk Enterprise Portal supports different storage options for storing the portal's CMS assets such as images, theme files and Open API Specification files. Please see the [Enterprise Portal Storage settings]({{<ref "tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration#portal-settings">}}) page for all the available options. Helm chart supports the setting of following fields in values.yaml `storage` section:
+Tyk Enterprise Portal supports different storage options for storing the portal's CMS assets such as images, theme files and Open API Specification files. Please see the [Enterprise Portal Storage settings](https://tyk.io/docs/tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration#portal-settings) page for all the available options. Helm chart supports the setting of following fields in values.yaml `storage` section:
 
 ```yaml
 tyk-dev-portal:
@@ -602,7 +602,7 @@ tyk-dev-portal:
 
 #### Other Configurations
 
-Other [Enterprise Portal configurations]({{<ref "tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration">}}) can be set by using environment variables with `extraEnvs` fields, e.g.:
+Other [Enterprise Portal configurations](https://tyk.io/docs/tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration) can be set by using environment variables with `extraEnvs` fields, e.g.:
 
 ```yaml
 tyk-dev-portal:
