@@ -775,12 +775,6 @@ tyk-dashboard:
           key_file: "/etc/certs/tyk-dashboard/tls.key"
 
 tyk-dev-portal:
-  # Default values for tyk-dev-portal.
-  # This is a YAML-formatted file.
-  # Declare variables to be passed into your templates.
-
-
-
   # The hostname to bind the Developer Portal to.
   hostName: tyk-dev-portal.local
   # Developer Portal license.

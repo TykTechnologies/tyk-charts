@@ -779,8 +779,6 @@ tyk-enterprise-portal:
   # This is a YAML-formatted file.
   # Declare variables to be passed into your templates.
 
-  
-
   # The hostname to bind the Developer Portal to.
   hostName: tyk-enterprise-portal.local
   # Developer Portal license.
