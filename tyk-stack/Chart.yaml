@@ -31,7 +31,7 @@ dependencies:
   - name: tyk-bootstrap
     version: 1.0.0-beta5
     repository: file://../components/tyk-bootstrap
-  - name: tyk-enterprise-portal
+  - name: tyk-dev-portal
     version: 1.0.0-beta4
-    repository: file://../components/tyk-enterprise-portal
-    condition: global.components.enterprisePortal
+    repository: file://../components/tyk-dev-portal
+    condition: global.components.devPortal

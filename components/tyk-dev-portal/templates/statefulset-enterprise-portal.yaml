@@ -62,7 +62,7 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
-                key: EnterprisePortalLicense
+                key: DevPortalLicense
           - name: PORTAL_HOST_PORT
             value: "{{ .Values.containerPort }}"
           - name: ADMIN_EMAIL
@@ -95,7 +95,7 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
-                key: "EnterprisePortalStorageConnectionString"
+                key: "DevPortalStorageConnectionString"
           {{ if eq .Values.storage.type "db" }}
           - name: PORTAL_DATABASE_ENABLELOGS
             value: "{{ .Values.storage.database.enableLogs }}"
@@ -113,7 +113,7 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
-                key: "EnterprisePortalAwsAccessKeyId"
+                key: "DevPortalAwsAccessKeyId"
           - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
@@ -122,7 +122,7 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
-                key: "EnterprisePortalAwsSecretAccessKey"
+                key: "DevPortalAwsSecretAccessKey"
           - name: PORTAL_S3_REGION
             value: "{{ .Values.storage.s3.region }}"
           - name: PORTAL_S3_ENDPOINT
@@ -152,12 +152,12 @@ spec:
           - name: TYK_AUTH
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.global.secrets.enterprisePortal}}
+                name: {{ .Values.global.secrets.devPortal}}
                 key: TYK_AUTH
           - name: TYK_ORG
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.global.secrets.enterprisePortal}}
+                name: {{ .Values.global.secrets.devPortal}}
                 key: TYK_ORG
         {{- if .Values.extraEnvs }}
         {{- range $env := .Values.extraEnvs }}
@@ -168,7 +168,7 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         command: ["/opt/portal/dev-portal"]
-        {{- if .Values.global.bootstrap.enterprisePortal }}
+        {{- if .Values.global.bootstrap.devPortal }}
         args: ["--bootstrap", "--provider-data={\"URL\":\"$(TYK_URL)\",\"Secret\":\"$(TYK_AUTH)\",\"OrgID\":\"$(TYK_ORG)\"}", "-user=$(ADMIN_EMAIL)", "-pass=$(ADMIN_PASSWORD)"]
         {{- end }}
         workingDir: /opt/portal
@@ -214,7 +214,7 @@ spec:
           {{- end }}
         livenessProbe:
           httpGet:
-            scheme: "HTTP{{ if .Values.global.tls.enterprisePortal }}S{{ end }}"
+            scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
             path: /
             port: {{ .Values.containerPort }}
           initialDelaySeconds: {{ default 60 .Values.livenessProbe.initialDelaySeconds}}
@@ -223,7 +223,7 @@ spec:
           failureThreshold: 2
         readinessProbe:
           httpGet:
-            scheme: "HTTP{{ if .Values.global.tls.enterprisePortal }}S{{ end }}"
+            scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
             path: /
             port: {{ .Values.containerPort }}
           initialDelaySeconds: {{ default 60 .Values.readinessProbe.initialDelaySeconds}}

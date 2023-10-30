@@ -36,12 +36,12 @@ global:
   components:
     # Determines whether the pump component should be installed.
     pump: true
-    enterprisePortal: false
+    devPortal: false
     dashboard: true
 
   bootstrap:
     # setting this to true bootstraps Tyk Enterprise Portal.
-    enterprisePortal: true
+    devPortal: true
 
   servicePorts:
     # The port at which the dashboard service can be found at
@@ -101,8 +101,8 @@ global:
     # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
-    # EnterprisePortalLicense - Tyk Enterprise Portal License
-    # EnterprisePortalStorageConnectionString - Tyk Enterprise Portal connection string to the selected database.
+    # DevPortalLicense - Tyk Enterprise Portal License
+    # DevPortalStorageConnectionString - Tyk Enterprise Portal connection string to the selected database.
     useSecretName: ""
 
   redis:
@@ -579,7 +579,7 @@ tyk-bootstrap:
 
   bootstrap:
     # Trigger to control if we want to bootstrap the Enterprise Portal component using tyk-bootstrap
-    enterprisePortal: true
+    devPortal: true
 
     # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
     dashboard: true
@@ -774,17 +774,15 @@ tyk-dashboard:
           cert_file: "/etc/certs/tyk-dashboard/tls.crt"
           key_file: "/etc/certs/tyk-dashboard/tls.key"
 
-tyk-enterprise-portal:
-  # Default values for tyk-enterprise-portal.
+tyk-dev-portal:
+  # Default values for tyk-dev-portal.
   # This is a YAML-formatted file.
   # Declare variables to be passed into your templates.
 
-  # Enterprise Portal will only bootstrap if the tyk-enterprise-portal-conf secret
-  # is present. The secret is created during the dashboard bootstrapping and
-  # be turned on and off using the dash.enterprisePortalSecret bool.
+
 
   # The hostname to bind the Enterprise Portal to.
-  hostName: tyk-enterprise-portal.local
+  hostName: tyk-dev-portal.local
   # Enterprise Portal license.
   license: ""
   # Enterprise portal can be deployed as StatefulSet or as Deployment

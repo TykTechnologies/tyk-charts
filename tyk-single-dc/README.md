@@ -345,7 +345,7 @@ the secret should contain a key called `DashLicense`.
 #### Enterprise Portal License
 
 In order to refer Tyk Enterprise Portal license through Kubernetes secret, please use `global.secrets.useSecretName`, 
-where the secret should contain a key called `EnterprisePortalLicense`.
+where the secret should contain a key called `DevPortalLicense`.
 
 #### Enterprise Portal Admin Password
 
@@ -356,7 +356,7 @@ please use `global.adminUser.useSecretName`, where the secret should contain a k
 
 In order to refer Tyk Enterprise Portal connection string to the selected database through Kubernetes secret,
 please use `global.secrets.useSecretName`, where the secret should contain a key called 
-`EnterprisePortalStorageConnectionString`.
+`DevPortalStorageConnectionString`.
 
 > [!WARNING]
 > If `global.secrets.useSecretName` is in use, please add all keys mentioned above to the secret. 
