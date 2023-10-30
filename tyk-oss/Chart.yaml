@@ -16,12 +16,23 @@ type: application
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
 version: 1.0.0
-
+home: https://tyk.io/
+sources:
+  - https://github.com/TykTechnologies/tyk-charts
+  - https://community.tyk.io/
+  - https://tyk.io/docs/
+keywords:
+  - api gateway
+  - reverse proxy
+  - api management
+  - ingress
+  - ingress controller
+  - open source gateway
+  - edge gateway
 dependencies:
   - name: tyk-gateway
     version: 1.0.0
     repository: file://../components/tyk-gateway
-
   - name: tyk-pump
     version: 1.0.0
     repository: file://../components/tyk-pump

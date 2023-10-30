@@ -5,3 +5,16 @@ description: This chart deploys the open source Tyk Gateway.
   Tyk Gateway is a fully open source Enterprise API Gateway, supporting REST, GraphQL, TCP and gRPC protocols.
   Tyk Gateway is provided ‘Batteries-included’, with no feature lockout. It enables organisations and businesses around
   the world to protect, secure, and process APIs and well as review and audit the consumed apis.
+home: https://tyk.io/
+sources:
+  - https://github.com/TykTechnologies/tyk-charts
+  - https://community.tyk.io/
+  - https://tyk.io/docs/
+keywords:
+  - api gateway
+  - reverse proxy
+  - api management
+  - ingress
+  - ingress controller
+  - open source gateway
+  - edge gateway
