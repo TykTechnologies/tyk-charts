@@ -42,6 +42,10 @@ At a minimum, modify values-stack.yaml for the following settings:
 2. [Set Mongo or PostgresSQL connection details](#set-mongo-or-postgressql-connection-details-required)
 3. [Dashboard License](#dashboard-license)
 
+If you would like to use Enterprise Developer Portal, additional license is required:
+
+4. [Enterprise Developer Portal License](#tyk-developer-enterprise-portal-license-required)
+
 Then just run:
 ```bash
 helm install tyk-stack tyk-helm/tyk-stack -n tyk --create-namespace -f values-stack.yaml --devel
