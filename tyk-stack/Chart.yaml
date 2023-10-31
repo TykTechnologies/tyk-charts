@@ -30,10 +30,11 @@ keywords:
   - api gateway
   - reverse proxy
   - api management
-  - ingress
-  - ingress controller
-  - open source gateway
-  - edge gateway
+  - tyk
+  - tyk stack
+  - tyk self managed
+  - apis
+  - api developer portal
 dependencies:
   - name: tyk-gateway
     version: 1.0.0
