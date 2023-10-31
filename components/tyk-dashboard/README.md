@@ -1,14 +1,14 @@
 ## Tyk Dashboard
 The [Tyk Dashboard](https://tyk.io/docs/tyk-dashboard/) is the GUI and analytics platform for Tyk. It provides an easy-to-use management interface for managing a Tyk installation as well as clear and granular analytics.
 
-The Dashboard also provides the [API Developer Portal](https://tyk.io/docs/tyk-developer-portal/), a customisable developer portal for your API documentation, developer auto-enrolment and usage tracking.
+The Dashboard also provides the [API Classic Developer Portal](https://tyk.io/docs/tyk-developer-portal/), a customisable developer portal for your API documentation, developer auto-enrolment and usage tracking.
 
 ## Introduction
 This chart defines a standalone Tyk Dashboard component on a [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
 
 For typical usage, we recommend using following umbrella charts:
 * For single data centre deployment, please use [tyk-stack](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-stack)
-* For multi data centre deployment, please use tyk-mdcb-control-plane (Coming soon!)
+* For multi data centre deployment, please use tyk-control-plane (Coming soon!)
 
 [Learn more about Tyk Licensing and Deployment models](https://tyk.io/docs/tyk-on-premises/licensing/)
 
