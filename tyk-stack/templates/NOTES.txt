@@ -1,4 +1,4 @@
-Thank you for installing Tyk Single DC Chart {{ .Chart.Name }}. Your release is named {{ .Release.Name }}. At this point, Tyk Single DC is fully installed and should be accessible.
+Thank you for installing Tyk Stack Chart.Your release is named {{ .Release.Name }}. At this point, Tyk Stack is fully installed and should be accessible.
 
 =====================================
   Manage Ingress resources and APIs
