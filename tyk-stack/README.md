@@ -1,6 +1,6 @@
 ## Tyk Stack
 
-`tyk-stack` provides the default deployment of Tyk Self Managed on a cluster. It will deploy all required Tyk components with the settings provided in the values.yaml file.
+`tyk-stack` provides the default deployment of Tyk Self Managed on a cluster. It will deploy all required Tyk components with the settings provided in the `values.yaml` file.
 
 It includes:
 - Tyk Gateway, an open source Enterprise API Gateway (supporting REST, GraphQL, TCP and gRPC protocols).
@@ -37,7 +37,7 @@ helm repo update
 helm show values tyk-helm/tyk-stack > values-stack.yaml --devel
 ```
 
-At a minimum, modify values-stack.yaml for the following settings:
+At a minimum, modify `values-stack.yaml `for the following settings:
 1. [Set Redis connection details](#set-redis-connection-details-required)
 2. [Set Mongo or PostgresSQL connection details](#set-mongo-or-postgressql-connection-details-required)
 3. [Dashboard License](#dashboard-license)
@@ -445,9 +445,9 @@ To set up other backends for pump, refer to this [document](https://github.com/T
 
 
 #### Tyk Dashboard
-The Tyk Dashboard can be configured by modifying the values under "tyk-dashboard" section of the values.yaml file
+The Tyk Dashboard can be configured by modifying the values under "tyk-dashboard" section of the `values.yaml` file
 The chart is provided with sane defaults such that the only hard requirement is the license which needs to be put under
-.Values.global.license.dashboard in order for the bootstrapping process to work.
+`.Values.global.license.dashboard` in order for the bootstrapping process to work.
 
 ```yaml
   tyk-dashboard:
@@ -559,7 +559,7 @@ tyk-dev-portal:
 
 #### Storage Settings
 
-Tyk Enterprise Portal supports different storage options for storing the portal's CMS assets such as images, theme files and Open API Specification files. Please see the [Enterprise Portal Storage settings](https://tyk.io/docs/tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration#portal-settings) page for all the available options. Helm chart supports the setting of following fields in values.yaml `storage` section:
+Tyk Enterprise Portal supports different storage options for storing the portal's CMS assets such as images, theme files and Open API Specification files. Please see the [Enterprise Portal Storage settings](https://tyk.io/docs/tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration#portal-settings) page for all the available options. Helm chart supports the setting of the following fields in `values.yaml` `storage` section:
 
 ```yaml
 tyk-dev-portal:
