@@ -19,19 +19,19 @@ version: 1.0.0-beta7
 deprecated: true
 dependencies:
   - name: tyk-gateway
-    version: 1.0.0
+    version: 1.1.0
     repository: file://../components/tyk-gateway
   - name: tyk-pump
-    version: 1.0.0
+    version: 1.1.0
     repository: file://../components/tyk-pump
     condition: global.components.pump
   - name: tyk-dashboard
-    version: 1.0.0-beta5
+    version: 1.0.0-beta6
     repository: file://../components/tyk-dashboard
   - name: tyk-bootstrap
-    version: 1.0.0-beta5
+    version: 1.0.0-beta6
     repository: file://../components/tyk-bootstrap
   - name: tyk-enterprise-portal
-    version: 1.0.0-beta4
+    version: 1.0.0-beta5
     repository: file://../components/tyk-enterprise-portal
     condition: global.components.devPortal
