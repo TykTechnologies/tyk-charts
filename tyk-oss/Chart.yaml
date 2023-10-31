@@ -27,6 +27,9 @@ keywords:
   - ingress controller
   - open source gateway
   - edge gateway
+  - tyk
+  - tyk gateway
+  - tyk open source
 dependencies:
   - name: tyk-gateway
     version: 1.0.0
