@@ -32,6 +32,12 @@ keywords:
   - ingress controller
   - open source gateway
   - edge gateway
+  - api microgateway
+  - tyk
+  - tyk cloud hybrid gateway
+  - tyk gateway
+  - tyk data plane
+  - tyk mdcb data plane
 dependencies:
   - name: tyk-gateway
     version: 1.0.0
