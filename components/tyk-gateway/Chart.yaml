@@ -7,9 +7,7 @@ description: This chart deploys the open source Tyk Gateway.
   the world to protect, secure, and process APIs and well as review and audit the consumed apis.
 home: https://tyk.io/
 sources:
-  - https://github.com/TykTechnologies/tyk-charts
-  - https://community.tyk.io/
-  - https://tyk.io/docs/
+  - https://github.com/TykTechnologies/tyk-charts/tree/main/components/tyk-gateway
 keywords:
   - api gateway
   - reverse proxy
@@ -20,3 +18,8 @@ keywords:
   - edge gateway
 annotations:
   artifacthub.io/category: networking
+  artifacthub.io/links: |
+    - name: docs
+      url: https://tyk.io/docs/
+    - name: support
+      url: https://community.tyk.io/
