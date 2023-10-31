@@ -1,6 +1,11 @@
 apiVersion: v2
 name: tyk-dashboard
-description: A Helm chart for deploying Tyk Dashboard component on Kubernetes
+description: |
+  A Helm chart for deploying Tyk Dashboard component on Kubernetes. 
+  The Tyk Dashboard is the GUI and analytics platform for Tyk. 
+  It provides an easy-to-use management interface for managing a Tyk installation as well as clear and granular analytics. 
+  The Dashboard also provides the API Classic Developer Portal, a customisable developer portal for your API documentation, 
+  developer auto-enrolment and usage tracking.
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -18,10 +23,13 @@ type: application
 version: 1.0.0-beta5
 home: https://tyk.io/
 sources:
-  - https://github.com/TykTechnologies/tyk-charts
-  - https://community.tyk.io/
-  - https://tyk.io/docs/
+  - https://github.com/TykTechnologies/tyk-charts/tree/main/components/tyk-dashboard
 keywords:
   - api management
 annotations:
   artifacthub.io/category: networking
+  artifacthub.io/links: |
+    - name: docs
+      url: https://tyk.io/docs/
+    - name: support
+      url: https://community.tyk.io/
