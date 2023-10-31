@@ -8,6 +8,12 @@ sources:
   - https://github.com/TykTechnologies/tyk-charts/tree/main/components/tyk-pump
 keywords:
   - analytics
+  - monitoring
+  - apis
+  - api analytics
+  - prometheus
+  - tyk
+  - tyk pump
 annotations:
   artifacthub.io/category: networking
   artifacthub.io/links: |
