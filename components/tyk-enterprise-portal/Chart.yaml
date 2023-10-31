@@ -25,3 +25,6 @@ type: application
 version: 1.0.0-beta4
 
 deprecated: true
+annotations:
+  artifacthub.io/recommendations: |
+    - url: https://artifacthub.io/packages/helm/tyk-helm/tyk-dev-portal

@@ -44,3 +44,7 @@ dependencies:
     version: 1.0.0-beta4
     repository: file://../components/tyk-enterprise-portal
     condition: global.components.devPortal
+
+annotations:
+  artifacthub.io/recommendations: |
+    - url: https://artifacthub.io/packages/helm/tyk-helm/tyk-stack
