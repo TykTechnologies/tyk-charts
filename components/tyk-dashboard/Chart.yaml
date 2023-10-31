@@ -26,6 +26,9 @@ sources:
   - https://github.com/TykTechnologies/tyk-charts/tree/main/components/tyk-dashboard
 keywords:
   - api management
+  - tyk
+  - tyk dashboard
+  - developer portal
 annotations:
   artifacthub.io/category: networking
   artifacthub.io/links: |
