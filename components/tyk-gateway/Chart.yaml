@@ -16,6 +16,10 @@ keywords:
   - ingress controller
   - open source gateway
   - edge gateway
+  - api microgateway
+  - tyk
+  - tyk gateway
+  - apis
 annotations:
   artifacthub.io/category: networking
   artifacthub.io/links: |
