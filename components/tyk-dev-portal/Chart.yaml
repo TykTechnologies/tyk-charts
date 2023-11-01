@@ -1,6 +1,11 @@
 apiVersion: v2
 name: tyk-dev-portal
-description: A Helm chart for Kubernetes
+description: |
+  A Helm chart for deploying Tyk Enterprise Developer Portal on Kubernetes.
+  The Tyk Enterprise Developer Portal is the most flexible and straightforward way for API providers
+  to publish, monetise and drive the adoption of APIs. It provides a full-fledged CMS-like system that
+  enables you to serve all stages of API adoption: from the look and feel customisation to exposing APIs
+  and enabling third-party developers to register and use your APIs.
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -12,3 +17,20 @@ description: A Helm chart for Kubernetes
 # pipeline. Library charts do not define any templates and therefore cannot be deployed.
 type: application
 version: 1.0.0-beta1
+home: https://tyk.io/
+sources:
+  - https://github.com/TykTechnologies/tyk-charts/tree/main/components/tyk-dev-portal
+keywords:
+  - developer portal
+  - api management
+  - tyk
+  - tyk enterprise developer portal
+  - tyk
+  - tyk enterprise developer portal
+annotations:
+  artifacthub.io/category: networking
+  artifacthub.io/links: |
+    - name: docs
+      url: https://tyk.io/docs/
+    - name: support
+      url: https://community.tyk.io/
