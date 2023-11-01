@@ -189,7 +189,7 @@ jobs:
           
           helm dependency update ./tyk-mdcb-data-plane
           
-          helm install --namespace ${{ env. TYK_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane --wait \
+          helm install --namespace ${{ env. TYK_MDCB_DATAPLANE_NS }} tyk-mdcb-data-plane ./tyk-mdcb-data-plane --wait \
             --set global.remoteControlPlane.orgId=${{ secrets.HYBRID_RPC_KEY }} \
             --set global.remoteControlPlane.userApiKey=${{ secrets.HYBRID_API_KEY }} \
             --set global.remoteControlPlane.connectionString=${{ secrets.HYBRID_MDCB_HOST }}
