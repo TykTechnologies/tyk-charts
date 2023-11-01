@@ -11,8 +11,8 @@ dependencies:
 - name: tyk-bootstrap
   repository: file://../components/tyk-bootstrap
   version: 1.0.0-beta6
-- name: tyk-enterprise-portal
-  repository: file://../components/tyk-enterprise-portal
-  version: 1.0.0-beta5
-digest: sha256:f7cc0691a4e00b1e7b460251bcf8c274d3b5139ade10deafb783c6597d8a11ff
-generated: "2023-10-31T18:03:07.830343+05:30"
+- name: tyk-dev-portal
+  repository: file://../components/tyk-dev-portal
+  version: 1.0.0-beta1
+digest: sha256:ac5685099366ecbe1c88b0ee852295cc33348f8361f37ee075b740363b2dd12b
+generated: "2023-11-01T12:51:10.752782+05:30"
