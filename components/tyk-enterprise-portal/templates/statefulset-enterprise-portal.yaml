@@ -86,7 +86,7 @@ spec:
           - name: PORTAL_STORAGE
             value: "{{ .Values.storage.type }}"
           - name: PORTAL_DATABASE_DIALECT
-            value: "{{ .Values.storage.database.dialect }}"
+            value: "{{ .Values.storage.dialect }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
@@ -98,7 +98,7 @@ spec:
                 key: "EnterprisePortalStorageConnectionString"
           {{ if eq .Values.storage.type "db" }}
           - name: PORTAL_DATABASE_ENABLELOGS
-            value: "{{ .Values.storage.database.enableLogs }}"
+            value: "{{ .Values.storage.enableLogs }}"
           - name: PORTAL_DATABASE_MAXRETRIES
             value: "{{.Values.storage.database.maxRetries }}"
           - name: PORTAL_DATABASE_RETRYDELAY
@@ -204,7 +204,7 @@ spec:
             mountPath: /opt/portal/themes
             subPath: themes
           {{- end }}
-          {{- if eq .Values.storage.database.dialect "sqlite3" }}
+          {{- if eq .Values.storage.dialect "sqlite3" }}
           - name: enterprise-portal-pvc-{{ include "tyk-enterprise-portal.fullname" . }}
             mountPath: /opt/portal/db
             subPath: db

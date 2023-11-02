@@ -35,7 +35,7 @@ global:
     # the Helm value file and would rather provide the k8s Secret externally.
     # You should set following fields in the secret
     # - EnterprisePortalLicense - Sets LicenseKey for Enterprise Portal
-    # - EnterprisePortalStorageConnectionString - Sets Database.ConnectionString for Enterprise Portal
+    # - EnterprisePortalStorageConnectionString - Sets connectionString for Enterprise Portal
     useSecretName: ""
 
 # The hostname to bind the Enterprise Portal to.

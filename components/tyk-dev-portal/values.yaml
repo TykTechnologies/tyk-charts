@@ -35,7 +35,7 @@ global:
     # the Helm value file and would rather provide the k8s Secret externally.
     # You should set following fields in the secret
     # - DevPortalLicense - Sets LicenseKey for Developer Portal
-    # - DevPortalStorageConnectionString - Sets Database.ConnectionString for Developer Portal
+    # - DevPortalStorageConnectionString - Sets connectionString for Developer Portal
     useSecretName: ""
 
 # The hostname to bind the Developer Portal to.
@@ -57,10 +57,11 @@ storage:
   # User can set the storage type for portal.
   # Supported types: fs, s3, db
   type: "fs"
+  dialect: "sqlite3"
+  connectionString: "db/portal.db"
+  enableLogs: false
+
   database:
-    dialect: "sqlite3"
-    connectionString: "db/portal.db"
-    enableLogs: false
     maxRetries: 3
     retryDelay: 5000
   # Configuration values for using s3 as storage for Tyk Developer Portal
