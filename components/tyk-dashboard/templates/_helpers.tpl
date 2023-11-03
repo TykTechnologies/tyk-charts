@@ -52,7 +52,7 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_host" -}}
-gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local
+{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_url" -}}
