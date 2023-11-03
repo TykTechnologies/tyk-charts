@@ -84,6 +84,11 @@ bootstrap:
         # tag specifies image tag of pre-install job.
         tag: v2.0.0-beta1
 
+      # extraEnvs is used to set extra environment variables to pre-install job.
+      # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
+      #   value: "yourlicense"
+      extraEnvs: []
+
     # postInstall configures post-install Helm hook
     postInstall:
       # image specifies image repository of bootstrap images
@@ -92,6 +97,11 @@ bootstrap:
         repository: tykio/tyk-k8s-bootstrap-post
         # tag specifies image tag of post-install job.
         tag: v2.0.0-beta1
+
+      # extraEnvs is used to set extra environment variables to post-install job.
+      # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
+      #   value: "burak"
+      extraEnvs: []
 
     # preDelete configures pre-delete Helm hook
     preDelete:
@@ -102,6 +112,10 @@ bootstrap:
         # tag specifies image tag of pre-delete job.
         tag: v2.0.0-beta1
 
+      # extraEnvs is used to set extra environment variables to pre-delete job.
+      # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
+      #   value: "tyk-operator-conf"
+      extraEnvs: []
   org:
     # The name for your organization inside Tyk
     name: Default Org
