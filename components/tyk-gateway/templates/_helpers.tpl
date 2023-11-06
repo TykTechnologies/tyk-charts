@@ -59,7 +59,7 @@ Create chart name and version as used by the chart label.
 {{- else if and .Values.global.redis.host .Values.global.redis.port -}}
 {{ .Values.global.redis.host }}:{{ .Values.global.redis.port }}
 {{- else -}}
-redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+redis.{{ .Release.Namespace }}.svc:6379
 {{- end -}}
 {{- end -}}
 

@@ -48,22 +48,22 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.dash_url" -}}
-{{ include "tyk-dashboard.dash_proto" . }}://dashboard-svc-{{.Release.Name}}-tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.dashboard }}
+{{ include "tyk-dashboard.dash_proto" . }}://dashboard-svc-{{.Release.Name}}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_host" -}}
-gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local
+gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_url" -}}
-{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}
+{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.gateway }}
 {{- end -}}
 
 {{- define "tyk-dashboard.redis_url" -}}
 {{- if .Values.global.redis.addrs -}}
 {{ join "," .Values.global.redis.addrs }}
 {{- else -}}
-redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+redis.{{ .Release.Namespace }}.svc:6379
 {{- end -}}
 {{- end -}}
 
@@ -95,7 +95,7 @@ redisPass
 {{- if .Values.global.mongo.mongoURL -}}
 {{ .Values.global.mongo.mongoURL }}
 {{- else -}}
-mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 
