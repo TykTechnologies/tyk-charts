@@ -1,28 +1,27 @@
-{{- if .Values.dashboard.ingress.enabled -}}
+{{- if .Values.portal.ingress.enabled -}}
 {{- $fullName := include "tyk-dashboard.fullname" . -}}
-{{- $svcPort := .Values.global.servicePorts.dashboard -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: dash-ing-{{ $fullName }}
+  name: portal-ing-{{ $fullName }}
   labels:
-    app: dash-ing-{{ $fullName }}
+    app: portal-ing-{{ $fullName }}
     chart: {{ include "tyk-dashboard.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-{{- if .Values.dashboard.ingress.annotations }}
+{{- if .Values.portal.ingress.annotations }}
   annotations:
-  {{- range $key, $value := .Values.dashboard.ingress.annotations }}
+  {{- range $key, $value := .Values.portal.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
   {{- end }}
 {{- end }}
 spec:
-  {{- if .Values.dashboard.ingress.className }}
-  ingressClassName: {{ .Values.dashboard.ingress.className }}
+  {{- if .Values.portal.ingress.className }}
+  ingressClassName: {{ .Values.portal.ingress.className }}
   {{- end }}
-  {{- if .Values.dashboard.ingress.tls }}
+  {{- if .Values.portal.ingress.tls }}
   tls:
-    {{- range .Values.dashboard.ingress.tls }}
+    {{- range .Values.portal.ingress.tls }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -31,7 +30,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.dashboard.ingress.hosts }}
+    {{- range .Values.portal.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
@@ -44,7 +43,7 @@ spec:
               service:
                 name: dashboard-svc-{{ include "tyk-dashboard.fullname" . }}
                 port:
-                  number: {{ $svcPort }}
+                  number: {{ $.Values.dashboard.service.port }}
           {{- end }}
     {{- end }}
 {{- end }}
