@@ -33,7 +33,7 @@ spec:
           command: ['/app/bin/bootstrap-app-pre-install']
           imagePullPolicy: IfNotPresent
           env:
-            - name: TYK_DB_LICENSEKEY
+            - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
               {{ if .Values.global.secrets.useSecretName }}
               valueFrom:
                 secretKeyRef:
