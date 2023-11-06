@@ -85,7 +85,7 @@ spec:
               {{- end }}
             - name: TYK_K8SBOOTSTRAP_TYK_ORG_NAME
               value: {{ .Values.bootstrap.org.name | quote }}
-            - name: TYK_K8SBOOTSTRAP_TYK_ORG_NAME
+            - name: TYK_K8SBOOTSTRAP_TYK_ORG_CNAME
               value: {{ .Values.bootstrap.org.cname | quote }}
             - name: TYK_K8SBOOTSTRAP_BOOTSTRAPDASHBOARD
               value: {{ .Values.bootstrap.dashboard | quote }}
