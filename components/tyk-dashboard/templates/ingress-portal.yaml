@@ -41,9 +41,9 @@ spec:
             {{- end }}
             backend:
               service:
-                name: dashboard-svc-{{ include "tyk-dashboard.fullname" . }}
+                name: dashboard-svc-{{ $fullName }}
                 port:
-                  number: {{ $.Values.dashboard.service.port }}
+                  number: {{ $.Values.global.servicePorts.dashboard }}
           {{- end }}
     {{- end }}
 {{- end }}

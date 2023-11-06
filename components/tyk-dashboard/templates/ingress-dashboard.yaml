@@ -42,7 +42,7 @@ spec:
             {{- end }}
             backend:
               service:
-                name: dashboard-svc-{{ include "tyk-dashboard.fullname" . }}
+                name: dashboard-svc-{{ $fullName }}
                 port:
                   number: {{ $svcPort }}
           {{- end }}
