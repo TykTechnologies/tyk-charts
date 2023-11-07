@@ -215,7 +215,7 @@ spec:
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
-            path: /
+            path: /live
             port: {{ .Values.containerPort }}
           initialDelaySeconds: {{ default 60 .Values.livenessProbe.initialDelaySeconds}}
           periodSeconds: 2
