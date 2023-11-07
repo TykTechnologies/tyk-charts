@@ -31,7 +31,7 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "tyk-dashboard.gwproto" -}}
+{{- define "tyk-dashboard.gw_proto" -}}
 {{- if .Values.global.tls.gateway -}}
 https
 {{- else -}}
@@ -53,10 +53,6 @@ http
 
 {{- define "tyk-dashboard.gateway_host" -}}
 gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
-{{- end -}}
-
-{{- define "tyk-dashboard.gateway_url" -}}
-{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.gateway }}
 {{- end -}}
 
 {{- define "tyk-dashboard.redis_url" -}}

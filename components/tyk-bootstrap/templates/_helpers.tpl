@@ -31,7 +31,7 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "tyk-bootstrap.gwproto" -}}
+{{- define "tyk-bootstrap.gw_proto" -}}
 {{- if .Values.global.tls.gateway -}}
 https
 {{- else -}}
@@ -52,5 +52,5 @@ http
 {{- end -}}
 
 {{- define "tyk-bootstrap.gateway_url" -}}
-{{ include "tyk-bootstrap.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.gateway }}
+{{ include "tyk-bootstrap.gw_proto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.gateway }}
 {{- end -}}

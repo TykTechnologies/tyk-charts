@@ -61,7 +61,7 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "tyk-data-plane.gwproto" -}}
+{{- define "tyk-data-plane.gw_proto" -}}
 {{- if index .Values "global" "tls" "gateway" -}}
 https
 {{- else -}}
