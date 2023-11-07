@@ -476,8 +476,6 @@ The chart is provided with sane defaults such that the only hard requirement is 
       enableUpdateKeyByHash: true
       enableHashedKeysListing: true
       enableMultiOrgUsers: true
-  
-      enableIstioIngress: false
       replicaCount: 1
       image:
         repository: tykio/tyk-dashboard
