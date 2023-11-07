@@ -169,9 +169,3 @@ extraVolumes: []
 ##     mountPath: /etc/ssl/certs/ca-certs.crt
 ##     readOnly: true
 extraVolumeMounts: []
-
-livenessProbe:
-  initialDelaySeconds: 60
-
-startupProbe:
-  initialDelaySeconds: 60

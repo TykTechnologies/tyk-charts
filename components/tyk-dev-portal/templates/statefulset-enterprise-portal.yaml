@@ -217,7 +217,6 @@ spec:
             scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
             path: /live
             port: {{ .Values.containerPort }}
-          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds}}
           periodSeconds: 2
           timeoutSeconds: 3
           failureThreshold: 2
@@ -226,7 +225,6 @@ spec:
             scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
             path: /
             port: {{ .Values.containerPort }}
-          initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds}}
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
