@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: {{ .Values.kind }}
 metadata:
-  name: {{ include "tyk-dev-portal.fullname" . }}
+  name: portal-{{ include "tyk-dev-portal.fullname" . }}
   labels:
     app: {{ include "tyk-dev-portal.fullname" . }}
     chart: {{ include "tyk-dev-portal.chart" . }}
