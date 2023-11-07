@@ -173,5 +173,5 @@ extraVolumeMounts: []
 livenessProbe:
   initialDelaySeconds: 60
 
-readinessProbe:
+startupProbe:
   initialDelaySeconds: 60
