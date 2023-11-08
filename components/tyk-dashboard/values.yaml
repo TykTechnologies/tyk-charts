@@ -161,8 +161,6 @@ dashboard:
   enableHashedKeysListing: true
   enableMultiOrgUsers: true
 
-  enableIstioIngress: false
-
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
 
