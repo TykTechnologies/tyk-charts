@@ -1,4 +1,3 @@
-{{- if .Values.bootstrap.dashboard -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -44,5 +43,3 @@ spec:
               {{ end }}
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
-{{- end }}
-      

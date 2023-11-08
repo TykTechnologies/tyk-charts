@@ -29,6 +29,11 @@ global:
     gateway: 8080
 
   components:
+    # Determines whether the bootstrap jobs should be run
+    # Those jobs verify the presence of the dashboard license and perform various operations to
+    # make apps such as tyk-dashboard, tyk-portal and tyk-operator ready to use from the get go
+    # If this is set to false, only the hook that checks for dashboard license will be run
+    bootstrap: true
     # Enables/disables the dashboard component and also used to detect when the bootstrapping needs to be done
     # for a separate Tyk Dashboard installation or for an umbrella chart installation
     dashboard: false
