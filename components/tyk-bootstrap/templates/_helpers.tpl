@@ -46,11 +46,3 @@ https
 http
 {{- end -}}
 {{- end -}}
-
-{{- define "tyk-bootstrap.dash_url" -}}
-{{ include "tyk-bootstrap.dash_proto" . }}://dashboard-svc-{{.Release.Name}}-tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.dashboard }}
-{{- end -}}
-
-{{- define "tyk-bootstrap.gateway_url" -}}
-{{ include "tyk-bootstrap.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}
-{{- end -}}
