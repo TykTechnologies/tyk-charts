@@ -30,8 +30,6 @@ global:
     # variables in extraEnvs object array to define your SSL cert and key files.
     # When true, sets the dashboard protocol to HTTPS.
     dashboard: false
-    # When true, sets the gateway protocol to HTTPS.
-    gateway: false
 
   secrets:
     # tyk_analytics.conf admin_secret

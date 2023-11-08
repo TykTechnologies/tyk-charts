@@ -31,14 +31,6 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "tyk-bootstrap.gwproto" -}}
-{{- if .Values.global.tls.gateway -}}
-https
-{{- else -}}
-http
-{{- end -}}
-{{- end -}}
-
 {{- define "tyk-bootstrap.dash_proto" -}}
 {{- if .Values.global.tls.dashboard -}}
 https
