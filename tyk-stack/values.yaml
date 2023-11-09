@@ -656,7 +656,7 @@ tyk-dashboard:
     hostConfig:
       enableHostNames: true
       disableOrgSlugPrefix: true
-      overrideHostname: "dashboard-svc-tyk-pro.tyk.svc.cluster.local"
+      overrideHostname: *gwHostName
     homeDir: "/opt/tyk-dashboard"
     useShardedAnalytics: false
     enableAggregateLookups: true
@@ -727,9 +727,7 @@ tyk-dashboard:
     tolerations: []
     affinity: {}
 
-    extraEnvs:
-    - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
-      value: *gwHostName
+    extraEnvs: []
 
     ## extraVolumes A list of volumes to be added to the pod
     ## extraVolumes:
