@@ -677,8 +677,6 @@ tyk-dashboard:
     enableUpdateKeyByHash: true
     enableHashedKeysListing: true
     enableMultiOrgUsers: true
-
-    enableIstioIngress: false
     replicaCount: 1
 
     # podAnnotations is annotations to be added to Tyk Dashboard pod.
