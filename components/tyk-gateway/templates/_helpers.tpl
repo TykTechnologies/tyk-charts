@@ -94,3 +94,20 @@ redisPass
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
 {{- end -}}
+
+
+{{/*
+    gw_secret defines the value for `TYK_GW_SECRET` environment variable
+    within the `env` section of Tyk Gateway Deployment.
+
+    If tyk-gateway chart is installed as a standalone chart, it uses `secrets-{{ include "tyk-gateway.fullname" . }}`.
+    Otherwise, if it is installed as sub-chart of tyk-stack, it uses hardcoded `secrets-tyk-stack` since the secret
+    name is also hardcoded in tyk-stack umbrella chart.
+*/}}
+{{- define "tyk-gateway.gwSecretRef" -}}
+{{ if contains "tyk-stack/charts/tyk-gateway/" .Template.BasePath }}
+secrets-tyk-stack
+{{ else }}
+secrets-{{ include "tyk-gateway.fullname" . }}
+{{ end }}
+{{- end -}}

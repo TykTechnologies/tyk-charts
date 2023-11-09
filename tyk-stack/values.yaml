@@ -375,12 +375,7 @@ tyk-gateway:
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
-    extraEnvs:
-      - name: TYK_GW_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-stack
-            key: APISecret
+    extraEnvs: []
 
     ## extraVolumes is a list of volumes to be added to the pod
     ## extraVolumes:
