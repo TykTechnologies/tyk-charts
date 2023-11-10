@@ -119,7 +119,7 @@ spec:
           - name: TYK_GW_SECRET
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} {{- include "tyk-gateway.gwSecretRef" . | trim }} {{ end}}
+                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
                 key: APISecret
           - name: TYK_GW_NODESECRET
             valueFrom:
