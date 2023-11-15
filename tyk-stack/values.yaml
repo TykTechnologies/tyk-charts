@@ -375,12 +375,7 @@ tyk-gateway:
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
-    extraEnvs:
-      - name: TYK_GW_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-stack
-            key: APISecret
+    extraEnvs: []
 
     ## extraVolumes is a list of volumes to be added to the pod
     ## extraVolumes:
@@ -661,7 +656,7 @@ tyk-dashboard:
     hostConfig:
       enableHostNames: true
       disableOrgSlugPrefix: true
-      overrideHostname: "dashboard-svc-tyk-pro.tyk.svc.cluster.local"
+      overrideHostname: *gwHostName
     homeDir: "/opt/tyk-dashboard"
     useShardedAnalytics: false
     enableAggregateLookups: true
@@ -732,9 +727,7 @@ tyk-dashboard:
     tolerations: []
     affinity: {}
 
-    extraEnvs:
-    - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
-      value: *gwHostName
+    extraEnvs: []
 
     ## extraVolumes A list of volumes to be added to the pod
     ## extraVolumes:
