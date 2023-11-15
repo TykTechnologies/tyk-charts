@@ -568,7 +568,7 @@ tyk-dev-portal:
     # .Values.global.secrets.useSecretName variable
     # User can set the storage type for portal.
     # Supported types: fs, s3, db
-    type: "fs"
+    type: "db"
     database:
       dialect: "sqlite3"
       connectionString: "db/portal.db"
