@@ -25,7 +25,6 @@ spec:
   template:
     metadata:
       annotations:
-        sidecar.istio.io/inject: “false”
         {{- if .Values.bootstrap.podAnnotations.preDeletePodAnnotations}}
         {{ toYaml .Values.bootstrap.podAnnotations.preDeletePodAnnotations | nindent 8 }}
         {{- end }}

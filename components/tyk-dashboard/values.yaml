@@ -145,7 +145,7 @@ dashboard:
   hostConfig:
     enableHostNames: true
     disableOrgSlugPrefix: true
-    overrideHostname: "dashboard-svc-tyk-pro.tyk.svc.cluster.local"
+    overrideHostname: "tyk-gw.local"
   homeDir: "/opt/tyk-dashboard"
   useShardedAnalytics: false
   enableAggregateLookups: true
@@ -160,8 +160,6 @@ dashboard:
   enableUpdateKeyByHash: true
   enableHashedKeysListing: true
   enableMultiOrgUsers: true
-
-  enableIstioIngress: false
 
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
