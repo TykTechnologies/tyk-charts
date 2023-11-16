@@ -73,8 +73,12 @@ gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.l
 {{- end }}
 
 
-{{- define "tyk-dashboard.gateway_url" -}}
+{{- define "tyk-dashboard.gatewayUrl" -}}
+{{ if (include "tyk-dashboard.gatewaySvcName" .) }}
 {{- include "tyk-dashboard.gwproto" . -}}://{{- include "tyk-dashboard.gatewaySvcName" . -}}.svc:{{ .Values.global.servicePorts.gateway }}
+{{ else }}
+{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}
+{{ end }}
 {{- end -}}
 
 {{- define "tyk-dashboard.redis_url" -}}

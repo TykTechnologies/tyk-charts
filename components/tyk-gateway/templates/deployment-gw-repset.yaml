@@ -237,9 +237,9 @@ spec:
             value: "/mnt/tyk-gateway/tyk.pid"
 
           - name: TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
-            value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.dashboard}}"
+            value: "{{ include "tyk-gateway.dashboardUrl" . }}"
           - name: TYK_GW_POLICIES_POLICYCONNECTIONSTRING
-            value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.dashboard }}"
+            value: "{{ include "tyk-gateway.dashboardUrl" . }}"
 
         {{- if .Values.gateway.sharding.enabled }}
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED

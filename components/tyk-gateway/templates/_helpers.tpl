@@ -39,6 +39,30 @@ http
 {{- end -}}
 {{- end -}}
 
+{{/*
+    It lists all services in the release namespace and find a service
+    for Tyk Dashboard with its label.
+*/}}
+{{- define "tyk-gateway.dashboardSvcName" -}}
+   {{- $services := (lookup "v1" "Service" .Release.Namespace "") -}}
+   {{- if $services -}}
+       {{- range $index, $svc := $services.items -}}
+           {{- range $key, $val := $svc.metadata.labels -}}
+               {{- if and (eq $key "app") (contains "dashboard-svc-" $val) -}}
+{{- $svc.metadata.name | trim -}}
+               {{ end }}
+           {{- end }}
+       {{- end }}
+   {{- end }}
+{{- end }}
+
+{{- define "tyk-gateway.dashboardUrl" -}}
+{{- if (include "tyk-gateway.dashboardSvcName" .) -}}
+{{- include "tyk-gateway.dash_proto" . }}://{{ include "tyk-gateway.dashboardSvcName" . }}.svc:{{ .Values.global.servicePorts.dashboard -}}
+{{- else -}}
+{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.dashboard}}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Create chart name and version as used by the chart label.
