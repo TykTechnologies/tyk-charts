@@ -55,6 +55,10 @@ http
 gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
 
+{{/*
+    It lists all services in the release namespace and find a service
+    for Tyk Gateway with its label.
+*/}}
 {{- define "tyk-dashboard.gatewaySvcName" -}}
    {{- $services := (lookup "v1" "Service" .Release.Namespace "") -}}
    {{- if $services -}}
@@ -67,7 +71,6 @@ gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.l
        {{- end }}
    {{- end }}
 {{- end }}
-
 
 
 {{- define "tyk-dashboard.gateway_url" -}}
