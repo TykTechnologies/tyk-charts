@@ -108,7 +108,6 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           - name: TYK_DB_TYKAPI_HOST
-            # this needs to be setup from values
             value: {{ include "tyk-dashboard.gateway_url" .}}
           - name: TYK_DB_TYKAPI_PORT
             value: "{{ .Values.global.servicePorts.dashboard }}"
