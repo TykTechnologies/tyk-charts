@@ -145,7 +145,7 @@ dashboard:
   hostConfig:
     enableHostNames: true
     disableOrgSlugPrefix: true
-    overrideHostname: "dashboard-svc-tyk-pro.tyk.svc"
+    overrideHostname: "tyk-gw.local"
   homeDir: "/opt/tyk-dashboard"
   useShardedAnalytics: false
   enableAggregateLookups: true
