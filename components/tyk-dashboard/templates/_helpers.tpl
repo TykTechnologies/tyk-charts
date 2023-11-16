@@ -55,8 +55,23 @@ http
 gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
 
+{{- define "tyk-dashboard.gatewaySvcName" -}}
+   {{- $services := (lookup "v1" "Service" .Release.Namespace "") -}}
+   {{- if $services -}}
+       {{- range $index, $svc := $services.items -}}
+           {{- range $key, $val := $svc.metadata.labels -}}
+               {{- if and (eq $key "app") (contains "gateway-svc-" $val) -}}
+{{- $svc.metadata.name | trim -}}
+               {{ end }}
+           {{- end }}
+       {{- end }}
+   {{- end }}
+{{- end }}
+
+
+
 {{- define "tyk-dashboard.gateway_url" -}}
-{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}
+{{- include "tyk-dashboard.gwproto" . -}}://{{- include "tyk-dashboard.gatewaySvcName" . -}}.svc:{{ .Values.global.servicePorts.gateway }}
 {{- end -}}
 
 {{- define "tyk-dashboard.redis_url" -}}
