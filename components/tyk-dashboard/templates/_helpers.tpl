@@ -31,7 +31,7 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "tyk-dashboard.gwproto" -}}
+{{- define "tyk-dashboard.gw_proto" -}}
 {{- if .Values.global.tls.gateway -}}
 https
 {{- else -}}
@@ -48,11 +48,11 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.dash_url" -}}
-{{ include "tyk-dashboard.dash_proto" . }}://dashboard-svc-{{.Release.Name}}-tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.dashboard }}
+{{ include "tyk-dashboard.dash_proto" . }}://dashboard-svc-{{.Release.Name}}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_host" -}}
-gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local
+gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
 {{- end -}}
 
 {{/*
@@ -75,9 +75,9 @@ gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.l
 
 {{- define "tyk-dashboard.gatewayUrl" -}}
 {{ if (include "tyk-dashboard.gatewaySvcName" .) }}
-{{- include "tyk-dashboard.gwproto" . -}}://{{- include "tyk-dashboard.gatewaySvcName" . -}}.svc:{{ .Values.global.servicePorts.gateway }}
+{{- include "tyk-dashboard.gw_proto" . -}}://{{- include "tyk-dashboard.gatewaySvcName" . -}}.svc:{{ .Values.global.servicePorts.gateway }}
 {{ else }}
-{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}
+{{ include "tyk-dashboard.gw_proto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}
 {{ end }}
 {{- end -}}
 
@@ -85,7 +85,7 @@ gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.l
 {{- if .Values.global.redis.addrs -}}
 {{ join "," .Values.global.redis.addrs }}
 {{- else -}}
-redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+redis.{{ .Release.Namespace }}.svc:6379
 {{- end -}}
 {{- end -}}
 
@@ -117,7 +117,7 @@ redisPass
 {{- if .Values.global.mongo.mongoURL -}}
 {{ .Values.global.mongo.mongoURL }}
 {{- else -}}
-mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 
