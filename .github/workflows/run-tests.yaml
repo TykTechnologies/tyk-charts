@@ -96,8 +96,8 @@ jobs:
           helm dependency update ./tyk-stack
 
           helm install --namespace ${{ env.TYK_STACK_NS }} tyk-stack ./tyk-stack \
-            --set "global.mongo.mongoURL=mongodb://mongo.tyk-stack.svc.cluster.local:27017/tyk_analytics" \
-            --set "global.redis.addrs[0]=redis.tyk-stack.svc.cluster.local:6379" \
+            --set "global.mongo.mongoURL=mongodb://mongo.tyk-stack.svc:27017/tyk_analytics" \
+            --set "global.redis.addrs[0]=redis.tyk-stack.svc:6379" \
             --set "global.license.dashboard=${{ secrets.DASH_LICENSE }}" \
             --set "global.storageType=mongo" \
             --timeout=${{ env.TIMEOUT }}
@@ -159,8 +159,8 @@ jobs:
           helm dependency update ./tyk-single-dc
 
           helm install --namespace ${{ env.TYK_SINGLE_DC_NS }} tyk-single-dc ./tyk-single-dc \
-            --set "global.mongo.mongoURL=mongodb://mongo.tyk-single-dc.svc.cluster.local:27017/tyk_analytics" \
-            --set "global.redis.addrs[0]=redis.tyk-single-dc.svc.cluster.local:6379" \
+            --set "global.mongo.mongoURL=mongodb://mongo.tyk-single-dc.svc:27017/tyk_analytics" \
+            --set "global.redis.addrs[0]=redis.tyk-single-dc.svc:6379" \
             --set "global.license.dashboard=${{ secrets.DASH_LICENSE }}" \
             --set "global.storageType=mongo" \
             --timeout=${{ env.TIMEOUT }}

@@ -114,16 +114,16 @@ global:
     # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
     # the endpoints of the redis instances or use the cluster configuration endpoint.
     #
-    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+    # Default value: redis.{{ .Release.Namespace }}.svc:6379
     # addrs:
     #   Example using tyk simple redis chart
-    #   - redis.tyk.svc.cluster.local:6379
+    #   - redis.tyk.svc:6379
     #   Example using bitnami/redis
-    #   - tyk-redis-master.tyk.svc.cluster.local:6379
+    #   - tyk-redis-master.tyk.svc:6379
     #   Example using bitnami/redis with sentinel
-    #   - tyk-redis.tyk.svc.cluster.local:26379
+    #   - tyk-redis.tyk.svc:26379
     #   Example using bitnami/redis-cluster
-    #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
+    #   - tyk-redis-redis-cluster.tyk.svc:6379
 
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
@@ -165,11 +165,11 @@ global:
   # for the list of supported MongoDB versions.
   mongo:
     # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
 
     # If your MongoDB has a password you can add the username and password to the url
-    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc:27017/tyk_analytics?authSource=admin
 
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
@@ -191,7 +191,7 @@ global:
 
   # Postgres connection string parameters.
   postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    host: tyk-postgres-postgresql.tyk.svc
     port: 5432
     user: postgres
     password:

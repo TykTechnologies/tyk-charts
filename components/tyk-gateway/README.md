@@ -60,7 +60,7 @@ If you do not already have redis installed, you can use these charts provided by
     helm repo add bitnami https://charts.bitnami.com/bitnami
     helm install tyk-redis bitnami/redis -n tyk --create-namespace
 
-Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379` (Tyk needs the name including the port) You can update them in your local values.yaml file under `global.redis.addrs` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
+Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc:6379` (Tyk needs the name including the port) You can update them in your local values.yaml file under `global.redis.addrs` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
 ### Enable autoscaling
 
