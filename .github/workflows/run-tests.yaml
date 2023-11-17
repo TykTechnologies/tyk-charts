@@ -11,7 +11,6 @@ env:
   TYK_OSS_NS: tyk-oss
   TYK_DATAPLANE_NS: tyk-dataplane
   TYK_STACK_NS: tyk-stack
-  TYK_SINGLE_DC_NS: tyk-single-dc 
   TYK_MDCB_DATAPLANE_NS: tyk-mdcb-dataplane
 
 jobs:
