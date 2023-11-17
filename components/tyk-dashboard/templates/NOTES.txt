@@ -1,0 +1,14 @@
+{{ $dashSvc := printf "dashboard-svc-%v" (include "tyk-dashboard.fullname" .)  }}
+Thank you for installing Tyk Dashboard Chart. Your release is named '{{ .Release.Name }}'.
+At this point, Tyk Dashboard is fully installed and should be accessible.
+
+To quickly test everything is ok, you can port-forward Tyk Dashboard service:
+
+    kubectl port-forward service/{{- $dashSvc }} --namespace {{ .Release.Namespace }} {{ .Values.global.servicePorts.dashboard  }}:{{ .Values.global.servicePorts.dashboard }}
+    curl http://localhost:{{ .Values.global.servicePorts.dashboard }}/hello
+
+===================================================
+  Manage Ingress resources and APIs on Kubernetes
+===================================================
+You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
+Please check Tyk Operator documentation at https://tyk.io/docs/tyk-operator/

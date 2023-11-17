@@ -1,0 +1,5 @@
+Thank you for installing Tyk Bootstrap Chart.
+
+Tyk Bootstrap chart comes with Kubernetes Jobs to bootstrap
+- Tyk Dashboard
+- Kubernetes Secrets for Tyk Developer Portal and Tyk Operator
