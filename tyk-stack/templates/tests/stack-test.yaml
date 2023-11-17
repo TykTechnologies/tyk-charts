@@ -20,7 +20,7 @@ spec:
           name: test-tyk-stack
       env:
         - name: TYK_GW_PROTO
-          value: {{ include "tyk-stack.gwproto" . }}
+          value: {{ include "tyk-stack.gw_proto" . }}
         - name: TYK_GW_SVC
           value: gateway-svc-{{ include "tyk-stack.fullname" . }}-tyk-gateway
         - name: TYK_GW_LISTENPORT
