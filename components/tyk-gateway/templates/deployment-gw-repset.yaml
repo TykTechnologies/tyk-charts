@@ -251,6 +251,57 @@ spec:
             value: "false"
         {{- end }}
 
+        {{- if .Values.gateway.opentelemetry.enabled }}
+          - name: TYK_GW_OPENTELEMETRY_ENABLED
+            value: "{{ .Values.gateway.opentelemetry.enabled }}"
+          - name: TYK_GW_OPENTELEMETRY_EXPORTER
+            value: "{{ .Values.gateway.opentelemetry.exporter }}"
+          - name: TYK_GW_OPENTELEMETRY_ENDPOINT
+            value: "{{ .Values.gateway.opentelemetry.endpoint}}"
+            {{- if .Values.gateway.opentelemetry.headers }}
+          - name: TYK_GW_OPENTELEMETRY_HEADERS
+            value: "{{ include "opentelemetry-headers" . }}"
+            {{- end }}
+          - name: TYK_GW_OPENTELEMETRY_CONNECTIONTIMEOUT
+            value: "{{ .Values.gateway.opentelemetry.connectionTimeout }}"
+          - name: TYK_GW_OPENTELEMETRY_RESOURCENAME
+            value: "{{ .Values.gateway.opentelemetry.resourceName }}"
+          - name: TYK_GW_OPENTELEMETRY_SPANPROCESSORTYPE
+            value: "{{ .Values.gateway.opentelemetry.spanProcessorType }}"
+          - name: TYK_GW_OPENTELEMETRY_CONTEXTPROPAGATION
+            value: "{{ .Values.gateway.opentelemetry.contextPropogation }}"
+
+          {{- if (.Values.gateway.opentelemetry.tls).enabled }}
+          - name: TYK_GW_OPENTELEMETRY_TLS_ENABLE
+            value: "{{ .Values.gateway.opentelemetry.tls.enabled }}"
+          - name: TYK_GW_OPENTELEMETRY_TLS_INSECURESKIPVERIFY
+            value: {{ .Values.gateway.opentelemetry.tls.insecureSkipVerify | quote }}
+          {{- if (.Values.gateway.opentelemetry.tls.ca).filename}}
+          - name: TYK_GW_OPENTELEMETRY_TLS_CAFILE
+            value: "{{ .Values.gateway.opentelemetry.tls.ca.filename }}"
+          {{- end }}
+          {{- if (.Values.gateway.opentelemetry.tls.cert).filename}}
+          - name: TYK_GW_OPENTELEMETRY_TLS_CERTFILE
+            value: "{{ .Values.gateway.opentelemetry.tls.cert.filename }}"
+          {{- end }}
+          {{- if (.Values.gateway.opentelemetry.tls.key).filename}}
+          - name: TYK_GW_OPENTELEMETRY_TLS_KEYFILE
+            value: "{{ .Values.gateway.opentelemetry.tls.key.filename }}"
+          {{- end }}
+          - name: TYK_GW_OPENTELEMETRY_TLS_MAXVERSION
+            value: "{{ .Values.gateway.opentelemetry.tls.maxVersion}}"
+          - name: TYK_GW_OPENTELEMETRY_TLS_MINVERSION
+            value:  "{{ .Values.gateway.opentelemetry.tls.minVersion}}" 
+          {{- end }}
+
+          - name: TYK_GW_OPENTELEMETRY_SAMPLING_TYPE
+            value: "{{ .Values.gateway.opentelemetry.sampling.type }}"
+          - name: TYK_GW_OPENTELEMETRY_SAMPLING_RATE
+            value: "{{ .Values.gateway.opentelemetry.sampling.rate }}"
+          - name: TYK_GW_OPENTELEMETRY_SAMPLING_PARENTBASED
+            value: "{{ .Values.gateway.opentelemetry.sampling.parentBased }}"
+        {{- end }}
+
         {{- if .Values.gateway.extraEnvs }}
         {{- include "tyk-gateway.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}

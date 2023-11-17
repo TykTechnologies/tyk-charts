@@ -94,3 +94,11 @@ redisPass
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
 {{- end -}}
+
+{{- define "opentelemetry-headers" -}}
+        {{- $list := list -}}
+        {{- range $k, $v := .Values.gateway.opentelemetry.headers  -}}
+        {{- $list = append $list (printf "%s:%s" $k $v) -}}
+        {{- end -}}
+        {{ join "," $list }}
+{{- end -}}
