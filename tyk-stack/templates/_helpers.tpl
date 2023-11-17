@@ -61,7 +61,7 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "tyk-stack.gwproto" -}}
+{{- define "tyk-stack.gw_proto" -}}
 {{- if .Values.global.tls.gateway -}}
 https
 {{- else -}}

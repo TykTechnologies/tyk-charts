@@ -108,10 +108,10 @@ Add following under the `global` section in `values.yaml`:
    # Set mongo connection details if you want to configure mongo pump.     
    mongo:
       # The mongoURL value will allow you to set your MongoDB address.
-      # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-      # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+      # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
+      # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
       # If your MongoDB has a password you can add the username and password to the url
-      # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+      # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc:27017/tyk_analytics?authSource=admin
       mongoURL: <MongoDB address>
       
      # mongo-go driver is supported for Tyk 5.0.2+.
@@ -141,7 +141,7 @@ Add following under the `global` section in `values.yaml`:
   # Set postgres connection details if you want to configure postgres pump.
   # Postgres connection string parameters.
   postgres:
-      host: tyk-postgres-postgresql.tyk.svc.cluster.local
+      host: tyk-postgres-postgresql.tyk.svc
       port: 5432
       user: postgres
       password:

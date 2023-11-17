@@ -113,8 +113,6 @@ spec:
             - name: DEVELOPER_PORTAL_SECRET_NAME
               value: {{ .Values.global.secrets.devPortal}}
             {{- end }}
-            - name: GATEWAY_ADDRESS
-              value: "{{ include "tyk-bootstrap.gateway_url" . }}"
             {{- if .Values.bootstrap.portal }}
             - name: BOOTSTRAP_PORTAL
               value: "true"
