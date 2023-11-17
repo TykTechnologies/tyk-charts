@@ -217,14 +217,16 @@ spec:
             scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
             path: /live
             port: {{ .Values.containerPort }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds}}
           periodSeconds: 2
           timeoutSeconds: 3
           failureThreshold: 2
-        startupProbe:
+        readinessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
-            path: /
+            path: /ready
             port: {{ .Values.containerPort }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds}}
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3

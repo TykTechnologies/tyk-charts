@@ -877,3 +877,9 @@ tyk-dev-portal:
   ##     mountPath: /etc/ssl/certs/ca-certs.crt
   ##     readOnly: true
   extraVolumeMounts: []
+
+  livenessProbe:
+    initialDelaySeconds: 60
+
+  readinessProbe:
+    initialDelaySeconds: 60
