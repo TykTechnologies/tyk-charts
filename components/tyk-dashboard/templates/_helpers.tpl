@@ -77,7 +77,7 @@ gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
 {{ if (include "tyk-dashboard.gatewaySvcName" .) }}
 {{- include "tyk-dashboard.gw_proto" . -}}://{{- include "tyk-dashboard.gatewaySvcName" . -}}.svc:{{ .Values.global.servicePorts.gateway }}
 {{ else }}
-{{ include "tyk-dashboard.gw_proto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}
+{{ include "tyk-dashboard.gw_proto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.gateway }}
 {{ end }}
 {{- end -}}
 
