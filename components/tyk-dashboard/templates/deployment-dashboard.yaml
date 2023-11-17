@@ -30,10 +30,6 @@ spec:
       {{- if .Values.dashboard.podAnnotations }}
       {{ toYaml .Values.dashboard.podAnnotations | nindent 8 }}
       {{- end }}
-      {{- if .Values.dashboard.enableIstioIngress }}
-        traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.global.servicePorts.dashboard }}"
-        traffic.sidecar.istio.io/includeInboundPorts: ""
-      {{- end }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
     spec:
 {{- if .Values.dashboard.nodeSelector }}
@@ -113,9 +109,9 @@ spec:
             value: "128"
           - name: TYK_DB_TYKAPI_HOST
             # this needs to be setup from values
-            value: {{ include "tyk-dashboard.gateway_url" .}}
+            value: {{ include "tyk-dashboard.gw_proto" . }}://{{ include "tyk-dashboard.gateway_host" .}}
           - name: TYK_DB_TYKAPI_PORT
-            value: "{{ .Values.global.servicePorts.dashboard }}"
+            value: "{{ .Values.global.servicePorts.gateway }}"
           - name: TYK_DB_TYKAPI_SECRET
             valueFrom:
               secretKeyRef:

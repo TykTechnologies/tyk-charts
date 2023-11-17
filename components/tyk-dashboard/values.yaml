@@ -72,7 +72,7 @@ global:
   storageType: postgres
 
   postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    host: tyk-postgres-postgresql.tyk.svc
     port: 5432
     user: postgres
     password:
@@ -88,11 +88,11 @@ global:
     # The addrs value will allow you to set your Redis addresses. If you are
     # using a redis cluster, you can list the endpoints of the redis instances
     # or use the cluster configuration endpoint.
-    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+    # Default value: redis.{{ .Release.Namespace }}.svc:6379
     addrs:
-    #   - redis.tyk.svc.cluster.local:6379
+    #   - redis.tyk.svc:6379
     #   This is the DNS name of the redis as set when using Bitnami
-    #   - "tyk-redis-master.tyk.svc.cluster.local:6379"
+    #   - "tyk-redis-master.tyk.svc:6379"
 
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
@@ -123,7 +123,7 @@ global:
   mongo:
     useSSL: false
     # For tyk-simple-mongo (no auth)
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
     mongoURL: ""
     # mongo-go driver is supported for Tyk 5.0.2+.
     # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
@@ -145,7 +145,7 @@ dashboard:
   hostConfig:
     enableHostNames: true
     disableOrgSlugPrefix: true
-    overrideHostname: "dashboard-svc-tyk-pro.tyk.svc.cluster.local"
+    overrideHostname: "tyk-gw.local"
   homeDir: "/opt/tyk-dashboard"
   useShardedAnalytics: false
   enableAggregateLookups: true
@@ -160,8 +160,6 @@ dashboard:
   enableUpdateKeyByHash: true
   enableHashedKeysListing: true
   enableMultiOrgUsers: true
-
-  enableIstioIngress: false
 
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
