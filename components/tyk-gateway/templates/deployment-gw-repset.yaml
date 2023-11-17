@@ -56,6 +56,7 @@ spec:
       {{- with .Values.gateway.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
+      {{- if not .Values.gateway.disableInitContainer }}
       initContainers:
       - name: "setup-directories"
         image: busybox:1.32
@@ -64,6 +65,7 @@ spec:
         volumeMounts:
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway
+      {{- end }}
       containers:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
@@ -135,12 +137,19 @@ spec:
             value: "/opt/tyk-gateway/templates"
           - name: TYK_GW_TYKJSPATH
             value: "/opt/tyk-gateway/js/tyk.js"
+        {{- if not .Values.gateway.disableInitContainer }}
           - name: TYK_GW_MIDDLEWAREPATH
             value: "/mnt/tyk-gateway/middleware"
           - name: TYK_GW_APPPATH
             value: "/mnt/tyk-gateway/apps"
           - name: TYK_GW_POLICIES_POLICYPATH
             value: "/mnt/tyk-gateway/policies"
+        {{- else}}
+          - name: TYK_GW_MIDDLEWAREPATH
+            value: "/opt/tyk-gateway/middleware"
+          - name: TYK_GW_APPPATH
+            value: "/opt/tyk-gateway/apps"
+        {{- end}}
           - name: TYK_GW_STORAGE_MAXIDLE
             value: "1000"
           - name: TYK_GW_ENABLENONTRANSACTIONALRATELIMITER
@@ -209,7 +218,11 @@ spec:
         {{- if .Values.global.remoteControlPlane.enabled }}
             value: "tyk_policies"
         {{- else}}
+          {{- if not .Values.gateway.disableInitContainer }}
             value: "/mnt/tyk-gateway/policies/policies.json"
+          {{- else}}
+            value: "/opt/tyk-gateway/policies/policies.json"
+          {{- end}}
         {{- end}}
           - name: TYK_GW_HASHKEYS
             value: "true"
@@ -235,7 +248,6 @@ spec:
             value: "true"
           - name: TYK_GW_PIDFILELOCATION
             value: "/mnt/tyk-gateway/tyk.pid"
-
           - name: TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
             value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard}}"
           - name: TYK_GW_POLICIES_POLICYCONNECTIONSTRING
