@@ -57,7 +57,7 @@ bootstrap:
   sslInsecureSkipVerify: false
 
   # Trigger to control if we want to create the tyk-operator secret
-  operatorSecret: true
+  operatorSecret: tyk-operator-conf
 
   # jobs field includes configurations for Helm Hooks.
   jobs:
@@ -68,7 +68,12 @@ bootstrap:
         # repository specifies image repository of pre-install job.
         repository: tykio/tyk-k8s-bootstrap-pre-install
         # tag specifies image tag of pre-install job.
-        tag: v2.0.0-beta1
+        tag: v2.0.0-beta4
+
+      # extraEnvs is used to set extra environment variables to pre-install job.
+      # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
+      #   value: "yourlicense"
+      extraEnvs: []
 
     # postInstall configures post-install Helm hook
     postInstall:
@@ -77,7 +82,12 @@ bootstrap:
         # repository specifies image repository of post-install job.
         repository: tykio/tyk-k8s-bootstrap-post
         # tag specifies image tag of post-install job.
-        tag: v2.0.0-beta1
+        tag: v2.0.0-beta4
+
+      # extraEnvs is used to set extra environment variables to post-install job.
+      # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
+      #   value: "burak"
+      extraEnvs: []
 
     # preDelete configures pre-delete Helm hook
     preDelete:
@@ -86,8 +96,12 @@ bootstrap:
         # repository specifies image repository of pre-delete job.
         repository: tykio/tyk-k8s-bootstrap-pre-delete
         # tag specifies image tag of pre-delete job.
-        tag: v2.0.0-beta1
+        tag: v2.0.0-beta4
 
+      # extraEnvs is used to set extra environment variables to pre-delete job.
+      # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
+      #   value: "tyk-operator-conf"
+      extraEnvs: []
   org:
     # The name for your organization inside Tyk
     name: Default Org
