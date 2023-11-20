@@ -333,7 +333,7 @@ gateway:
   # TLS configuration for the exporter.
     tls: 
     # Flag that can be used to enable TLS
-      enabled: true
+      enabled: false
     # Flag that can be used to skip TLS verification if TLS is enabled
       insecureSkipVerify: true
     # Maximum TLS version that is supported.

@@ -260,7 +260,7 @@ spec:
             value: "{{ .Values.gateway.opentelemetry.endpoint}}"
             {{- if .Values.gateway.opentelemetry.headers }}
           - name: TYK_GW_OPENTELEMETRY_HEADERS
-            value: "{{ include "opentelemetry-headers" . }}"
+            value: "{{ include "otel-headers" . }}"
             {{- end }}
           - name: TYK_GW_OPENTELEMETRY_CONNECTIONTIMEOUT
             value: "{{ .Values.gateway.opentelemetry.connectionTimeout }}"
@@ -277,25 +277,19 @@ spec:
           - name: TYK_GW_OPENTELEMETRY_TLS_INSECURESKIPVERIFY
             value: {{ .Values.gateway.opentelemetry.tls.insecureSkipVerify | quote }}
 
-          {{- if .Values.gateway.opentelemetry.tls.certificateSecretName}}
-          - name: TYK_GW_OPENTELEMETRY_TLS_CERTFILE
-            value:  {{ printf "/etc/ssl/certs/%s" .Values.gateway.opentelemetry.tls.certFileName }}
-          - name: TYK_GW_OPENTELEMETRY_TLS_KEYFILE
-            value:  {{ printf "/etc/ssl/certs/%s" .Values.gateway.opentelemetry.tls.keyFileName }}
-          - name: TYK_GW_OPENTELEMETRY_TLS_CAFILE
-            value:  {{ printf "/etc/ssl/certs/%s" .Values.gateway.opentelemetry.tls.caFileName }}
-          {{ else }}
           {{- if .Values.gateway.opentelemetry.tls.certFileName }}
           - name: TYK_GW_OPENTELEMETRY_TLS_CERTFILE
-            value:  "{{ .Values.gateway.opentelemetry.tls.certFileName }}"
-          {{- end}}
-          {{ if .Values.gateway.opentelemetry.tls.keyFileName }}
-          - name: TYK_GW_OPENTELEMETRY_TLS_KEYFILE
-            value:  "{{ .Values.gateway.opentelemetry.tls.keyFileName }}"
+            value:  {{ include "otel-tlsCertPath" . | quote }}
           {{- end }}
-          {{ if .Values.gateway.opentelemetry.tls.caFileName }}
+
+          {{- if .Values.gateway.opentelemetry.tls.keyFileName }}
+          - name: TYK_GW_OPENTELEMETRY_TLS_KEYFILE
+            value:  {{ include "otel-tlsKeyPath" . | quote }}
+          {{- end }}
+
+          {{- if .Values.gateway.opentelemetry.tls.caFileName }}
           - name: TYK_GW_OPENTELEMETRY_TLS_CAFILE
-            value:  "{{ .Values.gateway.opentelemetry.tls.caFileName }}"
+            value:  {{ include "otel-CAPath" . | quote }}
           {{- end }}
 
           - name: TYK_GW_OPENTELEMETRY_TLS_MAXVERSION
@@ -330,8 +324,7 @@ spec:
             mountPath: {{ .Values.gateway.tls.certificatesMountPath }}
           {{ end }}
 
-          {{- if .Values.gateway.opentelemetry.tls }}
-          {{- if .Values.gateway.opentelemetry.tls.certificateSecretName}}
+          {{- if (.Values.gateway.opentelemetry.tls).certificateSecretName}}
           - name: {{.Values.gateway.opentelemetry.tls.certificateSecretName}}
             mountPath: "/etc/ssl/certs/"
           {{- end}}
@@ -383,7 +376,7 @@ spec:
         {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
         {{- if (.Values.gateway.opentelemetry.tls).certificateSecretName }}
-        - name: {{ .Values.gateway.opentelemetry.tls.certificateSecretName}}
+        - name: {{ .Values.gateway.opentelemetry.tls.certificateSecretName }}
           secret:
-            secretName: {{.Values.gateway.opentelemetry.tls.certificateSecretName}}
+            secretName: {{ .Values.gateway.opentelemetry.tls.certificateSecretName }}
         {{- end }}
