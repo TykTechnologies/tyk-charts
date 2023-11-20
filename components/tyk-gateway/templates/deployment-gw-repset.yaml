@@ -78,6 +78,10 @@ spec:
           {{ if .Values.global.components.dashboard}}
           - name: TYK_GW_USEDBAPPCONFIGS
             value: "true"
+          - name: TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
+            value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard}}"
+          - name: TYK_GW_POLICIES_POLICYCONNECTIONSTRING
+            value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}"
            {{- end }}
           {{- if .Values.gateway.control.enabled }}
           - name: TYK_GW_CONTROLAPIPORT
@@ -148,6 +152,8 @@ spec:
           - name: TYK_GW_POLICIES_POLICYSOURCE
         {{- if .Values.global.remoteControlPlane.enabled }}
             value: "rpc"
+        {{- else if .Values.global.components.dashboard}}
+            value: "service"
         {{- else}}
             value: "file"
         {{- end}}
@@ -235,12 +241,6 @@ spec:
             value: "true"
           - name: TYK_GW_PIDFILELOCATION
             value: "/mnt/tyk-gateway/tyk.pid"
-
-          - name: TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
-            value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard}}"
-          - name: TYK_GW_POLICIES_POLICYCONNECTIONSTRING
-            value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}"
-
         {{- if .Values.gateway.sharding.enabled }}
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
             value: "{{ .Values.gateway.sharding.enabled }}"
