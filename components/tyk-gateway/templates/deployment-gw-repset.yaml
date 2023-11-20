@@ -276,18 +276,28 @@ spec:
             value: "{{ .Values.gateway.opentelemetry.tls.enabled }}"
           - name: TYK_GW_OPENTELEMETRY_TLS_INSECURESKIPVERIFY
             value: {{ .Values.gateway.opentelemetry.tls.insecureSkipVerify | quote }}
-          {{- if (.Values.gateway.opentelemetry.tls.ca).filename}}
-          - name: TYK_GW_OPENTELEMETRY_TLS_CAFILE
-            value: "{{ .Values.gateway.opentelemetry.tls.ca.filename }}"
-          {{- end }}
-          {{- if (.Values.gateway.opentelemetry.tls.cert).filename}}
+
+          {{- if .Values.gateway.opentelemetry.tls.certificateSecretName}}
           - name: TYK_GW_OPENTELEMETRY_TLS_CERTFILE
-            value: "{{ .Values.gateway.opentelemetry.tls.cert.filename }}"
-          {{- end }}
-          {{- if (.Values.gateway.opentelemetry.tls.key).filename}}
+            value:  {{ printf "/etc/ssl/certs/%s" .Values.gateway.opentelemetry.tls.certFileName }}
           - name: TYK_GW_OPENTELEMETRY_TLS_KEYFILE
-            value: "{{ .Values.gateway.opentelemetry.tls.key.filename }}"
+            value:  {{ printf "/etc/ssl/certs/%s" .Values.gateway.opentelemetry.tls.keyFileName }}
+          - name: TYK_GW_OPENTELEMETRY_TLS_CAFILE
+            value:  {{ printf "/etc/ssl/certs/%s" .Values.gateway.opentelemetry.tls.caFileName }}
+          {{ else }}
+          {{- if .Values.gateway.opentelemetry.tls.certFileName }}
+          - name: TYK_GW_OPENTELEMETRY_TLS_CERTFILE
+            value:  "{{ .Values.gateway.opentelemetry.tls.certFileName }}"
+          {{- end}}
+          {{ if .Values.gateway.opentelemetry.tls.keyFileName }}
+          - name: TYK_GW_OPENTELEMETRY_TLS_KEYFILE
+            value:  "{{ .Values.gateway.opentelemetry.tls.keyFileName }}"
           {{- end }}
+          {{ if .Values.gateway.opentelemetry.tls.caFileName }}
+          - name: TYK_GW_OPENTELEMETRY_TLS_CAFILE
+            value:  "{{ .Values.gateway.opentelemetry.tls.caFileName }}"
+          {{- end }}
+
           - name: TYK_GW_OPENTELEMETRY_TLS_MAXVERSION
             value: "{{ .Values.gateway.opentelemetry.tls.maxVersion}}"
           - name: TYK_GW_OPENTELEMETRY_TLS_MINVERSION
@@ -319,6 +329,13 @@ spec:
           - name: {{ .Values.gateway.tls.secretName }}
             mountPath: {{ .Values.gateway.tls.certificatesMountPath }}
           {{ end }}
+
+          {{- if .Values.gateway.opentelemetry.tls }}
+          {{- if .Values.gateway.opentelemetry.tls.certificateSecretName}}
+          - name: {{.Values.gateway.opentelemetry.tls.certificateSecretName}}
+            mountPath: "/etc/ssl/certs/"
+          {{- end}}
+
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway
           {{- if .Values.gateway.extraVolumeMounts }}
@@ -364,4 +381,9 @@ spec:
         {{ end }}
         {{- if .Values.gateway.extraVolumes }}
         {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+        {{- if (.Values.gateway.opentelemetry.tls).certificateSecretName }}
+        - name: {{ .Values.gateway.opentelemetry.tls.certificateSecretName}}
+          secret:
+            secretName: {{.Values.gateway.opentelemetry.tls.certificateSecretName}}
         {{- end }}
