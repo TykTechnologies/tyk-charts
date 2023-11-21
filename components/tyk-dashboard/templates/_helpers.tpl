@@ -60,17 +60,26 @@ gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
     for Tyk Gateway with its label.
 */}}
 {{- define "tyk-dashboard.gatewaySvcName" -}}
-    {{ $svcName := ""}}
+    {{- $svcName := "" -}}
+    {{- $svcControl := "" -}}
+    {{- $svcGw := "" -}}
    {{- $services := (lookup "v1" "Service" .Release.Namespace "") -}}
    {{- if $services -}}
        {{- range $index, $svc := $services.items -}}
            {{- range $key, $val := $svc.metadata.labels -}}
-               {{- if and (eq $key "app") (or (contains "gateway-svc-" $val) (contains "gateway-control-svc-" $val)) -}}
-               {{- $svcName = $svc.metadata.name | trim -}}
-               {{ end }}
-           {{- end }}
-       {{- end }}
-   {{- end }}
+               {{- if and (eq $key "app") (contains "gateway-svc-" $val) -}}
+               {{- $svcGw = $svc.metadata.name | trim -}}
+               {{- else if and (eq $key "app") (contains "gateway-control-svc-" $val) -}}
+               {{- $svcControl = $svc.metadata.name | trim -}}
+               {{- end -}}
+           {{- end -}}
+       {{- end -}}
+   {{- end -}}
+   {{- if $svcControl -}}
+    {{- $svcName = $svcControl | trim -}}
+   {{- else -}}
+    {{- $svcName = $svcGw | trim -}}
+   {{- end -}}
 {{- $svcName | trim -}}
 {{- end }}
 
