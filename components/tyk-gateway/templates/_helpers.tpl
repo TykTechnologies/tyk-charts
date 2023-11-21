@@ -58,7 +58,7 @@ http
 
 {{- define "tyk-gateway.dashboardUrl" -}}
 {{- if (include "tyk-gateway.dashboardSvcName" .) -}}
-{{- include "tyk-gateway.dash_proto" . }}://{{ include "tyk-gateway.dashboardSvcName" . }}.svc:{{ .Values.global.servicePorts.dashboard -}}
+{{- include "tyk-gateway.dash_proto" . }}://{{ include "tyk-gateway.dashboardSvcName" . }}.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard -}}
 {{- else -}}
 {{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard}}
 {{- end -}}
