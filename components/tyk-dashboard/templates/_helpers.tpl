@@ -51,10 +51,6 @@ http
 {{ include "tyk-dashboard.dash_proto" . }}://dashboard-svc-{{.Release.Name}}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}
 {{- end -}}
 
-{{- define "tyk-dashboard.gateway_host" -}}
-gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
-{{- end -}}
-
 {{/*
     It lists all services in the release namespace and find a service
     for Tyk Gateway with its label.
@@ -83,13 +79,16 @@ gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
 {{- $svcName | trim -}}
 {{- end }}
 
+{{- define "tyk-dashboard.gateway_host" -}}
+{{ if (include "tyk-dashboard.gatewaySvcName" .) }}
+{{- include "tyk-dashboard.gw_proto" . -}}://{{- include "tyk-dashboard.gatewaySvcName" . -}}.svc
+{{ else }}
+{{ include "tyk-dashboard.gw_proto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
+{{ end }}
+{{- end -}}
 
 {{- define "tyk-dashboard.gatewayUrl" -}}
-{{ if (include "tyk-dashboard.gatewaySvcName" .) }}
-{{- include "tyk-dashboard.gw_proto" . -}}://{{- include "tyk-dashboard.gatewaySvcName" . -}}.svc:{{ .Values.global.servicePorts.gateway }}
-{{ else }}
-{{ include "tyk-dashboard.gw_proto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.gateway }}
-{{ end }}
+{{- include "tyk-dashboard.gw_proto" . -}}://{{- include "tyk-dashboard.gateway_host" . -}}:{{ .Values.global.servicePorts.gateway }}
 {{- end -}}
 
 {{- define "tyk-dashboard.redis_url" -}}
