@@ -98,7 +98,7 @@ containerPort: 3001
 image:
   repository: tykio/portal
   # Developer portal < v1.2 is not supported
-  tag: v1.7.0
+  tag: v1.8.0
   pullPolicy: Always
 
 # image pull secrets to use when pulling images from repository
