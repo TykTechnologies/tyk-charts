@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: {{ .Values.kind }}
 metadata:
-  name: {{ include "tyk-dev-portal.fullname" . }}
+  name: portal-{{ include "tyk-dev-portal.fullname" . }}
   labels:
     app: {{ include "tyk-dev-portal.fullname" . }}
     chart: {{ include "tyk-dev-portal.chart" . }}
@@ -86,7 +86,7 @@ spec:
           - name: PORTAL_STORAGE
             value: "{{ .Values.storage.type }}"
           - name: PORTAL_DATABASE_DIALECT
-            value: "{{ .Values.storage.database.dialect }}"
+            value: "{{ .Values.storage.dialect }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
@@ -98,7 +98,7 @@ spec:
                 key: "DevPortalStorageConnectionString"
           {{ if eq .Values.storage.type "db" }}
           - name: PORTAL_DATABASE_ENABLELOGS
-            value: "{{ .Values.storage.database.enableLogs }}"
+            value: "{{ .Values.storage.enableLogs }}"
           - name: PORTAL_DATABASE_MAXRETRIES
             value: "{{.Values.storage.database.maxRetries }}"
           - name: PORTAL_DATABASE_RETRYDELAY
@@ -204,7 +204,7 @@ spec:
             mountPath: /opt/portal/themes
             subPath: themes
           {{- end }}
-          {{- if eq .Values.storage.database.dialect "sqlite3" }}
+          {{- if eq .Values.storage.dialect "sqlite3" }}
           - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/db
             subPath: db
@@ -215,18 +215,18 @@ spec:
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
-            path: /
+            path: /live
             port: {{ .Values.containerPort }}
-          initialDelaySeconds: {{ default 60 .Values.livenessProbe.initialDelaySeconds}}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds}}
           periodSeconds: 2
           timeoutSeconds: 3
           failureThreshold: 2
         readinessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
-            path: /
+            path: /ready
             port: {{ .Values.containerPort }}
-          initialDelaySeconds: {{ default 60 .Values.readinessProbe.initialDelaySeconds}}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds}}
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
