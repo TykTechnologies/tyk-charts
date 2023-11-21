@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: {{ .Values.kind }}
 metadata:
-  name: {{ include "tyk-dev-portal.fullname" . }}
+  name: portal-{{ include "tyk-dev-portal.fullname" . }}
   labels:
     app: {{ include "tyk-dev-portal.fullname" . }}
     chart: {{ include "tyk-dev-portal.chart" . }}
@@ -215,18 +215,18 @@ spec:
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
-            path: /
+            path: /live
             port: {{ .Values.containerPort }}
-          initialDelaySeconds: {{ default 60 .Values.livenessProbe.initialDelaySeconds}}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds}}
           periodSeconds: 2
           timeoutSeconds: 3
           failureThreshold: 2
         readinessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
-            path: /
+            path: /ready
             port: {{ .Values.containerPort }}
-          initialDelaySeconds: {{ default 60 .Values.readinessProbe.initialDelaySeconds}}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds}}
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
