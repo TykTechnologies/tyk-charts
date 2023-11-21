@@ -61,7 +61,7 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "tyk-oss.gwproto" -}}
+{{- define "tyk-oss.gw_proto" -}}
 {{- if index .Values "global" "tls" "gateway" -}}
 https
 {{- else -}}

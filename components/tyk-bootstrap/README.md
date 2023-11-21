@@ -36,8 +36,14 @@ helm upgrade tyk-bootstrap tyk-helm/tyk-bootstrap -n tyk
 ## Configuration
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To get all configurable options with detailed comments:
 
-``bash
+```bash
 helm show values tyk-helm/tyk-bootstrap > values-bootstrap.yaml --devel
-``
+```
     
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
+
+### Environment Variables
+
+All environment variable configurations can be found in the README of official 
+[`tyk-k8s-bootstrap`](https://github.com/TykTechnologies/tyk-k8s-bootstrap) repository.
+
