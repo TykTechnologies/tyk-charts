@@ -270,7 +270,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.2.1
+      tag: v5.2.3
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -702,7 +702,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.2.1
+      tag: v5.2.3
 
       # image pull policy
       pullPolicy: Always
