@@ -1,21 +1,20 @@
-Thank you for installing Tyk OSS Chart {{ .Chart.Name }}. Your release is named {{ .Release.Name }}. 
-
-At this point, Tyk Gateway is fully installed and should be accessible.
+Thank you for installing Tyk OSS Chart. Your release is named {{ .Release.Name }}.
+At this point, Tyk Gateway {{- if .Values.global.components.pump }} and Tyk Pump are {{- else }} is {{- end }} fully installed and should be accessible.
 
 {{- if index .Values "tyk-gateway" "gateway" "control" "enabled" }}
-
-To quickly test everything is ok, you can port-forward gateway pod to {{ index .Values "tyk-gateway" "gateway" "control" "containerPort" }} on your machine:
-    kubectl port-forward service/gateway-control-svc-{{ template "tyk-gateway.fullname" (index .Subcharts "tyk-gateway")}} {{ index .Values "tyk-gateway" "gateway" "control" "port" }}:{{ index .Values "tyk-gateway" "gateway" "control" "containerPort" }}
-and run `curl localhost:{{ index .Values "tyk-gateway" "gateway" "control" "containerPort" }}/hello` to see some data back that includes redis info.
+{{ $gwSvcName := printf "gateway-control-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  }}
+To quickly test everything is ok, you can port-forward Tyk Gateway pod:
+    kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ $gwSvcName }} {{ index .Values "tyk-gateway" "gateway" "control" "port" }}:{{ index .Values "tyk-gateway" "gateway" "control" "containerPort" }}
+    curl localhost:{{ index .Values "tyk-gateway" "gateway" "control" "port" }}/hello
 {{- else }}
-
-To quickly test everything is ok, you can port-forward gateway pod to {{ index .Values "global" "servicePorts" "gateway" }} on your machine :
-    kubectl port-forward service/gateway-svc-{{ template "tyk-gateway.fullname" (index .Subcharts "tyk-gateway")}} {{ index .Values "global" "servicePorts" "gateway" }}:{{ index .Values "global" "servicePorts" "gateway" }}
-and run `curl localhost:{{ index .Values "global" "servicePorts" "gateway" }}/hello` to see some data back that includes redis info.
+{{ $gwSvcName := printf "gateway-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  }}
+To quickly test everything is ok, you can port-forward Tyk Gateway pod:
+    kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ $gwSvcName }} {{ index .Values "global" "servicePorts" "gateway" }}:{{ index .Values "global" "servicePorts" "gateway" }}
+    curl localhost:{{ index .Values "global" "servicePorts" "gateway" }}/hello
 {{- end }}
 
-=====================================
-  Manage Ingress resources and APIs
-=====================================
+===================================================
+  Manage Ingress resources and APIs on Kubernetes
+===================================================
 You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
-[Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)
+Please check Tyk Operator documentation at https://tyk.io/docs/tyk-operator/

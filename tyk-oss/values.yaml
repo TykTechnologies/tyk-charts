@@ -7,7 +7,7 @@ fullnameOverride: ""
 global:
   components:
     # Determines whether the pump component should be installed.
-    pump: false
+    pump: true
 
   servicePorts:
     # The port at which the gateway service can be found at
@@ -329,7 +329,7 @@ tyk-pump:
 
     service:
       # Tyk Pump svc is disabled by default. Set it to true to enable it.
-      enabled: false
+      enabled: true
 
       # type specifies type of the service.
       type: NodePort
