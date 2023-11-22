@@ -37,7 +37,7 @@ global:
     # Determines whether the pump component should be installed.
     pump: true
     devPortal: false
-    
+
   bootstrap:
     # setting this to true bootstraps Tyk Developer Portal.
     devPortal: true
