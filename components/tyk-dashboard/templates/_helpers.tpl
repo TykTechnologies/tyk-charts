@@ -81,9 +81,9 @@ http
 
 {{- define "tyk-dashboard.gateway_host" -}}
 {{ if (include "tyk-dashboard.gatewaySvcName" .) }}
-{{- include "tyk-dashboard.gw_proto" . -}}://{{- include "tyk-dashboard.gatewaySvcName" . -}}.{{ .Release.Namespace }}.svc
+{{- include "tyk-dashboard.gatewaySvcName" . -}}.{{ .Release.Namespace }}.svc
 {{ else }}
-{{ include "tyk-dashboard.gw_proto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
+gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
 {{ end }}
 {{- end -}}
 
