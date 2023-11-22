@@ -1,0 +1,1 @@
+gateway host: {{ include "tyk-dashboard.gateway_host" . }}
