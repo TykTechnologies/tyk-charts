@@ -403,13 +403,15 @@ tyk-gateway:
         # Minimum TLS version that is supported
         minVersion: 1.2
         # Path to the cert file
-        certFileName:
+        certFileName: ""
         # Path to the key file  
-        keyFileName:
+        keyFileName: ""
         # Path to CA file
-        caFileName:
+        caFileName: ""
         # Existing secret that stores TLS and CA Certificate
-        certificateSecretName:
+        certificateSecretName: ""
+        # Mount path on which certificate secret should be mounted
+        secretMountPath: ""
       sampling:
         # Refers to the policy used by OpenTelemetry to determine whether a particular trace should be sampled or not.
         type: "AlwaysOn"
