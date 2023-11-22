@@ -341,7 +341,7 @@ tyk-gateway:
       # Path to CA file
         caFileName: ""
       # Existing secret that stores TLS and CA Certificate
-        certificateSecretName:
+        certificateSecretName: ""
       sampling:
       # Refers to the policy used by OpenTelemetry to determine whether a particular trace should be sampled or not.
         type: "AlwaysOn"
