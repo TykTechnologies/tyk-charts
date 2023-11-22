@@ -306,49 +306,49 @@ tyk-gateway:
 
     # opentelemetry is used to configure opentelemetry for Tyk Gateway
     opentelemetry:
-    # Used to enable/disable opentelemetry
+      # Used to enable/disable opentelemetry
       enabled: false
-    # exporter is used to define the type of the exporter to sending data in OTLP protocol
-    # Valid values are "grpc" or "http"
+      # exporter is used to define the type of the exporter to sending data in OTLP protocol
+      # Valid values are "grpc" or "http"
       exporter: grpc
-    # endpoint defines OpenTelemetry collector endpoint to connect to.
+      # endpoint defines OpenTelemetry collector endpoint to connect to.
       endpoint: localhost:4317
-    # A map of headers that will be sent with HTTP requests to the collector.
-    # It should be set to map of string to string
+      # A map of headers that will be sent with HTTP requests to the collector.
+      # It should be set to map of string to string
       headers: {}
-    # Timeout for establishing a connection to the collector
+      # Timeout for establishing a connection to the collector
       connectionTimeout: 1
-    # Name of the resource that will be used to identify the resource.
+      # Name of the resource that will be used to identify the resource.
       resourceName: tyk
-    # Type of the span processor to use
+      # Type of the span processor to use
       spanProcessorType: batch
-    # Type of the context propagator to use
+      # Type of the context propagator to use
       contextPropogation: tracecontext
-    # TLS configuration for the exporter.
+      # TLS configuration for the exporter.
       tls: 
-      # Flag that can be used to enable TLS
+        # Flag that can be used to enable TLS
         enabled: false
-      # Flag that can be used to skip TLS verification if TLS is enabled
+        # Flag that can be used to skip TLS verification if TLS is enabled
         insecureSkipVerify: true
-      # Maximum TLS version that is supported.
+        # Maximum TLS version that is supported.
         maxVersion: 1.3
-      # Minimum TLS version that is supported
+        # Minimum TLS version that is supported
         minVersion: 1.2
-      # Path to the cert file
+        # Path to the cert file
         certFileName: ""
-      # Path to the key file  
+        # Path to the key file  
         keyFileName: ""
-      # Path to CA file
+        # Path to CA file
         caFileName: ""
-      # Existing secret that stores TLS and CA Certificate
+        # Existing secret that stores TLS and CA Certificate
         certificateSecretName: ""
       sampling:
-      # Refers to the policy used by OpenTelemetry to determine whether a particular trace should be sampled or not.
+        # Refers to the policy used by OpenTelemetry to determine whether a particular trace should be sampled or not.
         type: "AlwaysOn"
-      # Parameter for the TraceIDRatioBased sampler type and represents the percentage of traces to be sampled.
+        # Parameter for the TraceIDRatioBased sampler type and represents the percentage of traces to be sampled.
         rate: 0.5
-      # Rule that ensures that if we decide to record data for a particular operation, we’ll also record data for
-      # all the subsequent work that operation causes
+        # Rule that ensures that if we decide to record data for a particular operation, we’ll also record data for
+        # all the subsequent work that operation causes
         parentBased: false
 
     ## extraVolumes is a list of volumes to be added to the pod
