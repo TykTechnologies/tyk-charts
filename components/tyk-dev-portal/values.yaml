@@ -29,7 +29,8 @@ global:
     bootstrap: true
 
   secrets:
-    # devPortal secret stands for secret including Tyk Dashboard credentials.
+    # devPortal secret is used to bootstrap the Portal which should include Tyk Dashboard credentials.
+    # You can set to empty to skip portal bootstrapping.
     # It should include the followings:
     # - TYK_ORG: Tyk Dashboard Organisation ID
     # - TYK_AUTH: Tyk Dashboard API Access Credentials
