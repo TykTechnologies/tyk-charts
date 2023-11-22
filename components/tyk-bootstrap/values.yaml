@@ -22,18 +22,6 @@ global:
     lastName: user
     email: default@example.com
 
-  servicePorts:
-    # The port at which the dashboard service can be found at
-    dashboard: 3000
-    # The port at which the gateway service can be found at
-    gateway: 8080
-
-  components:
-    # Enables/disables the dashboard component and also used to detect when the bootstrapping needs to be done
-    # for a separate Tyk Dashboard installation or for an umbrella chart installation
-    dashboard: false
-    devPortal: false
-
   tls:
     # If set to true the Dashboard will use SSL connection.
     # You will also need to set the:
@@ -42,8 +30,6 @@ global:
     # variables in extraEnvs object array to define your SSL cert and key files.
     # When true, sets the dashboard protocol to HTTPS.
     dashboard: false
-    # When true, sets the gateway protocol to HTTPS.
-    gateway: false
 
   secrets:
     # tyk_analytics.conf admin_secret
@@ -71,7 +57,7 @@ bootstrap:
   sslInsecureSkipVerify: false
 
   # Trigger to control if we want to create the tyk-operator secret
-  operatorSecret: true
+  operatorSecret: tyk-operator-conf
 
   # jobs field includes configurations for Helm Hooks.
   jobs:
@@ -82,7 +68,12 @@ bootstrap:
         # repository specifies image repository of pre-install job.
         repository: tykio/tyk-k8s-bootstrap-pre-install
         # tag specifies image tag of pre-install job.
-        tag: v2.0.0-beta1
+        tag: v2.0.0-beta4
+
+      # extraEnvs is used to set extra environment variables to pre-install job.
+      # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
+      #   value: "yourlicense"
+      extraEnvs: []
 
     # postInstall configures post-install Helm hook
     postInstall:
@@ -91,7 +82,12 @@ bootstrap:
         # repository specifies image repository of post-install job.
         repository: tykio/tyk-k8s-bootstrap-post
         # tag specifies image tag of post-install job.
-        tag: v2.0.0-beta1
+        tag: v2.0.0-beta4
+
+      # extraEnvs is used to set extra environment variables to post-install job.
+      # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
+      #   value: "burak"
+      extraEnvs: []
 
     # preDelete configures pre-delete Helm hook
     preDelete:
@@ -100,8 +96,12 @@ bootstrap:
         # repository specifies image repository of pre-delete job.
         repository: tykio/tyk-k8s-bootstrap-pre-delete
         # tag specifies image tag of pre-delete job.
-        tag: v2.0.0-beta1
+        tag: v2.0.0-beta4
 
+      # extraEnvs is used to set extra environment variables to pre-delete job.
+      # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
+      #   value: "tyk-operator-conf"
+      extraEnvs: []
   org:
     # The name for your organization inside Tyk
     name: Default Org
