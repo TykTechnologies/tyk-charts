@@ -100,7 +100,7 @@ If you want to use your own key/cert pair, you must follow the following steps:
 4. Set `gateway.tls.secretName` to the name of the newly created secret.
 
 #### OpenTelemetry
-To enable opentelemetry for Gateway set `gateway.opentelemetry.enabled` flag to true. It is disabled by default.
+To enable OpenTelemetry for Gateway set `gateway.opentelemetry.enabled` flag to true. It is disabled by default.
 
 You can also configure connection settings for it's exporter. By default `grpc` exporter is enabled on `localhost:4317` endpoint.
 
