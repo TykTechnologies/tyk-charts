@@ -104,4 +104,4 @@ To enable opentelemetry for Gateway set `gateway.opentelemetry.enabled` flag to 
 
 You can also configure connection settings for it's exporter. By default `grpc` exporter is enabled on `localhost:4317` endpoint.
 
- To enable TLS settings for exporter, you can set`gateway.opentelemetry.tls.enabled` to true. 
+ To enable TLS settings for the exporter, you can set `gateway.opentelemetry.tls.enabled` to true. 
