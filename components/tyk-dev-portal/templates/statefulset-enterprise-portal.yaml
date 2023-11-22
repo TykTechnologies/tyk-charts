@@ -150,7 +150,7 @@ spec:
             value: "http{{ if .Values.global.tls.dashboard }}s{{ end }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}"
           {{- end }}
 
-          {{- if (.Values.global.secrets).devPortal -}}
+          {{- if (.Values.global.secrets).devPortal }}
           - name: TYK_AUTH
             valueFrom:
               secretKeyRef:
@@ -161,7 +161,7 @@ spec:
               secretKeyRef:
                 name: {{ .Values.global.secrets.devPortal}}
                 key: TYK_ORG
-          {{- end -}}
+          {{- end }}
         {{- if .Values.extraEnvs }}
         {{- range $env := .Values.extraEnvs }}
           - name: {{ $env.name }}
@@ -171,7 +171,7 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         command: ["/opt/portal/dev-portal"]
-        {{- if .Values.global.components.bootstrap && (.Values.global.secrets).devPortal}}
+        {{- if and .Values.global.components.bootstrap (.Values.global.secrets).devPortal}}
         args: ["--bootstrap", "--provider-data={\"URL\":\"$(TYK_URL)\",\"Secret\":\"$(TYK_AUTH)\",\"OrgID\":\"$(TYK_ORG)\"}", "-user=$(ADMIN_EMAIL)", "-pass=$(ADMIN_PASSWORD)"]
         {{- end }}
         workingDir: /opt/portal
