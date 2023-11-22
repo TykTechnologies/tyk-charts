@@ -34,7 +34,7 @@ Create chart name and version as used by the chart label.
 {{- if .Values.global.redis.addrs -}}
 {{ join "," .Values.global.redis.addrs }}
 {{- else -}}
-redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+redis.{{ .Release.Namespace }}.svc:6379
 {{- end -}}
 {{- end -}}
 
@@ -66,7 +66,7 @@ redisPass
 {{- if .Values.global.mongo.mongoURL -}}
 {{ .Values.global.mongo.mongoURL }}
 {{- else -}}
-mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 

@@ -21,7 +21,7 @@ spec:
           name: test-tyk-oss
       env:
         - name: TYK_GW_PROTO
-          value: {{ include "tyk-oss.gwproto" . }}
+          value: {{ include "tyk-oss.gw_proto" . }}
         - name: TYK_GW_SVC
           value: gateway-svc-{{ include "tyk-oss.fullname" . }}-tyk-gateway
         - name: TYK_GW_LISTENPORT

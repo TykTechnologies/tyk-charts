@@ -92,7 +92,7 @@ helm install tyk-redis bitnami/redis -n tyk --create-namespace --set image.tag=6
 ```
 
 Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is
-`tyk-redis-master.tyk.svc.cluster.local:6379` (Tyk needs the name including the port)
+`tyk-redis-master.tyk.svc:6379` (Tyk needs the name including the port)
 
 ### Set Mongo or PostgresSQL connection details (Required)
 If you have already installed mongo/postgresSQL, you can set the connection details in `global.mongo` and `global.postgres` section of values file respectively.
@@ -393,10 +393,10 @@ NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) 
  # Set mongo connection details if you want to configure mongo pump.
  mongo:
     # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
     # If your MongoDB has a password you can add the username and password to the url
-    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc:27017/tyk_analytics?authSource=admin
     mongoURL: <MongoDB address>
 
    # mongo-go driver is supported for Tyk 5.0.2+.
@@ -424,7 +424,7 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 # Set postgres connection details if you want to configure postgres pump.
 # Postgres connection string parameters.
 postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    host: tyk-postgres-postgresql.tyk.svc
     port: 5432
     user: postgres
     password:
@@ -461,7 +461,7 @@ The chart is provided with sane defaults such that the only hard requirement is 
       hostConfig:
         enableHostNames: true
         disableOrgSlugPrefix: true
-        overrideHostname: "dashboard-svc-tyk-pro.tyk.svc.cluster.local"
+        overrideHostname: "dashboard-svc-tyk-pro.tyk.svc"
       homeDir: "/opt/tyk-dashboard"
       useShardedAnalytics: false
       enableAggregateLookups: true
@@ -568,11 +568,14 @@ tyk-dev-portal:
     # .Values.global.secrets.useSecretName variable
     # User can set the storage type for portal.
     # Supported types: fs, s3, db
-    type: "fs"
+    type: "db"
+    # This selects the SQL dialect to be used
+    # The supported values are mysql, postgres and sqlite3
+    dialect: "sqlite3"
+    connectionString: "db/portal.db"
+    enableLogs: false
+    
     database:
-      dialect: "sqlite3"
-      connectionString: "db/portal.db"
-      enableLogs: false
       maxRetries: 3
       retryDelay: 5000
     # Configuration values for using s3 as storage for Tyk Developer Portal
