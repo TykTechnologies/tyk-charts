@@ -337,7 +337,7 @@ tyk-gateway:
       # Path to the cert file
         certFileName: ""
       # Path to the key file  
-        keyFileName:
+        keyFileName: ""
       # Path to CA file
         caFileName: ""
       # Existing secret that stores TLS and CA Certificate
