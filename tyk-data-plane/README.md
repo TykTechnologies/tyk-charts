@@ -335,7 +335,7 @@ tyk-gateway:
 ```
 
 #### Enable OpenTelemetry
-To enable opentelemetry for Gateway set `gateway.opentelemetry.enabled` flag to true. It is disabled by default.
+To enable OpenTelemetry for Gateway set `gateway.opentelemetry.enabled` flag to true. It is disabled by default.
 
 You can also configure connection settings for it's exporter. By default `grpc` exporter is enabled on `localhost:4317` endpoint.
 
