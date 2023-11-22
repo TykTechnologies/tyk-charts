@@ -57,8 +57,8 @@ spec:
           - name: PORTAL_LICENSEKEY
             valueFrom:
               secretKeyRef:
-                {{ if .Values.global.secrets.useSecretName }}
-                name: {{ .Values.global.secrets.useSecretName }}
+                {{ if .Values.useSecretName }}
+                name: {{ .Values.useSecretName }}
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
@@ -90,8 +90,8 @@ spec:
           - name: PORTAL_DATABASE_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                {{ if .Values.global.secrets.useSecretName }}
-                name: "{{ .Values.global.secrets.useSecretName }}"
+                {{ if .Values.useSecretName }}
+                name: "{{ .Values.useSecretName }}"
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
@@ -108,8 +108,8 @@ spec:
           - name: PORTAL_S3_AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
-                {{ if .Values.global.secrets.useSecretName }}
-                name: {{ .Values.global.secrets.useSecretName }}
+                {{ if .Values.useSecretName }}
+                name: {{ .Values.useSecretName }}
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
@@ -117,8 +117,8 @@ spec:
           - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                {{ if .Values.global.secrets.useSecretName }}
-                name: {{ .Values.global.secrets.useSecretName }}
+                {{ if .Values.useSecretName }}
+                name: {{ .Values.useSecretName }}
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
