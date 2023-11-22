@@ -105,6 +105,11 @@ global:
     # DevPortalLicense - Tyk Developer Portal License
     # DevPortalStorageConnectionString - Tyk Developer Portal connection string to the selected database.
     useSecretName: ""
+    # devPortal secret stands for secret including Tyk Dashboard credentials.
+    # It should include the followings:
+    # - TYK_ORG: Tyk Dashboard Organisation ID
+    # - TYK_AUTH: Tyk Dashboard API Access Credentials
+    devPortal: tyk-dev-portal-conf
 
   redis:
     # The addrs value will allow you to set your Redis addresses.
