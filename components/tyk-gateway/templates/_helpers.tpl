@@ -96,7 +96,7 @@ redisPass
 {{- end -}}
 
 {{- define "otel-headers" -}}
-{{ if (.Values.gateway.opentelemetry).headers}}
+{{ if (.Values.gateway.opentelemetry).headers }}
         {{- $list := list -}}
         {{- range $k, $v := .Values.gateway.opentelemetry.headers  -}}
         {{- $list = append $list (printf "%s:%s" $k $v) -}}
@@ -105,10 +105,18 @@ redisPass
 {{- end -}}
 {{- end -}}
 
+{{- define "otel-secretMountPath" -}}
+    {{- if ((.Values.gateway.opentelemetry).tls).secretMountPath -}}
+        {{ trimSuffix "/" .Values.gateway.opentelemetry.tls.secretMountPath }}
+    {{- else -}}
+        /etc/ssl/certs
+    {{- end -}}
+{{- end -}}
+
 {{- define "otel-tlsCertPath" -}}
     {{- if .Values.gateway.opentelemetry.tls.certFileName -}}
         {{- if .Values.gateway.opentelemetry.tls.certificateSecretName -}}
-        {{- printf "/etc/ssl/certs/%s" .Values.gateway.opentelemetry.tls.certFileName -}}
+        {{- printf "%s/%s" ( include "otel-secretMountPath" . ) .Values.gateway.opentelemetry.tls.certFileName -}}
         {{- else -}}
         {{ .Values.gateway.opentelemetry.tls.certFileName }}
         {{- end -}}
@@ -118,7 +126,7 @@ redisPass
 {{- define "otel-tlsKeyPath"}}
     {{- if .Values.gateway.opentelemetry.tls.keyFileName -}}
         {{- if .Values.gateway.opentelemetry.tls.certificateSecretName -}}
-        {{- printf "/etc/ssl/certs/%s" .Values.gateway.opentelemetry.tls.keyFileName -}}
+        {{- printf "%s/%s" ( include "otel-secretMountPath" . ) .Values.gateway.opentelemetry.tls.keyFileName -}}
         {{- else -}}
         {{.Values.gateway.opentelemetry.tls.keyFileName}}
         {{- end -}}
@@ -128,7 +136,7 @@ redisPass
 {{- define "otel-tlsCAPath"}}
     {{- if .Values.gateway.opentelemetry.tls.caFileName -}}
         {{- if .Values.gateway.opentelemetry.tls.certificateSecretName -}}
-        {{- printf "/etc/ssl/certs/%s" .Values.gateway.opentelemetry.tls.caFileName -}}
+        {{- printf "%s/%s" ( include "otel-secretMountPath" . ) .Values.gateway.opentelemetry.tls.caFileName -}}
         {{- else -}}
         {{.Values.gateway.opentelemetry.tls.caFileName -}}
         {{- end -}}
