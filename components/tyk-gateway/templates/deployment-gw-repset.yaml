@@ -75,7 +75,7 @@ spec:
         env:
           - name: TYK_GW_LISTENPORT
             value: "{{ .Values.global.servicePorts.gateway }}"
-          {{ if .Values.global.components.dashboard}}
+          {{ if .Values.gateway.useDashboardAppConfig }}
           - name: TYK_GW_USEDBAPPCONFIGS
             value: "true"
           - name: TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING

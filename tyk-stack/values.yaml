@@ -37,8 +37,7 @@ global:
     # Determines whether the pump component should be installed.
     pump: true
     devPortal: false
-    dashboard: true
-
+    
   bootstrap:
     # setting this to true bootstraps Tyk Developer Portal.
     devPortal: true
@@ -224,6 +223,9 @@ tyk-gateway:
   gateway:
     # The hostname to bind the Gateway to.
     hostName: &gwHostName tyk-gw.local
+
+    # If this option is set to true, it will enable polling the Dashboard service for API definitions
+    useDashboardAppConfig: true
 
     tls:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
