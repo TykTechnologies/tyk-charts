@@ -335,7 +335,7 @@ tyk-gateway:
       # Minimum TLS version that is supported
         minVersion: 1.2
       # Path to the cert file
-        certFileName:
+        certFileName: ""
       # Path to the key file  
         keyFileName:
       # Path to CA file
