@@ -85,7 +85,7 @@ spec:
             value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard}}"
             {{- end }}
           - name: TYK_GW_POLICIES_POLICYCONNECTIONSTRING
-            {{- if .Values.gateway.useDashboardAppConfig.dashboardConnectionString }}
+            {{- if .Values.gateway.useDashboardAppConfig.policyConnectionString }}
             value: {{ .Values.gateway.useDashboardAppConfig.policyConnectionString | quote }}
             {{- else }}
             value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}"
