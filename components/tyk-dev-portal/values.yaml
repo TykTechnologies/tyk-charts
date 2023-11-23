@@ -72,7 +72,7 @@ storage:
     retryDelay: 5000
   # Configuration values for using s3 as storage for Tyk Developer Portal
   # In case you want to provide the key ID and access key via secrets please
-  # refer to the existing secret inside the helmchart or the
+  # refer to the existing secret inside the helm chart or the
   # .Values.useSecretName variable and a secret containing
   # the keys DevPortalAwsAccessKeyId and respectively,
   # DevPortalAwsSecretAccessKey
