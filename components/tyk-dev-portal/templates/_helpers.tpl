@@ -57,3 +57,30 @@ app.kubernetes.io/instance: {{ .Release.Name }}
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
 {{- end -}}
+
+{{/*
+    It lists all services in the release namespace and find a service
+    for Tyk Dashboard with its label.
+*/}}
+{{- define "tyk-dev-portal.dashboardSvcName" -}}
+   {{- $services := (lookup "v1" "Service" .Release.Namespace "") -}}
+   {{- if $services -}}
+       {{- range $index, $svc := $services.items -}}
+           {{- range $key, $val := $svc.metadata.labels -}}
+               {{- if and (eq $key "app") (contains "dashboard-svc-" $val) -}}
+{{- $svc.metadata.name | trim -}}
+               {{ end }}
+           {{- end }}
+       {{- end }}
+   {{- end }}
+{{- end }}
+
+{{- define "tyk-dev-portal.dashboardUrl" -}}
+{{- if ne .Values.overrideTykDashUrl "" -}}
+    {{ .Values.overrideTykDashUrl }}
+{{- else if (include "tyk-dev-portal.dashboardSvcName" .) -}}
+http{{ if .Values.global.tls.dashboard }}s{{ end }}://{{ include "tyk-dev-portal.dashboardSvcName" . }}.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}
+{{- else -}}
+http{{ if .Values.global.tls.dashboard }}s{{ end }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}
+{{- end -}}
+{{- end -}}
