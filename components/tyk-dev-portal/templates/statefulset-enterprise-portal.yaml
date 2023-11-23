@@ -86,7 +86,7 @@ spec:
           - name: PORTAL_STORAGE
             value: "{{ .Values.storage.type }}"
           - name: PORTAL_DATABASE_DIALECT
-            value: "{{ .Values.storage.dialect }}"
+            value: "{{ .Values.database.dialect }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
@@ -98,11 +98,11 @@ spec:
                 key: "DevPortalStorageConnectionString"
           {{ if eq .Values.storage.type "db" }}
           - name: PORTAL_DATABASE_ENABLELOGS
-            value: "{{ .Values.storage.enableLogs }}"
+            value: "{{ .Values.database.enableLogs }}"
           - name: PORTAL_DATABASE_MAXRETRIES
-            value: "{{.Values.storage.database.maxRetries }}"
+            value: "{{.Values.database.maxRetries }}"
           - name: PORTAL_DATABASE_RETRYDELAY
-            value: "{{ .Values.storage.database.retryDelay }}"
+            value: "{{ .Values.database.retryDelay }}"
           {{ end }}
           {{ if eq .Values.storage.type "s3" }}
           - name: PORTAL_S3_AWS_ACCESS_KEY_ID
@@ -204,7 +204,7 @@ spec:
             mountPath: /opt/portal/themes
             subPath: themes
           {{- end }}
-          {{- if eq .Values.storage.dialect "sqlite3" }}
+          {{- if eq .Values.database.dialect "sqlite3" }}
           - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/db
             subPath: db
