@@ -47,6 +47,15 @@ spec:
       {{- with .Values.dashboard.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
+      {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+      initContainers:
+        - name: "setup-empty-config-file"
+          image: busybox:1.32
+          command: ['sh','-c', 'echo "{}" > /tmpconf/tyk_analytics.conf']
+          volumeMounts:
+            - name: empty-config
+              mountPath: /tmpconf
+      {{- end }}
       containers:
       - image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
         imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
@@ -56,6 +65,11 @@ spec:
         {{- toYaml .Values.dashboard.containerSecurityContext | nindent 12 }}
         {{- end }}
         env:
+          {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+          - name: "TYK_DB_OMITCONFIGFILE"
+            value: "true"
+          {{- end }}
+
           ## DEFAULT TYK DASHBOARD CONFIGURATION
           - name: "TYK_DB_ENABLEOWNERSHIP"
             value: "{{ .Values.dashboard.enableOwnership }}"
@@ -205,7 +219,11 @@ spec:
           {{- end }}
         resources:
 {{ toYaml .Values.dashboard.resources | indent 12 }}
+        {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+        command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/conf/tyk_analytics.conf"]
+        {{- else }}
         command: ["/opt/tyk-dashboard/tyk-analytics"]
+        {{- end }}
         ports:
         - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
@@ -213,6 +231,10 @@ spec:
           - name: {{ .Values.dashboard.tls.secretName }}
             mountPath: {{ .Values.dashboard.tls.certificatesMountPath }}
           {{ end }}
+          {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+          - name: empty-config
+            mountPath: /tmpconf
+          {{- end }}
           {{- if .Values.dashboard.extraVolumeMounts }}
           {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
@@ -244,6 +266,11 @@ spec:
           secret:
             secretName: {{ .Values.dashboard.tls.secretName }}
         {{ end }}
+        {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+        - name: empty-config
+          emptyDir: {}
+        {{- end }}
+
         {{- if .Values.dashboard.extraVolumes }}
         {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
