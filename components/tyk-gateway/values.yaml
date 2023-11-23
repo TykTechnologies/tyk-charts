@@ -121,19 +121,19 @@ gateway:
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
 
-  # If this option is set to true, it will enable polling the Dashboard service for API definitions
+  # If this option is set to true, it will enable polling the Tyk Dashboard service for API definitions
   useDashboardAppConfig:
     enabled: false
     # Set it to the URL to your Dashboard instance (or a load balanced instance)
     # The URL needs to be formatted as: http://dashboard_host:port
     # It is used to set TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
-    overrideDashboardConnectionString: ""
+    dashboardConnectionString: ""
 
     # This option is required if Policy source is set to Tyk Dashboard (`service`).
     # Set this to the URL of your Tyk Dashboard installation.
     # The URL needs to be formatted as: http://dashboard_host:port.
     # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
-    overridePolicyConnectionString: ""
+    policyConnectionString: ""
 
   tls:
     # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
