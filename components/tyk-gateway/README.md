@@ -89,8 +89,6 @@ gateway:
             averageValue: 10000m
 ```
 
-### Gateway Configurations
-
 #### Enabling TLS
 We have provided an easy way of enabling TLS via the `global.tls.gateway` flag. Setting this value to true will
 automatically enable TLS using the certificate provided under tyk-gateway/certs/cert.pem.
@@ -100,3 +98,10 @@ If you want to use your own key/cert pair, you must follow the following steps:
 2. Set `global.tls.gateway`  to true.
 3. Set `global.tls.useDefaultTykCertificate` to false.
 4. Set `gateway.tls.secretName` to the name of the newly created secret.
+
+#### OpenTelemetry
+To enable OpenTelemetry for Gateway set `gateway.opentelemetry.enabled` flag to true. It is disabled by default.
+
+You can also configure connection settings for it's exporter. By default `grpc` exporter is enabled on `localhost:4317` endpoint.
+
+ To enable TLS settings for the exporter, you can set `gateway.opentelemetry.tls.enabled` to true. 

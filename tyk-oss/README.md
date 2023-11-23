@@ -333,6 +333,13 @@ tyk-gateway:
               averageValue: 10000m
 ```
 
+#### OpenTelemetry
+To enable OpenTelemetry for Gateway set `gateway.opentelemetry.enabled` flag to true. It is disabled by default.
+
+You can also configure connection settings for it's exporter. By default `grpc` exporter is enabled on `localhost:4317` endpoint.
+
+ To enable TLS settings for the exporter, you can set `gateway.opentelemetry.tls.enabled` to true. 
+ 
 ### Pump Configurations
 
 To enable Pump, set `global.components.pump` to true, and configure below inside `tyk-pump` section.

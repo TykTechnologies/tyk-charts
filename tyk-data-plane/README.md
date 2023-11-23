@@ -334,6 +334,13 @@ tyk-gateway:
               averageValue: 10000m
 ```
 
+#### Enable OpenTelemetry
+To enable OpenTelemetry for Gateway set `gateway.opentelemetry.enabled` flag to true. It is disabled by default.
+
+You can also configure connection settings for it's exporter. By default `grpc` exporter is enabled on `localhost:4317` endpoint.
+
+ To enable TLS settings for the exporter, you can set `gateway.opentelemetry.tls.enabled` to true. 
+
 #### Setting Environment Variable
 
 You can add environment variables for Tyk Gateway under `extraEnvs`. This can be used to override any default settings in the chart, e.g.
