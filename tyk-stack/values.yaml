@@ -726,6 +726,11 @@ tyk-dashboard:
   fullnameOverride: ""
 
   dashboard:
+    # This is the URL of your Tyk node, which is used to set TYK_DB_TYKAPI_HOST
+    # Set it to the URL of your Tyk node if you want to set custom service name for your Tyk Gateway
+    # The URL needs to be formatted as: http://gateway_host
+    tykApiHost: "myapihost"
+
     enableOwnership: true
     defaultPageSize: 10
     notifyOnChange: true
