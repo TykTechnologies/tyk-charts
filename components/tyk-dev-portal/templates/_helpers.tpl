@@ -79,7 +79,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if ne .Values.overrideTykDashUrl "" -}}
     {{ .Values.overrideTykDashUrl }}
 {{- else if (include "tyk-dev-portal.dashboardSvcName" .) -}}
-http{{ if .Values.global.tls.dashboard }}s{{ end }}://{{ include "tyk-gateway.dashboardSvcName" . }}.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}
+http{{ if .Values.global.tls.dashboard }}s{{ end }}://{{ include "tyk-dev-portal.dashboardSvcName" . }}.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}
 {{- else -}}
 http{{ if .Values.global.tls.dashboard }}s{{ end }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}
 {{- end -}}
