@@ -80,7 +80,8 @@ http
 {{- end }}
 
 {{- define "tyk-dashboard.gateway_host" -}}
-{{ if (include "tyk-dashboard.gatewaySvcName" .) }}
+{{ $gwSvc := (include "tyk-dashboard.gatewaySvcName" .) }}
+{{- if ne $gwSvc "" -}}
 {{- include "tyk-dashboard.gatewaySvcName" . -}}.{{ .Release.Namespace }}.svc
 {{ else }}
 gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc

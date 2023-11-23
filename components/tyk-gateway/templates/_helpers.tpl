@@ -47,17 +47,16 @@ http
    {{- $services := (lookup "v1" "Service" .Release.Namespace "") -}}
    {{- if $services -}}
        {{- range $index, $svc := $services.items -}}
-           {{- range $key, $val := $svc.metadata.labels -}}
-               {{- if and (eq $key "app") (contains "dashboard-svc-" $val) -}}
-{{- $svc.metadata.name | trim -}}
-               {{ end }}
+           {{- if (hasPrefix "dashboard-svc-" $svc.metadata.name) -}}
+{{ $svc.metadata.name }}
            {{- end }}
        {{- end }}
    {{- end }}
 {{- end }}
 
 {{- define "tyk-gateway.dashboardUrl" -}}
-{{- if (include "tyk-gateway.dashboardSvcName" .) -}}
+{{ $dashboardSvc := (include "tyk-gateway.dashboardSvcName" .) }}
+{{- if ne $dashboardSvc "" -}}
 {{- include "tyk-gateway.dash_proto" . }}://{{ include "tyk-gateway.dashboardSvcName" . }}.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard -}}
 {{- else -}}
 {{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard}}
