@@ -75,7 +75,7 @@ spec:
         env:
           - name: TYK_GW_LISTENPORT
             value: "{{ .Values.global.servicePorts.gateway }}"
-          {{ if .Values.global.components.dashboard}}
+          {{ if .Values.gateway.useDashboardAppConfig }}
           - name: TYK_GW_USEDBAPPCONFIGS
             value: "true"
           - name: TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
@@ -152,7 +152,7 @@ spec:
           - name: TYK_GW_POLICIES_POLICYSOURCE
         {{- if .Values.global.remoteControlPlane.enabled }}
             value: "rpc"
-        {{- else if .Values.global.components.dashboard}}
+        {{- else if .Values.gateway.useDashboardAppConfig }}
             value: "service"
         {{- else}}
             value: "file"
@@ -251,6 +251,61 @@ spec:
             value: "false"
         {{- end }}
 
+        {{- if .Values.gateway.opentelemetry.enabled }}
+          - name: TYK_GW_OPENTELEMETRY_ENABLED
+            value: "{{ .Values.gateway.opentelemetry.enabled }}"
+          - name: TYK_GW_OPENTELEMETRY_EXPORTER
+            value: "{{ .Values.gateway.opentelemetry.exporter }}"
+          - name: TYK_GW_OPENTELEMETRY_ENDPOINT
+            value: "{{ .Values.gateway.opentelemetry.endpoint}}"
+            {{- if .Values.gateway.opentelemetry.headers }}
+          - name: TYK_GW_OPENTELEMETRY_HEADERS
+            value: "{{ include "otel-headers" . }}"
+            {{- end }}
+          - name: TYK_GW_OPENTELEMETRY_CONNECTIONTIMEOUT
+            value: "{{ .Values.gateway.opentelemetry.connectionTimeout }}"
+          - name: TYK_GW_OPENTELEMETRY_RESOURCENAME
+            value: "{{ .Values.gateway.opentelemetry.resourceName }}"
+          - name: TYK_GW_OPENTELEMETRY_SPANPROCESSORTYPE
+            value: "{{ .Values.gateway.opentelemetry.spanProcessorType }}"
+          - name: TYK_GW_OPENTELEMETRY_CONTEXTPROPAGATION
+            value: "{{ .Values.gateway.opentelemetry.contextPropogation }}"
+
+          {{- if (.Values.gateway.opentelemetry.tls).enabled }}
+          - name: TYK_GW_OPENTELEMETRY_TLS_ENABLE
+            value: "{{ .Values.gateway.opentelemetry.tls.enabled }}"
+          - name: TYK_GW_OPENTELEMETRY_TLS_INSECURESKIPVERIFY
+            value: {{ .Values.gateway.opentelemetry.tls.insecureSkipVerify | quote }}
+
+          {{- if .Values.gateway.opentelemetry.tls.certFileName }}
+          - name: TYK_GW_OPENTELEMETRY_TLS_CERTFILE
+            value:  {{ include "otel-tlsCertPath" . | quote }}
+          {{- end }}
+
+          {{- if .Values.gateway.opentelemetry.tls.keyFileName }}
+          - name: TYK_GW_OPENTELEMETRY_TLS_KEYFILE
+            value:  {{ include "otel-tlsKeyPath" . | quote }}
+          {{- end }}
+
+          {{- if .Values.gateway.opentelemetry.tls.caFileName }}
+          - name: TYK_GW_OPENTELEMETRY_TLS_CAFILE
+            value:  {{ include "otel-CAPath" . | quote }}
+          {{- end }}
+
+          - name: TYK_GW_OPENTELEMETRY_TLS_MAXVERSION
+            value: "{{ .Values.gateway.opentelemetry.tls.maxVersion}}"
+          - name: TYK_GW_OPENTELEMETRY_TLS_MINVERSION
+            value:  "{{ .Values.gateway.opentelemetry.tls.minVersion}}" 
+          {{- end }}
+
+          - name: TYK_GW_OPENTELEMETRY_SAMPLING_TYPE
+            value: "{{ .Values.gateway.opentelemetry.sampling.type }}"
+          - name: TYK_GW_OPENTELEMETRY_SAMPLING_RATE
+            value: "{{ .Values.gateway.opentelemetry.sampling.rate }}"
+          - name: TYK_GW_OPENTELEMETRY_SAMPLING_PARENTBASED
+            value: "{{ .Values.gateway.opentelemetry.sampling.parentBased }}"
+        {{- end }}
+
         {{- if .Values.gateway.extraEnvs }}
         {{- include "tyk-gateway.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
@@ -268,6 +323,12 @@ spec:
           - name: {{ .Values.gateway.tls.secretName }}
             mountPath: {{ .Values.gateway.tls.certificatesMountPath }}
           {{ end }}
+
+          {{- if (.Values.gateway.opentelemetry.tls).certificateSecretName}}
+          - name: {{.Values.gateway.opentelemetry.tls.certificateSecretName}}
+            mountPath: "/etc/ssl/certs/"
+          {{- end}}
+
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway
           {{- if .Values.gateway.extraVolumeMounts }}
@@ -313,4 +374,9 @@ spec:
         {{ end }}
         {{- if .Values.gateway.extraVolumes }}
         {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+        {{- if (.Values.gateway.opentelemetry.tls).certificateSecretName }}
+        - name: {{ .Values.gateway.opentelemetry.tls.certificateSecretName }}
+          secret:
+            secretName: {{ .Values.gateway.opentelemetry.tls.certificateSecretName }}
         {{- end }}
