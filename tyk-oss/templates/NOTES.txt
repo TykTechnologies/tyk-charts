@@ -14,7 +14,7 @@ To quickly test everything is ok, you can port-forward Tyk Gateway pod:
 {{- end }}
 
 === API Secret (TYK_GW_SECRET) ===
-{{- if not .Values.global.secrets.useSecretName }}
+{{- if not .Values.global.secrets.useSecretName -}}
 {{ $gwFullName := (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway")) }}
     export TYK_GW_SECRET=$(kubectl get secrets secrets-{{- $gwFullName }} -o jsonpath="{.data.APISecret}" | base64 --decode)
 {{- else }}
