@@ -145,6 +145,7 @@ spec:
             value: "tyk"
           - name: TYK_URL
             value: {{ include "tyk-dev-portal.dashboardUrl" . | quote }}
+            {{- if (.Values.global.secrets).devPortal }}
           - name: TYK_AUTH
             valueFrom:
               secretKeyRef:
