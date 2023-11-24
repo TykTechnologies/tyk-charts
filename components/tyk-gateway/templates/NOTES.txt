@@ -8,7 +8,7 @@ To quickly test everything is ok, you can port-forward Tyk Gateway service:
     curl http://localhost:{{ .Values.global.servicePorts.gateway }}/hello
 {{- else }}
     kubectl port-forward service/gateway-control-svc-{{ include "tyk-gateway.fullname" . }} --namespace {{ .Release.Namespace }} {{ .Values.gateway.control.port }}:{{ .Values.gateway.control.port }}
-    curl http://localhost:{{ .Values.gateway.control.port }}
+    curl http://localhost:{{ .Values.gateway.control.port }}/hello
 {{- end }}
 
 ===================================================
