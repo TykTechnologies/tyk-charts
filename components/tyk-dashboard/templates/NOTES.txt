@@ -7,6 +7,26 @@ To quickly test everything is ok, you can port-forward Tyk Dashboard service:
     kubectl port-forward service/{{- $dashSvc }} --namespace {{ .Release.Namespace }} {{ .Values.global.servicePorts.dashboard  }}:{{ .Values.global.servicePorts.dashboard }}
     curl http://localhost:{{ .Values.global.servicePorts.dashboard }}/hello
 
+=== Tyk Dashboard Login Details ===
+If Tyk Dashboard is bootstrapped by using Tyk Bootstrap chart:
+
+{{- if not .Values.global.adminUser.useSecretName }}
+    export TYK_DASHBOARD_ADMINEMAIL={{ .Values.global.adminUser.email }}
+    export TYK_DASHBOARD_ADMINPASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} tyk-dashboard-login-details -o jsonpath="{.data.adminUserPassword}" | base64 --decode)
+{{- else }}
+    export TYK_DASHBOARD_ADMINEMAIL=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.adminUser.useSecretName }} -o jsonpath="{.data.adminUserFirstName}" | base64 --decode)
+    export TYK_DASHBOARD_ADMINPASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.adminUser.useSecretName }} -o jsonpath="{.data.adminUserPassword}" | base64 --decode)
+{{- end }}
+
+{{- if .Values.dashboard.ingress.enabled }}
+=== Ingress ===
+{{- range $host := .Values.dashboard.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- end }}
+
 ===================================================
   Manage Ingress resources and APIs on Kubernetes
 ===================================================
