@@ -1,14 +1,35 @@
 Thank you for installing Tyk Stack Chart. Your release is named {{ .Release.Name }}.
-{{- if index .Values "tyk-gateway" "gateway" "control" "enabled" }}
-{{ $gwSvcName := printf "gateway-control-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  }}
+
+{{ if index .Values "tyk-gateway" "gateway" "control" "enabled" }}
+{{- $gwSvcName := printf "gateway-control-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  -}}
 To quickly test everything is ok, you can port-forward Tyk Gateway pod:
     kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ $gwSvcName }} {{ index .Values "tyk-gateway" "gateway" "control" "port" }}:{{ index .Values "tyk-gateway" "gateway" "control" "containerPort" }}
     curl localhost:{{ index .Values "tyk-gateway" "gateway" "control" "port" }}/hello
 {{- else }}
-{{ $gwSvcName := printf "gateway-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  }}
+{{- $gwSvcName := printf "gateway-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  -}}
 To quickly test everything is ok, you can port-forward Tyk Gateway pod:
     kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ $gwSvcName }} {{ index .Values "global" "servicePorts" "gateway" }}:{{ index .Values "global" "servicePorts" "gateway" }}
     curl localhost:{{ index .Values "global" "servicePorts" "gateway" }}/hello
+{{- end }}
+
+{{ if .Values.global.components.bootstrap -}}
+=== Tyk Dashboard Login Details ===
+{{- if not .Values.global.adminUser.useSecretName }}
+    export TYK_DASHBOARD_ADMINEMAIL={{ .Values.global.adminUser.email }}
+    export TYK_DASHBOARD_ADMINPASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} tyk-dashboard-login-details -o jsonpath="{.data.adminUserPassword}" | base64 --decode)
+{{- else }}
+    export TYK_DASHBOARD_ADMINEMAIL=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.adminUser.useSecretName }} -o jsonpath="{.data.adminUserFirstName}" | base64 --decode)
+    export TYK_DASHBOARD_ADMINPASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.adminUser.useSecretName }} -o jsonpath="{.data.adminUserPassword}" | base64 --decode)
+{{- end }}
+{{- end }}
+
+{{- if index .Values "tyk-dashboard" "dashboard" "ingress" "enabled" }}
+=== Ingress ===
+{{- range $host := .Values.dashboard.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
 {{- end }}
 
 ===================================================
