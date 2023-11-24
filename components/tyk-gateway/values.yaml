@@ -208,7 +208,7 @@ gateway:
 
   control:
     # If enabled, exposes control port of the gateway
-    enabled: true
+    enabled: false
 
     # control port of gateway
     containerPort: 9696

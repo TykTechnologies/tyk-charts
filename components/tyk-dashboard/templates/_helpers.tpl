@@ -31,7 +31,7 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "tyk-dashboard.gwproto" -}}
+{{- define "tyk-dashboard.gw_proto" -}}
 {{- if .Values.global.tls.gateway -}}
 https
 {{- else -}}
@@ -52,33 +52,7 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_host" -}}
-gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local
-{{- end -}}
-
-{{/*
-    It lists all services in the release namespace and find a service
-    for Tyk Gateway with its label.
-*/}}
-{{- define "tyk-dashboard.gatewaySvcName" -}}
-   {{- $services := (lookup "v1" "Service" .Release.Namespace "") -}}
-   {{- if $services -}}
-       {{- range $index, $svc := $services.items -}}
-           {{- range $key, $val := $svc.metadata.labels -}}
-               {{- if and (eq $key "app") (contains "gateway-svc-" $val) -}}
-{{- $svc.metadata.name | trim -}}
-               {{ end }}
-           {{- end }}
-       {{- end }}
-   {{- end }}
-{{- end }}
-
-
-{{- define "tyk-dashboard.gatewayUrl" -}}
-{{ if (include "tyk-dashboard.gatewaySvcName" .) }}
-{{- include "tyk-dashboard.gwproto" . -}}://{{- include "tyk-dashboard.gatewaySvcName" . -}}.svc:{{ .Values.global.servicePorts.gateway }}
-{{ else }}
-{{ include "tyk-dashboard.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}
-{{ end }}
+gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
 {{- end -}}
 
 {{- define "tyk-dashboard.redis_url" -}}
