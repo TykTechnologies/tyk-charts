@@ -63,29 +63,6 @@ global:
     # a custom TLS certificate to avoid overwriting yours
     useDefaultTykCertificate: true
 
-  remoteControlPlane:
-    # useSecretName can be used if you don't want to store plaintext values for remote control plane configurations in
-    # the Helm value file and would rather provide the k8s Secret externally.
-    # You should set following fields in the secret
-    # - orgId - Sets slave_options.rpc_key of Tyk Gateway
-    # - userApiKey - Sets slave_options.api_key of Tyk Gateway
-    # - groupID - Sets slave_options.group_id of Tyk Gateway
-    useSecretName: ""
-
-    enabled: false
-    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
-    connectionString: ""
-    # orgID of your dashboard user
-    orgId: ""
-    # API key of your dashboard user
-    userApiKey: ""
-    # needed in case you want to have multiple single-dcs connected to the same redis instance
-    groupID: ""
-    # enable/disable ssl
-    useSSL: false
-    # Disables SSL certificate verification
-    sslInsecureSkipVerify: true
-
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     # tyk_analytics.conf tyk_api_config.secret
@@ -878,15 +855,6 @@ tyk-dev-portal:
     # User can set the storage type for portal.
     # Supported types: fs, s3, db
     type: "db"
-    # This selects the SQL dialect to be used
-    # The supported values are mysql, postgres and sqlite3
-    dialect: "sqlite3"
-    connectionString: "db/portal.db"
-    enableLogs: false
-
-    database:
-      maxRetries: 3
-      retryDelay: 5000
     # Configuration values for using s3 as storage for Tyk Developer Portal
     # In case you want to provide the key ID and access key via secrets please
     # refer to the existing secret inside the helmchart or the
@@ -908,6 +876,14 @@ tyk-dev-portal:
       annotations: {}
       labels: {}
       selector: {}
+  database:
+    # This selects the SQL dialect to be used
+    # The supported values are mysql, postgres and sqlite3
+    dialect: "sqlite3"
+    connectionString: "db/portal.db"
+    enableLogs: false
+    maxRetries: 3
+    retryDelay: 5000
   replicaCount: 1
   containerPort: 3001
   image:
