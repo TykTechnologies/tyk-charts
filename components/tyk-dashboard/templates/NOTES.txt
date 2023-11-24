@@ -22,7 +22,7 @@ If Tyk Dashboard is bootstrapped by using Tyk Bootstrap chart:
 === Ingress ===
 {{- range $host := .Values.dashboard.ingress.hosts }}
   {{- range .paths }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  http{{ if $.Values.dashboard.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
   {{- end }}
 {{- end }}
 {{- end }}
