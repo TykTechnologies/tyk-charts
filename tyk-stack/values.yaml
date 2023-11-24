@@ -78,8 +78,6 @@ global:
     # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
-    # DevPortalLicense - Tyk Developer Portal License
-    # DevPortalStorageConnectionString - Tyk Developer Portal connection string to the selected database.
     useSecretName: ""
     # devPortal secret is used to bootstrap the Portal which should include Tyk Dashboard credentials.
     # You can set to empty to skip portal bootstrapping.
@@ -863,6 +861,13 @@ tyk-dashboard:
       tls: []
 
 tyk-dev-portal:
+  # Sensitive configuration of Portal could be set using k8s secret
+  # You can set following fields:
+  # - DevPortalLicense - Sets LicenseKey for Developer Portal
+  # - DevPortalStorageConnectionString - Sets connectionString for Developer Portal
+  # - DevPortalAwsAccessKeyId - Sets AWS S3 Access Key ID
+  # - DevPortalAwsSecretAccessKey - Sets AWS S3 Secret Access Key
+  useSecretName: ""
   # The hostname to bind the Developer Portal to.
   hostName: tyk-dev-portal.local
   # Developer Portal license.
@@ -875,8 +880,8 @@ tyk-dev-portal:
     type: "db"
     # Configuration values for using s3 as storage for Tyk Developer Portal
     # In case you want to provide the key ID and access key via secrets please
-    # refer to the existing secret inside the helmchart or the
-    # .Values.global.secrets.useSecretName variable
+    # refer to the existing secret inside the helm chart or the
+    # .Values.useSecretName field
     s3:
       awsAccessKeyid: your-access-key
       awsSecretAccessKey: your-secret-key
