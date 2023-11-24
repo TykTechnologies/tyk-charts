@@ -14,7 +14,7 @@ If Tyk Dashboard is bootstrapped by using Tyk Bootstrap chart:
     export TYK_DASHBOARD_ADMINEMAIL={{ .Values.global.adminUser.email }}
     export TYK_DASHBOARD_ADMINPASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} tyk-dashboard-login-details -o jsonpath="{.data.adminUserPassword}" | base64 --decode)
 {{- else }}
-    export TYK_DASHBOARD_ADMINEMAIL=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.adminUser.useSecretName }} -o jsonpath="{.data.adminUserFirstName}" | base64 --decode)
+    export TYK_DASHBOARD_ADMINEMAIL=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.adminUser.useSecretName }} -o jsonpath="{.data.adminUserEmail}" | base64 --decode)
     export TYK_DASHBOARD_ADMINPASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.adminUser.useSecretName }} -o jsonpath="{.data.adminUserPassword}" | base64 --decode)
 {{- end }}
 
