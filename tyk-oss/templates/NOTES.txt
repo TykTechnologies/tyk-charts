@@ -13,6 +13,13 @@ To quickly test everything is ok, you can port-forward Tyk Gateway pod:
     curl localhost:{{ index .Values "global" "servicePorts" "gateway" }}/hello
 {{- end }}
 
+=== API Secret (TYK_GW_SECRET) ===
+{{- if not .Values.global.secrets.useSecretName }}
+    export TYK_GW_SECRET={{ .Values.global.secrets.APISecret }}
+{{- else }}
+    export TYK_GW_SECRET=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.secrets.useSecretName }} -o jsonpath="{.data.APISecret}" | base64 --decode)
+{{- end }}
+
 ===================================================
   Manage Ingress resources and APIs on Kubernetes
 ===================================================
