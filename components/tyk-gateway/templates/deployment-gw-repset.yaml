@@ -75,13 +75,21 @@ spec:
         env:
           - name: TYK_GW_LISTENPORT
             value: "{{ .Values.global.servicePorts.gateway }}"
-          {{ if .Values.global.components.dashboard}}
+          {{ if .Values.gateway.useDashboardAppConfig.enabled }}
           - name: TYK_GW_USEDBAPPCONFIGS
             value: "true"
           - name: TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
+            {{- if .Values.gateway.useDashboardAppConfig.dashboardConnectionString }}
+            value: {{ .Values.gateway.useDashboardAppConfig.dashboardConnectionString | quote }}
+            {{- else }}
             value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard}}"
+            {{- end }}
           - name: TYK_GW_POLICIES_POLICYCONNECTIONSTRING
-            value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}"
+            {{- if .Values.gateway.useDashboardAppConfig.policyConnectionString }}
+            value: {{ .Values.gateway.useDashboardAppConfig.policyConnectionString | quote }}
+            {{- else }}
+            value: "{{ include "tyk-gateway.dash_proto" . }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}"
+            {{- end }}
            {{- end }}
           {{- if .Values.gateway.control.enabled }}
           - name: TYK_GW_CONTROLAPIPORT
@@ -152,7 +160,7 @@ spec:
           - name: TYK_GW_POLICIES_POLICYSOURCE
         {{- if .Values.global.remoteControlPlane.enabled }}
             value: "rpc"
-        {{- else if .Values.global.components.dashboard}}
+        {{- else if .Values.gateway.useDashboardAppConfig.enabled }}
             value: "service"
         {{- else}}
             value: "file"

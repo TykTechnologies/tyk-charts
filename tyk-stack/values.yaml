@@ -34,14 +34,14 @@ global:
     password: "123456"
 
   components:
+    # Determines whether the bootstrap jobs should be run
+    # Those jobs verify the presence of the dashboard license and perform various operations to
+    # make apps such as tyk-dashboard, tyk-portal and tyk-operator ready to use from the get go
+    # If this is set to false, only the hook that checks for dashboard license will be run
+    bootstrap: true
     # Determines whether the pump component should be installed.
     pump: true
     devPortal: false
-    dashboard: true
-
-  bootstrap:
-    # setting this to true bootstraps Tyk Developer Portal.
-    devPortal: true
 
   servicePorts:
     # The port at which the dashboard service can be found at
@@ -63,29 +63,6 @@ global:
     # a custom TLS certificate to avoid overwriting yours
     useDefaultTykCertificate: true
 
-  remoteControlPlane:
-    # useSecretName can be used if you don't want to store plaintext values for remote control plane configurations in
-    # the Helm value file and would rather provide the k8s Secret externally.
-    # You should set following fields in the secret
-    # - orgId - Sets slave_options.rpc_key of Tyk Gateway
-    # - userApiKey - Sets slave_options.api_key of Tyk Gateway
-    # - groupID - Sets slave_options.group_id of Tyk Gateway
-    useSecretName: ""
-
-    enabled: false
-    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
-    connectionString: ""
-    # orgID of your dashboard user
-    orgId: ""
-    # API key of your dashboard user
-    userApiKey: ""
-    # needed in case you want to have multiple single-dcs connected to the same redis instance
-    groupID: ""
-    # enable/disable ssl
-    useSSL: false
-    # Disables SSL certificate verification
-    sslInsecureSkipVerify: true
-
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     # tyk_analytics.conf tyk_api_config.secret
@@ -102,6 +79,12 @@ global:
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
     useSecretName: ""
+    # devPortal secret is used to bootstrap the Portal which should include Tyk Dashboard credentials.
+    # You can set to empty to skip portal bootstrapping.
+    # It should include the followings:
+    # - TYK_ORG: Tyk Dashboard Organisation ID
+    # - TYK_AUTH: Tyk Dashboard API Access Credentials
+    devPortal: tyk-dev-portal-conf
 
   redis:
     # The addrs value will allow you to set your Redis addresses.
@@ -222,6 +205,22 @@ tyk-gateway:
   gateway:
     # The hostname to bind the Gateway to.
     hostName: &gwHostName tyk-gw.local
+
+    # If this option is set to true, it will enable polling the Dashboard service for API definitions
+    useDashboardAppConfig:
+      enabled: true
+      # Set it to the URL to your Dashboard instance (or a load balanced instance) if and only if
+      # Tyk Dashboard runs with custom service name, for instance; using `fullnameOverride` in `tyk-dashboard` section.
+      # The URL needs to be formatted as: http://dashboard_host:port
+      # It is used to set TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
+      dashboardConnectionString: ""
+
+      # This option is required if Policy source is set to Tyk Dashboard (`service`) if and only if
+      # Tyk Dashboard runs with custom service name, for instance; using `fullnameOverride` in `tyk-dashboard` section.
+      # Set this to the URL of your Tyk Dashboard installation.
+      # The URL needs to be formatted as: http://dashboard_host:port.
+      # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
+      policyConnectionString: ""
 
     tls:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
@@ -644,7 +643,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
-          tag: v2.0.0-beta4
+          tag: v2.0.0
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -658,7 +657,7 @@ tyk-bootstrap:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
-          tag: v2.0.0-beta4
+          tag: v2.0.0
 
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
@@ -672,7 +671,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: v2.0.0-beta4
+          tag: v2.0.0
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
@@ -709,6 +708,11 @@ tyk-dashboard:
   fullnameOverride: ""
 
   dashboard:
+    # This is the URL of your Tyk node, which is used to set TYK_DB_TYKAPI_HOST
+    # Set it to the URL of your Tyk node if you want to set custom service name for your Tyk Gateway
+    # The URL needs to be formatted as: http://gateway_host
+    tykApiHost: ""
+
     enableOwnership: true
     defaultPageSize: 10
     notifyOnChange: true
@@ -874,18 +878,6 @@ tyk-dev-portal:
     # User can set the storage type for portal.
     # Supported types: fs, s3, db
     type: "db"
-    # This selects the SQL dialect to be used
-    # The supported values are mysql, postgres and sqlite3
-    dialect: "sqlite3"
-    # Configuration for database connection string
-    # You can also provide database connection string in k8s secret
-    # by setting .Values.useSecretName field
-    connectionString: "db/portal.db"
-    enableLogs: false
-
-    database:
-      maxRetries: 3
-      retryDelay: 5000
     # Configuration values for using s3 as storage for Tyk Developer Portal
     # In case you want to provide the key ID and access key via secrets please
     # refer to the existing secret inside the helm chart or the
@@ -907,6 +899,14 @@ tyk-dev-portal:
       annotations: {}
       labels: {}
       selector: {}
+  database:
+    # This selects the SQL dialect to be used
+    # The supported values are mysql, postgres and sqlite3
+    dialect: "sqlite3"
+    connectionString: "db/portal.db"
+    enableLogs: false
+    maxRetries: 3
+    retryDelay: 5000
   replicaCount: 1
   containerPort: 3001
   image:
