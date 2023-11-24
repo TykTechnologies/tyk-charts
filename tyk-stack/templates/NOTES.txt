@@ -18,7 +18,7 @@ To quickly test everything is ok, you can port-forward Tyk Gateway pod:
     export TYK_DASHBOARD_ADMINEMAIL={{ .Values.global.adminUser.email }}
     export TYK_DASHBOARD_ADMINPASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} tyk-dashboard-login-details -o jsonpath="{.data.adminUserPassword}" | base64 --decode)
 {{- else }}
-    export TYK_DASHBOARD_ADMINEMAIL=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.adminUser.useSecretName }} -o jsonpath="{.data.adminUserFirstName}" | base64 --decode)
+    export TYK_DASHBOARD_ADMINEMAIL=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.adminUser.useSecretName }} -o jsonpath="{.data.adminUserEmail}" | base64 --decode)
     export TYK_DASHBOARD_ADMINPASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.adminUser.useSecretName }} -o jsonpath="{.data.adminUserPassword}" | base64 --decode)
 {{- end }}
 {{- end }}
