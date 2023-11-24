@@ -18,7 +18,7 @@ If Tyk Dashboard is bootstrapped by using Tyk Bootstrap chart:
     export TYK_DASHBOARD_ADMINPASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.global.adminUser.useSecretName }} -o jsonpath="{.data.adminUserPassword}" | base64 --decode)
 {{- end }}
 
-{{- if .Values.dashboard.ingress.enabled }}
+{{ if .Values.dashboard.ingress.enabled -}}
 === Ingress ===
 {{- range $host := .Values.dashboard.ingress.hosts }}
   {{- range .paths }}
