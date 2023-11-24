@@ -136,6 +136,9 @@ global:
     #   keyName: ""
 
 dashboard:
+  # This is the full URL of your Tyk node, which is used to set TYK_DB_TYKAPI_HOST
+  # The URL needs to be formatted as: http://gateway_host
+  tykApiHost: ""
   enableOwnership: true
   defaultPageSize: 10
   notifyOnChange: true
@@ -178,7 +181,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.2.1
+    tag: v5.2.3
 
     # image pull policy
     pullPolicy: Always
