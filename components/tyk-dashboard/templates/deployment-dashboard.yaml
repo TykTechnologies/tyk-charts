@@ -47,6 +47,13 @@ spec:
       {{- with .Values.dashboard.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+        - name: init-analytics-conf
+          image: busybox:1.32
+          args: ["sh", "-c", 'touch /etc/tyk-dashboard/tyk_analytics.conf && echo "{}" > /etc/tyk-dashboard/tyk_analytics.conf']
+          volumeMounts:
+            - mountPath: /etc/tyk-dashboard
+              name: analytics-conf
       containers:
       - image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
         imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
@@ -205,10 +212,13 @@ spec:
           {{- end }}
         resources:
 {{ toYaml .Values.dashboard.resources | indent 12 }}
-        command: ["/opt/tyk-dashboard/tyk-analytics"]
+        command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
+{{/*        command: ["/opt/tyk-dashboard/tyk-analytics"]*/}}
         ports:
         - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
+          - name: analytics-conf
+            mountPath: /etc/tyk-dashboard
           {{ if .Values.global.tls.dashboard }}
           - name: {{ .Values.dashboard.tls.secretName }}
             mountPath: {{ .Values.dashboard.tls.certificatesMountPath }}
@@ -239,6 +249,8 @@ spec:
       {{- toYaml .Values.dashboard.securityContext | nindent 10 }}
       {{- end }}
       volumes:
+        - name: analytics-conf
+          emptyDir: {}
         {{ if .Values.global.tls.dashboard }}
         - name: {{ .Values.dashboard.tls.secretName }}
           secret:
