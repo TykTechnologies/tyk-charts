@@ -1,6 +1,6 @@
 ## Tyk Stack
 
-`tyk-stack` provides the default deployment of Tyk Self Managed on a cluster. It will deploy all required Tyk components with the settings provided in the `values.yaml` file.
+`tyk-stack` provides the default deployment of Tyk Self Managed on a cluster. It will deploy all required Tyk components with the settings provided in the `values-stack.yaml` file.
 
 It includes:
 - Tyk Gateway, an open source Enterprise API Gateway (supporting REST, GraphQL, TCP and gRPC protocols).
@@ -66,7 +66,7 @@ helm upgrade tyk-stack tyk-helm/tyk-stack -n tyk --devel
 
 _Note: Upgrading from tyk-pro chart_
 
-If you were using `tyk-pro` chart for existing release, you cannot upgrade directly. Please modify the values.yaml base on your requirements and install using the new `tyk-stack` chart.
+If you were using `tyk-pro` chart for existing release, you cannot upgrade directly. Please modify the `values-stack.yaml` base on your requirements and install using the new `tyk-stack` chart.
 
 ## Configuration
 
@@ -116,7 +116,7 @@ Follow the notes from the installation output to get connection details.
 
 ### Protect Confidential Fields with Kubernetes Secrets
 
-In the `values.yaml` file, some fields are considered confidential, such as `APISecret`, connection strings, etc.
+In the `values-stack.yaml` file, some fields are considered confidential, such as `APISecret`, connection strings, etc.
 Declaring values for such fields as plain text might not be desired for all use cases. Instead, for certain fields,
 Kubernetes secrets can be referenced, and Kubernetes by itself configures values based on the referred secret.
 
@@ -284,7 +284,7 @@ If you want to use your own key/cert pair, you must follow the following steps:
 
 #### Enable gateway autoscaling
 
-This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling it's enough to add `--set tyk-gateway.gateway.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances). To customize those values you can add `--set tyk-gateway.gateway.autoscaling.averageCpuUtilization=75` or use `values.yaml` file:
+This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling it's enough to add `--set tyk-gateway.gateway.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances). To customize those values you can add `--set tyk-gateway.gateway.autoscaling.averageCpuUtilization=75` or use `values-stack.yaml` file:
 
 ```yaml
 tyk-gateway:
@@ -390,7 +390,7 @@ To install Mongo you can use these rather excellent charts provided by Bitnami:
 helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
 ```
 
-(follow notes from the installation output to get connection details and update them in `values.yaml` file)
+(follow notes from the installation output to get connection details and update them in `values-stack.yaml` file)
 
 NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) list of supported MongoDB versions. Please make sure you are installing mongo helm chart that matches these version.
 
@@ -425,7 +425,7 @@ To install PostgreSQL you can use these rather excellent charts provided by Bitn
 helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics" -n tyk
 ```
 
-(follow notes from the installation output to get connection details and update them in `values.yaml` file)
+(follow notes from the installation output to get connection details and update them in `values-stack.yaml` file)
 
 ```yaml
 # Set postgres connection details if you want to configure postgres pump.
@@ -440,7 +440,7 @@ postgres:
 ```
 
 #### Uptime Pump
-Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It supports following values
+Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values-stack.yaml file. It supports following values
 1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
 2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
 3. empty: Used to disable uptime analytics.
@@ -452,7 +452,7 @@ To set up other backends for pump, refer to this [document](https://github.com/T
 
 
 #### Tyk Dashboard
-The Tyk Dashboard can be configured by modifying the values under "tyk-dashboard" section of the `values.yaml` file
+The Tyk Dashboard can be configured by modifying the values under "tyk-dashboard" section of the `values-stack.yaml` file
 The chart is provided with sane defaults such that the only hard requirement is the license which needs to be put under
 `.Values.global.license.dashboard` in order for the bootstrapping process to work.
 
@@ -564,7 +564,7 @@ tyk-dev-portal:
 
 #### Storage Settings
 
-Tyk Enterprise Portal supports different storage options for storing the portal's CMS assets such as images, theme files and Open API Specification files. Please see the [Enterprise Portal Storage settings](https://tyk.io/docs/tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration#portal-settings) page for all the available options. Helm chart supports the setting of the following fields in `values.yaml` `storage` section:
+Tyk Enterprise Portal supports different storage options for storing the portal's CMS assets such as images, theme files and Open API Specification files. Please see the [Enterprise Portal Storage settings](https://tyk.io/docs/tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration#portal-settings) page for all the available options. Helm chart supports the setting of the following fields in `values-stack.yaml` `storage` section:
 
 ```yaml
 tyk-dev-portal:

@@ -36,12 +36,13 @@ global:
     # - TYK_AUTH: Tyk Dashboard API Access Credentials
     devPortal: tyk-dev-portal-conf
 
-    # useSecretName can be used if you don't want to store plaintext values for Developer Portal license in
-    # the Helm value file and would rather provide the k8s Secret externally.
-    # You should set following fields in the secret
-    # - DevPortalLicense - Sets LicenseKey for Developer Portal
-    # - DevPortalStorageConnectionString - Sets connectionString for Developer Portal
-    useSecretName: ""
+# Sensitive configuration of Portal could be set using k8s secret
+# You can set following fields:
+# - DevPortalLicense - Sets LicenseKey for Developer Portal
+# - DevPortalStorageConnectionString - Sets connectionString for Developer Portal
+# - DevPortalAwsAccessKeyId - Sets AWS S3 Access Key ID
+# - DevPortalAwsSecretAccessKey - Sets AWS S3 Secret Access Key
+useSecretName: ""
 
 # The hostname to bind the Developer Portal to.
 hostName: tyk-dev-portal.local
@@ -62,11 +63,10 @@ storage:
   # User can set the storage type for portal.
   # Supported types: fs, s3, db
   type: "db"
-  
   # Configuration values for using s3 as storage for Tyk Developer Portal
   # In case you want to provide the key ID and access key via secrets please
-  # refer to the existing secret inside the helmchart or the
-  # .Values.global.secrets.useSecretName variable and a secret containing
+  # refer to the existing secret inside the helm chart or the
+  # .Values.useSecretName field and a secret containing
   # the keys DevPortalAwsAccessKeyId and respectively,
   # DevPortalAwsSecretAccessKey
   s3:
@@ -88,7 +88,6 @@ storage:
     annotations: {}
     labels: {}
     selector: {}
-
 database:
   # This selects the SQL dialect to be used
   # The supported values are mysql, postgres and sqlite3
