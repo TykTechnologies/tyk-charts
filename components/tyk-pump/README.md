@@ -10,7 +10,7 @@ This chart deploys the open source Tyk pump on a [Kubernetes](https://kubernetes
 
 For typical usage, we recommend using following umbrella charts:
 * For Tyk Open Source, please use [tyk-oss](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss)
-* For Tyk Hybrid Gateway with Tyk Cloud or MDCB Remote Gateway, please use [tyk-mdcb-data-plane](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-mdcb-data-plane)
+* For Tyk Hybrid Gateway with Tyk Cloud or MDCB Remote Gateway, please use [tyk-tyk-data-plane](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-tyk-data-plane)
 * Coming soon: For Tyk Self-Managed, please use [tyk-self-managed](https://github.com/TykTechnologies/tyk-charts/tree/main/)
 
 [Learn more about different deployment options](https://tyk.io/docs/apim/)
@@ -61,14 +61,24 @@ You may set `global.redis.addr` and `global.redis.pass` with redis connection st
 
 ### Pump Configurations
 
-| Pump                      | Configuration                                                                                              |
-|---------------------------|------------------------------------------------------------------------------------------------------------| 
-| Prometheus Pump (Default) | Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. |
-| Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.global.mongo`.                 |
-| SQL Pump                  | Add `postgres` to `.pump.backend`, and add connection details for postgres under `.global.postgres`.       |
-| Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                          |
-| Hybrid Pump               | Add `hybrid` to `.pump.backend`, and setup `.global.remoteControlPlane` section with the required adresses and tokens           |
-| Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                 |
+| Pump                      | Configuration                                                                                                         |
+|---------------------------|-----------------------------------------------------------------------------------------------------------------------| 
+| Prometheus Pump (Default) | Add the value `prometheus` to the `pump.backend` entry, and add connection details for Prometheus under `pump.prometheusPump`. |
+| Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `global.mongo`.                             |
+| Mongo Selective Pump      | Add `mongo-selective` to `pump.backend`, and add connection details for mongo under `global.mongo`.                   |
+| Mongo Aggregate Pump      | Add `mongo-aggregate` to `pump.backend`, and add connection details for mongo under `global.mongo`.                   |
+| Postgres Pump             | Add `postgres` to `pump.backend`, and add connection details for postgres under `global.postgres`.                    |
+| Postgres Aggregate Pump   | Add `postgres-aggregate` to `pump.backend`, and add connection details for postgres under `global.postgres`.          |
+| Uptime Pump               | Set `pump.uptimePumpBackend` to `mongo` or `postgres` or `""`                                                         |
+| Hybrid Pump               | Add `hybrid` to `pump.backend`, and setup `global.remoteControlPlane` section with the required adresses and tokens   |
+| Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                            |
+
+
+> [!NOTE] 
+> For additional information on Tyk Pump configurations, 
+refer to the [Setup Dashboard Analytics](https://tyk.io/docs/tyk-pump/tyk-pump-configuration/tyk-pump-dashboard-config/) documentation. 
+
+> To explore the list of supported backends for Tyk Pump, please visit https://tyk.io/docs/tyk-stack/tyk-pump/other-data-stores/.
 
 #### Prometheus Pump
 Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. 
@@ -77,7 +87,7 @@ We also support monitoring using Prometheus Operator. All you have to do is set 
 This will create a PodMonitor resource for your Pump instance.
 
 #### Mongo Pump
-If you are using the MongoDB pumps in the tyk-oss installation you will require MongoDB installed for that as well.
+If you are using the MongoDB pumps in the `tyk-oss` installation you will require MongoDB installed for that as well.
 
 To install Mongo you can use these rather excellent charts provided by Bitnami:
 
@@ -98,11 +108,16 @@ Add following under the `global` section in `values.yaml`:
    # Set mongo connection details if you want to configure mongo pump.     
    mongo:
       # The mongoURL value will allow you to set your MongoDB address.
-      # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-      # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+      # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
+      # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
       # If your MongoDB has a password you can add the username and password to the url
-      # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+      # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc:27017/tyk_analytics?authSource=admin
       mongoURL: <MongoDB address>
+      
+     # mongo-go driver is supported for Tyk 5.0.2+.
+     # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
+     # For MongoDB versions prior to 4.4, please use the mgo driver.
+      driver: mgo
 
       # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
       # Default value: false
@@ -126,7 +141,7 @@ Add following under the `global` section in `values.yaml`:
   # Set postgres connection details if you want to configure postgres pump.
   # Postgres connection string parameters.
   postgres:
-      host: tyk-postgres-postgresql.tyk.svc.cluster.local
+      host: tyk-postgres-postgresql.tyk.svc
       port: 5432
       user: postgres
       password:

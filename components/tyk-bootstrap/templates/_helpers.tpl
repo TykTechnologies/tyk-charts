@@ -2,7 +2,7 @@
 Expand the name of the chart.
 */}}
 {{- define "tyk-bootstrap.name" -}}
-{{- default .Chart.Name .Values.bootstrap.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- /*
@@ -12,10 +12,10 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "tyk-bootstrap.fullname" -}}
-{{- if .Values.bootstrap.fullnameOverride -}}
-{{- .Values.bootstrap.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- if .Values.fullnameOverride -}}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-{{- $name := default .Chart.Name .Values.bootstrap.nameOverride -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
 {{- if contains $name .Release.Name -}}
 {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -31,14 +31,6 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "tyk-bootstrap.gwproto" -}}
-{{- if .Values.global.tls.gateway -}}
-https
-{{- else -}}
-http
-{{- end -}}
-{{- end -}}
-
 {{- define "tyk-bootstrap.dash_proto" -}}
 {{- if .Values.global.tls.dashboard -}}
 https
@@ -47,10 +39,10 @@ http
 {{- end -}}
 {{- end -}}
 
-{{- define "tyk-bootstrap.dash_url" -}}
-{{ include "tyk-bootstrap.dash_proto" . }}://dashboard-svc-{{.Release.Name}}-tyk-dashboard.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.dashboard }}
-{{- end -}}
-
-{{- define "tyk-bootstrap.gateway_url" -}}
-{{ include "tyk-bootstrap.gwproto" . }}://gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.servicePorts.gateway }}
+{{- define "tyk-bootstrap.tplvalues.render" -}}
+    {{- if typeIs "string" .value }}
+        {{- tpl .value .context }}
+    {{- else }}
+        {{- tpl (.value | toYaml) .context }}
+    {{- end }}
 {{- end -}}

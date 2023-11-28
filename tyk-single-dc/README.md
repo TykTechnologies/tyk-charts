@@ -14,7 +14,7 @@ By default, this chart installs following components as subcharts on a [Kubernet
 | --------- | ------------------ | ---- |
 |Tyk Gateway |true  | n/a                    |
 |Tyk Pump    |true | global.components.pump |
-|Tyk Dashboard| true| global.components.dashboard | 
+|Tyk Dashboard| true| global.components.dashboard |
 
 To enable or disable each component, change the corresponding enabled flag.
 
@@ -35,9 +35,9 @@ helm repo update
 helm show values tyk-helm/tyk-single-dc > values-single-dc.yaml --devel
 ```
 
-*If you use the Bitnami chart for Redis installation, the DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379`. 
+*If you use the Bitnami chart for Redis installation, the DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc:6379`.
 
-You can update them in your local `values-single-dc.yaml` file under `global.redis.addr` and `global.redis.pass`. 
+You can update them in your local `values-single-dc.yaml` file under `global.redis.addr` and `global.redis.pass`.
 
 Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
@@ -69,7 +69,7 @@ To get all configurable options with detailed comments:
 helm show values tyk-helm/tyk-single-dc > values-single-dc.yaml --devel
 ```
 
-You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation. 
+You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation.
 Alternatively, you can use `--set` flag to set it in Tyk installation.
 
 Note:
@@ -79,7 +79,7 @@ Note:
 
 ### Set Redis connection details (Required)
 
-Tyk uses Redis for distributed rate-limiting and token storage. You may set `global.redis.addr` and `global.redis.pass` with redis connection 
+Tyk uses Redis for distributed rate-limiting and token storage. You may set `global.redis.addr` and `global.redis.pass` with redis connection
 string and password respectively.
 
 If you do not already have redis installed, you may use these charts provided by Bitnami
@@ -89,8 +89,8 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm install tyk-redis bitnami/redis -n tyk --create-namespace --set image.tag=6.2.13
 ```
 
-Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is 
-`tyk-redis-master.tyk.svc.cluster.local:6379` (Tyk needs the name including the port) 
+Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is
+`tyk-redis-master.tyk.svc:6379` (Tyk needs the name including the port)
 
 ### Set Mongo or PostgresSQL connection details (Required)
 If you have already installed mongo/postgresSQL, you can set the connection details in `global.mongo` and `global.postgres` section of values file respectively.
@@ -111,6 +111,35 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 Follow the notes from the installation output to get connection details.
 
 >NOTE: Please make sure you are installing mongo/postgres versions that are supported by Tyk. Please refer to Tyk docs to get list of supported versions.
+
+### Enable gateway autoscaling
+
+This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling it's enough to add `--set tyk-gateway.gateway.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances). To customize those values you can add `--set tyk-gateway.gateway.autoscaling.averageCpuUtilization=75` or use `values.yaml` file:
+
+```yaml
+tyk-gateway:
+  gateway:
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 30
+```
+
+Built-in rules include `tyk-gateway.gateway.autoscaling.averageCpuUtilization` for CPU utilization (set by default at 60%) and `tyk-gateway.gateway.autoscaling.averageMemoryUtilization` for memory (disabled by default). In addition to that you can define rules for custom metrics using `tyk-gateway.gateway.autoscaling.autoscalingTemplate` list:
+
+```yaml
+tyk-gateway:
+  gateway:
+    autoscaling:
+      autoscalingTemplate:
+        - type: Pods
+          pods:
+            metric:
+              name: nginx_ingress_controller_nginx_process_requests_total
+            target:
+              type: AverageValue
+              averageValue: 10000m
+```
 
 ### Gateway Configurations
 
@@ -136,16 +165,25 @@ To enable Pump, set `global.components.pump` to true, and configure below inside
 
 <!-- BEGIN import from pump doc -->
 
-| Pump                      | Configuration                                                                                              |
-|---------------------------|------------------------------------------------------------------------------------------------------------| 
-| Prometheus Pump (Default) | Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. |
-| Mongo Pump                | Add `mongo` to `pump.backend`, and add connection details for mongo under `.mongo`.                        |
-| SQL Pump                  | Add `postgres` to `pump.backend`, and add connection details for postgres under `.postgres`.               |
-| Uptime Pump               | Set `pump.uptimePumpBackend` to `'mongo'` or `'postgres'` or `''`                                          |
-| Other Pumps               | Add the required environment variables in `pump.extraEnvs`                                                 |
+| Pump                      | Configuration                                                                                                                                    |
+|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------| 
+| Prometheus Pump (Default) | Add the value `prometheus` to the `tyk-pump.pump.backend` entry, and add connection details for Prometheus under `tyk-pump.pump.prometheusPump`. |
+| Mongo Pump                | Add `mongo` to `tyk-pump.pump.backend`, and add connection details for mongo under `global.mongo`.                                               |
+| Mongo Selective Pump      | Add `mongo-selective` to `tyk-pump.pump.backend`, and add connection details for mongo under `global.mongo`.                                     |
+| Mongo Aggregate Pump      | Add `mongo-aggregate` to `tyk-pump.pump.backend`, and add connection details for mongo under `global.mongo`.                                     |
+| Postgres Pump             | Add `postgres` to `tyk-pump.pump.backend`, and add connection details for postgres under `global.postgres`.                                      |
+| Postgres Aggregate Pump   | Add `postgres-aggregate` to `tyk-pump.pump.backend`, and add connection details for postgres under `global.postgres`.                            |
+| Uptime Pump               | Set `tyk-pump.pump.uptimePumpBackend` to `mongo` or `postgres` or `""`                                                                           |
+| Other Pumps               | Add the required environment variables in `tyk-pump.pump.extraEnvs`                                                                              |
+
+> [!NOTE]
+> For additional information on Tyk Pump configurations, refer to the 
+[Setup Dashboard Analytics](https://tyk.io/docs/tyk-pump/tyk-pump-configuration/tyk-pump-dashboard-config/) documentation.
+
+> To explore the list of supported backends for Tyk Pump, please visit https://tyk.io/docs/tyk-stack/tyk-pump/other-data-stores/.
 
 #### Prometheus Pump
-Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`. 
+Add `prometheus` to `pump.backend`, and add connection details for prometheus under `pump.prometheusPump`.
 
 We also support monitoring using Prometheus Operator. All you have to do is set `pump.prometheusPump.prometheusOperator.enabled` to true.
 This will create a PodMonitor resource for your Pump instance.
@@ -166,15 +204,20 @@ NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) 
 *Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1. If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1. Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
 
 ```yaml
- # Set mongo connection details if you want to configure mongo pump.     
+ # Set mongo connection details if you want to configure mongo pump.
  mongo:
     # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
     # If your MongoDB has a password you can add the username and password to the url
-    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc:27017/tyk_analytics?authSource=admin
     mongoURL: <MongoDB address>
 
+   # mongo-go driver is supported for Tyk 5.0.2+.
+   # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
+   # For MongoDB versions prior to 4.4, please use the mgo driver.
+    driver: mgo
+    
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
     # useSSL: false
@@ -195,7 +238,7 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 # Set postgres connection details if you want to configure postgres pump.
 # Postgres connection string parameters.
 postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    host: tyk-postgres-postgresql.tyk.svc
     port: 5432
     user: postgres
     password:
@@ -299,21 +342,21 @@ global:
 In order to refer Tyk Dashboard license through Kubernetes secret, please use `global.secrets.useSecretName`, where 
 the secret should contain a key called `DashLicense`.
 
-#### Enterprise Portal License
+#### Developer Portal License
 
-In order to refer Tyk Enterprise Portal license through Kubernetes secret, please use `global.secrets.useSecretName`, 
-where the secret should contain a key called `EnterprisePortalLicense`.
+In order to refer Tyk Developer Portal license through Kubernetes secret, please use `global.secrets.useSecretName`, 
+where the secret should contain a key called `DevPortalLicense`.
 
-#### Enterprise Portal Admin Password
+#### Developer Portal Admin Password
 
-In order to refer Tyk Enterprise Portal's admin password through Kubernetes secret, 
+In order to refer Tyk Developer Portal's admin password through Kubernetes secret, 
 please use `global.adminUser.useSecretName`, where the secret should contain a key called `adminUserPassword`.
 
-#### Enterprise Portal Storage Connection String
+#### Developer Portal Storage Connection String
 
-In order to refer Tyk Enterprise Portal connection string to the selected database through Kubernetes secret,
+In order to refer Tyk Developer Portal connection string to the selected database through Kubernetes secret,
 please use `global.secrets.useSecretName`, where the secret should contain a key called 
-`EnterprisePortalStorageConnectionString`.
+`DevPortalStorageConnectionString`.
 
 > [!WARNING]
 > If `global.secrets.useSecretName` is in use, please add all keys mentioned above to the secret. 

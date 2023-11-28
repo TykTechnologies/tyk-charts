@@ -36,11 +36,12 @@ global:
   components:
     # Determines whether the pump component should be installed.
     pump: true
-    enterprisePortal: false
+    devPortal: false
     dashboard: true
 
   bootstrap:
-    enterprisePortal: true
+    # setting this to true bootstraps Tyk Developer Portal.
+    devPortal: true
 
   servicePorts:
     # The port at which the dashboard service can be found at
@@ -100,8 +101,8 @@ global:
     # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
-    # EnterprisePortalLicense - Tyk Enterprise Portal License
-    # EnterprisePortalStorageConnectionString - Tyk Enterprise Portal connection string to the selected database.
+    # DevPortalLicense - Tyk Developer Portal License
+    # DevPortalStorageConnectionString - Tyk Developer Portal connection string to the selected database.
     useSecretName: ""
 
   redis:
@@ -113,16 +114,16 @@ global:
     # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
     # the endpoints of the redis instances or use the cluster configuration endpoint.
     #
-    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+    # Default value: redis.{{ .Release.Namespace }}.svc:6379
     # addrs:
     #   Example using tyk simple redis chart
-    #   - redis.tyk.svc.cluster.local:6379
+    #   - redis.tyk.svc:6379
     #   Example using bitnami/redis
-    #   - tyk-redis-master.tyk.svc.cluster.local:6379
+    #   - tyk-redis-master.tyk.svc:6379
     #   Example using bitnami/redis with sentinel
-    #   - tyk-redis.tyk.svc.cluster.local:26379
+    #   - tyk-redis.tyk.svc:26379
     #   Example using bitnami/redis-cluster
-    #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
+    #   - tyk-redis-redis-cluster.tyk.svc:6379
 
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
@@ -160,17 +161,24 @@ global:
     storage:
       database: 0
 
+  # Please check https://tyk.io/docs/planning-for-production/database-settings/mongodb/#supported-versions
+  # for the list of supported MongoDB versions.
   mongo:
     # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
 
     # If your MongoDB has a password you can add the username and password to the url
-    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc:27017/tyk_analytics?authSource=admin
 
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
     # mongoURL: ""
+
+    # mongo-go driver is supported for Tyk 5.0.2+.
+    # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
+    # For MongoDB versions prior to 4.4, please use the mgo driver.
+    driver: mgo
 
     # Connection URL can also be set using a secret. Provide the name of the secret and key below.
     # connectionURLSecret:
@@ -183,12 +191,16 @@ global:
 
   # Postgres connection string parameters.
   postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    host: tyk-postgres-postgresql.tyk.svc
     port: 5432
     user: postgres
     password:
     database: tyk_analytics
     sslmode:
+    # Connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
 
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
   storageType: &globalStorageType postgres
@@ -230,6 +242,24 @@ tyk-gateway:
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
+
+    # autoscaling configuration if kind IS NOT DaemonSet
+    autoscaling: {}
+    #  enabled: true
+    #  minReplicas: 1
+    #  maxReplicas: 3
+    #  averageCpuUtilization: 60
+    #  averageMemoryUtilization: null
+    #  autoscalingTemplate:
+    #   Custom or additional autoscaling metrics
+    #   ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-custom-metrics
+    #    - type: Pods
+    #      pods:
+    #        metric:
+    #          name: nginx_ingress_controller_nginx_process_requests_total
+    #        target:
+    #          type: AverageValue
+    #          averageValue: 10000m
 
     # analyticsEnabled property is used to enable/disable analytics.
     # If set to empty or nil, analytics will be enabled/disabled based on `global.components.pump`.
@@ -435,10 +465,17 @@ tyk-pump:
     containerPort: 9090
 
     # backend defines the pumps to be created by default, as an array of string.
-    # Supported backends are ["mongo", "postgres", "prometheus"]
+    # Supported backends are:
+    #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
+    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
+    #   - "mongo-selective": Enables ONLY Mongo Selective
+    #   - "postgres": Enables Postgres Aggregate and SQL Pump
+    #   - "postgres-aggregate": Enables ONLY SQL Aggregate
+    #   - "postgres-pump": Enables ONLY SQL Pump
+    #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
+    #   - "hybrid": Enables Hybrid Pump
     # If you would like to use other backends such as ElasticSearch, please
     # configure the backend via environment variables.
-    # By default, Tyk Pump uses Prometheus.
     backend:
       - "prometheus"
       - *globalStorageType
@@ -537,79 +574,75 @@ tyk-pump:
     extraVolumeMounts: []
 
 tyk-bootstrap:
-  # Default values for tyk-bootstrap.
-  # This is a YAML-formatted file.
-  # Declare variables to be passed into your templates.
-  bootstrap:
-    dashboard:
-      enabled: true
-      deploymentName: dashboard-tyk-single-dc-tyk-dashboard
-      sslInsecureSkipVerify: false
-      # Specify if dashboard has custom service name.
-      serviceName: ""
-    portal:
-      enabled: true
-    gateway:
-      deploymentName: gateway-tyk-single-dc-tyk-gateway
-  # jobs field includes configurations for Helm Hooks.
-  jobs:
-    # preInstall configures pre-install Helm hook
-    preInstall:
-      # Name of the pre-install bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
-      name: bootstrap-pre-install
-      # image specifies image repository of bootstrap images
-      image:
-        # repository specifies image repository of pre-install job.
-        repository: tykio/tyk-k8s-bootstrap-pre-install
-        # tag specifies image tag of pre-install job.
-        tag: latest
-
-    # postInstall configures post-install Helm hook
-    postInstall:
-      # Name of the post-install bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
-      name: bootstrap-post-install
-      # image specifies image repository of bootstrap images
-      image:
-        # repository specifies image repository of post-install job.
-        repository: tykio/tyk-k8s-bootstrap-post
-        # tag specifies image tag of post-install job.
-        tag: latest
-
-    # preDelete configures pre-delete Helm hook
-    preDelete:
-      # image specifies image repository of bootstrap images
-      image:
-        # repository specifies image repository of pre-delete job.
-        repository: tykio/tyk-k8s-bootstrap-pre-delete
-        # tag specifies image tag of pre-delete job.
-        tag: latest
-
-  org:
-    name: Default Org
-    # The hostname to bind the Portal to.
-    cname: tyk-portal.local
-
-  operatorSecret: true
-
-  enterprisePortalSecret: true
-
   fullnameOverride: ""
   nameOverride: ""
 
-  # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
-  # It takes key-value pairs.
-  # There are no required annotations for Tyk Bootstrap.
-  #
-  # podAnnotations:
-  #   postInstallPodAnnotations:
-  #     key: value
-  #     post: install
-  #   preDeletePodAnnotations:
-  #     key: value
-  #     post: install
-  podAnnotations:
-    postInstallPodAnnotations: {}
-    preDeletePodAnnotations: {}
+  bootstrap:
+    # Trigger to control if we want to bootstrap the Developer Portal component using tyk-bootstrap
+    devPortal: true
+
+    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+    dashboard: true
+
+    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+    portal: true
+
+    # Skip validating the SSL certificates. Usually needed when using self-signed certs.
+    sslInsecureSkipVerify: false
+
+    # Trigger to control if we want to create the tyk-operator secret
+    operatorSecret: true
+
+    # jobs field includes configurations for Helm Hooks.
+    jobs:
+      # preInstall configures pre-install Helm hook
+      preInstall:
+        # image specifies image repository of bootstrap images
+        image:
+          # repository specifies image repository of pre-install job.
+          repository: tykio/tyk-k8s-bootstrap-pre-install
+          # tag specifies image tag of pre-install job.
+          tag: v2.0.0-beta1
+
+      # postInstall configures post-install Helm hook
+      postInstall:
+        # image specifies image repository of bootstrap images
+        image:
+          # repository specifies image repository of post-install job.
+          repository: tykio/tyk-k8s-bootstrap-post
+          # tag specifies image tag of post-install job.
+          tag: v2.0.0-beta1
+
+      # preDelete configures pre-delete Helm hook
+      preDelete:
+        # image specifies image repository of bootstrap images
+        image:
+          # repository specifies image repository of pre-delete job.
+          repository: tykio/tyk-k8s-bootstrap-pre-delete
+          # tag specifies image tag of pre-delete job.
+          tag: v2.0.0-beta1
+
+    org:
+      # The name for your organization inside Tyk
+      name: Default Org
+      # The hostname to bind the Portal to.
+      cname: tyk-portal.local
+
+    # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
+    # It takes key-value pairs.
+    # There are no required annotations for Tyk Bootstrap.
+    #
+    # podAnnotations:
+    #   postInstallPodAnnotations:
+    #     key: value
+    #     post: install
+    #   preDeletePodAnnotations:
+    #     key: value
+    #     post: install
+    podAnnotations:
+      preInstallPodAnnotations: {}
+      postInstallPodAnnotations: {}
+      preDeletePodAnnotations: {}
 
 tyk-dashboard:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
@@ -628,7 +661,7 @@ tyk-dashboard:
     hostConfig:
       enableHostNames: true
       disableOrgSlugPrefix: true
-      overrideHostname: "dashboard-svc-tyk-pro.tyk.svc.cluster.local"
+      overrideHostname: "dashboard-svc-tyk-pro.tyk.svc"
     homeDir: "/opt/tyk-dashboard"
     useShardedAnalytics: false
     enableAggregateLookups: true
@@ -720,11 +753,9 @@ tyk-dashboard:
     ##     readOnly: true
     extraVolumeMounts: []
 
-    # Dashboard will only bootstrap if the master bootstrap option is set to true.
-    bootstrap: true
-
     # The hostname to bind the Dashboard to.
     hostName: tyk-dashboard.local
+
     # If set to true the Dashboard will use SSL connection.
     # You will also need to set the:
     # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
@@ -743,32 +774,27 @@ tyk-dashboard:
           cert_file: "/etc/certs/tyk-dashboard/tls.crt"
           key_file: "/etc/certs/tyk-dashboard/tls.key"
 
-tyk-enterprise-portal:
-  # Default values for tyk-enterprise-portal.
-  # This is a YAML-formatted file.
-  # Declare variables to be passed into your templates.
-
-  # Enterprise Portal will only bootstrap if the tyk-enterprise-portal-conf secret
-  # is present. The secret is created during the dashboard bootstrapping and
-  # be turned on and off using the dash.enterprisePortalSecret bool.
-
-  # The hostname to bind the Enterprise Portal to.
-  hostName: tyk-enterprise-portal.local
-  # Enterprise Portal license.
+tyk-dev-portal:
+  # The hostname to bind the Developer Portal to.
+  hostName: tyk-dev-portal.local
+  # Developer Portal license.
   license: ""
-  # Enterprise portal can be deployed as StatefulSet or as Deployment
+  # Developer portal can be deployed as StatefulSet or as Deployment
   kind: StatefulSet
   storage:
     # User can set the storage type for portal.
     # Supported types: fs, s3, db
     type: "fs"
+    # This selects the SQL dialect to be used
+    # The supported values are mysql, postgres and sqlite3
+    dialect: "sqlite3"
+    connectionString: "db/portal.db"
+    enableLogs: false
+
     database:
-      dialect: "sqlite3"
-      connectionString: "db/portal.db"
-      enableLogs: false
       maxRetries: 3
       retryDelay: 5000
-    # Configuration values for using s3 as storage for Tyk Enterprise Portal
+    # Configuration values for using s3 as storage for Tyk Developer Portal
     # In case you want to provide the key ID and access key via secrets please
     # refer to the existing secret inside the helmchart or the
     # .Values.global.secrets.useSecretName variable
@@ -793,7 +819,7 @@ tyk-enterprise-portal:
   containerPort: 3001
   image:
     repository: tykio/portal
-    # Enterprise portal < v1.2 is not supported
+    # Developer portal < v1.2 is not supported
     tag: v1.7.0
     pullPolicy: Always
 

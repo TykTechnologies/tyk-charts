@@ -2,10 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Enterprise Portal will only bootstrap if the tyk-enterprise-portal-conf secret
-# is present. The secret is created during the dashboard bootstrapping and
-# be turned on and off using the dash.enterprisePortalSecret bool.
-
 global:
   adminUser:
     # If you don't want to store plaintext secrets for admin user in the Helm value file and would
@@ -25,6 +21,7 @@ global:
   servicePorts:
     dashboard: 3000
   bootstrap:
+    # setting this to true bootstraps Tyk Enterprise Portal.
     enterprisePortal: false
 
   secrets:
@@ -38,7 +35,7 @@ global:
     # the Helm value file and would rather provide the k8s Secret externally.
     # You should set following fields in the secret
     # - EnterprisePortalLicense - Sets LicenseKey for Enterprise Portal
-    # - EnterprisePortalStorageConnectionString - Sets Database.ConnectionString for Enterprise Portal
+    # - EnterprisePortalStorageConnectionString - Sets connectionString for Enterprise Portal
     useSecretName: ""
 
 # The hostname to bind the Enterprise Portal to.
@@ -59,11 +56,14 @@ storage:
   # .Values.global.secrets.useSecretName variable
   # User can set the storage type for portal.
   # Supported types: fs, s3, db
-  type: "fs"
+  type: "db"
+  # This selects the SQL dialect to be used
+  # The supported values are mysql, postgres and sqlite3
+  dialect: "sqlite3"
+  connectionString: "db/portal.db"
+  enableLogs: false
+
   database:
-    dialect: "sqlite3"
-    connectionString: "db/portal.db"
-    enableLogs: false
     maxRetries: 3
     retryDelay: 5000
   # Configuration values for using s3 as storage for Tyk Enterprise Portal

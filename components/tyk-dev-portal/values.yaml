@@ -1,0 +1,185 @@
+# Default values for tyk-dev-portal.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  adminUser:
+    # If you don't want to store plaintext secrets for admin user in the Helm value file and would
+    # rather provide the k8s Secret externally please populate the value below
+    # You can set following fields in the secret:
+    # - adminUserEmail sets .global.adminUser.email
+    # - adminUserPassword sets .global.adminUser.password
+    useSecretName: ""
+
+    # email of Developer Portal admin
+    email: default@example.com
+    # password of Developer Portal admin
+    password: 123456
+  tls:
+    dashboard: false
+    devPortal: false
+  servicePorts:
+    dashboard: 3000
+  components:
+    # Determines whether the bootstrap jobs should be run
+    # Those jobs verify the presence of the dashboard license and perform various operations to
+    # make apps such as tyk-dashboard, tyk-portal and tyk-operator ready to use from the get go
+    # If this is set to false, only the hook that checks for dashboard license will be run
+    # In the context of the tyk-developer-portal only, this just runs the bootstrapping jobs only for the portal
+    bootstrap: true
+
+  secrets:
+    # devPortal secret is used to bootstrap the Portal which should include Tyk Dashboard credentials.
+    # You can set to empty to skip portal bootstrapping.
+    # It should include the followings:
+    # - TYK_ORG: Tyk Dashboard Organisation ID
+    # - TYK_AUTH: Tyk Dashboard API Access Credentials
+    devPortal: tyk-dev-portal-conf
+
+# Sensitive configuration of Portal could be set using k8s secret
+# You can set following fields:
+# - DevPortalLicense - Sets LicenseKey for Developer Portal
+# - DevPortalStorageConnectionString - Sets connectionString for Developer Portal
+# - DevPortalAwsAccessKeyId - Sets AWS S3 Access Key ID
+# - DevPortalAwsSecretAccessKey - Sets AWS S3 Secret Access Key
+useSecretName: ""
+
+# The hostname to bind the Developer Portal to.
+hostName: tyk-dev-portal.local
+
+# Developer Portal license.
+license: ""
+
+# In case you want to deploy enterprise portal as a standalone app, you can configure a different dashboard URL using
+# the parameter bellow.
+overrideTykDashUrl: ""
+# Developer portal can be deployed as StatefulSet or as Deployment
+kind: StatefulSet
+storage:
+  # Configuration values for using an SQL database as storage for Tyk Developer Portal
+  # In case you want to provide the connection string via secrets please
+  # refer to the existing secret inside the helmchart or the
+  # .Values.global.secrets.useSecretName variable
+  # User can set the storage type for portal.
+  # Supported types: fs, s3, db
+  type: "db"
+  # Configuration values for using s3 as storage for Tyk Developer Portal
+  # In case you want to provide the key ID and access key via secrets please
+  # refer to the existing secret inside the helm chart or the
+  # .Values.useSecretName field and a secret containing
+  # the keys DevPortalAwsAccessKeyId and respectively,
+  # DevPortalAwsSecretAccessKey
+  s3:
+    awsAccessKeyid: your-access-key
+    awsSecretAccessKey: your-secret-key
+    region: sa-east-1
+    endpoint: your-portal-bucket
+    bucket: https://s3.sa-east-1.amazonaws.com
+    acl: private
+    presign_urls: true
+  persistence:
+    # User can mount existing PVC to enterprise portal
+    # Make sure to change the kind to Deployment if you are mounting existing PVC 
+    mountExistingPVC: ""
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+    annotations: {}
+    labels: {}
+    selector: {}
+database:
+  # This selects the SQL dialect to be used
+  # The supported values are mysql, postgres and sqlite3
+  dialect: "sqlite3"
+  connectionString: "db/portal.db"
+  enableLogs: false
+  maxRetries: 3
+  retryDelay: 5000
+
+replicaCount: 1
+containerPort: 3001
+
+image:
+  repository: tykio/portal
+  # Developer portal < v1.2 is not supported
+  tag: v1.7.0
+  pullPolicy: Always
+
+# image pull secrets to use when pulling images from repository
+imagePullSecrets: []
+
+service:
+  type: NodePort
+  port: 3001
+  externalTrafficPolicy: Local
+  annotations: {}
+# Creates an ingress object in k8s. Will require an ingress-controller and
+# annotation to that ingress controller.
+
+ingress:
+  enabled: false
+  # specify your ingress controller class name below
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+#  - secretName: chart-example-tls
+#    hosts:
+#      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this
+  # as a conscious choice for the user. This also increases chances charts
+  # run on environments with little resources, such as Minikube. If you do
+  # want to specify resources, uncomment the following lines, adjust them
+  # as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+#  memory: 128Mi
+
+securityContext:
+  runAsUser: 1000
+  fsGroup: 2000
+containerSecurityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  privileged: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - all
+nodeSelector: {}
+tolerations: []
+affinity: {}
+extraEnvs: []
+
+## extraVolumes A list of volumes to be added to the pod
+## extraVolumes:
+##   - name: ca-certs
+##     secret:
+##       defaultMode: 420
+##       secretName: ca-certs
+extraVolumes: []
+
+## extraVolumeMounts A list of volume mounts to be added to the pod
+## extraVolumeMounts:
+##   - name: ca-certs
+##     mountPath: /etc/ssl/certs/ca-certs.crt
+##     readOnly: true
+extraVolumeMounts: []
+
+livenessProbe:
+  initialDelaySeconds: 60
+
+readinessProbe:
+  initialDelaySeconds: 60

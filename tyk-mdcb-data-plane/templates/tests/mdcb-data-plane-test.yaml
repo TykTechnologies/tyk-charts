@@ -20,7 +20,7 @@ spec:
           name: test-tyk-data-plane
       env:
         - name: TYK_GW_PROTO
-          value: {{ include "tyk-data-plane.gwproto" . }}
+          value: {{ include "tyk-data-plane.gw_proto" . }}
         - name: TYK_GW_SVC
           value: gateway-svc-{{ .Release.Name }}-tyk-gateway
         - name: TYK_GW_LISTENPORT

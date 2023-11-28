@@ -69,10 +69,10 @@ global:
     useDefaultTykCertificate: true
 
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
-  storageType: mongo
+  storageType: postgres
 
   postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    host: tyk-postgres-postgresql.tyk.svc
     port: 5432
     user: postgres
     password:
@@ -88,11 +88,11 @@ global:
     # The addrs value will allow you to set your Redis addresses. If you are
     # using a redis cluster, you can list the endpoints of the redis instances
     # or use the cluster configuration endpoint.
-    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+    # Default value: redis.{{ .Release.Namespace }}.svc:6379
     addrs:
-    #   - redis.tyk.svc.cluster.local:6379
+    #   - redis.tyk.svc:6379
     #   This is the DNS name of the redis as set when using Bitnami
-    #   - "tyk-redis-master.tyk.svc.cluster.local:6379"
+    #   - "tyk-redis-master.tyk.svc:6379"
 
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
@@ -118,11 +118,17 @@ global:
     storage:
       database: 0
 
+  # Please check https://tyk.io/docs/planning-for-production/database-settings/mongodb/#supported-versions
+  # for the list of supported MongoDB versions.
   mongo:
     useSSL: false
     # For tyk-simple-mongo (no auth)
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
     mongoURL: ""
+    # mongo-go driver is supported for Tyk 5.0.2+.
+    # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
+    # For MongoDB versions prior to 4.4, please use the mgo driver.
+    driver: mgo
 
     # Connection URL can also be set using a secret. Provide the name of the secret and key below.
     # connectionURLSecret:
@@ -130,6 +136,9 @@ global:
     #   keyName: ""
 
 dashboard:
+  # This is the full URL of your Tyk node, which is used to set TYK_DB_TYKAPI_HOST
+  # The URL needs to be formatted as: http://gateway_host
+  tykApiHost: ""
   enableOwnership: true
   defaultPageSize: 10
   notifyOnChange: true
@@ -139,7 +148,7 @@ dashboard:
   hostConfig:
     enableHostNames: true
     disableOrgSlugPrefix: true
-    overrideHostname: "dashboard-svc-tyk-pro.tyk.svc.cluster.local"
+    overrideHostname: "tyk-gw.local"
   homeDir: "/opt/tyk-dashboard"
   useShardedAnalytics: false
   enableAggregateLookups: true
@@ -154,8 +163,6 @@ dashboard:
   enableUpdateKeyByHash: true
   enableHashedKeysListing: true
   enableMultiOrgUsers: true
-
-  enableIstioIngress: false
 
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
@@ -174,7 +181,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.2.0
+    tag: v5.2.3
 
     # image pull policy
     pullPolicy: Always
@@ -231,9 +238,6 @@ dashboard:
   ##     readOnly: true
   extraVolumeMounts: []
 
-  # Dashboard will only bootstrap if the master bootstrap option is set to true.
-  bootstrap: true
-
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
 
@@ -249,14 +253,32 @@ dashboard:
         cert_file: "/etc/certs/tyk-dashboard/tls.crt"
         key_file: "/etc/certs/tyk-dashboard/tls.key"
 
-  # Dashboard admin information.
-  adminUser:
-    # First name of the admin user
-    firstName: admin
-    # Last name of the admin user
-    lastName: user
-    # Email address of the admin user
-    email: default@example.com
-    # Set a password or a random one will be assigned.
-    password: "123456"
-  # Dashboard Organisation information.
+  ingress:
+    enabled: false
+    # specify your ingress controller class name below
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+
+portal:
+  ingress:
+    enabled: false
+    # specify your ingress controller class name below
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []  
+

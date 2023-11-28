@@ -20,7 +20,7 @@ spec:
           name: test-tyk-single-dc
       env:
         - name: TYK_GW_PROTO
-          value: {{ include "tyk-single-dc.gwproto" . }}
+          value: {{ include "tyk-single-dc.gw_proto" . }}
         - name: TYK_GW_SVC
           value: gateway-svc-{{ include "tyk-single-dc.fullname" . }}-tyk-gateway
         - name: TYK_GW_LISTENPORT

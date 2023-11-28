@@ -1,14 +1,14 @@
 ## Tyk Dashboard
 The [Tyk Dashboard](https://tyk.io/docs/tyk-dashboard/) is the GUI and analytics platform for Tyk. It provides an easy-to-use management interface for managing a Tyk installation as well as clear and granular analytics.
 
-The Dashboard also provides the [API Developer Portal](https://tyk.io/docs/tyk-developer-portal/), a customisable developer portal for your API documentation, developer auto-enrolment and usage tracking.
+The Dashboard also provides the [API Classic Developer Portal](https://tyk.io/docs/tyk-developer-portal/), a customisable developer portal for your API documentation, developer auto-enrolment and usage tracking.
 
 ## Introduction
 This chart defines a standalone Tyk Dashboard component on a [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
 
 For typical usage, we recommend using following umbrella charts:
-* For single data centre deployment, please use [tyk-single-dc](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-single-dc)
-* For multi data centre deployment, please use tyk-mdcb-control-plane (Coming soon!)
+* For single data centre deployment, please use [tyk-stack](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-stack)
+* For multi data centre deployment, please use tyk-control-plane (Coming soon!)
 
 [Learn more about Tyk Licensing and Deployment models](https://tyk.io/docs/tyk-on-premises/licensing/)
 
@@ -59,7 +59,7 @@ If you do not already have redis installed, you can use these charts provided by
     helm repo add bitnami https://charts.bitnami.com/bitnami
     helm install tyk-redis bitnami/redis -n tyk --create-namespace
 
-Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc.cluster.local:6379` (Tyk needs the name including the port) You can update them in your local values.yaml file under `global.redis.addrs` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
+Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc:6379` (Tyk needs the name including the port) You can update them in your local values.yaml file under `global.redis.addrs` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
 ### Set Mongo or PostgresSQL connection details (Required)
 If you have already installed mongo/postgresSQL, you can set the connection details in `global.mongo` and `global.postgres` section of values file respectively.
