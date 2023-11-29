@@ -47,6 +47,7 @@ spec:
       {{- with .Values.dashboard.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
+      {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
       initContainers:
         - name: init-analytics-conf
           image: busybox:1.32
@@ -54,6 +55,7 @@ spec:
           volumeMounts:
             - mountPath: /etc/tyk-dashboard
               name: analytics-conf
+      {{- end }}
       containers:
       - image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
         imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
@@ -217,8 +219,10 @@ spec:
         ports:
         - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
+          {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
           - name: analytics-conf
             mountPath: /etc/tyk-dashboard
+          {{- end }}
           {{ if .Values.global.tls.dashboard }}
           - name: {{ .Values.dashboard.tls.secretName }}
             mountPath: {{ .Values.dashboard.tls.certificatesMountPath }}
@@ -249,8 +253,10 @@ spec:
       {{- toYaml .Values.dashboard.securityContext | nindent 10 }}
       {{- end }}
       volumes:
+        {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
         - name: analytics-conf
           emptyDir: {}
+        {{- end }}
         {{ if .Values.global.tls.dashboard }}
         - name: {{ .Values.dashboard.tls.secretName }}
           secret:
