@@ -222,7 +222,7 @@ tyk-gateway:
       annotations: {}
 
       # control ingress
-      ingress: 
+      ingress:
         # if enabled, creates an ingress resource for the gateway control
         enabled: false
 
