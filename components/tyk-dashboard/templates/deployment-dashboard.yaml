@@ -214,8 +214,11 @@ spec:
           {{- end }}
         resources:
 {{ toYaml .Values.dashboard.resources | indent 12 }}
+        {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
         command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
-{{/*        command: ["/opt/tyk-dashboard/tyk-analytics"]*/}}
+        {{- else }}
+        command: ["/opt/tyk-dashboard/tyk-analytics"]
+        {{- end }}
         ports:
         - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
