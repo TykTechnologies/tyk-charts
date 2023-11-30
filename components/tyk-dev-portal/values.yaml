@@ -178,7 +178,7 @@ resources: {}
   #  memory: 128Mi
   # requests:
   #  cpu: 100m
-#  memory: 128Mi
+  #  memory: 128Mi
 
 # securityContext holds pod-level security attributes for Tyk Developer Portal pod.
 securityContext:
