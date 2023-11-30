@@ -145,56 +145,83 @@ global:
     #   keyName: ""
 
 dashboard:
-  # This is the full URL of your Tyk node, which is used to set TYK_DB_TYKAPI_HOST
+  # This is the URL of your Tyk Gateway node, which is used to set TYK_DB_TYKAPI_HOST.
+  # The Dashboard controls Tyk using the Gateway API and only requires visibility to one node. In a sharded environment,
+  # the Gateway node specified here must not be sharded.
+  # - If you are using tyk-stack chart, it is automatically set to the gateway service URL.
+  #   HOWEVER, if Tyk Gateway runs with custom service name, please override with the correct URL using this field.
+  # - If you are using tyk-dashboard chart, you need to set the correct Gateway URL here too.
   # The URL needs to be formatted as: http://gateway_host
   tykApiHost: ""
-  # used to set TYK_DB_ENABLEOWNERSHIP
+  # enableOwnership specifies if API Ownership for Self-Managed installations is enabled or not.
+  # It is used to set TYK_DB_ENABLEOWNERSHIP
   enableOwnership: true
-  # TYK_DB_PAGESIZE
+  # defaultPageSize specifies the page size that the dashboard should use.
+  # It is used to set TYK_DB_PAGESIZE
   defaultPageSize: 10
-  # TYK_DB_NOTIFYONCHANGE
+  # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
+  # It is used to set TYK_DB_NOTIFYONCHANGE
   notifyOnChange: true
-  # TYK_DB_HASHKEYS
+  # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
+  # The Dashboard will now operate in a mode that is compatible with key hashing.
+  # It is used to set TYK_DB_HASHKEYS
   hashKeys: true
-  # TYK_DB_ENABLEDUPLICATESLUGS
+  # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
+  # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
+  # It is used to set TYK_DB_ENABLEDUPLICATESLUGS
   enableDuplicateSlugs: true
-  # TYK_DB_SHOWORGID
+  # showOrgId determines whether the Org ID will be shown in the Users -> Username detail page.
+  # This can be useful for quickly identifying your Org ID.
+  # It is used to set TYK_DB_SHOWORGID
   showOrgId: true
-  # TYK_DB_HOSTCONFIG_ENABLEHOSTNAMES
   hostConfig:
-    # TYK_DB_HOSTCONFIG_ENABLEHOSTNAMES
+    # Enable this option to have the Dashboard only allow access on a specific domain and 404 on any other host access
+    # It is used to set TYK_DB_HOSTCONFIG_ENABLEHOSTNAMES
     enableHostNames: true
-    # TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX
+    # By default, for developer portal, Tyk will add orgID prefix. Set to true if you have single tenant application or each portal on separate domain.
+    # It is used to set TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX
     disableOrgSlugPrefix: true
-    # TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
+    # Set this value to whatever hostname your Tyk Gateway is running on.
+    # It is used to set TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
     overrideHostname: "tyk-gw.local"
-  # TYK_DB_HOMEDIR
+  # The path to the home directory of Tyk Dashboard, this must be set in order for Portal templates and other files to be loadable.
+  # It is used to set TYK_DB_HOMEDIR
   homeDir: "/opt/tyk-dashboard"
-  # TYK_DB_USESHARDEDANALYTICS
+  # If using the mongo-pump-selective pump, where data is written to org-id-specific collections in MongoDB,
+  # then enabling this option will switch querying for analytics over to the independent collection entries.
+  # It is used to set TYK_DB_USESHARDEDANALYTICS
   useShardedAnalytics: false
-  # TYK_DB_NOTIFYONCHANGE
+  # It is used to set TYK_DB_ENABLEAGGREGATELOOKUPS
   enableAggregateLookups: true
   # TYK_DB_ENABLEANALYTICSCACHE
   enableAnalyticsCache: true
-  # TYK_DB_ALLOWEXPLICITPOLICYID
+  # Set this value to true if you are planning to use Tyk Sync or Tyk Operator
+  # It is used to set TYK_DB_ALLOWEXPLICITPOLICYID
   allowExplicitPolicyId: true
-  # TYK_DB_OAUTHREDIRECTURISEPARATOR
+  # oAuth redirect URI separator
+  # It is used to set TYK_DB_OAUTHREDIRECTURISEPARATOR
   oauthRedirectUriSeparator: ";"
   # TYK_DB_KEYREQUESTFIELDS
   keyRequestFields: "appName;appType"
-  # TYK_DB_DASHBOARDSESSIONLIFETIME
+  # Dashboard session lifetime
+  # It is used to set TYK_DB_DASHBOARDSESSIONLIFETIME
   dashboardSessionLifetime: 43200
-  # TYK_DB_SSOENABLEUSERLOOKUP
+  # When enabled, if dashboard already have user with given email found, it will be used for the login process
+  # It is used to set TYK_DB_SSOENABLEUSERLOOKUP
   ssoEnableUserLookup: true
   # TYK_DB_NOTIFICATIONSLISTENPORT
   notificationsListenPort: 5000
-  # TYK_DB_ENABLEDELETEKEYBYHASH
+  # To delete a key by its hash, set this option to true
+  # It is used to set TYK_DB_ENABLEDELETEKEYBYHASH
   enableDeleteKeyByHash: true
-  # TYK_DB_ENABLEUPDATEKEYBYHASH
+  # To update a key by its hash, set this option to true.
+  # It is used to set TYK_DB_ENABLEUPDATEKEYBYHASH
   enableUpdateKeyByHash: true
-  # TYK_DB_ENABLEHASHEDKEYSLISTING
+  # To retrieve a list of all key hash listings, set this option to true.
+  # It is used to set TYK_DB_ENABLEHASHEDKEYSLISTING
   enableHashedKeysListing: true
-  # TYK_DB_ENABLEMULTIORGUSERS
+  # Enable support for users with the same email for multiple organisations
+  # It is used to set TYK_DB_ENABLEMULTIORGUSERS
   enableMultiOrgUsers: true
 
   # replicaCount specifies number of replicas to be created if kind is Deployment.
