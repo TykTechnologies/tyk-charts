@@ -1,12 +1,14 @@
 Thank you for installing Tyk Stack Chart. Your release is named {{ .Release.Name }}.
 
 NOTE:
+{{- $tykApiPort :=  include "tyk-stack.gwServicePort" . -}}
 {{- if index .Values "tyk-dashboard" "dashboard" "tykApiHost" }}
-    Tyk Dashboard connects to Tyk Gateway at {{ index .Values "tyk-dashboard" "dashboard" "tykApiHost"  }} for key management functions.
+    Tyk Dashboard connects to Tyk Gateway at {{ index .Values "tyk-dashboard" "dashboard" "tykApiHost"  }} over port {{ $tykApiPort }} for key management functions.
 {{- else }}
-    Tyk Dashboard connects to Tyk Gateway at {{ (include "tyk-dashboard.gw_proto" (index .Subcharts "tyk-dashboard")) }}://{{ (include "tyk-dashboard.gateway_host" (index .Subcharts "tyk-dashboard")) }} for key management functions.
+    Tyk Dashboard connects to Tyk Gateway at {{ (include "tyk-dashboard.gw_proto" (index .Subcharts "tyk-dashboard")) }}://{{ (include "tyk-dashboard.gateway_host" (index .Subcharts "tyk-dashboard")) }} over port {{ $tykApiPort }} for key management functions.
 {{- end }}
-    Please double check if Tyk Gateway runs on this address. If not, Tyk Gateway host can be overridden through .tyk-dashboard.dashboard.tykApiHost field in values.yaml.
+    Please double check if Tyk Gateway runs on this address. If not, Tyk Gateway host and Tyk Gateway port can be overridden
+        through .tyk-dashboard.dashboard.tykApiHost and .global.servicePorts.gateway fields respectively in values.yaml.
 
 {{ if index .Values "tyk-gateway" "gateway" "control" "enabled" }}
 {{- $gwSvcName := printf "gateway-control-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  -}}
