@@ -1,5 +1,13 @@
 Thank you for installing Tyk Stack Chart. Your release is named {{ .Release.Name }}.
 
+NOTE:
+{{- if index .Values "tyk-dashboard" "dashboard" "tykApiHost" }}
+    Tyk Dashboard uses {{ index .Values "tyk-dashboard" "dashboard" "tykApiHost"  }} as Tyk Gateway Host.
+{{- else }}
+    Tyk Dashboard uses {{ (include "tyk-dashboard.gw_proto" (index .Subcharts "tyk-dashboard")) }}://{{ (include "tyk-dashboard.gateway_host" (index .Subcharts "tyk-dashboard")) }} as Tyk Gateway Host.
+{{- end }}
+    Please double check if Tyk Gateway runs on this address. If not, Tyk Gateway host can be overridden through .tyk-dashboard.dashboard.tykApiHost field in values.yaml.
+
 {{ if index .Values "tyk-gateway" "gateway" "control" "enabled" }}
 {{- $gwSvcName := printf "gateway-control-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  -}}
 To quickly test everything is ok, you can port-forward Tyk Gateway pod:

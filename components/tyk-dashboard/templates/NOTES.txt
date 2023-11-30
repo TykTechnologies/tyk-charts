@@ -2,6 +2,14 @@
 Thank you for installing Tyk Dashboard Chart. Your release is named '{{ .Release.Name }}'.
 At this point, Tyk Dashboard is fully installed and should be accessible.
 
+NOTE:
+{{- if index .Values.dashboard.tykApiHost }}
+    Tyk Dashboard uses {{ .Values.dashboard.tykApiHost }} as Tyk Gateway Host.
+{{- else }}
+    Tyk Dashboard uses {{ (include "tyk-dashboard.gw_proto" .) }}://{{ (include "tyk-dashboard.gateway_host" .) }} as Tyk Gateway Host.
+{{- end }}
+    Please double check if Tyk Gateway runs on this address. If not, Tyk Gateway host can be overridden through .dashboard.tykApiHost field in values.yaml.
+
 To quickly test everything is ok, you can port-forward Tyk Dashboard service:
 
     kubectl port-forward service/{{- $dashSvc }} --namespace {{ .Release.Namespace }} {{ .Values.global.servicePorts.dashboard  }}:{{ .Values.global.servicePorts.dashboard }}
