@@ -34,10 +34,11 @@ To quickly test everything is ok, you can port-forward Tyk Gateway pod:
 {{- end }}
 
 {{- if index .Values "tyk-dashboard" "dashboard" "ingress" "enabled" }}
+{{- $tlsEnabled := index .Values "tyk-dashboard" "dashboard" "ingress" "tls" }}
 === Ingress ===
-{{- range $host := .Values.dashboard.ingress.hosts }}
+{{- range $host := index .Values "tyk-dashboard" "dashboard" "ingress" "hosts" }}
   {{- range .paths }}
-  http{{ if $.Values.dashboard.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  http{{ if $tlsEnabled }}s{{ end }}://{{ $host.host }}{{ .path }}
   {{- end }}
 {{- end }}
 {{- end }}
