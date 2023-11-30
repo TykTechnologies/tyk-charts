@@ -22,8 +22,10 @@ For typical usage, we recommend using following umbrella charts:
 
 To install the chart from the Helm repository in namespace `tyk` with the release name `tyk-dashboard`:
 
-    helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-    helm show values tyk-helm/tyk-dashboard > values-dashboard.yaml --devel
+```bash
+helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+helm show values tyk-helm/tyk-dashboard > values-dashboard.yaml --devel
+```
 
 Note: 
 * Set redis connection details first at `.Values.global.redis`
@@ -32,34 +34,51 @@ Note:
 * The Tyk Dashboard will require bootstrapping in order to work. This can be achieved by running the component
 chart "tyk-bootstrap"
 
-    helm install tyk-dashboard tyk-helm/tyk-dashboard -n tyk --create-namespace -f values-dashboard.yaml
+```bash
+helm install tyk-dashboard tyk-helm/tyk-dashboard -n tyk --create-namespace -f values-dashboard.yaml
+```
 
 ## Uninstalling the Chart
 
-    helm uninstall tyk-dashboard -n tyk
+```bash
+helm uninstall tyk-dashboard -n tyk
+```
 
 This removes all the Kubernetes components associated with the chart and deletes the release.
 
 ## Upgrading Chart
 
-    helm upgrade tyk-dashboard tyk-helm/tyk-dashboard -n tyk
+```bash
+helm upgrade tyk-dashboard tyk-helm/tyk-dashboard -n tyk
+```
 
 ## Configuration
-See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To get all configurable options with detailed comments:
+See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). 
+To get all configurable options with detailed comments:
 
-    helm show values tyk-helm/tyk-dashboard > values.yaml --devel
+```bash
+helm show values tyk-helm/tyk-dashboard > values.yaml --devel
+```
     
-You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. Alternatively, you can use `--set` flag to set it in Tyk installation.
+You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation. 
+Alternatively, you can use `--set` flag to set it in Tyk installation.
 
 ### Set Redis connection details (Required)
-Tyk uses Redis for distributed rate-limiting and token storage. You may set `global.redis.addr` and `global.redis.pass` with redis connection string and password respectively.
+Tyk uses Redis for distributed rate-limiting and token storage. 
+You may set `global.redis.addr` and `global.redis.pass` with redis connection string and password respectively.
 
 If you do not already have redis installed, you can use these charts provided by Bitnami
 
-    helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm install tyk-redis bitnami/redis -n tyk --create-namespace
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install tyk-redis bitnami/redis -n tyk --create-namespace
+```
 
-Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc:6379` (Tyk needs the name including the port) You can update them in your local values.yaml file under `global.redis.addrs` and `global.redis.pass`. Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
+Follow the notes from the installation output to get connection details and password. 
+The DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc:6379` (Tyk needs the name including the port).
+
+You can update them in your local values.yaml file under `global.redis.addrs` and `global.redis.pass`. 
+Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
 ### Set Mongo or PostgresSQL connection details (Required)
 If you have already installed mongo/postgresSQL, you can set the connection details in `global.mongo` and `global.postgres` section of values file respectively.
@@ -68,12 +87,12 @@ If not, you can use these rather excellent charts provided by Bitnami to install
 
 **Mongo Installation**
 
-```
+```bash
 helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
 ```
 
 **PostgresSQL Installation**
-```
+```bash
 helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics" -n tyk
 ```
 
@@ -90,4 +109,3 @@ automatically enable TLS using the certificate provided under tyk-dashboard/cert
 If you want to use your own key/cert pair, you must follow the following steps:
 1. Create a tls secret using your cert and key pair.
 2. Set `global.tls.dashboard` to true.
-
