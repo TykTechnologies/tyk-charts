@@ -190,7 +190,7 @@ dashboard:
   imagePullSecrets: []
 
   service:
-    type: NodePort
+    type: ClusterIP
     externalTrafficPolicy: Local
     annotations: {}
 

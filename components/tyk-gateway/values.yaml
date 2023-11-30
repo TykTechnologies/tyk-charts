@@ -198,7 +198,7 @@ gateway:
 
   service:
     # type of service
-    type: NodePort
+    type: ClusterIP
 
     # external traffic policy of the service. Set it only if you are using LoadBalancer service type
     externalTrafficPolicy: Local

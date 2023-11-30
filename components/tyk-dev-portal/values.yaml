@@ -110,7 +110,7 @@ image:
 imagePullSecrets: []
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 3001
   externalTrafficPolicy: Local
   annotations: {}
