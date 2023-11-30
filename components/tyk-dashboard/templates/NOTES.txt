@@ -4,9 +4,9 @@ At this point, Tyk Dashboard is fully installed and should be accessible.
 
 NOTE:
 {{- if index .Values.dashboard.tykApiHost }}
-    Tyk Dashboard uses {{ .Values.dashboard.tykApiHost }} as Tyk Gateway Host.
+    Tyk Dashboard connects to Tyk Gateway at {{ .Values.dashboard.tykApiHost }} for key management functions.
 {{- else }}
-    Tyk Dashboard uses {{ (include "tyk-dashboard.gw_proto" .) }}://{{ (include "tyk-dashboard.gateway_host" .) }} as Tyk Gateway Host.
+    Tyk Dashboard connects to Tyk Gateway at {{ (include "tyk-dashboard.gw_proto" .) }}://{{ (include "tyk-dashboard.gateway_host" .) }} for key management functions.
 {{- end }}
     Please double check if Tyk Gateway runs on this address. If not, Tyk Gateway host can be overridden through .dashboard.tykApiHost field in values.yaml.
 
