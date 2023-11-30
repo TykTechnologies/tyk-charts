@@ -2,7 +2,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# fullnameOverride overrides App name. It is truncated to 63 characters.
 fullnameOverride: ""
+
+# nameOverride overrides the Chart name. It is truncated to 63 characters.
 nameOverride: ""
 
 global:
@@ -18,8 +21,14 @@ global:
     # adminUserEmail - sets .global.adminUser.email
     useSecretName: ""
 
+    # firstName corresponds to the first name of the admin user going to be created in bootstrap.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
     firstName: admin
+    # lastName corresponds to the last name of the admin user going to be created in bootstrap.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_LASTNAME
     lastName: user
+    # email corresponds to the email of the admin user going to be created in bootstrap.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_EMAILADDRESS
     email: default@example.com
 
   components:
@@ -127,6 +136,9 @@ bootstrap:
   #     key: value
   #     post: install
   podAnnotations:
+    # preInstallPodAnnotations specifies annotations to be added Tyk Bootstrap pre-install hook's job pods.
     preInstallPodAnnotations: {}
+    # postInstallPodAnnotations specifies annotations to be added Tyk Bootstrap post-install hook's job pods.
     postInstallPodAnnotations: {}
+    # preDeletePodAnnotations specifies annotations to be added Tyk Bootstrap pre-delete hook's job pods.
     preDeletePodAnnotations: {}
