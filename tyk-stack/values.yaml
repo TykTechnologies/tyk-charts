@@ -710,7 +710,7 @@ tyk-bootstrap:
     podAnnotations:
       # preInstallPodAnnotations specifies annotations to be added to Tyk Bootstrap pre-install hook's job pods.
       preInstallPodAnnotations: {}
-      # postInstallPodAnnotations specifies annotations to be added Tyk Bootstrap post-install hook's job pods.
+      # postInstallPodAnnotations specifies annotations to be added to Tyk Bootstrap post-install hook's job pods.
       postInstallPodAnnotations: {}
       # preDeletePodAnnotations specifies annotations to be added Tyk Bootstrap pre-delete hook's job pods.
       preDeletePodAnnotations: {}
