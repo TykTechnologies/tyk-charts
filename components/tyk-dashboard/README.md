@@ -80,7 +80,7 @@ The DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc:6379` 
 You can update them in your local values.yaml file under `global.redis.addrs` and `global.redis.pass`. 
 Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
-### Set MongoDB or PostgresSQL connection details (Required)
+### Set MongoDB or PostgreSQL connection details (Required)
 If you have already installed MongoDB or PostgreSQL, you can set the connection details in `global.mongo` and `global.postgres` section of values file respectively.
 
 If not, you can use these rather excellent charts provided by Bitnami to install MongoDB or PostgreSQL:
@@ -91,7 +91,7 @@ If not, you can use these rather excellent charts provided by Bitnami to install
 helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
 ```
 
-**PostgresSQL Installation**
+**PostgreSQL Installation**
 ```bash
 helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics" -n tyk
 ```
