@@ -26,7 +26,7 @@ global:
     # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
     firstName: admin
 
-    # lastName corresponds to the last name of the admin user going to be created in bootstrap.
+    # lastName corresponds to the last name of the admin user that will be created during the bootstrapping process.
     # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_LASTNAME
     lastName: user
 
