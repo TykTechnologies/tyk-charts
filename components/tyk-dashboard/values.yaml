@@ -192,6 +192,9 @@ dashboard:
   # then enabling this option will switch querying for analytics over to the independent collection entries.
   # It is used to set TYK_DB_USESHARDEDANALYTICS
   useShardedAnalytics: false
+  # If using the new Aggregate Pump, Tyk Analytics can make use of the newer, faster Analytics lookup,
+  # to ensure that this can be made backwards compatible.This option must be set to true,
+  # in conjunction with the aggregate_lookup_cutoff value.
   # It is used to set TYK_DB_ENABLEAGGREGATELOOKUPS
   enableAggregateLookups: true
   # TYK_DB_ENABLEANALYTICSCACHE
