@@ -17,10 +17,6 @@ global:
     password: 123456
   tls:
     # If set to true the Dashboard will use SSL connection.
-    # You will also need to set the:
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-    # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
 
     # If set to true the Tyk Developer Portal will use SSL connection.

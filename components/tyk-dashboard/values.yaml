@@ -12,7 +12,7 @@ global:
     # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
 
-  # adminUser specifies credentials for Tyk Dashboard admin user while bootstrapping Tyk Dashboard.
+  # adminUser specifies credentials for the Tyk Dashboard admin user that will be created while bootstrapping the Tyk Dashboard.
   # Dashboard admin information.
   adminUser:
     # If you don't want to store plaintext secrets for admin user in the Helm value file and would
@@ -24,13 +24,13 @@ global:
     # adminUserPassword - sets .global.adminUser.password
     useSecretName: ""
 
-    # firstName corresponds to the first name of the admin user going to be created in bootstrap.
+    # firstName corresponds to the first name of the admin user that will be created during the bootstrapping process.
     # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
     firstName: admin
-    # lastName corresponds to the last name of the admin user going to be created in bootstrap.
+    # lastName corresponds to the last name of the admin user that will be created during the bootstrapping process.
     # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_LASTNAME
     lastName: user
-    # email corresponds to the email of the admin user going to be created in bootstrap.
+    # email corresponds to the email of the admin user that will be created during the bootstrapping process.
     # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_EMAILADDRESS
     email: default@example.com
     # Set a password or a random one will be assigned.
@@ -62,10 +62,6 @@ global:
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
     # If set to true the Dashboard will use SSL connection.
-    # You will also need to set the:
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-    # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
 
     # When true, it will install the certificate present in the templates folder, set to false when using
@@ -163,7 +159,7 @@ dashboard:
   # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
   # It is used to set TYK_DB_NOTIFYONCHANGE
   notifyOnChange: true
-  # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
+  # hashKeys is used to enable/disable key hashing. It should match with the value set in Gateway configuration.
   # The Dashboard will now operate in a mode that is compatible with key hashing.
   # It is used to set TYK_DB_HASHKEYS
   hashKeys: true
@@ -185,13 +181,16 @@ dashboard:
     # Set this value to whatever hostname your Tyk Gateway is running on.
     # It is used to set TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
     overrideHostname: "tyk-gw.local"
-  # The path to the home directory of Tyk Dashboard, this must be set in order for Portal templates and other files to be loadable.
+  # The path to the home directory of the Tyk Dashboard. This must be set for Portal templates and other files to be loadable.
   # It is used to set TYK_DB_HOMEDIR
   homeDir: "/opt/tyk-dashboard"
   # If using the mongo-pump-selective pump, where data is written to org-id-specific collections in MongoDB,
   # then enabling this option will switch querying for analytics over to the independent collection entries.
   # It is used to set TYK_DB_USESHARDEDANALYTICS
   useShardedAnalytics: false
+  # If using the new Aggregate Pump, Tyk Analytics can make use of the newer, faster Analytics lookup,
+  # to ensure that this can be made backwards compatible.This option must be set to true,
+  # in conjunction with the aggregate_lookup_cutoff value.
   # It is used to set TYK_DB_ENABLEAGGREGATELOOKUPS
   enableAggregateLookups: true
   # TYK_DB_ENABLEANALYTICSCACHE
@@ -207,7 +206,7 @@ dashboard:
   # Dashboard session lifetime
   # It is used to set TYK_DB_DASHBOARDSESSIONLIFETIME
   dashboardSessionLifetime: 43200
-  # When enabled, if dashboard already have user with given email found, it will be used for the login process
+  # When enabled, if the dashboard already has a user with a given email, it will be used for the login process
   # It is used to set TYK_DB_SSOENABLEUSERLOOKUP
   ssoEnableUserLookup: true
   # TYK_DB_NOTIFICATIONSLISTENPORT
@@ -259,7 +258,7 @@ dashboard:
     annotations: {}
 
   # We usually recommend not to specify default resources and to leave this
-  # as a conscious choice for the user. This also increases chances charts
+  # as a conscious choice for the user. This also increases the chances of charts to
   # run on environments with little resources, such as Minikube. If you do
   # want to specify resources, uncomment the following lines, adjust them
   # as necessary, and remove the curly braces after 'resources:'.
@@ -325,7 +324,7 @@ dashboard:
 
     # certificatesMountPath corresponds to the mount path of the secret.
     certificatesMountPath: "/etc/certs/tyk-dashboard"
-    # certificates is an array of strings, used to set TYK_DB_HTTPSERVEROPTIONS_CERTIFICATES
+    # List of certificates for each domain being covered by the application. It is used to set TYK_DB_HTTPSERVEROPTIONS_CERTIFICATES
     certificates:
       - domain_name: "*"
         cert_file: "/etc/certs/tyk-dashboard/tls.crt"
