@@ -51,6 +51,10 @@ global:
 
   tls:
     # If set to true the Dashboard will use SSL connection.
+    # You will also need to set the:
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+    # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
@@ -808,6 +812,12 @@ tyk-dashboard:
 
     # The hostname to bind the Dashboard to.
     hostName: tyk-dashboard.local
+
+    # If set to true the Dashboard will use SSL connection.
+    # You will also need to set the:
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+    # variables in extraEnvs object array to define your SSL cert and key files.
 
     tls:
       # The name of the secret which should contain the TLS certificate you want to use with the dashboard deployment
