@@ -22,15 +22,15 @@ global:
     # - adminUserPassword - sets .global.adminUser.password
     useSecretName: ""
 
-    # firstName corresponds to the first name of the admin user going to be created in bootstrap.
+    # firstName corresponds to the first name of the admin user that will be created during the bootstrapping process.
     # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
     firstName: admin
 
-    # lastName corresponds to the last name of the admin user going to be created in bootstrap.
+    # lastName corresponds to the last name of the admin user that will be created during the bootstrapping process.
     # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_LASTNAME
     lastName: user
 
-    # email corresponds to the email of the admin user going to be created in bootstrap.
+    # email corresponds to the email of the admin user that will be created during the bootstrapping process.
     # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_EMAILADDRESS
     email: default@example.com
     # Set a password or a random one will be assigned.
@@ -55,10 +55,6 @@ global:
 
   tls:
     # If set to true the Dashboard will use SSL connection.
-    # You will also need to set the:
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-    # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
@@ -708,11 +704,11 @@ tyk-bootstrap:
     #     key: value
     #     post: install
     podAnnotations:
-      # preInstallPodAnnotations specifies annotations to be added Tyk Bootstrap pre-install hook's job pods.
+      # preInstallPodAnnotations specifies annotations to be added to Tyk Bootstrap pre-install hook's job pods.
       preInstallPodAnnotations: {}
-      # postInstallPodAnnotations specifies annotations to be added Tyk Bootstrap post-install hook's job pods.
+      # postInstallPodAnnotations specifies annotations to be added to Tyk Bootstrap post-install hook's job pods.
       postInstallPodAnnotations: {}
-      # preDeletePodAnnotations specifies annotations to be added Tyk Bootstrap pre-delete hook's job pods.
+      # preDeletePodAnnotations specifies annotations to be added to Tyk Bootstrap pre-delete hook's job pods.
       preDeletePodAnnotations: {}
 
 tyk-dashboard:
@@ -769,6 +765,9 @@ tyk-dashboard:
     # then enabling this option will switch querying for analytics over to the independent collection entries.
     # It is used to set TYK_DB_USESHARDEDANALYTICS
     useShardedAnalytics: false
+    # If using the new Aggregate Pump, Tyk Analytics can make use of the newer, faster Analytics lookup,
+    # to ensure that this can be made backwards compatible.This option must be set to true,
+    # in conjunction with the aggregate_lookup_cutoff value.
     # It is used to set TYK_DB_ENABLEAGGREGATELOOKUPS
     enableAggregateLookups: true
     # TYK_DB_ENABLEANALYTICSCACHE
@@ -891,11 +890,6 @@ tyk-dashboard:
     # The hostname to bind the Dashboard to.
     hostName: tyk-dashboard.local
 
-    # If set to true the Dashboard will use SSL connection.
-    # You will also need to set the:
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-    # variables in extraEnvs object array to define your SSL cert and key files.
     tls:
       # The name of the secret which should contain the TLS certificate you want to use with the dashboard deployment
       secretName: tyk-default-tls-secret
