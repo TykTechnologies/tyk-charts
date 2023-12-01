@@ -16,7 +16,7 @@ For typical usage, we recommend using following umbrella charts:
 * Kubernetes 1.19+
 * Helm 3+
 * [Redis](https://tyk.io/docs/planning-for-production/redis/) should already be installed or accessible by the dashboard 
-* [Mongo](https://tyk.io/docs/planning-for-production/database-settings/mongodb/) or [PostgreSQL](https://tyk.io/docs/planning-for-production/database-settings/postgresql/) should already be installed or accessible by the dashboard
+* [MongoDB](https://tyk.io/docs/planning-for-production/database-settings/mongodb/) or [PostgreSQL](https://tyk.io/docs/planning-for-production/database-settings/postgresql/) should already be installed or accessible by the dashboard
 
 ## Installing the Chart
 
@@ -28,8 +28,8 @@ helm show values tyk-helm/tyk-dashboard > values-dashboard.yaml --devel
 ```
 
 Note: 
-* Set redis connection details first at `.Values.global.redis`
-* Set mongo connection details second at `.Values.global.mongo`
+* Set Redis connection details first at `.Values.global.redis`
+* Set MongoDB connection details second at `.Values.global.mongo`
 * The Tyk Dashboard also requires a license to be set at `.Values.global.license.dashboard`
 * The Tyk Dashboard will require bootstrapping in order to work. This can be achieved by running the component
 chart "tyk-bootstrap"
@@ -65,9 +65,9 @@ Alternatively, you can use `--set` flag to set it in Tyk installation.
 
 ### Set Redis connection details (Required)
 Tyk uses Redis for distributed rate-limiting and token storage. 
-You may set `global.redis.addr` and `global.redis.pass` with redis connection string and password respectively.
+You may set `global.redis.addr` and `global.redis.pass` with Redis connection string and password respectively.
 
-If you do not already have redis installed, you can use these charts provided by Bitnami
+If you do not already have Redis installed, you can use these charts provided by Bitnami
 
 ```bash
 helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -80,12 +80,12 @@ The DNS name of your Redis as set by Bitnami is `tyk-redis-master.tyk.svc:6379` 
 You can update them in your local values.yaml file under `global.redis.addrs` and `global.redis.pass`. 
 Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
 
-### Set Mongo or PostgresSQL connection details (Required)
-If you have already installed mongo/postgresSQL, you can set the connection details in `global.mongo` and `global.postgres` section of values file respectively.
+### Set MongoDB or PostgresSQL connection details (Required)
+If you have already installed MongoDB or PostgreSQL, you can set the connection details in `global.mongo` and `global.postgres` section of values file respectively.
 
-If not, you can use these rather excellent charts provided by Bitnami to install mongo/postgres:
+If not, you can use these rather excellent charts provided by Bitnami to install MongoDB or PostgreSQL:
 
-**Mongo Installation**
+**MongoDB Installation**
 
 ```bash
 helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
@@ -98,7 +98,7 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 
 Follow the notes from the installation output to get connection details.
 
->NOTE: Please make sure you are installing mongo/postgres versions that are supported by Tyk. Please refer to Tyk docs to get list of supported versions.
+>NOTE: Please make sure you are installing MongoDB or PostgreSQL versions that are supported by Tyk. Please refer to Tyk docs to get list of supported versions.
 
 ### Dashboard Configurations
 
