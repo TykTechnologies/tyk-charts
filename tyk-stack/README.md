@@ -384,7 +384,7 @@ This will create a _PodMonitor_ resource for your Pump instance.
 #### Mongo pump
 If you are using the MongoDB pumps in the tyk-oss installation you will require MongoDB installed for that as well.
 
-To install Mongo you can use these rather excellent charts provided by Bitnami:
+To install MongoDB you can use these rather excellent charts provided by Bitnami:
 
 ```bash
 helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
@@ -392,9 +392,16 @@ helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "rep
 
 (follow notes from the installation output to get connection details and update them in `values-stack.yaml` file)
 
-NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) list of supported MongoDB versions. Please make sure you are installing mongo helm chart that matches these version.
+> [!NOTE]
+[Here is](https://tyk.io/docs/planning-for-production/database-settings/) list of supported MongoDB versions.
+Please make sure you are installing mongo helm chart that matches these version.
 
-*Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1. If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1. Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
+> [!NOTE]
+> Important Note regarding MongoDB:
+> This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1.
+> If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires
+> for the node to be drained, this action will be prevented due the replica count being 1.
+> Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
 
 ```yaml
  # Set mongo connection details if you want to configure mongo pump.

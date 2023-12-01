@@ -151,15 +151,24 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 Add following under the `global` section in `values.yaml`:
 
 ```yaml
-  # Set postgres connection details if you want to configure postgres pump.
   # Postgres connection string parameters.
   postgres:
-      host: tyk-postgres-postgresql.tyk.svc
-      port: 5432
-      user: postgres
-      password:
-      database: tyk_analytics
-      sslmode: disable
+    # host corresponds to the host name of postgres
+    host: tyk-postgres-postgresql.tyk.svc
+    # port corresponds to the port of postgres
+    port: 5432
+    # user corresponds to the user of postgres
+    user: postgres
+    # password corresponds to the password of the given postgres user in selected database
+    password:
+    # database corresponds to the database to be used in postgres
+    database: tyk_analytics
+    # sslmode corresponds to if postgres runs in sslmode (https)
+    sslmode: disable
+    # Connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
 ```
 
 #### Uptime Pump
