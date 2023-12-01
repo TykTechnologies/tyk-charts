@@ -185,7 +185,7 @@ dashboard:
     # Set this value to whatever hostname your Tyk Gateway is running on.
     # It is used to set TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
     overrideHostname: "tyk-gw.local"
-  # The path to the home directory of Tyk Dashboard, this must be set in order for Portal templates and other files to be loadable.
+  # The path to the home directory of the Tyk Dashboard. This must be set for Portal templates and other files to be loadable.
   # It is used to set TYK_DB_HOMEDIR
   homeDir: "/opt/tyk-dashboard"
   # If using the mongo-pump-selective pump, where data is written to org-id-specific collections in MongoDB,
