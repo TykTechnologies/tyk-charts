@@ -325,7 +325,7 @@ dashboard:
 
     # certificatesMountPath corresponds to the mount path of the secret.
     certificatesMountPath: "/etc/certs/tyk-dashboard"
-    # certificates is an array of strings, used to set TYK_DB_HTTPSERVEROPTIONS_CERTIFICATES
+    # List of certificates for each domain being covered by the application. It is used to set TYK_DB_HTTPSERVEROPTIONS_CERTIFICATES
     certificates:
       - domain_name: "*"
         cert_file: "/etc/certs/tyk-dashboard/tls.crt"
