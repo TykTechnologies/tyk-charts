@@ -12,7 +12,7 @@ global:
     # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
 
-  # adminUser specifies credentials for Tyk Dashboard admin user while bootstrapping Tyk Dashboard.
+  # adminUser specifies credentials for the Tyk Dashboard admin user that will be created while bootstrapping the Tyk Dashboard.
   # Dashboard admin information.
   adminUser:
     # If you don't want to store plaintext secrets for admin user in the Helm value file and would
