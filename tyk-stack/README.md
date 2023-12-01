@@ -1,6 +1,7 @@
 ## Tyk Stack
 
-`tyk-stack` provides the default deployment of Tyk Self Managed on a cluster. It will deploy all required Tyk components with the settings provided in the `values-stack.yaml` file.
+`tyk-stack` provides the default deployment of Tyk Self Managed on a cluster. 
+It will deploy all required Tyk components with the settings provided in the `values-stack.yaml` file.
 
 It includes:
 - Tyk Gateway, an open source Enterprise API Gateway (supporting REST, GraphQL, TCP and gRPC protocols).
@@ -11,12 +12,13 @@ It includes:
 ## Introduction
 
 By default, this chart installs following components as subcharts on a [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
-| Component | Enabled by Default | Flag |
-| --------- | ------------------ | ---- |
-|Tyk Gateway |true  | n/a                    |
-|Tyk Pump    |true | global.components.pump |
-|Tyk Dashboard| true| global.components.dashboard |
-| Tyk Developer Enterprise Portal | false| global.components.devPortal | 
+
+| Component                       | Enabled by Default | Flag                        |
+|---------------------------------|--------------------|-----------------------------|
+| Tyk Gateway                     | true               | n/a                         |
+| Tyk Pump                        | true               | global.components.pump      |
+| Tyk Dashboard                   | true               | global.components.dashboard |
+| Tyk Developer Enterprise Portal | false              | global.components.devPortal | 
 
 To enable or disable each component, change the corresponding enabled flag.
 
@@ -94,10 +96,10 @@ helm install tyk-redis bitnami/redis -n tyk --create-namespace --set image.tag=6
 Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is
 `tyk-redis-master.tyk.svc:6379` (Tyk needs the name including the port)
 
-### Set Mongo or PostgresSQL connection details (Required)
-If you have already installed mongo/postgresSQL, you can set the connection details in `global.mongo` and `global.postgres` section of values file respectively.
+### Set MongoDB or PostgresSQL connection details (Required)
+If you have already installed MongoDB or PostgreSQL, you can set the connection details in `global.mongo` and `global.postgres` section of values file respectively.
 
-If not, you can use these rather excellent charts provided by Bitnami to install mongo/postgres:
+If not, you can use these rather excellent charts provided by Bitnami to install MongoDB or PostgreSQL:
 
 **Mongo Installation**
 
@@ -112,7 +114,7 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 
 Follow the notes from the installation output to get connection details.
 
->NOTE: Please make sure you are installing mongo/postgres versions that are supported by Tyk. Please refer to Tyk docs to get list of supported versions.
+>NOTE: Please make sure you are installing MongoDB or PostgreSQL versions that are supported by Tyk. Please refer to Tyk docs to get list of supported versions.
 
 ### Protect Confidential Fields with Kubernetes Secrets
 
@@ -257,7 +259,7 @@ global:
        keyName: "redisPassKey"
 ```
 
-- Postgres:
+- PostgreSQL:
 ```yaml
 global:
   postgres:
@@ -435,15 +437,24 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 (follow notes from the installation output to get connection details and update them in `values-stack.yaml` file)
 
 ```yaml
-# Set postgres connection details if you want to configure postgres pump.
-# Postgres connection string parameters.
-postgres:
+  # Postgres connection string parameters.
+  postgres:
+    # host corresponds to the host name of postgres
     host: tyk-postgres-postgresql.tyk.svc
+    # port corresponds to the port of postgres
     port: 5432
+    # user corresponds to the user of postgres
     user: postgres
+    # password corresponds to the password of the given postgres user in selected database
     password:
+    # database corresponds to the database to be used in postgres
     database: tyk_analytics
+    # sslmode corresponds to if postgres runs in sslmode (https)
     sslmode: disable
+    # Connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
 ```
 
 #### Uptime Pump
@@ -455,105 +466,214 @@ Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values-stac
 #### Other Pumps
 To set up other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
 
-<!-- END import from pump doc -->
-
-
 #### Tyk Dashboard
-The Tyk Dashboard can be configured by modifying the values under "tyk-dashboard" section of the `values-stack.yaml` file
+The Tyk Dashboard can be configured by modifying the values under `tyk-dashboard` section of the `values-stack.yaml` file
 The chart is provided with sane defaults such that the only hard requirement is the license which needs to be put under
 `.Values.global.license.dashboard` in order for the bootstrapping process to work.
 
 ```yaml
   tyk-dashboard:
     dashboard:
-      enableOwnership: true
-      defaultPageSize: 10
-      notifyOnChange: true
-      hashKeys: true
-      enableDuplicateSlugs: true
-      showOrgId: true
-      hostConfig:
-        enableHostNames: true
-        disableOrgSlugPrefix: true
-        overrideHostname: "dashboard-svc-tyk-pro.tyk.svc"
-      homeDir: "/opt/tyk-dashboard"
-      useShardedAnalytics: false
-      enableAggregateLookups: true
-      enableAnalyticsCache: true
-      allowExplicitPolicyId: true
-      oauthRedirectUriSeparator: ";"
-      keyRequestFields: "appName;appType"
-      dashboardSessionLifetime: 43200
-      ssoEnableUserLookup: true
-      notificationsListenPort: 5000
-      enableDeleteKeyByHash: true
-      enableUpdateKeyByHash: true
-      enableHashedKeysListing: true
-      enableMultiOrgUsers: true
-      replicaCount: 1
-      image:
-        repository: tykio/tyk-dashboard
-        tag: v5.0.0
-        pullPolicy: Always
-      service:
-        type: NodePort
-        externalTrafficPolicy: Local
-        annotations: {}
-  
-      resources: {}
+        # This is the URL of your Tyk Gateway node, which is used to set TYK_DB_TYKAPI_HOST.
+        # The Dashboard controls Tyk using the Gateway API and only requires visibility to one node. In a sharded environment,
+        # the Gateway node specified here must not be sharded.
+        # - If you are using tyk-stack chart, it is automatically set to the gateway service URL.
+        #   HOWEVER, if Tyk Gateway runs with custom service name, please override with the correct URL using this field.
+        # - If you are using tyk-dashboard chart, you need to set the correct Gateway URL here too.
+        # The URL needs to be formatted as: http://gateway_host
+        tykApiHost: ""
+        # enableOwnership specifies if API Ownership for Self-Managed installations is enabled or not.
+        # It is used to set TYK_DB_ENABLEOWNERSHIP
+        enableOwnership: true
+        # defaultPageSize specifies the page size that the dashboard should use.
+        # It is used to set TYK_DB_PAGESIZE
+        defaultPageSize: 10
+        # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
+        # It is used to set TYK_DB_NOTIFYONCHANGE
+        notifyOnChange: true
+        # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
+        # The Dashboard will now operate in a mode that is compatible with key hashing.
+        # It is used to set TYK_DB_HASHKEYS
+        hashKeys: true
+        # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
+        # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
+        # It is used to set TYK_DB_ENABLEDUPLICATESLUGS
+        enableDuplicateSlugs: true
+        # showOrgId determines whether the Org ID will be shown in the Users -> Username detail page.
+        # This can be useful for quickly identifying your Org ID.
+        # It is used to set TYK_DB_SHOWORGID
+        showOrgId: true
+        hostConfig:
+          # Enable this option to have the Dashboard only allow access on a specific domain and 404 on any other host access
+          # It is used to set TYK_DB_HOSTCONFIG_ENABLEHOSTNAMES
+          enableHostNames: true
+          # By default, for developer portal, Tyk will add orgID prefix. Set to true if you have single tenant application or each portal on separate domain.
+          # It is used to set TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX
+          disableOrgSlugPrefix: true
+          # Set this value to whatever hostname your Tyk Gateway is running on.
+          # It is used to set TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
+          overrideHostname: *gwHostName
+        # The path to the home directory of Tyk Dashboard, this must be set in order for Portal templates and other files to be loadable.
+        # It is used to set TYK_DB_HOMEDIR
+        homeDir: "/opt/tyk-dashboard"
+        # If using the mongo-pump-selective pump, where data is written to org-id-specific collections in MongoDB,
+        # then enabling this option will switch querying for analytics over to the independent collection entries.
+        # It is used to set TYK_DB_USESHARDEDANALYTICS
+        useShardedAnalytics: false
+        # If using the new Aggregate Pump, Tyk Analytics can make use of the newer, faster Analytics lookup,
+        # to ensure that this can be made backwards compatible.This option must be set to true,
+        # in conjunction with the aggregate_lookup_cutoff value.
+        # It is used to set TYK_DB_ENABLEAGGREGATELOOKUPS
+        enableAggregateLookups: true
+        # TYK_DB_ENABLEANALYTICSCACHE
+        enableAnalyticsCache: true
+        # Set this value to true if you are planning to use Tyk Sync or Tyk Operator
+        # It is used to set TYK_DB_ALLOWEXPLICITPOLICYID
+        allowExplicitPolicyId: true
+        # oAuth redirect URI separator
+        # It is used to set TYK_DB_OAUTHREDIRECTURISEPARATOR
+        oauthRedirectUriSeparator: ";"
+        # TYK_DB_KEYREQUESTFIELDS
+        keyRequestFields: "appName;appType"
+        # Dashboard session lifetime
+        # It is used to set TYK_DB_DASHBOARDSESSIONLIFETIME
+        dashboardSessionLifetime: 43200
+        # When enabled, if dashboard already have user with given email found, it will be used for the login process
+        # It is used to set TYK_DB_SSOENABLEUSERLOOKUP
+        ssoEnableUserLookup: true
+        # TYK_DB_NOTIFICATIONSLISTENPORT
+        notificationsListenPort: 5000
+        # To delete a key by its hash, set this option to true
+        # It is used to set TYK_DB_ENABLEDELETEKEYBYHASH
+        enableDeleteKeyByHash: true
+        # To update a key by its hash, set this option to true.
+        # It is used to set TYK_DB_ENABLEUPDATEKEYBYHASH
+        enableUpdateKeyByHash: true
+        # To retrieve a list of all key hash listings, set this option to true.
+        # It is used to set TYK_DB_ENABLEHASHEDKEYSLISTING
+        enableHashedKeysListing: true
+        # Enable support for users with the same email for multiple organisations
+        # It is used to set TYK_DB_ENABLEMULTIORGUSERS
+        enableMultiOrgUsers: true
+
+        # replicaCount specifies number of replicas to be created if kind is Deployment.
+        replicaCount: 1
+
+        # podAnnotations is annotations to be added to Tyk Dashboard pod.
+        # It takes key-value pairs.
+        # There are no required annotation field for Tyk Dashboard.
+        #
+        # podAnnotations:
+        #   yourkey: value
+        #   image: yourhub
+        podAnnotations: {}
+
+        image:
+          # image repository for Tyk Dashboard.
+          repository: tykio/tyk-dashboard
+
+          # tag for Tyk Dashboard
+          tag: v5.2.3
+
+          # image pull policy
+          pullPolicy: Always
+
+        # image pull secrets to use when pulling images from repository
+        imagePullSecrets: []
+
+        service:
+          type: NodePort
+          externalTrafficPolicy: Local
+          annotations: {}
+
         # We usually recommend not to specify default resources and to leave this
         # as a conscious choice for the user. This also increases chances charts
         # run on environments with little resources, such as Minikube. If you do
         # want to specify resources, uncomment the following lines, adjust them
         # as necessary, and remove the curly braces after 'resources:'.
-        # limits:
-      #  cpu: 100m
-      #  memory: 128Mi
-      # requests:
-      #  cpu: 100m
-      #  memory: 128Mi
-      securityContext:
-        runAsUser: 1000
-        fsGroup: 2000
-      nodeSelector: {}
-      tolerations: []
-      affinity: {}
-      extraEnvs: []
-      ## extraVolumes A list of volumes to be added to the pod
-      ## extraVolumes:
-      ##   - name: ca-certs
-      ##     secret:
-      ##       defaultMode: 420
-      ##       secretName: ca-certs
-      extraVolumes: []
-      ## extraVolumeMounts A list of volume mounts to be added to the pod
-      ## extraVolumeMounts:
-      ##   - name: ca-certs
-      ##     mountPath: /etc/ssl/certs/ca-certs.crt
-      ##     readOnly: true
-      extraVolumeMounts: []
-      mounts: []
-  
-      # Dashboard will only bootstrap if the master bootstrap option is set to true.
-      bootstrap: true
-  
-      # The hostname to bind the Dashboard to.
-      hostName: tyk-dashboard.local
-      # If set to true the Dashboard will use SSL connection.
-      # You will also need to set the:
-      # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-      # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-      # variables in extraEnvs object array to define your SSL cert and key files.
-      tls: false
-  
-      # Dashboard admin information.
-      adminUser:
-        firstName: admin
-        lastName: user
-        email: default@example.com
-        # Set a password or a random one will be assigned.
-        password: "123456"
-      # Dashboard Organisation information.
+        #  resources:
+        #   limits:
+        #    cpu: 100m
+        #    memory: 128Mi
+        #   requests:
+        #    cpu: 100m
+        #    memory: 128Mi
+        resources: {}
+
+        # securityContext holds pod-level security attributes for Tyk Dashboard pod.
+        securityContext:
+          runAsUser: 1000
+          fsGroup: 2000
+
+        # containerSecurityContext holds container-level security attributes for Tyk Dashboard container.
+        containerSecurityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
+
+        # nodeSelector is a selector which must be true for Tyk Dashboard pod to fit on a specific node.
+        nodeSelector: {}
+        # tolerations specifies tolerations to be applied on Tyk Dashboard pods.
+        tolerations: []
+        # affinity specifies affinity and anti-affinity constraints.
+        affinity: {}
+
+        # extraEnvs is used to set extra environment variables to Tyk Dashboard pod.
+        # - name: TYK_DB_PAGESIZE
+        #   value: "10"
+        extraEnvs: []
+
+        # extraVolumes is a list of volumes to be added to the pod
+        # extraVolumes:
+        #   - name: ca-certs
+        #     secret:
+        #       defaultMode: 420
+        #       secretName: ca-certs
+        extraVolumes: []
+
+        # extraVolumeMounts is a list of volume mounts to be added to the pod
+        # extraVolumeMounts:
+        #   - name: ca-certs
+        #     mountPath: /etc/ssl/certs/ca-certs.crt
+        #     readOnly: true
+        extraVolumeMounts: []
+
+        # The hostname to bind the Dashboard to.
+        hostName: tyk-dashboard.local
+
+        tls:
+          # The name of the secret which should contain the TLS certificate you want to use with the dashboard deployment
+          secretName: tyk-default-tls-secret
+          # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
+          insecureSkipVerify: false
+
+          # certificatesMountPath corresponds to the mount path of the secret.
+          certificatesMountPath: "/etc/certs/tyk-dashboard"
+          # certificates is an array of strings, used to set TYK_DB_HTTPSERVEROPTIONS_CERTIFICATES
+          certificates:
+            - domain_name: "*"
+              cert_file: "/etc/certs/tyk-dashboard/tls.crt"
+              key_file: "/etc/certs/tyk-dashboard/tls.key"
+
+        # ingress specifies Ingress rules for Tyk Dashboard Service.
+        # Ingress is disabled by default.
+        ingress:
+          enabled: false
+          # specify your ingress controller class name below
+          className: ""
+          annotations: {}
+            # kubernetes.io/ingress.class: nginx
+          # kubernetes.io/tls-acme: "true"
+          hosts:
+            - host: chart-example.local
+              paths:
+                - path: /
+                  pathType: ImplementationSpecific
+          tls: []
 ```
 ### Tyk Developer Enterprise Portal Configurations
 
@@ -571,44 +691,29 @@ tyk-dev-portal:
 
 #### Storage Settings
 
-Tyk Enterprise Portal supports different storage options for storing the portal's CMS assets such as images, theme files and Open API Specification files. Please see the [Enterprise Portal Storage settings](https://tyk.io/docs/tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration#portal-settings) page for all the available options. Helm chart supports the setting of the following fields in `values-stack.yaml` `storage` section:
+Tyk Enterprise Portal supports different storage options for storing the portal's CMS assets such as images, theme files and Open API Specification files. 
+Please see the [Enterprise Portal Storage settings](https://tyk.io/docs/tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration#portal-settings) page for all the available options. 
+Helm chart supports the setting of the following fields in `values-stack.yaml` `storage` and `database` section:
 
 ```yaml
 tyk-dev-portal:
   storage:
-    # Configuration values for using an SQL database as storage for Tyk Developer Portal
-    # In case you want to provide the connection string via secrets please
-    # refer to the existing secret inside the helmchart or the
-    # .Values.global.secrets.useSecretName variable
     # User can set the storage type for portal.
     # Supported types: fs, s3, db
     type: "db"
-    # This selects the SQL dialect to be used
-    # The supported values are mysql, postgres and sqlite3
-    dialect: "sqlite3"
-    connectionString: "db/portal.db"
-    enableLogs: false
-    
-    database:
-      maxRetries: 3
-      retryDelay: 5000
     # Configuration values for using s3 as storage for Tyk Developer Portal
     # In case you want to provide the key ID and access key via secrets please
-    # refer to the existing secret inside the helmchart or the
-    # .Values.global.secrets.useSecretName variable and a secret containing
-    # the keys DeveloperPortalAwsAccessKeyId and respectively,
-    # DeveloperPortalAwsSecretAccessKey
+    # refer to the existing secret inside the helm chart or the
+    # .Values.useSecretName field
     s3:
       awsAccessKeyid: your-access-key
       awsSecretAccessKey: your-secret-key
       region: sa-east-1
-      endpoint: your-portal-bucket
-      bucket: https://s3.sa-east-1.amazonaws.com
+      endpoint: https://s3.sa-east-1.amazonaws.com
+      bucket: your-portal-bucket
       acl: private
       presign_urls: true
     persistence:
-      # User can mount existing PVC to the Tyk Developer Portal
-      # Make sure to change the kind to Deployment if you are mounting existing PVC 
       mountExistingPVC: ""
       storageClass: ""
       accessModes:
@@ -617,6 +722,14 @@ tyk-dev-portal:
       annotations: {}
       labels: {}
       selector: {}
+  database:
+    # This selects the SQL dialect to be used
+    # The supported values are mysql, postgres and sqlite3
+    dialect: "sqlite3"
+    connectionString: "db/portal.db"
+    enableLogs: false
+    maxRetries: 3
+    retryDelay: 5000
 ```
 
 #### Other Configurations
