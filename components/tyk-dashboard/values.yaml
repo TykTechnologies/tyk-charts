@@ -207,7 +207,7 @@ dashboard:
   # Dashboard session lifetime
   # It is used to set TYK_DB_DASHBOARDSESSIONLIFETIME
   dashboardSessionLifetime: 43200
-  # When enabled, if dashboard already have user with given email found, it will be used for the login process
+  # When enabled, if the dashboard already has a user with a given email, it will be used for the login process
   # It is used to set TYK_DB_SSOENABLEUSERLOOKUP
   ssoEnableUserLookup: true
   # TYK_DB_NOTIFICATIONSLISTENPORT
