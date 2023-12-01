@@ -163,7 +163,7 @@ dashboard:
   # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
   # It is used to set TYK_DB_NOTIFYONCHANGE
   notifyOnChange: true
-  # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
+  # hashKeys is used to enable/disable key hashing. It should match with the value set in Gateway configuration.
   # The Dashboard will now operate in a mode that is compatible with key hashing.
   # It is used to set TYK_DB_HASHKEYS
   hashKeys: true
