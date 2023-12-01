@@ -85,7 +85,6 @@ You may set `global.redis.addr` and `global.redis.pass` with redis connection st
 > [!NOTE] 
 > For additional information on Tyk Pump configurations, 
 refer to the [Setup Dashboard Analytics](https://tyk.io/docs/tyk-pump/tyk-pump-configuration/tyk-pump-dashboard-config/) documentation. 
-
 > To explore the list of supported backends for Tyk Pump, please visit https://tyk.io/docs/tyk-stack/tyk-pump/other-data-stores/.
 
 #### Prometheus Pump
