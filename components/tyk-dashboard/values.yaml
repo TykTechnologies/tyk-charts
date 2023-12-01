@@ -30,7 +30,7 @@ global:
     # lastName corresponds to the last name of the admin user that will be created during the bootstrapping process.
     # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_LASTNAME
     lastName: user
-    # email corresponds to the email of the admin user going to be created in bootstrap.
+    # email corresponds to the email of the admin user that will be created during the bootstrapping process.
     # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_EMAILADDRESS
     email: default@example.com
     # Set a password or a random one will be assigned.
