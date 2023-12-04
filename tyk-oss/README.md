@@ -234,7 +234,7 @@ An Ingress resource is created if `tyk-gateway.gateway.ingress.enabled` is set t
     # annotation to that ingress controller.
     ingress:
       # if enabled, creates an ingress resource for the gateway
-      enabled: false
+      enabled: true
 
       # specify ingress controller class name
       className: ""
