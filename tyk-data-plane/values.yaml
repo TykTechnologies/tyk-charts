@@ -238,7 +238,7 @@ tyk-gateway:
             paths:
               - path: /
                 pathType: ImplementationSpecific
-                  
+
         # tls configuration for ingress
         #  - secretName: chart-example-tls
         #    hosts:
