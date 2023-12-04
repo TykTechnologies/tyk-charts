@@ -29,7 +29,7 @@ helm show values tyk-helm/tyk-dashboard > values-dashboard.yaml
 
 Note: 
 * Set Redis connection details at `.Values.global.redis`
-* Set MongoDB connection details second at `.Values.global.mongo`
+* Set MongoDB connection details at `.Values.global.mongo`
 * The Tyk Dashboard also requires a license to be set at `.Values.global.license.dashboard`
 * The Tyk Dashboard will require bootstrapping in order to work. This can be achieved by running the component
 chart "tyk-bootstrap"
