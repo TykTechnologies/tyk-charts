@@ -74,7 +74,7 @@ spec:
         {{- end }}
         env:
           - name: TYK_GW_LISTENPORT
-            value: "{{ .Values.global.servicePorts.gateway }}"
+            value: "{{.Values.gateway.containerPort}}"
           {{ if .Values.gateway.useDashboardAppConfig.enabled }}
           - name: TYK_GW_USEDBAPPCONFIGS
             value: "true"
@@ -320,7 +320,7 @@ spec:
         command: ["/opt/tyk-gateway/tyk"]
         workingDir: /opt/tyk-gateway
         ports:
-        - containerPort: {{ .Values.global.servicePorts.gateway }}
+        - containerPort: {{ .Values.gateway.containerPort }}
         {{- if .Values.gateway.control.enabled }}
         - containerPort: {{ .Values.gateway.control.containerPort }}
         {{- end }}
@@ -349,7 +349,7 @@ spec:
             {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
             port: {{ .Values.gateway.control.containerPort }}
             {{- else }}
-            port: {{ .Values.global.servicePorts.gateway }}
+            port: {{ .Values.gateway.containerPort }}
             {{- end }}
           initialDelaySeconds: 5
           periodSeconds: 2
@@ -362,7 +362,7 @@ spec:
             {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
             port: {{ .Values.gateway.control.containerPort }}
             {{- else }}
-            port: {{ .Values.global.servicePorts.gateway }}
+            port: {{ .Values.gateway.containerPort }}
             {{- end }}
           initialDelaySeconds: 1
           periodSeconds: 10
