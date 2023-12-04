@@ -149,17 +149,22 @@ Add following under the `global` section in `values.yaml`:
       sslmode: disable
 ```
 
-#### Uptime Pump
-Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It supports following values
-1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
-2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
-3. empty: Used to disable uptime analytics.
-
 #### Hybrid Pump
+Hybrid Pump can be configured by setting `pump.backend` to `hybrid`. 
+Set the connection details of your control plane in `global.remoteControlPlane` field of values file. 
+Connection details can be stored either directly in the values file or you can store it in k8s secret and provide reference
+to it in the `global.remoteControlPlane.useSecretName` field.
 
 ```yaml
   # Set remoteControlPlane connection details if you want to configure hybrid pump.
   remoteControlPlane:
+      # useSecretName can be used if you don't want to store plaintext values for remote control plane configurations in
+      # the Helm value file and would rather provide the k8s Secret externally.
+      # You should set following fields in the secret
+      # - orgId - Sets slave_options.rpc_key of Tyk Gateway
+      # - userApiKey - Sets slave_options.api_key of Tyk Gateway
+      # - groupID - Sets slave_options.group_id of Tyk Gateway
+      useSecretName: ""
       # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
       connectionString: ""
       # orgID of your dashboard user
@@ -185,6 +190,12 @@ Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml
     # Hybrid pump connection pool size. If not specified, default value will be picked up by Tyk Pump.
     poolSize: 5
 ```
+
+#### Uptime Pump
+Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It supports following values
+1. mongo: Used to set mongo pump for uptime analytics. Mongo Pump should be enabled.
+2. postgres: Used to set postgres pump for uptime analytics. Postgres Pump should be enabled.
+3. empty: Used to disable uptime analytics.
 
 #### Other Pumps
 To set up other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
