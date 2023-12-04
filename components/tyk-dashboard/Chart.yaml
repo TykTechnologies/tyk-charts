@@ -6,6 +6,7 @@ description: |
   It provides an easy-to-use management interface for managing a Tyk installation as well as clear and granular analytics. 
   The Dashboard also provides the API Classic Developer Portal, a customisable developer portal for your API documentation, 
   developer auto-enrolment and usage tracking.
+icon: https://tyk.io/wp-content/uploads/2023/11/Tyk-helm-icon-02.png
 
 # A chart can be either an 'application' or a 'library' chart.
 #
