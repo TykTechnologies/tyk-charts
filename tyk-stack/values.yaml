@@ -770,7 +770,11 @@ tyk-dashboard:
     # in conjunction with the aggregate_lookup_cutoff value.
     # It is used to set TYK_DB_ENABLEAGGREGATELOOKUPS
     enableAggregateLookups: true
-    # TYK_DB_ENABLEANALYTICSCACHE
+    # enableAnalyticsCache enables the caching of analytics data queries.
+    # When this field is set to true, the Tyk Dashboard will cache the results of analytics queries in Redis,
+    # which can significantly improve performance by reducing the load on the underlying MongoDB or PostgreSQL database
+    # that stores this data.
+    # It is used to set TYK_DB_ENABLEANALYTICSCACHE
     enableAnalyticsCache: true
     # Set this value to true if you are planning to use Tyk Sync or Tyk Operator
     # It is used to set TYK_DB_ALLOWEXPLICITPOLICYID
@@ -778,7 +782,9 @@ tyk-dashboard:
     # oAuth redirect URI separator
     # It is used to set TYK_DB_OAUTHREDIRECTURISEPARATOR
     oauthRedirectUriSeparator: ";"
-    # TYK_DB_KEYREQUESTFIELDS
+    # keyRequestFields enables administrators to collect necessary information for API key issuance, enforce policies,
+    # and provide the flexibility to customize the key request process according to evolving business needs.
+    # It is used to set TYK_DB_KEYREQUESTFIELDS
     keyRequestFields: "appName;appType"
     # Dashboard session lifetime
     # It is used to set TYK_DB_DASHBOARDSESSIONLIFETIME
@@ -786,7 +792,8 @@ tyk-dashboard:
     # When enabled, if dashboard already have user with given email found, it will be used for the login process
     # It is used to set TYK_DB_SSOENABLEUSERLOOKUP
     ssoEnableUserLookup: true
-    # TYK_DB_NOTIFICATIONSLISTENPORT
+    # notificationsListenPort specifies the port that the Tyk Dashboard listens on for webhook notifications sent from Tyk Gateways.
+    # It is used to set TYK_DB_NOTIFICATIONSLISTENPORT
     notificationsListenPort: 5000
     # To delete a key by its hash, set this option to true
     # It is used to set TYK_DB_ENABLEDELETEKEYBYHASH
