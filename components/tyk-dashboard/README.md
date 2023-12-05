@@ -103,9 +103,17 @@ Follow the notes from the installation output to get connection details.
 ### Dashboard Configurations
 
 #### Enabling TLS
-We have provided an easy way of enabling TLS via the `global.tls.dashboard` flag. Setting this value to true will
-automatically enable TLS using the certificate provided under tyk-dashboard/certs/cert.pem.
 
-If you want to use your own key/cert pair, you must follow the following steps:
-1. Create a tls secret using your cert and key pair.
-2. Set `global.tls.dashboard` to true.
+Assuming that TLS certificates for the Tyk Dashboard are available in the Kubernetes Secret `tyk-dashboard-tls`, 
+follow these steps to enable TLS:
+
+1. Set `global.tls.dashboard` to `true`.
+2. Set `dashboard.tls.secretName` to the name of the Kubernetes secret containing TLS certificates for the Tyk Dashboard, in this case, `tyk-dashboard-tls`.
+3. Define certificate configurations in `dashboard.tls.certificates`, which generates `TYK_DB_HTTPSERVEROPTIONS_CERTIFICATES` for the Tyk Dashboard.
+
+> Optional Steps, if needed:
+>  
+> - Modify the secret mount path on the Tyk Dashboard Pod via `dashboard.tls.certificatesMountPath`.
+> - If necessary, either enable `insecureSkipVerify` via `dashboard.tls.certificates`, or mount CA information through `dashboard.extraVolumes` and `dashboard.extraVolumeMounts`.
+> - If the `tyk-bootstrap` chart is used to bootstrap the Tyk Dashboard, ensure that it has certificates to send requests to the Tyk Dashboard or enable `insecureSkipVerify` in the `tyk-bootstrap` chart.
+> - If the Tyk Gateway connects to the Tyk Dashboard, confirm that the Tyk Gateway has appropriate certificates for connecting to the Tyk Dashboard
