@@ -2,7 +2,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# fullnameOverride overrides App name. It is truncated to 63 characters.
 fullnameOverride: ""
+
+# nameOverride overrides the Chart name. It is truncated to 63 characters.
 nameOverride: ""
 
 global:
@@ -18,8 +21,14 @@ global:
     # adminUserEmail - sets .global.adminUser.email
     useSecretName: ""
 
+    # firstName corresponds to the first name of the admin user that will be created during the bootstrapping process.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
     firstName: admin
+    # lastName corresponds to the last name of the admin user that will be created during the bootstrapping process.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_LASTNAME
     lastName: user
+    # email corresponds to the email of the admin user that will be created during the bootstrapping process.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_EMAILADDRESS
     email: default@example.com
 
   components:
@@ -31,11 +40,6 @@ global:
 
   tls:
     # If set to true the Dashboard will use SSL connection.
-    # You will also need to set the:
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-    # variables in extraEnvs object array to define your SSL cert and key files.
-    # When true, sets the dashboard protocol to HTTPS.
     dashboard: false
 
   secrets:
@@ -127,6 +131,9 @@ bootstrap:
   #     key: value
   #     post: install
   podAnnotations:
+    # preInstallPodAnnotations specifies annotations to be added to Tyk Bootstrap pre-install hook's job pods.
     preInstallPodAnnotations: {}
+    # postInstallPodAnnotations specifies annotations to be added to Tyk Bootstrap post-install hook's job pods.
     postInstallPodAnnotations: {}
+    # preDeletePodAnnotations specifies annotations to be added to Tyk Bootstrap pre-delete hook's job pods.
     preDeletePodAnnotations: {}

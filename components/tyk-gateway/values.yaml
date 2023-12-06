@@ -21,12 +21,9 @@ global:
     gateway: 8080
 
   tls:
+    # When true, sets the gateway protocol to HTTPS.
     gateway: false
     # If set to true the Dashboard will use SSL connection.
-    # You will also need to set the:
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-    # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
 
     # When true, it will install the certificate present in the templates folder, set to false when using
@@ -141,7 +138,9 @@ gateway:
     # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
     insecureSkipVerify: false
 
+    # certificatesMountPath corresponds to the mount path of the secret.
     certificatesMountPath: "/etc/certs/tyk-gateway"
+    # certificates is an array of strings, used to set TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
     certificates:
     - domain_name: "*"
       cert_file: "/etc/certs/tyk-gateway/tls.crt"
@@ -247,6 +246,8 @@ gateway:
     #      - chart-example.local
     tls: []
 
+  # hashKeyFunction specifies hashing function used in Tyk Gateway.
+  # It is used to set TYK_GW_HASHKEYFUNCTION
   hashKeyFunction: murmur128
 
   # Sharding gateway allows you to selectively load APIs to specific gateways.
@@ -254,6 +255,8 @@ gateway:
   # Also be sure to match API segmentation tags with the tags selected below.
   sharding:
     enabled: false
+    # tags is used when filtering (sharding) Tyk Gateway nodes.
+    # It sets TYK_GW_DBAPPCONFOPTIONS_TAGS
     tags: ""
 
   # We usually recommend not to specify default resources and to leave this
@@ -300,19 +303,19 @@ gateway:
   #   value: "true"
   extraEnvs: []
 
-  ## extraVolumes is a list of volumes to be added to the pod
-  ## extraVolumes:
-  ##   - name: ca-certs
-  ##     secret:
-  ##       defaultMode: 420
-  ##       secretName: ca-certs
+  # extraVolumes is a list of volumes to be added to the pod
+  # extraVolumes:
+  #   - name: ca-certs
+  #     secret:
+  #       defaultMode: 420
+  #       secretName: ca-certs
   extraVolumes: []
 
-  ## extraVolumeMounts is a list of volume mounts to be added to the pod
-  ## extraVolumeMounts:
-  ##   - name: ca-certs
-  ##     mountPath: /etc/ssl/certs/ca-certs.crt
-  ##     readOnly: true
+  # extraVolumeMounts is a list of volume mounts to be added to the pod
+  # extraVolumeMounts:
+  #   - name: ca-certs
+  #     mountPath: /etc/ssl/certs/ca-certs.crt
+  #     readOnly: true
   extraVolumeMounts: []
 
   # analyticsEnabled property is used to enable/disable analytics.
@@ -371,5 +374,3 @@ gateway:
       # Rule that ensures that if we decide to record data for a particular operation, we’ll also record data for
       # all the subsequent work that operation causes
       parentBased: false
-
-
