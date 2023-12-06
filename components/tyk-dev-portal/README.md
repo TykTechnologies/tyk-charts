@@ -49,7 +49,6 @@ helm install tyk-dev-portal tyk-helm/tyk-dev-portal -n tyk --create-namespace -f
 ```bash
 helm uninstall tyk-dev-portal -n tyk
 ```
-    
 
 This removes all the Kubernetes resources associated with the chart and deletes the release.
 
