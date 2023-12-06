@@ -116,7 +116,7 @@ storage:
 
 ### Database Settings
 Portal uses database to store metadata related to the portal, such as API products, plans, developers, applications, and more.
-Please refer to this page for more details.
+Please refer to [Database connection settings](https://tyk.io/docs/product-stack/tyk-enterprise-developer-portal/deploy/configuration/#database-connection-settings) for more details.
 
 Helm chart provides following configuration options for database connection:
 
