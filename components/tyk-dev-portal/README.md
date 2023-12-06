@@ -40,7 +40,7 @@ helm show values tyk-helm/tyk-dev-portal > values.yaml
 Note: 
 * Set license key at `.Values.license`
 
- By default, Helm chart will try to discover Dashboard service in same namespace. If you want to explicity specify dashboard url, you can set `.Values.overrideTykDashUrl` in values.yaml file.
+ By default, Helm chart will try to discover Tyk Dashboard service in the same namespace. If you want to explicitly specify Tyk Dashboard URL, you can set `.Values.overrideTykDashUrl` in values.yaml file.
 
 ```bash
 helm install tyk-dev-portal tyk-helm/tyk-dev-portal -n tyk --create-namespace -f values.yaml
