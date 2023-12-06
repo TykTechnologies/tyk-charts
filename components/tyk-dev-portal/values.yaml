@@ -45,7 +45,7 @@ global:
 # Sensitive configuration of Portal could be set using k8s secret
 # You can set following fields:
 # - DevPortalLicense - Sets LicenseKey for Developer Portal
-# - DevPortalStorageConnectionString - Sets connectionString for Developer Portal
+# - DevPortalDatabaseConnectionString - Sets database connectionString for Developer Portal
 # - DevPortalAwsAccessKeyId - Sets AWS S3 Access Key ID
 # - DevPortalAwsSecretAccessKey - Sets AWS S3 Secret Access Key
 useSecretName: ""
