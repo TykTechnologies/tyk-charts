@@ -7,6 +7,7 @@ description: |
   to publish, monetise and drive the adoption of APIs. It provides a full-fledged CMS-like system that
   enables you to serve all stages of API adoption: from the look and feel customisation to exposing APIs
   and enabling third-party developers to register and use your APIs.
+icon: https://tyk.io/wp-content/uploads/2023/11/Tyk-helm-icon-02.png
 type: application
 home: https://tyk.io/
 sources:
