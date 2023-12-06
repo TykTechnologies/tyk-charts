@@ -138,8 +138,7 @@ database:
 Other [Enterprise Portal configurations](https://tyk.io/docs/tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration) can be set by using environment variables with `extraEnvs` fields, e.g.:
 
 ```yaml
-tyk-dev-portal:
-  extraEnvs:
+extraEnvs:
   - name: PORTAL_LOG_LEVEL
     value: debug
 ```
