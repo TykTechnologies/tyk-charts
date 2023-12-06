@@ -145,7 +145,7 @@ extraEnvs:
 
 
 ## Protect Confidential Fields with Kubernetes Secrets
-In the `values.yaml` file, some fields are considered confidential, such as License , connection strings, etc.
+In the `values.yaml` file, some fields are considered confidential, such as Developer Portal license, connection strings, etc.
 Declaring values for such fields as plain text might not be desired for all use cases. Instead, for certain fields,
 Kubernetes secrets can be referenced, and Kubernetes by itself configures values based on the referred secret.
 
