@@ -155,7 +155,7 @@ This section describes how to use Kubernetes secrets to declare confidential fie
 ### Tyk Developer Enterprise Portal License
 
 In order to refer Tyk Developer Enterprise Portal license through Kubernetes secret, please use `useSecretName`, 
-where the secret should contain a key called `EnterprisePortalLicense`.
+where the secret should contain a key called `DevPortalLicense`.
 
 ### Tyk Developer Enterprise Portal Admin Password
 
