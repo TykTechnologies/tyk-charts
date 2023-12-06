@@ -283,7 +283,7 @@ tyk-gateway:
 
     service:
       # type of service
-      type: ClusterIP
+      type: NodePort
 
       # external traffic policy of the service. Set it only if you are using LoadBalancer service type
       externalTrafficPolicy: Local
@@ -443,7 +443,7 @@ tyk-pump:
       enabled: false
 
       # type specifies type of the service.
-      type: ClusterIP
+      type: NodePort
 
       # port specifies the port exposed by the service.
       port: 9090
@@ -711,7 +711,7 @@ tyk-dashboard:
     imagePullSecrets: []
 
     service:
-      type: ClusterIP
+      type: NodePort
       externalTrafficPolicy: Local
       annotations: {}
 
@@ -862,7 +862,7 @@ tyk-dev-portal:
   imagePullSecrets: []
 
   service:
-    type: ClusterIP
+    type: NodePort
     port: 3001
     externalTrafficPolicy: Local
     annotations: {}
