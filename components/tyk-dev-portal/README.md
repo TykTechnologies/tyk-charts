@@ -70,8 +70,8 @@ You can update any value in your local values.yaml file and use `-f [filename]` 
 Tyk Developer Enterprise Portal License is required. It can be set up in `license` or through secret `useSecretName`. The secret should contain a key called `DevPortalLicense`.
 
 ```yaml
-  # Developer Portal license.
-  license: ""
+# Developer Portal license.
+license: ""
 ```
 
 ### Storage Settings
