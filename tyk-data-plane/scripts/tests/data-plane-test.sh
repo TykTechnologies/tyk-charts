@@ -34,9 +34,9 @@ checkGateway() {
 
   if [[ $count -ge 10 ]]
   then
-    echo "All components required for the Tyk MDCB Data Plane to work are NOT available"
+    echo "All components required for the Tyk Data Plane to work are NOT available"
   else
-    echo "All components required for the Tyk MDCB Data Plane to work are available"
+    echo "All components required for the Tyk Data Plane to work are available"
   fi
 }
 
