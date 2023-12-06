@@ -37,8 +37,8 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
 helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
 helm show values tyk-helm/tyk-dev-portal > values.yaml 
 ```
-Note: 
-* Set license key at `.Values.license`
+> [!NOTE]
+> Set license key at `.Values.license`
 
  By default, Helm chart will try to discover Tyk Dashboard service in the same namespace. If you want to explicitly specify Tyk Dashboard URL, you can set `.Values.overrideTykDashUrl` in values.yaml file.
 
