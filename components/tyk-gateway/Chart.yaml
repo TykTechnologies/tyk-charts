@@ -5,6 +5,7 @@ description: A Helm chart for deploying the open source Tyk Gateway.
   Tyk Gateway is a fully open source Enterprise API Gateway, supporting REST, GraphQL, TCP and gRPC protocols.
   Tyk Gateway is provided ‘Batteries-included’, with no feature lockout. It enables organisations and businesses around
   the world to protect, secure, and process APIs and well as review and audit the consumed apis.
+icon: https://tyk.io/wp-content/uploads/2023/11/Tyk-helm-icon-02.png
 home: https://tyk.io/
 sources:
   - https://github.com/TykTechnologies/tyk-charts/tree/main/components/tyk-gateway
