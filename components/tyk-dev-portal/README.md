@@ -162,7 +162,7 @@ where the secret should contain a key called `EnterprisePortalLicense`.
 In order to refer Tyk Developer Enterprise Portal's admin password through Kubernetes secret, 
 please use `global.adminUser.useSecretName`, where the secret should contain a key called `adminUserPassword`.
 
-### Tyk Developer Enterprise Portal Storage Connection String
+### Tyk Developer Enterprise Portal Database Connection String
 
 In order to refer Tyk Enterprise Portal connection string to the selected database through Kubernetes secret,
 please use `useSecretName`, where the secret should contain a key called 
