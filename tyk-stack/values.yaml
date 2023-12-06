@@ -183,7 +183,8 @@ global:
     # database corresponds to the database to be used in postgres
     database: tyk_analytics
     # sslmode corresponds to if postgres runs in sslmode (https)
-    sslmode:
+    sslmode: disable
+
     # Connection string can also be set using a secret. Provide the name of the secret and key below.
     # connectionStringSecret:
     #   name: ""
