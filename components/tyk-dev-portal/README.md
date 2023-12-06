@@ -17,7 +17,7 @@ For typical usage, we recommend using following umbrella charts:
 ## Installation
 ### 1. Create Kubernetes Secret
 
-Make sure the k8s secret exists in your namespace containing Tyk Dashboard Organisation ID and Tyk Dashboard API Access Credentials.
+Make sure the Kubernetes secret exists in your namespace containing Tyk Dashboard Organisation ID and Tyk Dashboard API Access Credentials.
 
 This secret will automatically be generated if [tyk-bootstrap](../tyk-bootstrap/) component chart was installed with `bootstrap.devPortal` value set to true in the values.yaml.
 
