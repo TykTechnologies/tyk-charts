@@ -2,10 +2,6 @@ tyk-oss/charts/*
 
 /.idea
 
-tyk-mdcb-data-plane/charts/*
-
-tyk-single-dc/charts/*
-
 tyk-stack/charts/*
 
 tyk-data-plane/charts/*
