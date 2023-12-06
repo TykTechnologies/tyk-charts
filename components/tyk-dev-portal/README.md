@@ -166,7 +166,7 @@ please use `global.adminUser.useSecretName`, where the secret should contain a k
 
 In order to refer Tyk Enterprise Portal connection string to the selected database through Kubernetes secret,
 please use `useSecretName`, where the secret should contain a key called 
-`EnterprisePortalStorageConnectionString`.
+`DevPortalDatabaseConnectionString `.
 
 > [!WARNING]
 > If `useSecretName` is in use, please add all keys mentioned above to the secret. 
