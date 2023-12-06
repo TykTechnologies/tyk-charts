@@ -140,7 +140,9 @@ tyk-gateway:
       # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
       insecureSkipVerify: false
 
+      # certificatesMountPath corresponds to the mount path of the secret.
       certificatesMountPath: "/etc/certs/tyk-gateway"
+      # certificates is an array of strings, used to set TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
       certificates:
         - domain_name: "*"
           cert_file: "/etc/certs/tyk-gateway/tls.crt"
@@ -353,19 +355,19 @@ tyk-gateway:
         # all the subsequent work that operation causes
         parentBased: false
 
-    ## extraVolumes is a list of volumes to be added to the pod
-    ## extraVolumes:
-    ##   - name: ca-certs
-    ##     secret:
-    ##       defaultMode: 420
-    ##       secretName: ca-certs
+    # extraVolumes is a list of volumes to be added to the pod
+    # extraVolumes:
+    #   - name: ca-certs
+    #     secret:
+    #       defaultMode: 420
+    #       secretName: ca-certs
     extraVolumes: []
 
-    ## extraVolumeMounts is a list of volume mounts to be added to the pod
-    ## extraVolumeMounts:
-    ##   - name: ca-certs
-    ##     mountPath: /etc/ssl/certs/ca-certs.crt
-    ##     readOnly: true
+    # extraVolumeMounts is a list of volume mounts to be added to the pod
+    # extraVolumeMounts:
+    #   - name: ca-certs
+    #     mountPath: /etc/ssl/certs/ca-certs.crt
+    #     readOnly: true
     extraVolumeMounts: []
 
 tyk-pump:
@@ -539,17 +541,17 @@ tyk-pump:
     #   value: 30
     extraEnvs: []
 
-    ## extraVolumes is a list of volumes to be added to the pod
-    ## extraVolumes:
-    ##   - name: ca-certs
-    ##     secret:
-    ##       defaultMode: 420
-    ##       secretName: ca-certs
+    # extraVolumes is a list of volumes to be added to the pod
+    # extraVolumes:
+    #   - name: ca-certs
+    #     secret:
+    #       defaultMode: 420
+    #       secretName: ca-certs
     extraVolumes: []
 
-    ## extraVolumeMounts is a list of volume mounts to be added to the pod
-    ## extraVolumeMounts:
-    ##   - name: ca-certs
-    ##     mountPath: /etc/ssl/certs/ca-certs.crt
-    ##     readOnly: true
+    # extraVolumeMounts is a list of volume mounts to be added to the pod
+    # extraVolumeMounts:
+    #   - name: ca-certs
+    #     mountPath: /etc/ssl/certs/ca-certs.crt
+    #     readOnly: true
     extraVolumeMounts: []
