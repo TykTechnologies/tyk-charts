@@ -177,7 +177,7 @@ global:
 
 #### AdminSecret
 
-[`AdminSecret](https://tyk.io/docs/tyk-dashboard/configuration/#admin_secret) sets a secret for Admin API.
+[AdminSecret](https://tyk.io/docs/tyk-dashboard/configuration/#admin_secret) sets a secret for Admin API.
 
 It can be configured via `global.secrets.AdminSecret` as a plain text or Kubernetes secret which includes `AdminSecret` 
 key in it. Then, this secret must be referenced via `global.secrets.useSecretName`.
