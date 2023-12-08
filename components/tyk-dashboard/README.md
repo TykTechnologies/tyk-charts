@@ -102,6 +102,20 @@ Follow the notes from the installation output to get connection details.
 
 ### Dashboard Configurations
 
+#### Tyk Dashboard License (Required)
+
+Tyk Dashboard License is required. It can be set up in `global.license.dashboard` or through secret `global.secrets.useSecretName`. The secret should contain a key called DashLicense.
+
+```yaml
+global:
+  license:
+    # The license key needed by Tyk Dashboard to work.
+    #
+    # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
+    # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
+    dashboard: ""
+```
+
 #### Enabling TLS
 
 Assuming that TLS certificates for the Tyk Dashboard are available in the Kubernetes Secret `tyk-dashboard-tls`, 
