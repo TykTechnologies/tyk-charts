@@ -95,7 +95,7 @@ spec:
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
-                key: "DevPortalStorageConnectionString"
+                key: "DevPortalDatabaseConnectionString"
           {{ if eq .Values.storage.type "db" }}
           - name: PORTAL_DATABASE_ENABLELOGS
             value: "{{ .Values.database.enableLogs }}"

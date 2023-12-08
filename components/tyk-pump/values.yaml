@@ -92,11 +92,17 @@ global:
 
   # If postgres pump is in use, please set the connection details of Postgres in the below field.
   postgres:
+    # host corresponds to the host name of postgres
     host: tyk-postgres-postgresql.tyk.svc
+    # port corresponds to the port of postgres
     port: 5432
+    # user corresponds to the user of postgres
     user: postgres
+    # password corresponds to the password of the given postgres user in selected database
     password:
+    # database corresponds to the database to be used in postgres
     database: tyk_analytics
+    # sslmode corresponds to if postgres runs in sslmode (https)
     sslmode: disable
 
     # Connection string can also be set using a secret. Provide the name of the secret and key below.
@@ -280,17 +286,17 @@ pump:
   #   value: 30
   extraEnvs: []
 
-  ## extraVolumes is a list of volumes to be added to the pod
-  ## extraVolumes:
-  ##   - name: ca-certs
-  ##     secret:
-  ##       defaultMode: 420
-  ##       secretName: ca-certs
+  # extraVolumes is a list of volumes to be added to the pod
+  # extraVolumes:
+  #   - name: ca-certs
+  #     secret:
+  #       defaultMode: 420
+  #       secretName: ca-certs
   extraVolumes: []
 
-  ## extraVolumeMounts is a list of volume mounts to be added to the pod
-  ## extraVolumeMounts:
-  ##   - name: ca-certs
-  ##     mountPath: /etc/ssl/certs/ca-certs.crt
-  ##     readOnly: true
+  # extraVolumeMounts is a list of volume mounts to be added to the pod
+  # extraVolumeMounts:
+  #   - name: ca-certs
+  #     mountPath: /etc/ssl/certs/ca-certs.crt
+  #     readOnly: true
   extraVolumeMounts: []

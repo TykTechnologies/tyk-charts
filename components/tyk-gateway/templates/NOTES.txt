@@ -1,7 +1,18 @@
-Install Tyk Operator
-
+{{ $svcName := printf "gateway-svc-%v" (include "tyk-gateway.fullname" .)  }}
+Thank you for installing Tyk Gateway Chart. Your release is named '{{ .Release.Name }}'.
 At this point, Tyk Gateway is fully installed and should be accessible.
 
-You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
+To quickly test everything is ok, you can port-forward Tyk Gateway service:
+{{ if not .Values.gateway.control.enabled }}
+    kubectl port-forward service/{{- $svcName}} --namespace {{ .Release.Namespace }} {{ .Values.global.servicePorts.gateway  }}:{{ .Values.global.servicePorts.gateway }}
+    curl http://localhost:{{ .Values.global.servicePorts.gateway }}/hello
+{{- else }}
+    kubectl port-forward service/gateway-control-svc-{{ include "tyk-gateway.fullname" . }} --namespace {{ .Release.Namespace }} {{ .Values.gateway.control.port }}:{{ .Values.gateway.control.port }}
+    curl http://localhost:{{ .Values.gateway.control.port }}/hello
+{{- end }}
 
-[Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)
+===================================================
+  Manage Ingress resources and APIs on Kubernetes
+===================================================
+You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
+Please check Tyk Operator documentation at https://tyk.io/docs/tyk-operator/
