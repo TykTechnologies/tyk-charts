@@ -21,19 +21,15 @@ global:
     gateway: 8080
 
   tls:
+    # When true, sets the gateway protocol to HTTPS.
     gateway: false
     # If set to true the Dashboard will use SSL connection.
-    # You will also need to set the:
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-    # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
 
     # When true, it will install the certificate present in the templates folder, set to false when using
     # a custom TLS certificate to avoid overwriting yours
     useDefaultTykCertificate: true
-  components:
-    dashboard: false
+
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     APISecret: CHANGEME
@@ -122,13 +118,29 @@ gateway:
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
 
+  # If this option is set to true, it will enable polling the Tyk Dashboard service for API definitions
+  useDashboardAppConfig:
+    enabled: false
+    # Set it to the URL to your Dashboard instance (or a load balanced instance)
+    # The URL needs to be formatted as: http://dashboard_host:port
+    # It is used to set TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
+    dashboardConnectionString: ""
+
+    # This option is required if Policy source is set to Tyk Dashboard (`service`).
+    # Set this to the URL of your Tyk Dashboard installation.
+    # The URL needs to be formatted as: http://dashboard_host:port.
+    # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
+    policyConnectionString: ""
+
   tls:
     # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
     secretName: tyk-default-tls-secret
     # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
     insecureSkipVerify: false
 
+    # certificatesMountPath corresponds to the mount path of the secret.
     certificatesMountPath: "/etc/certs/tyk-gateway"
+    # certificates is an array of strings, used to set TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
     certificates:
     - domain_name: "*"
       cert_file: "/etc/certs/tyk-gateway/tls.crt"
@@ -234,6 +246,8 @@ gateway:
     #      - chart-example.local
     tls: []
 
+  # hashKeyFunction specifies hashing function used in Tyk Gateway.
+  # It is used to set TYK_GW_HASHKEYFUNCTION
   hashKeyFunction: murmur128
 
   # Sharding gateway allows you to selectively load APIs to specific gateways.
@@ -241,6 +255,8 @@ gateway:
   # Also be sure to match API segmentation tags with the tags selected below.
   sharding:
     enabled: false
+    # tags is used when filtering (sharding) Tyk Gateway nodes.
+    # It sets TYK_GW_DBAPPCONFOPTIONS_TAGS
     tags: ""
 
   # We usually recommend not to specify default resources and to leave this
@@ -287,19 +303,19 @@ gateway:
   #   value: "true"
   extraEnvs: []
 
-  ## extraVolumes is a list of volumes to be added to the pod
-  ## extraVolumes:
-  ##   - name: ca-certs
-  ##     secret:
-  ##       defaultMode: 420
-  ##       secretName: ca-certs
+  # extraVolumes is a list of volumes to be added to the pod
+  # extraVolumes:
+  #   - name: ca-certs
+  #     secret:
+  #       defaultMode: 420
+  #       secretName: ca-certs
   extraVolumes: []
 
-  ## extraVolumeMounts is a list of volume mounts to be added to the pod
-  ## extraVolumeMounts:
-  ##   - name: ca-certs
-  ##     mountPath: /etc/ssl/certs/ca-certs.crt
-  ##     readOnly: true
+  # extraVolumeMounts is a list of volume mounts to be added to the pod
+  # extraVolumeMounts:
+  #   - name: ca-certs
+  #     mountPath: /etc/ssl/certs/ca-certs.crt
+  #     readOnly: true
   extraVolumeMounts: []
 
   # analyticsEnabled property is used to enable/disable analytics.
@@ -309,3 +325,52 @@ gateway:
   # used to decide whether to send the results back directly to Tyk without a hybrid pump
   # if you want to send analytics to control plane instead of pump, change analyticsConfigType to "rpc"
   analyticsConfigType: ""
+
+  # opentelemetry is used to configure opentelemetry for Tyk Gateway
+  opentelemetry:
+    # Used to enable/disable opentelemetry
+    enabled: false
+    # exporter is used to define the type of the exporter to sending data in OTLP protocol
+    # Valid values are "grpc" or "http"
+    exporter: grpc
+    # endpoint defines OpenTelemetry collector endpoint to connect to.
+    endpoint: localhost:4317
+    # A map of headers that will be sent with HTTP requests to the collector.
+    # It should be set to map of string to string
+    headers: {}
+    # Timeout for establishing a connection to the collector
+    connectionTimeout: 1
+    # Name of the resource that will be used to identify the resource.
+    resourceName: tyk
+    # Type of the span processor to use. Valid values are “simple” or “batch”.
+    spanProcessorType: batch
+    # Type of the context propagator to use. Valid values are "tracecontext" and "b3".
+    contextPropagation: tracecontext
+    # TLS configuration for the exporter.
+    tls: 
+      # Flag that can be used to enable TLS
+      enabled: false
+      # Flag that can be used to skip TLS verification if TLS is enabled
+      insecureSkipVerify: true
+     # Maximum TLS version that is supported.
+      maxVersion: 1.3
+      # Minimum TLS version that is supported
+      minVersion: 1.2
+      # Path to the cert file
+      certFileName: ""
+      # Path to the key file  
+      keyFileName: ""
+      # Path to CA file
+      caFileName: ""
+      # Existing secret that stores TLS and CA Certificate
+      certificateSecretName: ""
+      # Mount path on which certificate secret should be mounted
+      secretMountPath: ""
+    sampling:
+      # Refers to the policy used by OpenTelemetry to determine whether a particular trace should be sampled or not.
+      type: "AlwaysOn"
+      # Parameter for the TraceIDRatioBased sampler type and represents the percentage of traces to be sampled.
+      rate: 0.5
+      # Rule that ensures that if we decide to record data for a particular operation, we’ll also record data for
+      # all the subsequent work that operation causes
+      parentBased: false

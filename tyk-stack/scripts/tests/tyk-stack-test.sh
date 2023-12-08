@@ -34,10 +34,10 @@ checkGateway() {
 
   if [[ $count -ge 30 ]]
   then
-    echo "All components required for the Tyk single dc to work are NOT available"
+    echo "All components required for the Tyk stack to work are NOT available"
     exit 1
   else
-    echo "All components required for the Tyk single dc to work are available"
+    echo "All components required for the Tyk stack to work are available"
   fi
 }
 

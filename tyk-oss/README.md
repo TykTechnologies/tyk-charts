@@ -6,10 +6,10 @@ Tyk-oss provides the default deployment of the Tyk Open Source stack. It include
 
 By default, this chart installs following components as subcharts on a [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
 
-| Component | Enabled by Default | Flag |
-| --------- | ------------------ | ---- |
-|Tyk Gateway |true  | n/a                    |
-|Tyk Pump    |false | global.components.pump |
+| Component   | Enabled by Default | Flag                   |
+|-------------|--------------------|------------------------|
+| Tyk Gateway | true               | n/a                    |
+| Tyk Pump    | false              | global.components.pump |
 
 To enable or disable each component, change the corresponding enabled flag.
 
@@ -47,9 +47,9 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
 First, add our Helm repo and get default values:
 
 ```bash
-    helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-    helm repo update
-    helm show values tyk-helm/tyk-oss > values-oss.yaml
+helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+helm repo update
+helm show values tyk-helm/tyk-oss > values-oss.yaml
 ```
 See [Configuration](#configuration) section for the available config options and modify your local `values-oss.yaml` file accordingly. Then install the chart:
 
@@ -92,12 +92,12 @@ Tyk uses Redis for distributed rate-limiting and token storage. You may use the 
 
 Set the following values after installing Redis:
 
-| Name | Description |
-|------|-------------|
-| `global.redis.addrs` | Redis addresses |
-| `global.redis.pass` | Redis password in plain text |
-| `global.redis.passSecret.name` | If global.redis.pass is not provided, you can store it in a secret and provide the secret name here |
-| `global.redis.passSecret.keyName` | key name to retrieve redis password from the secret |
+| Name                              | Description                                                                                         |
+|-----------------------------------|-----------------------------------------------------------------------------------------------------|
+| `global.redis.addrs`              | Redis addresses                                                                                     |
+| `global.redis.pass`               | Redis password in plain text                                                                        |
+| `global.redis.passSecret.name`    | If global.redis.pass is not provided, you can store it in a secret and provide the secret name here |
+| `global.redis.passSecret.keyName` | key name to retrieve redis password from the secret                                                 |
 
 #### Recommended: via *Bitnami* chart
 
@@ -230,19 +230,21 @@ If you want to use your own key/cert pair, you must follow the following steps:
 An Ingress resource is created if `tyk-gateway.gateway.ingress.enabled` is set to true.
 
 ```yaml
+    # Creates an ingress object in k8s. Will require an ingress-controller and
+    # annotation to that ingress controller.
     ingress:
       # if enabled, creates an ingress resource for the gateway
       enabled: true
 
       # specify ingress controller class name
-      className: "nginx"
+      className: ""
 
       # annotations for ingress
       annotations: {}
 
       # ingress rules
       hosts:
-        - host: tyk-gw.local
+        - host: chart-example.local
           paths:
             - path: /
               pathType: ImplementationSpecific
@@ -333,6 +335,13 @@ tyk-gateway:
               averageValue: 10000m
 ```
 
+#### OpenTelemetry
+To enable OpenTelemetry for Gateway set `gateway.opentelemetry.enabled` flag to true. It is disabled by default.
+
+You can also configure connection settings for it's exporter. By default `grpc` exporter is enabled on `localhost:4317` endpoint.
+
+ To enable TLS settings for the exporter, you can set `gateway.opentelemetry.tls.enabled` to true. 
+ 
 ### Pump Configurations
 
 To enable Pump, set `global.components.pump` to true, and configure below inside `tyk-pump` section.
@@ -352,7 +361,6 @@ To enable Pump, set `global.components.pump` to true, and configure below inside
 > [!NOTE]
 > For additional information on Tyk Pump configurations, refer to the 
 [Setup Dashboard Analytics](https://tyk.io/docs/tyk-pump/tyk-pump-configuration/tyk-pump-dashboard-config/) documentation.
-
 > To explore the list of supported backends for Tyk Pump, please visit https://tyk.io/docs/tyk-stack/tyk-pump/other-data-stores/.
 
 #### Prometheus Pump
@@ -368,7 +376,7 @@ See [Configure Tyk Pump to expose analytics data to Prometheus](https://tyk.io/d
 #### Mongo Pump
 If you are using the MongoDB pumps in the tyk-oss installation you will require MongoDB installed for that as well.
 
-To install Mongo you can use these rather excellent charts provided by Bitnami:
+To install MongoDB you can use these rather excellent charts provided by Bitnami:
 
 ```bash
 helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
@@ -376,9 +384,16 @@ helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "rep
 
 (follow notes from the installation output to get connection details and update them in `values.yaml` file)
 
-NOTE: [Here is](https://tyk.io/docs/planning-for-production/database-settings/) list of supported MongoDB versions. Please make sure you are installing mongo helm chart that matches these version.
+> [!NOTE]
+[Here is](https://tyk.io/docs/planning-for-production/database-settings/) list of supported MongoDB versions.
+Please make sure you are installing mongo helm chart that matches these version.
 
-*Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1. If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1. Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
+> [!NOTE]
+> Important Note regarding MongoDB:
+> This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1.
+> If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires
+> for the node to be drained, this action will be prevented due the replica count being 1.
+> Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
 
 Add following under the `global` section in `values.yaml`:
 
@@ -416,15 +431,24 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 Add following under the `global` section in `values.yaml`:
 
 ```yaml
-    # Set postgres connection details if you want to configure postgres pump.
-    # Postgres connection string parameters.
-    postgres:
-        host: tyk-postgres-postgresql.tyk.svc
-        port: 5432
-        user: postgres
-        password:
-        database: tyk_analytics
-        sslmode: disable
+  # Postgres connection string parameters.
+  postgres:
+    # host corresponds to the host name of postgres
+    host: tyk-postgres-postgresql.tyk.svc
+    # port corresponds to the port of postgres
+    port: 5432
+    # user corresponds to the user of postgres
+    user: postgres
+    # password corresponds to the password of the given postgres user in selected database
+    password:
+    # database corresponds to the database to be used in postgres
+    database: tyk_analytics
+    # sslmode corresponds to if postgres runs in sslmode (https)
+    sslmode: disable
+    # Connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
 ```
 
 #### Uptime Pump
