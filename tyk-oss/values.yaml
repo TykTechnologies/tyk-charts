@@ -282,7 +282,7 @@ tyk-gateway:
       # Type of the span processor to use
       spanProcessorType: batch
       # Type of the context propagator to use
-      contextPropogation: tracecontext
+      contextPropagation: tracecontext
       # TLS configuration for the exporter.
       tls:
         # Flag that can be used to enable TLS
