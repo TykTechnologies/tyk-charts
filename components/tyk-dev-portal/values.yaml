@@ -127,8 +127,7 @@ imagePullSecrets: []
 
 service:
   # type corresponds to the service type of Tyk Developer Portal Service.
-  type: NodePort
-
+  type: ClusterIP
   # The port at which Tyk Developer Portal service can be found
   port: 3001
 
