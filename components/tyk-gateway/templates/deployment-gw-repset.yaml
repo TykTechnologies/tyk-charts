@@ -303,7 +303,7 @@ spec:
           - name: TYK_GW_OPENTELEMETRY_TLS_MAXVERSION
             value: "{{ .Values.gateway.opentelemetry.tls.maxVersion}}"
           - name: TYK_GW_OPENTELEMETRY_TLS_MINVERSION
-            value:  "{{ .Values.gateway.opentelemetry.tls.minVersion}}" 
+            value:  "{{ .Values.gateway.opentelemetry.tls.minVersion}}"
           {{- end }}
 
           - name: TYK_GW_OPENTELEMETRY_SAMPLING_TYPE
