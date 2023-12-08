@@ -277,7 +277,7 @@ spec:
           - name: TYK_GW_OPENTELEMETRY_SPANPROCESSORTYPE
             value: "{{ .Values.gateway.opentelemetry.spanProcessorType }}"
           - name: TYK_GW_OPENTELEMETRY_CONTEXTPROPAGATION
-            value: "{{ .Values.gateway.opentelemetry.contextPropogation }}"
+            value: "{{ .Values.gateway.opentelemetry.contextPropagation }}"
 
           {{- if (.Values.gateway.opentelemetry.tls).enabled }}
           - name: TYK_GW_OPENTELEMETRY_TLS_ENABLE
