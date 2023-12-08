@@ -117,8 +117,7 @@ image:
   # image repository for Tyk Developer Portal.
   repository: tykio/portal
   # Developer portal < v1.2 is not supported
-  tag: v1.7.0
-
+  tag: v1.8.1
   # image pull policy
   pullPolicy: Always
 
