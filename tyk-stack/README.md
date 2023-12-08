@@ -138,7 +138,7 @@ helm repo update
 helm show values tyk-helm/tyk-stack > values.yaml
 ```
 
-At a minimum, modify `values-stack.yaml `for the following settings:
+At a minimum, modify `values.yaml `for the following settings:
 1. [Set Redis connection details](#set-redis-connection-details-required)
 2. [Set Mongo or PostgresSQL connection details](#set-mongo-or-postgressql-connection-details-required)
 3. [Dashboard License](#tyk-dashboard-license-required)
@@ -634,7 +634,7 @@ To install MongoDB you can use these rather excellent charts provided by Bitnami
 helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
 ```
 
-(follow notes from the installation output to get connection details and update them in `values-stack.yaml` file)
+(follow notes from the installation output to get connection details and update them in `values.yaml` file)
 
 > [!NOTE]
 [Here is](https://tyk.io/docs/planning-for-production/database-settings/) list of supported MongoDB versions.
