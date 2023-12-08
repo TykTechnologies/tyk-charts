@@ -730,6 +730,22 @@ global:
     dashboard: ""
 ```
 
+#### Enabling Dashboard TLS
+
+Assuming that TLS certificates for the Tyk Dashboard are available in the Kubernetes Secret `tyk-dashboard-tls`, 
+follow these steps to enable TLS:
+
+1. Set `global.tls.dashboard` to `true`.
+2. Set `tyk-dashboard.dashboard.tls.secretName` to the name of the Kubernetes secret containing TLS certificates for the Tyk Dashboard, in this case, `tyk-dashboard-tls`.
+3. Define certificate configurations in `tyk-dashboard.dashboard.tls.certificates`, which generates `TYK_DB_HTTPSERVEROPTIONS_CERTIFICATES` for the Tyk Dashboard.
+
+> Optional Steps, if needed:
+>  
+> - Modify the secret mount path on the Tyk Dashboard Pod via `tyk-dashboard.dashboard.tls.certificatesMountPath`.
+> - If necessary, either enable `insecureSkipVerify` via `tyk-dashboard.dashboard.tls.certificates`, or mount CA information through `tyk-dashboard.dashboard.extraVolumes` and `tyk-dashboard.dashboard.extraVolumeMounts`.
+> - If the `tyk-bootstrap` chart is used to bootstrap the Tyk Dashboard, ensure that it has certificates to send requests to the Tyk Dashboard or enable `insecureSkipVerify` in the `tyk-bootstrap` chart.
+> - If the Tyk Gateway connects to the Tyk Dashboard, confirm that the Tyk Gateway has appropriate certificates for connecting to the Tyk Dashboard
+
 ### Tyk Bootstrap
 
 To enable bootstrapping, set `global.components.bootstrap` to `true`. It would run [tyk-k8s-bootstrap](https://github.com/TykTechnologies/tyk-k8s-bootstrap) to bootstrap `tyk-stack` and to create Kubernetes secrets that can be utilized in Tyk Operator and Tyk Enterprise Developer Portal.
