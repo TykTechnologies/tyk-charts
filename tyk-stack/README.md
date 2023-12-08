@@ -193,7 +193,7 @@ helm install tyk-redis bitnami/redis -n tyk --create-namespace --set image.tag=6
 ```
 
 Follow the notes from the installation output to get connection details and password. The DNS name of your Redis as set by Bitnami is 
-`tyk-redis-master.tyk.svc.cluster.local:6379` (Tyk needs the name including the port) 
+`tyk-redis-master.tyk.svc:6379` (Tyk needs the name including the port) 
 
 ### Set MongoDB or PostgresSQL connection details (Required)
 If you have already installed Mongo/PostgresSQL, you can set the connection details in `global.mongo` and `global.postgres` section of values file respectively.
