@@ -86,7 +86,7 @@ The following quick start guide explains how to use the Tyk Stack Helm chart to 
 
 At the end of this quickstart Tyk Dashboard should be accessible through service `dashboard-svc-tyk-tyk-dashboard` at port `3000`. You can login to Dashboard using the admin email and password to start managing APIs. Tyk Gateway will be accessible through service `gateway-svc-tyk-tyk-gateway.tyk.svc` at port `8080`.
 
-```
+```bash
 NAMESPACE=tyk
 API_SECRET=changeit
 ADMIN_KEY=changeit
