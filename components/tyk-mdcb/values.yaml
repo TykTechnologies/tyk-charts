@@ -1,20 +1,128 @@
-# Default values for tyk-mdcb.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 global:
-  something: here
+  # Choose the storageType for Tyk. [ "mongo", "postgres" ]
+  storageType: postgres
 
+  postgres:
+    # host corresponds to the host name of postgres
+    host: tyk-postgres-postgresql.tyk.svc
+    # port corresponds to the port of postgres
+    port: 5432
+    # user corresponds to the user of postgres
+    user: postgres
+    # password corresponds to the password of the given postgres user in selected database
+    password:
+    # database corresponds to the database to be used in postgres
+    database: tyk_analytics
+    # sslmode corresponds to if postgres runs in sslmode (https)
+    sslmode: disable
 
+    # Connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
+
+  # Please check https://tyk.io/docs/planning-for-production/database-settings/mongodb/#supported-versions
+  # for the list of supported MongoDB versions.
+  mongo:
+    useSSL: false
+    # For tyk-simple-mongo (no auth)
+    # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
+    mongoURL: ""
+    # mongo-go driver is supported for Tyk 5.0.2+.
+    # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
+    # For MongoDB versions prior to 4.4, please use the mgo driver.
+    driver: mgo
+
+    # Connection URL can also be set using a secret. Provide the name of the secret and key below.
+    # connectionURLSecret:
+    #   name: ""
+    #   keyName: ""
+
+  redis:
+    # The addrs value will allow you to set your Redis addresses.
+    #
+    # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
+    # endpoint. If using sentinel connection mode for Redis, please update the port number (typically 26379).
+    #
+    # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
+    # the endpoints of the redis instances or use the cluster configuration endpoint.
+    #
+    # Default value: redis.{{ .Release.Namespace }}.svc:6379
+    # addrs:
+    #   Example using tyk simple redis chart
+    #   - redis.tyk.svc:6379
+    #   Example using bitnami/redis
+    #   - tyk-redis-master.tyk.svc:6379
+    #   Example using bitnami/redis with sentinel
+    #   - tyk-redis.tyk.svc:26379
+    #   Example using bitnami/redis-cluster
+    #   - tyk-redis-redis-cluster.tyk.svc:6379
+
+    # Redis password
+    # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
+    # your password in the field below
+    # pass: ""
+
+    # Redis password can also be provided via a secret. Provide the name of the secret and key below.
+    # passSecret:
+    #   name: ""
+    #   keyName: ""
+
+    # Enables SSL for Redis connection. Redis instance will have to support that.
+    # Default value: false
+    # useSSL: true
+
+    # If using "Redis Cluster" set enableCluster to true
+    # (e.g. if using bitnami/redis-cluster)
+    # enableCluster: true
+
+    # Enables sentinel connection mode for Redis. If enabled, provide both
+    # mandatory values for sentinelPass and masterName.
+    # enableSentinel: false
+
+    # Redis sentinel master name, only required while enableSentinel is true.
+    # masterName: ""
+
+    # By default, the database index is 0. Setting the database index is not
+    # supported with redis cluster. As such, if you have enableCluster: true,
+    # then this value should be omitted or explicitly set to 0.
+    storage:
+      database: 0
 
 mdcb:
   nameOverride: ""
   fullnameOverride: ""
-  replicaCount: 1
+
+  useSecretName: ""
+
+  # Tyk MDCB license
+  # It is used to set TYK_MDCB_LICENSE
+  license: ""
+
+  # The rpc port which worker gateways will connect to.
+  # It is used to set TYK_MDCB_LISTENPORT
+  listenPort: 9091
+
+  # Set to true if you are using a hashed configuration installation of Tyk, otherwise set to false.
+  # It is used to set TYK_MDCB_HASHKEYS
+  hashKeys: true
+
+  # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
+  # It is used to set TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
+  redisSSLInsecureSkipVerify: false
+
+  # When it is set to true, instead of sending analytics directly to MongoDB,
+  # MDCB can send analytics to Redis. This will allow tyk-pump to pull
+  # analytics from Redis and send to your own data sinks.
+  # It is used to set TYK_MDCB_FORWARDANALYTICSTOPUMP
+  forwardAnalyticsToPump: true
 
   probes:
+    # This port lets MDCB allow standard health checks.
+    # It also defines the path for liveness and readiness probes.
+    # It is used to set TYK_MDCB_HEALTHCHECKPORT
+    healthCheckPort: 8181
     liveness:
-      port: 8181
       path: "/health"
       scheme: "HTTP"
       initialDelaySeconds: 5
@@ -22,13 +130,15 @@ mdcb:
       timeoutSeconds: 3
       failureThreshold: 2
     readiness:
-      port: 8181
       path: "/health"
       scheme: "HTTP"
       initialDelaySeconds: 1
       periodSeconds: 10
       timeoutSeconds: 3
       failureThreshold: 3
+
+  replicaCount: 1
+
   image:
     repository: tykio/tyk-mdcb-docker
     tag: v2.4.1
@@ -53,8 +163,6 @@ mdcb:
 
   podSecurityContext: {}
     # fsGroup: 2000
-
-  containerPort: 9090
 
   containerSecurityContext: {}
     # capabilities:

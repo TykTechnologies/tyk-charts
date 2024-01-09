@@ -61,3 +61,112 @@ Create the name of the service account to use
 {{- default "default" .Values.mdcb.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "mdcb.redis_url" -}}
+{{- if .Values.global.redis.addrs -}}
+{{ join "," .Values.global.redis.addrs }}
+{{- /* Adds support for older charts with the host and port options */}}
+{{- else if and .Values.global.redis.host .Values.global.redis.port -}}
+{{ .Values.global.redis.host }}:{{ .Values.global.redis.port }}
+{{- else -}}
+redis.{{ .Release.Namespace }}.svc:6379
+{{- end -}}
+{{- end -}}
+
+{{- define "mdcb.redis_secret_name" -}}
+{{- if .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.name -}}
+{{ .Values.global.redis.passSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-mdcb.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-mdcb.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "mdcb.redis_secret_key" -}}
+{{- if .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.keyName -}}
+{{ .Values.global.redis.passSecret.keyName }}
+{{- else -}}
+redisPass
+{{- end -}}
+{{- else -}}
+redisPass
+{{- end -}}
+{{- end -}}
+
+{{- define "mdcb.storageType" -}}
+{{- if .Values.global.storageType -}}
+{{- if eq "postgres" .Values.global.storageType -}}
+postgres
+{{- else if eq "mongo" .Values.global.storageType -}}
+mongo
+{{- end -}}
+{{- else -}}
+mongo
+{{- end -}}
+{{- end -}}
+
+{{- define "mdcb.pg_connection_string" -}}
+{{- if .Values.global.postgres -}}
+{{- range $key, $value := .Values.global.postgres }}{{ print $key "=" $value " " }}{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{- define "mdcb.pg_connection_string_secret_name" -}}
+{{- if .Values.global.postgres.connectionStringSecret -}}
+{{- if .Values.global.postgres.connectionStringSecret.name -}}
+{{ .Values.global.postgres.connectionStringSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-mdcb.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-mdcb.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "mdcb.pg_connection_string_secret_key" -}}
+{{- if .Values.global.postgres.connectionStringSecret -}}
+{{- if .Values.global.postgres.connectionStringSecret.keyName -}}
+{{ .Values.global.postgres.connectionStringSecret.keyName }}
+{{- else -}}
+pgConnectionString
+{{- end -}}
+{{- else -}}
+pgConnectionString
+{{- end -}}
+{{- end -}}
+
+{{- define "mdcb.mongo_url" -}}
+{{- if .Values.global.mongo.mongoURL -}}
+{{ .Values.global.mongo.mongoURL }}
+{{- else -}}
+mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
+{{- end -}}
+{{- end -}}
+
+{{- define "mdcb.mongo_url_secret_name" -}}
+{{- if .Values.global.mongo.connectionURLSecret -}}
+{{- if .Values.global.mongo.connectionURLSecret.name -}}
+{{ .Values.global.mongo.connectionURLSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-mdcb.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-mdcb.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "mdcb.mongo_url_secret_key" -}}
+{{- if .Values.global.mongo.connectionURLSecret -}}
+{{- if .Values.global.mongo.connectionURLSecret.keyName -}}
+{{ .Values.global.mongo.connectionURLSecret.keyName }}
+{{- else -}}
+mongoURL
+{{- end -}}
+{{- else -}}
+mongoURL
+{{- end -}}
+{{- end -}}

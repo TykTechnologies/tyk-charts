@@ -38,11 +38,11 @@ spec:
           imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
           command: ["/opt/tyk-sink/tyk-sink"]
           ports:
-            - containerPort: {{ .Values.mdcb.containerPort }}
+            - containerPort: {{ .Values.mdcb.listenPort }}
           livenessProbe:
             httpGet:
               path: {{ .Values.mdcb.probes.liveness.path }}
-              port: {{ .Values.mdcb.probes.liveness.port }}
+              port: {{ .Values.mdcb.probes.healthCheckPort}}
               scheme: {{ .Values.mdcb.probes.liveness.scheme }}
             initialDelaySeconds: {{ .Values.mdcb.probes.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.mdcb.probes.liveness.periodSeconds }}
@@ -55,7 +55,7 @@ spec:
             failureThreshold: {{ .Values.mdcb.probes.readiness.failureThreshold }}
             httpGet:
               path: {{ .Values.mdcb.probes.readiness.path }}
-              port: {{ .Values.mdcb.probes.readiness.port }}
+              port: {{ .Values.mdcb.probes.healthCheckPort}}
               scheme: {{ .Values.mdcb.probes.liveness.scheme }}
           resources:
             {{- toYaml .Values.mdcb.resources | nindent 12 }}
@@ -63,6 +63,58 @@ spec:
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          env:
+            - name: TYK_MDCB_LISTENPORT
+              value: "{{ .Values.mdcb.listenPort }}"
+            - name: TYK_MDCB_HEALTHCHECKPORT
+              value: "{{ .Values.mdcb.probes.healthCheckPort }}"
+            - name: TYK_MDCB_STORAGE_TYPE
+              value: "redis"
+            - name: TYK_MDCB_STORAGE_ENABLECLUSTER
+              value: "{{ default "false" .Values.global.redis.enableCluster }}"
+            - name: TYK_MDCB_STORAGE_ADDRS
+              value: {{ include "mdcb.redis_url" . | quote }}
+            - name: TYK_MDCB_STORAGE_PORT
+              value: "{{ .Values.mdcb.probes.healthCheckPort }}"
+            - name: TYK_MDCB_HASHKEYS
+              value: "{{ .Values.mdcb.hashKeys }}"
+            - name: TYK_MDCB_STORAGE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mdcb.redis_secret_name" . }}
+                  key: {{ include "mdcb.redis_secret_key" . }}
+            - name: TYK_MDCB_STORAGE_REDISUSESSL
+              value: "{{ default "false" .Values.global.redis.useSSL }}"
+            - name: TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
+              value: "{{ .Values.mdcb.redisSSLInsecureSkipVerify }}"
+            - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
+              value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
+            - name: TYK_MDCB_LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.mdcb.useSecretName }} {{ .Values.mdcb.useSecretName }} {{ else }} mdcb-{{ include "tyk-mdcb.fullname" . }} {{ end }}
+                  key: MDCBLicense
+            {{ if eq "postgres" (include "mdcb.storageType" .) }}
+            - name: TYK_MDCB_ANALYTICSCONFIG_TYPE
+              value: "postgres"
+            - name: TYK_MDCB_ANALYTICSCONFIG_CONNECTIONSTRING
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mdcb.pg_connection_string_secret_name" . }}
+                  key: {{ include "mdcb.pg_connection_string_secret_key" . }}
+
+            {{ else if eq "mongo" (include "mdcb.storageType" .) }}
+            - name: TYK_MDCB_ANALYTICSCONFIG_TYPE
+              value: "mongo"
+            - name: TYK_MDCB_ANALYTICSCONFIG_MONGOURL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mdcb.mongo_url_secret_name" . }}
+                  key: {{ include "mdcb.mongo_url_secret_key" . }}
+            - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
+              value: "{{ default "false" .Values.global.mongo.useSSL }}"
+            {{ end }}
+
       {{- with .Values.mdcb.extraVolumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
