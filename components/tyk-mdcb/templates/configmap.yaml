@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mdcb-conf-{{ include "tyk-mdcb.fullname" . }}
+  labels:
+    app: mdcb-{{ include "tyk-mdcb.fullname" . }}
+    chart: {{ include "tyk-mdcb.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  {{- (.Files.Glob "configs/tyk_mdcb.conf").AsConfig | nindent 2 }}

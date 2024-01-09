@@ -1,0 +1,16 @@
+apiVersion: v2
+name: tyk-mdcb
+version: 1.0.0-beta1
+description: A Helm chart for deploying Tyk MDCB.
+icon: https://tyk.io/wp-content/uploads/2023/11/Tyk-helm-icon-02.png
+home: https://tyk.io/
+sources:
+  - https://github.com/TykTechnologies/tyk-charts/tree/main/components/tyk-mdcb
+
+annotations:
+  artifacthub.io/category: networking
+  artifacthub.io/links: |
+    - name: docs
+      url: https://tyk.io/docs/
+    - name: support
+      url: https://community.tyk.io/
