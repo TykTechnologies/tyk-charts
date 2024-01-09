@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mdcb-svc-{{ include "tyk-mdcb.fullname" . }}
+  labels:
+    {{- include "tyk-mdcb.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.mdcb.service.annotations | nindent 4 }}
+spec:
+  type: {{ .Values.mdcb.service.type }}
+  ports:
+    - port: {{ .Values.mdcb.service.port }}
+      targetPort: {{ .Values.mdcb.containerPort }}
+      protocol: TCP
+  selector:
+    {{- include "tyk-mdcb.selectorLabels" . | nindent 4 }}
+ {{- if eq .Values.mdcb.service.type "LoadBalancer" }}
+    externalTrafficPolicy: {{ .Values.mdcb.service.externalTrafficPolicy }}
+ {{- end }}

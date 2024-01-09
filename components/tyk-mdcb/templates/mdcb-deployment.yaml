@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mdcb-{{ include "tyk-mdcb.fullname" . }}
+  labels:
+    {{- include "tyk-mdcb.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.mdcb.autoscaling.enabled }}
+  replicas: {{ .Values.mdcb.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "tyk-mdcb.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.mdcb.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "tyk-mdcb.labels" . | nindent 8 }}
+	{{- with .Values.mdcb.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.mdcb.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tyk-mdcb.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.mdcb.podSecurityContext | nindent 8 }}
+      containers:
+        - name: mdcb-{{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.mdcb.containerSecurityContext | nindent 12 }}
+          image: "{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
+          imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
+          command: ["/opt/tyk-sink/tyk-sink"]
+          ports:
+            - containerPort: {{ .Values.mdcb.containerPort }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.mdcb.probes.liveness.path }}
+              port: {{ .Values.mdcb.probes.liveness.port }}
+              scheme: {{ .Values.mdcb.probes.liveness.scheme }}
+            initialDelaySeconds: {{ .Values.mdcb.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.mdcb.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.mdcb.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.mdcb.probes.liveness.failureThreshold }}
+          readinessProbe:
+            initialDelaySeconds: {{ .Values.mdcb.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.mdcb.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.mdcb.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.mdcb.probes.readiness.failureThreshold }}
+            httpGet:
+              path: {{ .Values.mdcb.probes.readiness.path }}
+              port: {{ .Values.mdcb.probes.readiness.port }}
+              scheme: {{ .Values.mdcb.probes.liveness.scheme }}
+          resources:
+            {{- toYaml .Values.mdcb.resources | nindent 12 }}
+          {{- with .Values.mdcb.extraVolumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.mdcb.extraVolumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mdcb.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mdcb.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mdcb.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
