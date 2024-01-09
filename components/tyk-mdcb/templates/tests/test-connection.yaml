@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "tyk-mdcb.fullname" . }}:{{ .Values.service.mdcb.port }}']
+      args: ['{{ include "tyk-mdcb.fullname" . }}:{{ .Values.mdcb.service.port }}']
   restartPolicy: Never

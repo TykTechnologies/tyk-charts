@@ -19,7 +19,7 @@ spec:
       {{- end }}
       labels:
         {{- include "tyk-mdcb.labels" . | nindent 8 }}
-	{{- with .Values.mdcb.podLabels }}
+        {{- with .Values.mdcb.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
