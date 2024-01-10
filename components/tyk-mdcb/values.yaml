@@ -100,6 +100,7 @@ mdcb:
   license: ""
 
   # The rpc port which worker gateways will connect to.
+  # This opens a port on MDCB container and MDCB server targets this port.
   # It is used to set TYK_MDCB_LISTENPORT
   listenPort: 9091
 
@@ -174,7 +175,7 @@ mdcb:
 
   service:
     type: ClusterIP
-    port: 80
+    port: 9090
     externalTrafficPolicy: Local
     annotations: {}
 
@@ -212,6 +213,10 @@ mdcb:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
+
+  extraEnvs:
+    - name: TYK_MDCB_LOGLEVEL
+      value: "debug"
 
   # Additional volumes on the output Deployment definition.
   extraVolumes: []

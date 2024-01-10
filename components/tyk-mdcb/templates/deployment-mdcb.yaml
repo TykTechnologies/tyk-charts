@@ -36,7 +36,7 @@ spec:
             {{- toYaml .Values.mdcb.containerSecurityContext | nindent 12 }}
           image: "{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
           imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
-          command: ["/opt/tyk-sink/tyk-sink"]
+          command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_sink.conf"]
           ports:
             - containerPort: {{ .Values.mdcb.listenPort }}
           livenessProbe:
@@ -59,10 +59,12 @@ spec:
               scheme: {{ .Values.mdcb.probes.liveness.scheme }}
           resources:
             {{- toYaml .Values.mdcb.resources | nindent 12 }}
-          {{- with .Values.mdcb.extraVolumeMounts }}
           volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            - name: mdcb-conf
+              mountPath: /etc/tyk-sink
+              {{- if .Values.mdcb.extraVolumeMounts }}
+              {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraVolumeMounts "context" $) | nindent 10 }}
+              {{- end }}
           env:
             - name: TYK_MDCB_LISTENPORT
               value: "{{ .Values.mdcb.listenPort }}"
@@ -92,7 +94,7 @@ spec:
             - name: TYK_MDCB_LICENSE
               valueFrom:
                 secretKeyRef:
-                  name: {{ if .Values.mdcb.useSecretName }} {{ .Values.mdcb.useSecretName }} {{ else }} mdcb-{{ include "tyk-mdcb.fullname" . }} {{ end }}
+                  name: {{ if .Values.mdcb.useSecretName }} {{ .Values.mdcb.useSecretName }} {{ else }} secrets-{{ include "tyk-mdcb.fullname" . }} {{ end }}
                   key: MDCBLicense
             {{ if eq "postgres" (include "mdcb.storageType" .) }}
             - name: TYK_MDCB_ANALYTICSCONFIG_TYPE
@@ -114,11 +116,19 @@ spec:
             - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
               value: "{{ default "false" .Values.global.mongo.useSSL }}"
             {{ end }}
-
-      {{- with .Values.mdcb.extraVolumes }}
+          {{- if .Values.mdcb.extraEnvs }}
+          {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraEnvs "context" $) | nindent 12 }}
+          {{- end }}
       volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        - name: mdcb-conf
+          configMap:
+            name: mdcb-conf-{{ include "tyk-mdcb.fullname" . }}
+            items:
+              - key: tyk_sink.conf
+                path: tyk_sink.conf
+          {{- if .Values.mdcb.extraVolumes }}
+          {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraVolumes "context" $) | nindent 8 }}
+          {{- end }}
       {{- with .Values.mdcb.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

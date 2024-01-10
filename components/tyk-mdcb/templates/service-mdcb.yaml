@@ -10,7 +10,7 @@ spec:
   type: {{ .Values.mdcb.service.type }}
   ports:
     - port: {{ .Values.mdcb.service.port }}
-      targetPort: {{ .Values.mdcb.containerPort }}
+      targetPort: {{ .Values.mdcb.listenPort }}
       protocol: TCP
   selector:
     {{- include "tyk-mdcb.selectorLabels" . | nindent 4 }}
