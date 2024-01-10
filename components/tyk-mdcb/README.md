@@ -1,4 +1,4 @@
-## Tyk Tyk Multi Data Centre Bridge (MDCB)
+## Tyk Multi Data Centre Bridge (MDCB)
 
 Tyk’s Multi Data Centre Bridge (MDCB) is a separately licensed extension to the Tyk control plane that performs management 
 and synchronisation of logically or geographically distributed clusters of Tyk API Gateways. 
