@@ -102,7 +102,7 @@ mdcb:
   # The rpc port which worker gateways will connect to.
   # This opens a port on MDCB container and MDCB server targets this port.
   # It is used to set TYK_MDCB_LISTENPORT
-  listenPort: 9091
+  listenPort: 9090
 
   # Set to true if you are using a hashed configuration installation of Tyk, otherwise set to false.
   # It is used to set TYK_MDCB_HASHKEYS
@@ -163,7 +163,7 @@ mdcb:
 
 
   podSecurityContext: {}
-    # fsGroup: 2000
+  # fsGroup: 2000
 
   containerSecurityContext: {}
     # capabilities:
