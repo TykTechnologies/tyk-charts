@@ -12,6 +12,11 @@ spec:
     - port: {{ .Values.mdcb.service.port }}
       targetPort: {{ .Values.mdcb.listenPort }}
       protocol: TCP
+      name: serviceport
+    - port: {{ .Values.mdcb.probes.healthCheckPort }}
+      targetPort: {{ .Values.mdcb.probes.healthCheckPort }}
+      protocol: TCP
+      name: healthport
   selector:
     {{- include "tyk-mdcb.selectorLabels" . | nindent 4 }}
  {{- if eq .Values.mdcb.service.type "LoadBalancer" }}

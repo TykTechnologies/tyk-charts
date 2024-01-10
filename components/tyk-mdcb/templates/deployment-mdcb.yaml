@@ -39,6 +39,7 @@ spec:
           command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_sink.conf"]
           ports:
             - containerPort: {{ .Values.mdcb.listenPort }}
+            - containerPort: {{ .Values.mdcb.probes.healthCheckPort }}
           livenessProbe:
             httpGet:
               path: {{ .Values.mdcb.probes.liveness.path }}
