@@ -214,9 +214,7 @@ mdcb:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
-  extraEnvs:
-    - name: TYK_MDCB_LOGLEVEL
-      value: "debug"
+  extraEnvs: []
 
   # Additional volumes on the output Deployment definition.
   extraVolumes: []
