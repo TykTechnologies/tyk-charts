@@ -57,7 +57,7 @@ spec:
             httpGet:
               path: {{ .Values.mdcb.probes.readiness.path }}
               port: {{ .Values.mdcb.probes.healthCheckPort}}
-              scheme: {{ .Values.mdcb.probes.liveness.scheme }}
+              scheme: {{ .Values.mdcb.probes.readiness.scheme }}
           resources:
             {{- toYaml .Values.mdcb.resources | nindent 12 }}
           volumeMounts:
