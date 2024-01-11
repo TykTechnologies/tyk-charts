@@ -37,9 +37,6 @@ Common labels
 app: mdcb-{{ include "tyk-mdcb.fullname" . }}
 helm.sh/chart: {{ include "tyk-mdcb.chart" . }}
 {{ include "tyk-mdcb.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
@@ -65,9 +62,6 @@ Create the name of the service account to use
 {{- define "mdcb.redis_url" -}}
 {{- if .Values.global.redis.addrs -}}
 {{ join "," .Values.global.redis.addrs }}
-{{- /* Adds support for older charts with the host and port options */}}
-{{- else if and .Values.global.redis.host .Values.global.redis.port -}}
-{{ .Values.global.redis.host }}:{{ .Values.global.redis.port }}
 {{- else -}}
 redis.{{ .Release.Namespace }}.svc:6379
 {{- end -}}

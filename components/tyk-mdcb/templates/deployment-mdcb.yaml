@@ -77,8 +77,6 @@ spec:
               value: "{{ default "false" .Values.global.redis.enableCluster }}"
             - name: TYK_MDCB_STORAGE_ADDRS
               value: {{ include "mdcb.redis_url" . | quote }}
-            - name: TYK_MDCB_STORAGE_PORT
-              value: "{{ .Values.mdcb.probes.healthCheckPort }}"
             - name: TYK_MDCB_HASHKEYS
               value: "{{ .Values.mdcb.hashKeys }}"
             - name: TYK_MDCB_STORAGE_PASSWORD
