@@ -247,7 +247,7 @@ mdcb:
   #   cpu: 100m
   #   memory: 128Mi
 
-  # autoscaling configuration if kind IS NOT DaemonSet
+  # autoscaling configuration
   autoscaling:
     enabled: false
     minReplicas: 1
