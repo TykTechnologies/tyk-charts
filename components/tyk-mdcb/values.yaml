@@ -157,7 +157,7 @@ mdcb:
       # failureThreshold represents the consecutive number of failures in a row for Kubernetes to consider that the overall check has failed.
       failureThreshold: 3
 
-  # replicaCount specifies number of replicas to be created if kind is Deployment.
+  # replicaCount specifies number of replicas to be created.
   replicaCount: 1
 
   image:
