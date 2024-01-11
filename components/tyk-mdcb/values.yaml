@@ -173,7 +173,7 @@ mdcb:
 
   # podAnnotations specifies annotations to be added in MDCB Pod
   podAnnotations: {}
-  # podLabels specifie labels to be added in MDCB Pod
+  # podLabels specifies labels to be added in MDCB Pod
   podLabels: {}
 
   serviceAccount:
