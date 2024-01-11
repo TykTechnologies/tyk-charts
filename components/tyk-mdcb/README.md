@@ -32,7 +32,7 @@ helm show values tyk-helm/tyk-mdcb > values.yaml
 
 Note:
 * Set Redis connection details at `.Values.global.redis`
-* Set MongoDB or connection details either at `.Values.global.mongo` or `.Values.global.postgres`
+* Set MongoDB or Postgres connection details at `.Values.global.mongo` or `.Values.global.postgres` respectively.
 * The Tyk MDCB also requires a license to be set at `.Values.mdcb.license`
 
 ```bash
