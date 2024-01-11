@@ -76,7 +76,7 @@ global:
     # enableCluster: true
 
     # Enables sentinel connection mode for Redis. If enabled, provide both
-    # mandatory values for sentinelPass and masterName.
+    # mandatory values for pass and masterName.
     # enableSentinel: false
 
     # Redis sentinel master name, only required while enableSentinel is true.
