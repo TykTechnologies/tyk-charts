@@ -25,5 +25,5 @@
 ============
 Health Check
 ============
-    kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME {{ $healtChekPort }}:{{ $healtChekPort }}
-    curl http://localhost:{{ $healtChekPort }}/health
+    kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME {{ $healthCheckPort }}:{{ $healthCheckPort }}
+    curl http://localhost:{{ $healthCheckPort }}/health
