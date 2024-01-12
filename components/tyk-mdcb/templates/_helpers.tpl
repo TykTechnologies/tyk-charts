@@ -81,7 +81,7 @@ secrets-{{ include "tyk-mdcb.fullname" . }}
 
 {{- define "mdcb.redis_secret_key" -}}
 {{- if .Values.global.redis.passSecret -}}
-{{- if .Values.global.redis.passSecret.keyName -}}
+{{- if ((.Values.global.redis.passSecret).keyName) -}}
 {{ .Values.global.redis.passSecret.keyName }}
 {{- else -}}
 redisPass
