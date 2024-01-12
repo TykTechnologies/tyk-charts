@@ -155,7 +155,7 @@ secrets-{{ include "tyk-mdcb.fullname" . }}
 
 {{- define "mdcb.mongo_url_secret_key" -}}
 {{- if .Values.global.mongo.connectionURLSecret -}}
-{{- if .Values.global.mongo.connectionURLSecret.keyName -}}
+{{- if ((.Values.global.mongo.connectionURLSecret).keyName) -}}
 {{ .Values.global.mongo.connectionURLSecret.keyName }}
 {{- else -}}
 mongoURL
