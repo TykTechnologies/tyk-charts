@@ -44,7 +44,7 @@ spec:
             httpGet:
               path: {{ .Values.mdcb.probes.liveness.path }}
               port: {{ .Values.mdcb.probes.healthCheckPort}}
-              scheme: {{ .Values.mdcb.probes.liveness.scheme }}
+              scheme: "HTTP"
             initialDelaySeconds: {{ .Values.mdcb.probes.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.mdcb.probes.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.mdcb.probes.liveness.timeoutSeconds }}
@@ -57,7 +57,7 @@ spec:
             httpGet:
               path: {{ .Values.mdcb.probes.readiness.path }}
               port: {{ .Values.mdcb.probes.healthCheckPort}}
-              scheme: {{ .Values.mdcb.probes.readiness.scheme }}
+              scheme: "HTTP"
           resources:
             {{- toYaml .Values.mdcb.resources | nindent 12 }}
           volumeMounts:

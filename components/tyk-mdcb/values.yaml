@@ -132,8 +132,6 @@ mdcb:
     liveness:
       # path represents the http path to be used in liveness probe in MDBC deployment.
       path: "/health"
-      # HTTP represents the scheme to be used in liveness probe in MDCB deployment.
-      scheme: "HTTP"
       # initialDelaySeconds specifies duration in seconds used in liveness probe as initial delay.
       initialDelaySeconds: 5
       # The periodSeconds specifies the duration in seconds to perform a liveness probe.
@@ -146,8 +144,6 @@ mdcb:
     readiness:
       # path represents the http path to be used in readiness probe in MDBC deployment.
       path: "/health"
-      # HTTP represents the scheme to be used in readiness probe in MDBC deployment.
-      scheme: "HTTP"
       # initialDelaySeconds specifies the seconds used in readiness probe as initial delay.
       initialDelaySeconds: 1
       # The periodSeconds specifies the duration in seconds to perform a readiness probe.
