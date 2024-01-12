@@ -69,7 +69,7 @@ redis.{{ .Release.Namespace }}.svc:6379
 
 {{- define "mdcb.redis_secret_name" -}}
 {{- if .Values.global.redis.passSecret -}}
-{{- if .Values.global.redis.passSecret.name -}}
+{{- if ((.Values.global.redis.passSecret).name) -}}
 {{ .Values.global.redis.passSecret.name }}
 {{- else -}}
 secrets-{{ include "tyk-mdcb.fullname" . }}
