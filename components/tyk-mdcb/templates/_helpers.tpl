@@ -143,7 +143,7 @@ mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
 
 {{- define "mdcb.mongo_url_secret_name" -}}
 {{- if .Values.global.mongo.connectionURLSecret -}}
-{{- if .Values.global.mongo.connectionURLSecret.name -}}
+{{- if ((.Values.global.mongo.connectionURLSecret).name) -}}
 {{ .Values.global.mongo.connectionURLSecret.name }}
 {{- else -}}
 secrets-{{ include "tyk-mdcb.fullname" . }}
