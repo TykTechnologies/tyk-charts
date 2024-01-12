@@ -69,8 +69,6 @@ global:
     # tyk_analytics.conf shared_node_secret
     APISecret: CHANGEME
     # tyk_analytics.conf admin_secret
-    # tib.conf TykAPISettings.GatewayConfig.AdminSecret
-    # tib.conf TykAPISettings.DashboardConfig.AdminSecret
     AdminSecret: "12345"
     # If you don't want to store plaintext secrets in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below
@@ -938,8 +936,9 @@ tyk-dashboard:
             - path: /
               pathType: ImplementationSpecific
       tls: []
-
+  # tib is used to configure Tyk Identity Broker(TIB) connection details
   tib:
+    # enabled is used to enable/disable embedded TIB
     enabled: false
 
 tyk-dev-portal:
