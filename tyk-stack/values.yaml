@@ -943,6 +943,9 @@ tyk-dashboard:
               pathType: ImplementationSpecific
       tls: []
 
+  tib:
+    enabled: false
+
 tyk-dev-portal:
   # Sensitive configuration of Portal could be set using k8s secret
   # You can set following fields:

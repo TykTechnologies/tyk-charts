@@ -388,3 +388,5 @@ portal:
     # tls corresponds to the tls configuration if Ingress rules use TLS
     tls: []
 
+tib:
+  enabled: false
