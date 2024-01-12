@@ -123,7 +123,7 @@ secrets-{{ include "tyk-mdcb.fullname" . }}
 
 {{- define "mdcb.pg_connection_string_secret_key" -}}
 {{- if .Values.global.postgres.connectionStringSecret -}}
-{{- if .Values.global.postgres.connectionStringSecret.keyName -}}
+{{- if ((.Values.global.postgres.connectionStringSecret).keyName) -}}
 {{ .Values.global.postgres.connectionStringSecret.keyName }}
 {{- else -}}
 pgConnectionString
