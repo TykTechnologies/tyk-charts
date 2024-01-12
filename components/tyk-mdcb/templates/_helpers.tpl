@@ -111,7 +111,7 @@ mongo
 
 {{- define "mdcb.pg_connection_string_secret_name" -}}
 {{- if .Values.global.postgres.connectionStringSecret -}}
-{{- if .Values.global.postgres.connectionStringSecret.name -}}
+{{- if ((.Values.global.postgres.connectionStringSecret).name) -}}
 {{ .Values.global.postgres.connectionStringSecret.name }}
 {{- else -}}
 secrets-{{ include "tyk-mdcb.fullname" . }}
