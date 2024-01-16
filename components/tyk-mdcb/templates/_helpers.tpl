@@ -102,24 +102,16 @@ mongo
 {{- end -}}
 
 {{- define "mdcb.pg_connection_string_secret_name" -}}
-{{- if .Values.global.postgres.connectionStringSecret -}}
 {{- if ((.Values.global.postgres.connectionStringSecret).name) -}}
 {{ .Values.global.postgres.connectionStringSecret.name }}
-{{- else -}}
-secrets-{{ include "tyk-mdcb.fullname" . }}
-{{- end -}}
 {{- else -}}
 secrets-{{ include "tyk-mdcb.fullname" . }}
 {{- end -}}
 {{- end -}}
 
 {{- define "mdcb.pg_connection_string_secret_key" -}}
-{{- if .Values.global.postgres.connectionStringSecret -}}
 {{- if ((.Values.global.postgres.connectionStringSecret).keyName) -}}
 {{ .Values.global.postgres.connectionStringSecret.keyName }}
-{{- else -}}
-pgConnectionString
-{{- end -}}
 {{- else -}}
 pgConnectionString
 {{- end -}}
