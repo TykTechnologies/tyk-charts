@@ -73,10 +73,10 @@ spec:
           - name: "TYK_DB_NOTIFYONCHANGE"
             value: "{{ .Values.dashboard.notifyOnChange }}"
           - name: "TYK_DB_HASHKEYS"
-            {{- if .Values.dashboard.hashKeys  }}
-            value: {{ .Values.dashboard.hashKeys | quote }}
-            {{- else }}
+            {{- if .Values.global.hashKeys  }}
             value: {{ .Values.global.hashKeys | quote }}
+            {{- else }}
+            value: {{ .Values.dashboard.hashKeys | quote }}
             {{- end }}
           - name: "TYK_DB_ENABLEDUPLICATESLUGS"
             value: "{{ .Values.dashboard.enableDuplicateSlugs }}"

@@ -189,7 +189,9 @@ global:
 
   # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
   # The Dashboard will now operate in a mode that is compatible with key hashing.
+  # This takes precedence over the dashboard value i.e `dashboard.hashKeys`
   # It is used to set TYK_DB_HASHKEYS
+  # It will enable hashkeys in both gateway and dashboard.
   hashKeys: true
 
 tyk-gateway:
@@ -736,6 +738,10 @@ tyk-dashboard:
     # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
     # It is used to set TYK_DB_NOTIFYONCHANGE
     notifyOnChange: true
+    # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
+    # The Dashboard will now operate in a mode that is compatible with key hashing.
+    # It is used to set TYK_DB_HASHKEYS
+    hashKeys: true
     # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
     # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
     # It is used to set TYK_DB_ENABLEDUPLICATESLUGS

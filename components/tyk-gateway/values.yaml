@@ -113,8 +113,7 @@ global:
     # Disables SSL certificate verification
     sslInsecureSkipVerify: true
 
-  # hashKeys is used to enable/disable key hashing. It should match with the value set in Gateway configuration.
-  # The Dashboard will now operate in a mode that is compatible with key hashing.
+  # hashKeys is used to enable/disable key hashing.
   # It is used to set TYK_GW_HASHKEYS
   hashKeys: true
 
