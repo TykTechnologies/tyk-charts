@@ -68,24 +68,16 @@ redis.{{ .Release.Namespace }}.svc:6379
 {{- end -}}
 
 {{- define "mdcb.redis_secret_name" -}}
-{{- if .Values.global.redis.passSecret -}}
 {{- if ((.Values.global.redis.passSecret).name) -}}
 {{ .Values.global.redis.passSecret.name }}
-{{- else -}}
-secrets-{{ include "tyk-mdcb.fullname" . }}
-{{- end -}}
 {{- else -}}
 secrets-{{ include "tyk-mdcb.fullname" . }}
 {{- end -}}
 {{- end -}}
 
 {{- define "mdcb.redis_secret_key" -}}
-{{- if .Values.global.redis.passSecret -}}
 {{- if ((.Values.global.redis.passSecret).keyName) -}}
 {{ .Values.global.redis.passSecret.keyName }}
-{{- else -}}
-redisPass
-{{- end -}}
 {{- else -}}
 redisPass
 {{- end -}}
@@ -142,24 +134,16 @@ mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
 {{- end -}}
 
 {{- define "mdcb.mongo_url_secret_name" -}}
-{{- if .Values.global.mongo.connectionURLSecret -}}
 {{- if ((.Values.global.mongo.connectionURLSecret).name) -}}
 {{ .Values.global.mongo.connectionURLSecret.name }}
-{{- else -}}
-secrets-{{ include "tyk-mdcb.fullname" . }}
-{{- end -}}
 {{- else -}}
 secrets-{{ include "tyk-mdcb.fullname" . }}
 {{- end -}}
 {{- end -}}
 
 {{- define "mdcb.mongo_url_secret_key" -}}
-{{- if .Values.global.mongo.connectionURLSecret -}}
 {{- if ((.Values.global.mongo.connectionURLSecret).keyName) -}}
 {{ .Values.global.mongo.connectionURLSecret.keyName }}
-{{- else -}}
-mongoURL
-{{- end -}}
 {{- else -}}
 mongoURL
 {{- end -}}
