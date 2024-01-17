@@ -36,7 +36,7 @@ spec:
             {{- toYaml .Values.mdcb.containerSecurityContext | nindent 12 }}
           image: "{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
           imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
-          command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_sink.conf"]
+          command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_mdcb.conf"]
           ports:
             - containerPort: {{ .Values.mdcb.listenPort }}
             - containerPort: {{ .Values.mdcb.probes.healthCheckPort }}
@@ -123,8 +123,8 @@ spec:
           configMap:
             name: mdcb-conf-{{ include "tyk-mdcb.fullname" . }}
             items:
-              - key: tyk_sink.conf
-                path: tyk_sink.conf
+              - key: tyk_mdcb.conf
+                path: tyk_mdcb.conf
           {{- if .Values.mdcb.extraVolumes }}
           {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraVolumes "context" $) | nindent 8 }}
           {{- end }}

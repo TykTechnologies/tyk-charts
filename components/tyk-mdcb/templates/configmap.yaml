@@ -8,4 +8,4 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  {{- (.Files.Glob "configs/tyk_sink.conf").AsConfig | nindent 2 }}
+  {{- (.Files.Glob "configs/tyk_mdcb.conf").AsConfig | nindent 2 }}
