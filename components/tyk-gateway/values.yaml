@@ -113,6 +113,12 @@ global:
     # Disables SSL certificate verification
     sslInsecureSkipVerify: true
 
+  # hashKeys is used to enable/disable key hashing. It should match with the value set in Gateway configuration.
+  # The Dashboard will now operate in a mode that is compatible with key hashing.
+  # It is used to set TYK_GW_HASHKEYS
+  hashKeys: true
+
+
 gateway:
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
@@ -346,7 +352,7 @@ gateway:
     # Type of the context propagator to use. Valid values are "tracecontext" and "b3".
     contextPropagation: tracecontext
     # TLS configuration for the exporter.
-    tls: 
+    tls:
       # Flag that can be used to enable TLS
       enabled: false
       # Flag that can be used to skip TLS verification if TLS is enabled
@@ -357,7 +363,7 @@ gateway:
       minVersion: 1.2
       # Path to the cert file
       certFileName: ""
-      # Path to the key file  
+      # Path to the key file
       keyFileName: ""
       # Path to CA file
       caFileName: ""

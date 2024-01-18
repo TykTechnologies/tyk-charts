@@ -139,6 +139,11 @@ global:
     #   name: ""
     #   keyName: ""
 
+  # hashKeys is used to enable/disable key hashing. It should match with the value set in Gateway configuration.
+  # The Dashboard will now operate in a mode that is compatible with key hashing.
+  # It is used to set TYK_DB_HASHKEYS
+  hashKeys: true
+
 dashboard:
   # This is the URL of your Tyk Gateway node, which is used to set TYK_DB_TYKAPI_HOST.
   # The Dashboard controls Tyk using the Gateway API and only requires visibility to one node. In a sharded environment,
@@ -157,10 +162,6 @@ dashboard:
   # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
   # It is used to set TYK_DB_NOTIFYONCHANGE
   notifyOnChange: true
-  # hashKeys is used to enable/disable key hashing. It should match with the value set in Gateway configuration.
-  # The Dashboard will now operate in a mode that is compatible with key hashing.
-  # It is used to set TYK_DB_HASHKEYS
-  hashKeys: true
   # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
   # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
   # It is used to set TYK_DB_ENABLEDUPLICATESLUGS
