@@ -620,7 +620,7 @@ Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml
 #### Other Pumps
 To set up other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
 
-### Tyk Dashboard
+### Tyk Dashboard Configurations
 
 #### Tyk Dashboard License (Required)
 
@@ -651,6 +651,31 @@ follow these steps to enable TLS:
 > - If necessary, either enable `insecureSkipVerify` via `tyk-dashboard.dashboard.tls.certificates`, or mount CA information through `tyk-dashboard.dashboard.extraVolumes` and `tyk-dashboard.dashboard.extraVolumeMounts`.
 > - If the `tyk-bootstrap` chart is used to bootstrap the Tyk Dashboard, ensure that it has certificates to send requests to the Tyk Dashboard or enable `insecureSkipVerify` in the `tyk-bootstrap` chart.
 > - If the Tyk Gateway connects to the Tyk Dashboard, confirm that the Tyk Gateway has appropriate certificates for connecting to the Tyk Dashboard
+
+### Tyk MDCB Configurations
+
+#### Tyk MDCB License (Required)
+
+Tyk MDCB requires a license to be set at `tyk-mdcb.mdcb.license`. This field is mandatory and must be configured.
+
+To enhance security and avoid storing plaintext values for the MDCB license directly in the Helm value file,
+an alternative approach is available. You can store the license in a Kubernetes Secret and reference it externally.
+Set the license in the Kubernetes Secret and provide the secret's name through `tyk-mdcb.mdcb.useSecretName`.
+The Secret must contain a key named `MDCBLicense`.
+
+#### Tyk MDCB Listen Port
+
+The `tyk-mdcb.mdcb.listenPort` field represents a RPC port which worker Tyk Gateways will connect to.
+Setting `tyk-mdcb.mdcb.listenPort` field opens a port on MDCB container and MDCB service targets this port.
+It is used to set `TYK_MDCB_LISTENPORT`
+
+#### Tyk MDCB Health Check Port
+The health check port for Tyk MDCB can be configurable via `tyk-mdcb.mdcb.probes.healthCheckPort` field.
+This port lets MDCB allow standard health checks.
+
+It also defines the path for liveness and readiness probes.
+It is used to set TYK_MDCB_HEALTHCHECKPORT
+
 
 ### Tyk Bootstrap
 

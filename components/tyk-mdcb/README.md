@@ -103,18 +103,24 @@ Follow the notes from the installation output to get connection details.
 
 >NOTE: Please make sure you are installing MongoDB or PostgreSQL versions that are supported by Tyk. Please refer to Tyk docs to get list of supported versions.
 
-### MDCB Configuration
+### Tyk MDCB Configuration
 
-#### License
-Tyk MDCB requires a license to be set at `.Values.mdcb.license`. This field is required and must be set.
+#### Tyk MDCB License
 
-#### Listen Port
+Tyk MDCB requires a license to be set at `.Values.mdcb.license`. This field is mandatory and must be configured.
+
+To enhance security and avoid storing plaintext values for the MDCB license directly in the Helm value file,
+an alternative approach is available. You can store the license in a Kubernetes Secret and reference it externally. 
+Set the license in the Kubernetes Secret and provide the secret's name through `.Values.mdcb.useSecretName`. 
+The Secret must contain a key named `MDCBLicense`.
+
+#### Tyk MDCB Listen Port
 
 The `.Values.mdcb.listenPort` field represents a RPC port which worker Tyk Gateways will connect to.
 Setting `.Values.mdcb.listenPort` field opens a port on MDCB container and MDCB service targets this port.
 It is used to set `TYK_MDCB_LISTENPORT`
 
-#### Health Check Port
+#### Tyk MDCB Health Check Port
 The health check port for Tyk MDCB can be configurable via `.Values.mdcb.probes.healthCheckPort` field.  This port lets MDCB allow standard health checks.
 
 It also defines the path for liveness and readiness probes.
