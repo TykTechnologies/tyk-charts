@@ -746,6 +746,11 @@ follow these steps to enable TLS:
 > - If the `tyk-bootstrap` chart is used to bootstrap the Tyk Dashboard, ensure that it has certificates to send requests to the Tyk Dashboard or enable `insecureSkipVerify` in the `tyk-bootstrap` chart.
 > - If the Tyk Gateway connects to the Tyk Dashboard, confirm that the Tyk Gateway has appropriate certificates for connecting to the Tyk Dashboard
 
+#### Embedded TIB
+Starting from Tyk v3.0 TIB has been added as a built-in feature of the Tyk Dashboard. You no longer have to setup a separated instance of the service to make it work with the Dashboard.
+
+User can enable in-built TIB simply by setting `tyk-dashboard.tib.enabled` to true.
+
 ### Tyk Bootstrap
 
 To enable bootstrapping, set `global.components.bootstrap` to `true`. It would run [tyk-k8s-bootstrap](https://github.com/TykTechnologies/tyk-k8s-bootstrap) to bootstrap `tyk-stack` and to create Kubernetes secrets that can be utilized in Tyk Operator and Tyk Enterprise Developer Portal.
