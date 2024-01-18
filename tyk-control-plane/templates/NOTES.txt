@@ -33,6 +33,45 @@ To quickly test everything is ok, you can port-forward Tyk Gateway pod:
 {{- end }}
 {{- end }}
 
+=== Tyk Control Plane Details ===
+Before a worker gateway that is deployed in data plane can connect to MDCB, it is important to set remote control plane options.
+If the worker gateway will be deployed via Helm, tyk-data-plane chart helps to facilitate this process.
+
+1- First obtain required connection details from Tyk MDCB:
+
+{{- $tykMDCBSvc := printf "mdcb-svc-%s" (include "tyk-mdcb.fullname" (index .Subcharts "tyk-mdcb")) -}}
+{{- $tykMDCBSvcProto := (include "mdcb.proto" (index .Subcharts "tyk-mdcb")) -}}
+{{- $tykMDCBSvcPort := (include "mdcb.svcPort" (index .Subcharts "tyk-mdcb")) }}
+    export MDCB_CONNECTIONSTRING="{{ $tykMDCBSvcProto }}://{{ $tykMDCBSvc }}.{{ .Release.Namespace }}.svc:{{ $tykMDCBSvcPort }}"
+    export GROUP_ID=your_group_id # You can use any name for your group.
+
+{{- $operatorSecret := index .Values "tyk-bootstrap" "bootstrap" "operatorSecret" }}
+{{- $edpSecret := .Values.global.secrets.devPortal }}
+{{- if and .Values.global.components.bootstrap (or $operatorSecret $edpSecret) -}}
+{{ if $operatorSecret }}
+    export USER_API_KEY=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ $operatorSecret }} -o jsonpath="{.data.TYK_AUTH}" | base64 --decode)
+    export ORG_ID=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ $operatorSecret }} -o jsonpath="{.data.TYK_ORG}" | base64 --decode)
+{{ else if  $edpSecret }}
+    export USER_API_KEY=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ $edpSecret}} -o jsonpath="{.data.TYK_AUTH}" | base64 --decode)
+    export ORG_ID=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ $edpSecret }} -o jsonpath="{.data.TYK_ORG}" | base64 --decode)
+{{- end }}
+{{ else }}
+    export USER_API_KEY=USER_API_KEY # Set the API key of a user used to authenticate and authorise the Gateway’s access through MDCB.
+    export ORG_ID=YOUR_ORGANISATION_ID # Set your organisation id
+
+NOTE: You can find your organisation id and user api key through Tyk Dashboard, under your user account details.
+{{ end }}
+2- Create a Kubernetes Secret based on credentials.
+    kubectl create secret --namespace {{ .Release.Namespace }} generic tyk-data-plane-details \
+    --from-literal "orgId=$ORG_ID" \
+    --from-literal "userApiKey=$USER_API_KEY" \
+    --from-literal "groupID=$GROUP_ID
+
+3- Refer this Kubernetes secret (tyk-data-plane-details) while installing worker gateways through `global.remoteControlPlane.useSecretName`
+in tyk-data-plane chart.
+
+For more detail about tyk-data-plane chart, please refer to the https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-data-plane
+
 {{- if index .Values "tyk-dashboard" "dashboard" "ingress" "enabled" }}
 {{- $tlsEnabled := index .Values "tyk-dashboard" "dashboard" "ingress" "tls" }}
 === Ingress ===

@@ -141,6 +141,20 @@ mongoURL
 {{- end -}}
 {{- end -}}
 
+{{/*
+HTTP Protocol that is used by Tyk MDCB. At the moment, TLS is not supported.
+*/}}
+{{- define "mdcb.proto" -}}
+http
+{{- end -}}
+
+{{/*
+HTTP Protocol that is used by Tyk MDCB. At the moment, TLS is not supported.
+*/}}
+{{- define "mdcb.svcPort" -}}
+{{ .Values.mdcb.service.port }}
+{{- end -}}
+
 {{- define "mdcb.tplvalues.render" -}}
     {{- if typeIs "string" .value }}
         {{- tpl .value .context }}
