@@ -113,7 +113,6 @@ global:
     # Disables SSL certificate verification
     sslInsecureSkipVerify: true
 
-
 gateway:
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
