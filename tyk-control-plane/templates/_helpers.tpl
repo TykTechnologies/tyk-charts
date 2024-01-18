@@ -29,3 +29,15 @@ Create chart name and version as used by the chart label.
 {{- define "tyk-control-plane.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
+
+{{- define "tyk-control-plane.gw_proto" -}}
+{{- if .Values.global.tls.gateway -}}
+https
+{{- else -}}
+http
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-control-plane.gwServicePort" -}}
+{{ .Values.global.servicePorts.gateway }}
+{{- end -}}
