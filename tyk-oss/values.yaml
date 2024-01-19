@@ -86,6 +86,9 @@ global:
     storage:
       database: 0
 
+  # hashKeys is used to enable/disable key hashing.
+  hashKeys: true
+
 tyk-gateway:
   ## Default values for tyk-gateway chart.
   ## This is a YAML-formatted file.
