@@ -16,7 +16,7 @@ Helm umbrella chart (chart of charts) is an easy and really flexible way of inst
 * [tyk-pump](./components/tyk-pump)
 * [tyk-dashboard](./components/tyk-dashboard)
 * [tyk-dev-portal](./components/tyk-dev-portal)
-* tyk-mdcb (Coming soon!)
+* [tyk-mdcb](./components/tyk-mdcb)
 * tyk-tib (Coming soon!)
 * tyk-operator (Coming soon!)
 
