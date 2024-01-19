@@ -113,10 +113,6 @@ global:
     # Disables SSL certificate verification
     sslInsecureSkipVerify: true
 
-  # hashKeys is used to enable/disable key hashing.
-  # It is used to set TYK_GW_HASHKEYS
-  hashKeys: true
-
 
 gateway:
   # The hostname to bind the Gateway to.
@@ -378,3 +374,7 @@ gateway:
       # Rule that ensures that if we decide to record data for a particular operation, we’ll also record data for
       # all the subsequent work that operation causes
       parentBased: false
+
+  # hashKeys is used to enable/disable key hashing.
+  # It is used to set TYK_GW_HASHKEYS
+  hashKeys: true
