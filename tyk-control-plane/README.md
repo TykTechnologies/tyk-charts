@@ -458,7 +458,7 @@ Here is an example configuration for `tyk-data-plane` `values.yaml`.
 global:
   redis:
     addrs:
-      - tyk-redis-master.tyk-control-plane.svc:6379       # New Gateway groups should connect to the same Redis
+      - tyk-redis-master.tyk.svc:6379       # New Gateway groups should connect to the same Redis
     pass: "xxxxxxx"
 
 tyk-gateway:
@@ -469,13 +469,13 @@ tyk-gateway:
           # Set it to the URL to your Dashboard instance (or a load balanced instance)
           # The URL needs to be formatted as: http://dashboard_host:port
           # It is used to set TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
-        dashboardConnectionString: "http://dashboard-svc-tyk-tyk-dashboard.tyk-control-plane.svc:3000"
+        dashboardConnectionString: "http://dashboard-svc-tyk-control-plane-tyk-dashboard.tyk.svc:3000"
 
           # This option is required if Policy source is set to Tyk Dashboard (`service`).
           # Set this to the URL of your Tyk Dashboard installation.
           # The URL needs to be formatted as: http://dashboard_host:port.
           # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
-        policyConnectionString: "http://dashboard-svc-tyk-tyk-dashboard.tyk-control-plane.svc:3000"
+        policyConnectionString: "http://dashboard-svc-tyk-control-plane-tyk-dashboard.tyk.svc:3000"
 
       ...
 
