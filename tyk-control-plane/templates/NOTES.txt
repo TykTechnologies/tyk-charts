@@ -74,7 +74,7 @@ For more detail about tyk-data-plane chart, please refer to the https://github.c
 
 {{- if index .Values "tyk-dashboard" "dashboard" "ingress" "enabled" }}
 {{- $tlsEnabled := index .Values "tyk-dashboard" "dashboard" "ingress" "tls" }}
-=== Ingress ===
+=== Tyk Dashboard Ingress ===
 {{- range $host := index .Values "tyk-dashboard" "dashboard" "ingress" "hosts" }}
   {{- range .paths }}
   http{{ if $tlsEnabled }}s{{ end }}://{{ $host.host }}{{ .path }}

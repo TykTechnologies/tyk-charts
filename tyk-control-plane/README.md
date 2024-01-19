@@ -19,7 +19,7 @@ By default, this chart installs following components as subcharts on a [Kubernet
 | Tyk Gateway                     | true               | n/a                         |
 | Tyk Dashboard                   | true               | n/a                         |
 | Tyk MDCB                        | true               | n/a                         |
-| Tyk Pump                        | true               | global.components.pump      |
+| Tyk Pump                        | false              | global.components.pump      |
 | Tyk Enterprise Developer Portal | false              | global.components.devPortal | 
 
 To enable or disable each component, change the corresponding enabled flag.
@@ -105,13 +105,47 @@ If you have already installed Mongo/PostgresSQL, you can set the connection deta
 
 If not, you can use these rather excellent charts provided by Bitnami to install mongo/postgres:
 
-**Mongo Installation**
+#### Mongo Installation
 
 ```bash
 helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
 ```
 
-**PostgresSQL Installation**
+(follow notes from the installation output to get connection details and update them in `values.yaml` file)
+
+> [!NOTE]
+[Here is](https://tyk.io/docs/planning-for-production/database-settings/) list of supported MongoDB versions.
+Please make sure you are installing mongo helm chart that matches these version.
+
+> [!NOTE]
+> Important Note regarding MongoDB:
+> This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1.
+> If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires
+> for the node to be drained, this action will be prevented due the replica count being 1.
+> Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
+
+```yaml
+global:
+ # Set mongo connection details if you want to configure mongo pump.
+ mongo:
+   # The mongoURL value will allow you to set your MongoDB address.
+   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
+   # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
+   # If your MongoDB has a password you can add the username and password to the url
+   # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc:27017/tyk_analytics?authSource=admin
+   mongoURL: <MongoDB address>
+
+   # mongo-go driver is supported for Tyk 5.0.2+.
+   # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
+   # For MongoDB versions prior to 4.4, please use the mgo driver.
+   driver: mgo
+
+   # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+   # Default value: false
+   # useSSL: false
+```
+
+#### PostgresSQL Installation
 ```bash
 helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics" -n tyk
 ```
@@ -119,6 +153,29 @@ helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics"
 Follow the notes from the installation output to get connection details.
 
 >NOTE: Please make sure you are installing Mongo/Postgres versions that are supported by Tyk. Please refer to Tyk docs to get list of [supported versions](https://tyk.io/docs/tyk-dashboard/database-options/).
+
+```yaml
+global:
+  # Postgres connection string parameters.
+  postgres:
+    # host corresponds to the host name of postgres
+    host: tyk-postgres-postgresql.tyk.svc
+    # port corresponds to the port of postgres
+    port: 5432
+    # user corresponds to the user of postgres
+    user: postgres
+    # password corresponds to the password of the given postgres user in selected database
+    password:
+    # database corresponds to the database to be used in postgres
+    database: tyk_analytics
+    # sslmode corresponds to if postgres runs in sslmode (https)
+    sslmode: disable
+    # Connection string can also be set using a secret. Provide the name of the secret and key below.
+    # connectionStringSecret:
+    #   name: ""
+    #   keyName: ""
+```
+
 
 ### Protect Confidential Fields with Kubernetes Secrets
 
@@ -236,23 +293,6 @@ please use `tyk-dev-portal.useSecretName`, where the secret should contain a key
 > [!WARNING]
 > If `tyk-dev-portal.useSecretName` is in use, please add all keys mentioned to the secret.
 
-<!--
-#### Remote Control Plane Configuration
-
-All configurations regarding remote control plane (`orgId`, `userApiKey`, and `groupID`) can be set via
-Kubernetes secret.
-
-Instead of explicitly setting them in the values file, just create a Kubernetes secret including `orgId`, `userApiKey`
-and `groupID` keys and refer to it in `global.remoteControlPlane.useSecretName`.
-
-```yaml
-global:
-  remoteControlPlane:
-    useSecretName: "foo-secret"
-```
-
-where `foo-secret` should contain `orgId`, `userApiKey` and `groupID` keys in it.
--->
 #### Redis Password
 
 Redis password can also be provided via a secret. Store Redis password in Kubernetes secret and refer to this secret
@@ -407,12 +447,13 @@ Configure the gateways to load APIs with specific tags only by enabling `tyk-gat
 #### Deploy additional gateway groups
 
 `tyk-control-plane` chart manages one Gateway Deployment in the same namespace as Tyk Dashboard. 
-You can flexibly deploy additional gateways using `tyk-gateway` component chart. With gateway sharding, it is useful for:
+You can flexibly deploy additional gateways using `tyk-data-plane` umbrella chart. 
+With gateway sharding, it is useful for:
 - Deploy Gateways in different networks,
 - Deploy Gateways with different resources and autoscaling parameters,
 - Allow different teams to manage their own Gateway instances in their own namespace.
 
-Here is an example configuration for `tyk-gateway` `values.yaml`.
+Here is an example configuration for `tyk-data-plane` `values.yaml`.
 ```yaml
 global:
   redis:
@@ -420,44 +461,45 @@ global:
       - tyk-redis-master.tyk-control-plane.svc:6379       # New Gateway groups should connect to the same Redis
     pass: "xxxxxxx"
 
-gateway:
-  # If this option is set to true, it will enable polling the Tyk Dashboard service for API definitions
-  useDashboardAppConfig:
-    enabled: true
-      # Set it to the URL to your Dashboard instance (or a load balanced instance)
-      # The URL needs to be formatted as: http://dashboard_host:port
-      # It is used to set TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
-    dashboardConnectionString: "http://dashboard-svc-tyk-tyk-dashboard.tyk-control-plane.svc:3000"
+tyk-gateway:
+    gateway:
+      # If this option is set to true, it will enable polling the Tyk Dashboard service for API definitions
+      useDashboardAppConfig:
+        enabled: true
+          # Set it to the URL to your Dashboard instance (or a load balanced instance)
+          # The URL needs to be formatted as: http://dashboard_host:port
+          # It is used to set TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
+        dashboardConnectionString: "http://dashboard-svc-tyk-tyk-dashboard.tyk-control-plane.svc:3000"
 
-      # This option is required if Policy source is set to Tyk Dashboard (`service`).
-      # Set this to the URL of your Tyk Dashboard installation.
-      # The URL needs to be formatted as: http://dashboard_host:port.
-      # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
-    policyConnectionString: "http://dashboard-svc-tyk-tyk-dashboard.tyk-control-plane.svc:3000"
+          # This option is required if Policy source is set to Tyk Dashboard (`service`).
+          # Set this to the URL of your Tyk Dashboard installation.
+          # The URL needs to be formatted as: http://dashboard_host:port.
+          # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
+        policyConnectionString: "http://dashboard-svc-tyk-tyk-dashboard.tyk-control-plane.svc:3000"
 
-  ...
+      ...
 
-  # Sharding gateway allows you to selectively load APIs to specific gateways.
-  # If enabled make sure you have at least one gateway that is not sharded.
-  # Also be sure to match API segmentation tags with the tags selected below.
-  sharding:
-    enabled: true
-    tags: "gw-dmz"
+      # Sharding gateway allows you to selectively load APIs to specific gateways.
+      # If enabled make sure you have at least one gateway that is not sharded.
+      # Also be sure to match API segmentation tags with the tags selected below.
+      sharding:
+        enabled: true
+        tags: "gw-dmz"
 
-  ...
+      ...
 
-  # analyticsEnabled property is used to enable/disable analytics.
-  # If set to empty or nil, analytics will be enabled/disabled based on `global.components.pump`.
-  analyticsEnabled: "true"
+      # analyticsEnabled property is used to enable/disable analytics.
+      # If set to empty or nil, analytics will be enabled/disabled based on `global.components.pump`.
+      analyticsEnabled: "true"
 
-  # used to decide whether to send the results back directly to Tyk without a hybrid pump
-  # if you want to send analytics to control plane instead of pump, change analyticsConfigType to "rpc"
-  analyticsConfigType: ""
+      # used to decide whether to send the results back directly to Tyk without a hybrid pump
+      # if you want to send analytics to control plane instead of pump, change analyticsConfigType to "rpc"
+      analyticsConfigType: ""
 ```
 
 Run the following command to deploy additional Gateways in namespace `another-namespace`.
 ```bash
-helm install another-gateway tyk-helm/tyk-gateway --namespace another-namespace -f values.yaml
+helm install worker-gateway tyk-helm/tyk-data-plane --namespace another-namespace -f values.yaml
 ```
 
 #### OpenTelemetry
@@ -532,78 +574,20 @@ This will create a _PodMonitor_ resource for your Pump instance.
 ```
 
 #### Mongo pump
-If you are using the MongoDB pumps in the tyk-oss installation you will require MongoDB installed for that as well.
+If you are using the MongoDB pumps in the tyk-control-plane installation you will require MongoDB installed for that as well.
 
-To install MongoDB you can use these rather excellent charts provided by Bitnami:
+To install MongoDB you can use these rather excellent charts provided by Bitnami, 
+as described in [Set MongoDB or PostgresSQL connection details (Required)](#set-mongodb-or-postgressql-connection-details--required-) section.
 
-```bash
-helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "replicaSet.enabled=true" -n tyk
-```
-
-(follow notes from the installation output to get connection details and update them in `values.yaml` file)
-
-> [!NOTE]
-[Here is](https://tyk.io/docs/planning-for-production/database-settings/) list of supported MongoDB versions.
-Please make sure you are installing mongo helm chart that matches these version.
-
-> [!NOTE]
-> Important Note regarding MongoDB:
-> This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1.
-> If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires
-> for the node to be drained, this action will be prevented due the replica count being 1.
-> Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
-
-```yaml
- # Set mongo connection details if you want to configure mongo pump.
- mongo:
-    # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
-    # If your MongoDB has a password you can add the username and password to the url
-    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc:27017/tyk_analytics?authSource=admin
-    mongoURL: <MongoDB address>
-
-   # mongo-go driver is supported for Tyk 5.0.2+.
-   # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
-   # For MongoDB versions prior to 4.4, please use the mgo driver.
-    driver: mgo
-    
-    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-    # Default value: false
-    # useSSL: false
-```
+After installing MongoDB, add `mongo` to `tyk-pump.pump.backend` field.
 
 #### SQL pump
-If you are using the SQL pumps in the tyk-oss installation you will require PostgreSQL installed for that as well.
+If you are using the SQL pumps in the tyk-control-plane installation you will require PostgreSQL installed for that as well.
 
-To install PostgreSQL you can use these rather excellent charts provided by Bitnami:
+To install PostgreSQL you can use these rather excellent charts provided by Bitnami,
+as described in [Set MongoDB or PostgresSQL connection details (Required)](#set-mongodb-or-postgressql-connection-details--required-) section.
 
-```bash
-helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics" -n tyk
-```
-
-(follow notes from the installation output to get connection details and update them in `values.yaml` file)
-
-```yaml
-  # Postgres connection string parameters.
-  postgres:
-    # host corresponds to the host name of postgres
-    host: tyk-postgres-postgresql.tyk.svc
-    # port corresponds to the port of postgres
-    port: 5432
-    # user corresponds to the user of postgres
-    user: postgres
-    # password corresponds to the password of the given postgres user in selected database
-    password:
-    # database corresponds to the database to be used in postgres
-    database: tyk_analytics
-    # sslmode corresponds to if postgres runs in sslmode (https)
-    sslmode: disable
-    # Connection string can also be set using a secret. Provide the name of the secret and key below.
-    # connectionStringSecret:
-    #   name: ""
-    #   keyName: ""
-```
+After installing PostgreSQL, add `postgres` to `tyk-pump.pump.backend` field.
 
 #### Uptime Pump
 Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml file. It supports following values

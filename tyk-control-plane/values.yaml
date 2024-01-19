@@ -41,6 +41,7 @@ global:
     # Determines whether the pump component should be installed.
     pump: false
     # Determines whether Tyk Developer Portal component should be installed.
+    # If you want to bootstrap Tyk Developer Portal, set `tyk-bootstrap.bootstrap.devPortal` to true
     devPortal: false
 
   servicePorts:
@@ -363,6 +364,12 @@ tyk-gateway:
     # affinity for gateway pod assignment
     affinity: {}
 
+    # used to decide whether to send the results back directly to Tyk without a hybrid pump
+    # if you want to send analytics to control plane instead of pump, change analyticsConfigType to "rpc"
+    # TODO: Consider updating analytics config type to RPC
+    # Ref: https://github.com/TykTechnologies/tyk-charts/pull/211#discussion_r1458662620
+    analyticsConfigType: ""
+
     # opentelemetry is used to configure opentelemetry for Tyk Gateway
     opentelemetry:
       # Used to enable/disable opentelemetry
@@ -614,7 +621,7 @@ tyk-bootstrap:
 
   bootstrap:
     # Trigger to control if we want to bootstrap the Developer Portal component using tyk-bootstrap
-    devPortal: true
+    devPortal: false
 
     # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
     dashboard: true
