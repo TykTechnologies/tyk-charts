@@ -27,7 +27,7 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
 
 ```bash
 helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-helm show values tyk-helm/tyk-mdcb > values.yaml --devel
+helm show values tyk-helm/tyk-mdcb --devel > values.yaml
 ```
 
 Note:
@@ -60,7 +60,7 @@ To get all configurable options with detailed comments:
 
 ```bash
 helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-helm show values tyk-helm/tyk-mdcb > values.yaml --devel
+helm show values tyk-helm/tyk-mdcb --devel > values.yaml
 ```
 
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation.
