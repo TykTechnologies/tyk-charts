@@ -44,11 +44,6 @@ global:
     # Enable the MDCB Synchroniser
     # It will be used to set TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED in Tyk MDCB deployment.
     enabled: false
-    # If hash key were used, set usingHashKeys to true.
-    # It is used to set
-    #   - TYK_GW_HASHKEYS to false,
-    #   - TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED to true
-    usingHashKeys: false
 
   tls:
     # When true, sets the gateway protocol to HTTPS.
