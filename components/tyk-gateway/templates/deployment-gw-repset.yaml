@@ -318,6 +318,11 @@ spec:
             value: "{{ .Values.gateway.opentelemetry.sampling.parentBased }}"
         {{- end }}
 
+        {{- if and (.Values.global.mdcbSynchronizer).enabled (not .Values.global.remoteControlPlane.enabled) }}
+          - name: TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED
+            value: "{{ default "true" .Values.global.mdcbSynchronizer.enabled }}"
+        {{- end }}
+
         {{- if .Values.gateway.extraEnvs }}
         {{- include "tyk-gateway.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}

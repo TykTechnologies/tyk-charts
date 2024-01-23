@@ -40,6 +40,16 @@ global:
     # Disables SSL certificate verification
     sslInsecureSkipVerify: true
 
+  mdcbSynchronizer:
+    # Enable the MDCB Synchroniser
+    # It will be used to set TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED in Tyk MDCB deployment.
+    enabled: false
+    # If hash key were used, set usingHashKeys to true.
+    # It is used to set
+    #   - TYK_GW_HASHKEYS to false,
+    #   - TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED to true
+    usingHashKeys: false
+
   tls:
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
@@ -290,6 +300,7 @@ tyk-gateway:
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
+    extraEnvs: []
 
     # Sharding gateway allows you to selectively load APIs to specific gateways.
     # If enabled make sure you have at least one gateway that is not sharded.

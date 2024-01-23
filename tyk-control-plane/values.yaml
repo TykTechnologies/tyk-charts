@@ -186,6 +186,20 @@ global:
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
   storageType: &globalStorageType postgres
 
+  mdcbSynchronizer:
+    # Enable the MDCB Synchroniser
+    # It will be used to set TYK_MDCB_SYNCWORKER_ENABLED to true in Tyk MDCB deployment.
+    enabled: false
+    # If hash key were used, set usingHashKeys to true.
+    # It is used to set
+    #   - TYK_MDCB_HASHKEYS to false
+    #   - TYK_DB_HASHKEYS to false
+    #   - TYK_GW_HASHKEYS to false,
+    usingHashKeys: false
+    # If certificates were used, please also set the following.
+    # For more details, please refer to https://tyk.io/docs/tyk-multi-data-centre/mdcb-configuration-options/#securityprivate_certificate_encoding_secret
+    privateCertificateEncodingSecret: ""
+
 tyk-gateway:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
   # Default value: tyk-gateway.name
