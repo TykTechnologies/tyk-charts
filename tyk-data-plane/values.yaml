@@ -44,6 +44,9 @@ global:
     # Enable the MDCB Synchroniser
     # It will be used to set TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED in Tyk MDCB deployment.
     enabled: false
+    # keySpaceSyncInverval configures the interval (in seconds) that the worker Gateway will
+    # take to check if there are any changes.
+    keySpaceSyncInterval: 10
 
   tls:
     # When true, sets the gateway protocol to HTTPS.

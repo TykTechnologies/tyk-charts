@@ -318,10 +318,15 @@ spec:
             value: "{{ .Values.gateway.opentelemetry.sampling.parentBased }}"
         {{- end }}
 
-        {{- if and (.Values.global.mdcbSynchronizer).enabled (not .Values.global.remoteControlPlane.enabled) }}
+        {{- if (.Values.global.mdcbSynchronizer).enabled }}
           - name: TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED
-            value: "{{ default "true" .Values.global.mdcbSynchronizer.enabled }}"
+            value: "{{ .Values.global.mdcbSynchronizer.enabled }}"
         {{- end }}
+        {{- if (.Values.global.mdcbSynchronizer).keySpaceSyncInterval }}
+          - name: TYK_GW_SLAVEOPTIONS_KEYSPACESYNCINTERVAL
+            value: "{{ .Values.global.mdcbSynchronizer.keySpaceSyncInterval }}"
+        {{- end }}
+
 
         {{- if .Values.gateway.extraEnvs }}
         {{- include "tyk-gateway.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
