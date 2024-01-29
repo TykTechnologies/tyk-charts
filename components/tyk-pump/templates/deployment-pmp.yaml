@@ -142,8 +142,8 @@ spec:
           - name: TYK_PMP_PUMPS_SQLGRAPH_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: { { include "tyk-pump.pg_connection_string_secret_name" . } }
-                key: { { include "tyk-pump.pg_connection_string_secret_key" . } }
+                name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
           {{ end }}
           {{ if or (has "postgres" .Values.pump.backend) (has "postgres-aggregate" .Values.pump.backend) }}
           # SQL Aggregate Pump
@@ -158,11 +158,11 @@ spec:
                 key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
 
           # SQL Aggregate Graph Pump
-          - name: TYK_PMP_PUMPS_SQLGRAPH_TYPE
+          - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_TYPE
             value: "sql-graph-aggregate"
-          - name: TYK_PMP_PUMPS_SQLGRAPH_META_TYPE
+          - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_META_TYPE
             value: "postgres"
-          - name: TYK_PMP_PUMPS_SQLGRAPH_META_CONNECTIONSTRING
+          - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
                 name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
@@ -192,8 +192,8 @@ spec:
           - name: TYK_PMP_PUMPS_GRAPHMONGO_META_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: { { include "tyk-pump.mongo_url_secret_name" . } }
-                key: { { include "tyk-pump.mongo_url_secret_key" . } }
+                name: {{ include "tyk-pump.mongo_url_secret_name" . }}
+                key: {{ include "tyk-pump.mongo_url_secret_key" . }}
           - name: TYK_PMP_PUMPS_GRAPHMONGO_META_MONGODRIVERTYPE
             value: "{{ default "mgo" .Values.global.mongo.driver}}"
           {{ end }}
