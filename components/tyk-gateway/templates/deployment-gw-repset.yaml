@@ -318,6 +318,9 @@ spec:
             value: "{{ .Values.gateway.opentelemetry.sampling.parentBased }}"
         {{- end }}
 
+        # For management gateway, check if synchroniser enabled as well as if it is control plane
+        # or not by checking remoteControlPlane field. If remoteControlPlane field is in use, it means
+        # we use data-plane
         {{- if and (.Values.global.mdcbSynchronizer).enabled (not .Values.global.remoteControlPlane.enabled) }}
           - name: TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED
             value: "{{ default "true" .Values.global.mdcbSynchronizer.enabled }}"
