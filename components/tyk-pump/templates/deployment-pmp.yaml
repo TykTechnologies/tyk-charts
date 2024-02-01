@@ -138,7 +138,7 @@ spec:
           - name: TYK_PMP_PUMPS_SQLGRAPH_META_TYPE
             value: "postgres"
           - name: TYK_PMP_PUMPS_SQLGRAPH_META_TABLENAME
-            value: "tyk_analytics_graphs"
+            value: "{{ default "tyk_analytics_graphs" .Values.pump.sqlGraphPump.tableName }}"
           - name: TYK_PMP_PUMPS_SQLGRAPH_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
