@@ -61,6 +61,10 @@ spec:
           resources:
             {{- toYaml .Values.mdcb.resources | nindent 12 }}
           volumeMounts:
+            {{- if .Values.mdcb.tls.useSSL }}
+            - name: {{ .Values.mdcb.tls.volumeName }}
+              mountPath: {{ .Values.mdcb.tls.certificatesMountPath }}
+            {{- end }}             
             - name: mdcb-conf
               mountPath: /etc/tyk-sink
               {{- if .Values.mdcb.extraVolumeMounts }}
@@ -79,6 +83,14 @@ spec:
               value: {{ include "mdcb.redis_url" . | quote }}
             - name: TYK_MDCB_HASHKEYS
               value: "{{ .Values.mdcb.hashKeys }}"
+            {{- if .Values.mdcb.tls.useSSL }}
+            - name: TYK_MDCB_SERVEROPTIONS_USESSL
+              value: "{{ .Values.mdcb.tls.useSSL }}"
+            - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+              value: "{{ .Values.mdcb.tls.certificatekeyFile }}"
+            - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+              value: "{{ .Values.mdcb.tls.certificateCertFile }}"                
+            {{- end }}                                       
             - name: TYK_MDCB_STORAGE_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -129,6 +141,11 @@ spec:
           {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraEnvs "context" $) | nindent 12 }}
           {{- end }}
       volumes:
+        {{- if .Values.mdcb.tls.useSSL }}
+        - name: {{ .Values.mdcb.tls.volumeName }}
+          secret:
+            secretName: {{ .Values.mdcb.tls.secretName }}
+        {{- end }}         
         - name: mdcb-conf
           configMap:
             name: mdcb-conf-{{ include "tyk-mdcb.fullname" . }}
