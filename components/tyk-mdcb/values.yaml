@@ -283,3 +283,22 @@ mdcb:
 
   # affinity for MDCB pod assignment
   affinity: {}
+
+  tls:
+    # enables ssl for mdcb
+    useSSL: false
+
+    # the path to where the keys will be mounted in the pod
+    certificatesMountPath: "/etc/certs"
+
+    # location to pem encoded private key
+    certificatekeyFile: "/etc/certs/tls.key"
+
+    # location to pem encoded certificate
+    certificateCertFile: "/etc/certs/tls.crt"
+
+    # the name of the secret
+    secretName: "mdcb-tls-secret"
+
+     # the name of the volume
+    volumeName: "mdcb-tls-secret-volume"   
