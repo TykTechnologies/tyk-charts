@@ -87,7 +87,7 @@ spec:
             - name: TYK_MDCB_SERVEROPTIONS_USESSL
               value: "{{ .Values.mdcb.tls.useSSL }}"
             - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-              value: "{{ .Values.mdcb.tls.certificatekeyFile }}"
+              value: "{{ .Values.mdcb.tls.certificateKeyFile }}"
             - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
               value: "{{ .Values.mdcb.tls.certificateCertFile }}"                
             {{- end }}                                       
@@ -132,7 +132,7 @@ spec:
               value: {{ .Values.global.mdcbSynchronizer.enabled | quote }}
             - name: TYK_MDCB_SYNCWORKER_HASHKEYS
               value: {{ .Values.mdcb.hashKeys | quote }}
-            {{ if .Values.global.mdcbSynchronizer.privateCertificateEncodingSecret }}
+            {{ if .Values.mdcb.tls.privateCertificateEncodingSecret }}
             - name: TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
               value: {{ .Values.global.mdcbSynchronizer.privateCertificateEncodingSecret | quote }}
             {{ end }}

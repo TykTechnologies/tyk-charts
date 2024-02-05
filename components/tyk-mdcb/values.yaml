@@ -92,10 +92,6 @@ global:
     # Enable the MDCB Synchroniser
     # It will be used to set TYK_MDCB_SYNCWORKER_ENABLED in Tyk MDCB deployment.
     enabled: false
-    # If certificates were used, please also set the following.
-    # For more details, please refer to https://tyk.io/docs/tyk-multi-data-centre/mdcb-configuration-options/#securityprivate_certificate_encoding_secret
-    # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
-    privateCertificateEncodingSecret: ""
 
 mdcb:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
@@ -292,10 +288,15 @@ mdcb:
     certificatesMountPath: "/etc/certs"
 
     # location to pem encoded private key
-    certificatekeyFile: "/etc/certs/tls.key"
+    certificateKeyFile: "/etc/certs/tls.key"
 
     # location to pem encoded certificate
     certificateCertFile: "/etc/certs/tls.crt"
+
+    # Sets the AES256 secret which is used to encode certificate private keys when
+    # they uploaded via certificate storage.
+    # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
+    privateCertificateEncodingSecret: ""
 
     # the name of the secret
     secretName: "mdcb-tls-secret"

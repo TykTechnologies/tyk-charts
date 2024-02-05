@@ -119,11 +119,11 @@ Alternatively, you can use `--set` flag to set it in Tyk installation.
 If Tyk MDCB is deployed with the Synchroniser feature enabled, Tyk Gateway(s), worker gateway(s), in the data plane has to be
 configured as per the documentation: https://tyk.io/docs/product-stack/tyk-enterprise-mdcb/advanced-configurations/synchroniser/.
 
-While deploying Tyk Data Plane through tyk-helm/tyk-data-plane chart, please make sure setting
+While deploying Tyk Data Plane through tyk-helm/tyk-data-plane chart, please make sure following fields are set.
 ```bash
 TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED=true
 TYK_GW_SLAVEOPTIONS_KEYSPACESYNCINTERVAL=10 # based on your preference
-TYK_GW_SLAVEOPTIONS_GROUPID=YOUR_GROUP_ID # if you are running a cluster of Gateways
+TYK_GW_SLAVEOPTIONS_GROUPID=YOUR_GROUP_ID   # if you are running a cluster of Gateways
 ```
 
 These environment variables can be set through `tyk-gateway.gateway.extraEnvs`.
