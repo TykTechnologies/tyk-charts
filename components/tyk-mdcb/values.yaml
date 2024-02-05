@@ -88,6 +88,15 @@ global:
     storage:
       database: 0
 
+  mdcbSynchronizer:
+    # Enable the MDCB Synchroniser
+    # It will be used to set TYK_MDCB_SYNCWORKER_ENABLED in Tyk MDCB deployment.
+    enabled: false
+    # If certificates were used, please also set the following.
+    # For more details, please refer to https://tyk.io/docs/tyk-multi-data-centre/mdcb-configuration-options/#securityprivate_certificate_encoding_secret
+    # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
+    privateCertificateEncodingSecret: ""
+
 mdcb:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
   nameOverride: ""
@@ -110,7 +119,7 @@ mdcb:
   listenPort: 9090
 
   # Set to true if you are using a hashed configuration installation of Tyk, otherwise set to false.
-  # It is used to set TYK_MDCB_HASHKEYS
+  # It is used to set TYK_MDCB_HASHKEYS and TYK_MDCB_SYNCWORKER_HASHKEYS
   hashKeys: true
 
   # Allows usage of self-signed certificates when connecting to an encrypted Redis database.

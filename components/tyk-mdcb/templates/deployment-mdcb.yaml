@@ -127,6 +127,16 @@ spec:
             - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
               value: "{{ default "false" .Values.global.mongo.useSSL }}"
             {{ end }}
+            {{ if .Values.global.mdcbSynchronizer.enabled }}
+            - name: TYK_MDCB_SYNCWORKER_ENABLED
+              value: {{ .Values.global.mdcbSynchronizer.enabled | quote }}
+            - name: TYK_MDCB_SYNCWORKER_HASHKEYS
+              value: {{ .Values.mdcb.hashKeys | quote }}
+            {{ if .Values.global.mdcbSynchronizer.privateCertificateEncodingSecret }}
+            - name: TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
+              value: {{ .Values.global.mdcbSynchronizer.privateCertificateEncodingSecret | quote }}
+            {{ end }}
+            {{ end }}
           {{- if .Values.mdcb.extraEnvs }}
           {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraEnvs "context" $) | nindent 12 }}
           {{- end }}
