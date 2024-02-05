@@ -114,6 +114,34 @@ helm show values tyk-helm/tyk-data-plane >  values-data-plane.yaml
 You can update any value in your local ` values-data-plane.yaml` file and use `-f [filename]` flag to override default values during installation.
 Alternatively, you can use `--set` flag to set it in Tyk installation.
 
+### Tyk MDCB Synchroniser (Optional)
+
+If Tyk MDCB is deployed with the Synchroniser feature enabled, Tyk Gateway(s), worker gateway(s), in the data plane has to be
+configured as per the documentation: https://tyk.io/docs/product-stack/tyk-enterprise-mdcb/advanced-configurations/synchroniser/.
+
+While deploying Tyk Data Plane through tyk-helm/tyk-data-plane chart, please make sure setting
+```bash
+TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED=true
+TYK_GW_SLAVEOPTIONS_KEYSPACESYNCINTERVAL=10 # based on your preference
+TYK_GW_SLAVEOPTIONS_GROUPID=YOUR_GROUP_ID # if you are running a cluster of Gateways
+```
+
+These environment variables can be set through `tyk-gateway.gateway.extraEnvs`.
+
+```yaml
+tyk-gateway:
+  gateway:
+    extraEnvs:
+      - name: TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED
+        value: "true"
+      - name: TYK_GW_SLAVEOPTIONS_KEYSPACESYNCINTERVAL
+        value: "10"
+      - name: TYK_GW_SLAVEOPTIONS_GROUPID
+        value: "FOOBAR"
+```
+For more details about setting Tyk Gateways in Tyk Data Plane, please refer to official documentation:
+https://tyk.io/docs/product-stack/tyk-enterprise-mdcb/advanced-configurations/synchroniser/
+
 ### Set Redis Connection Details (Required)
 
 Tyk uses Redis for distributed rate-limiting and token storage. You may use the Bitnami chart to install or Tyk's `simple-redis` chart for POC purpose.
