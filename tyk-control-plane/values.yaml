@@ -962,10 +962,6 @@ tyk-mdcb:
     # It is used to set TYK_MDCB_LISTENPORT
     listenPort: 9090
 
-    # Set to true if you are using a hashed configuration installation of Tyk, otherwise set to false.
-    # It is used to set TYK_MDCB_HASHKEYS
-    hashKeys: true
-
     # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
     # It is used to set TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
     redisSSLInsecureSkipVerify: false
