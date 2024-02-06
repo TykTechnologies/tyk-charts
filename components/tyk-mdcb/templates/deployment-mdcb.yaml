@@ -132,9 +132,9 @@ spec:
               value: {{ .Values.global.mdcbSynchronizer.enabled | quote }}
             - name: TYK_MDCB_SYNCWORKER_HASHKEYS
               value: {{ .Values.global.hashKeys | quote }}
-            {{ if .Values.mdcb.tls.privateCertificateEncodingSecret }}
+            {{ if .Values.global.mtls.privateCertificateEncodingSecret }}
             - name: TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
-              value: {{ .Values.global.mdcbSynchronizer.privateCertificateEncodingSecret | quote }}
+              value: {{ .Values.global.mtls.privateCertificateEncodingSecret | quote }}
             {{ end }}
             {{ end }}
           {{- if .Values.mdcb.extraEnvs }}

@@ -97,6 +97,12 @@ global:
   # It is used to set TYK_MDCB_HASHKEYS and TYK_MDCB_SYNCWORKER_HASHKEYS
   hashKeys: true
 
+  mtls:
+    # Sets the AES256 secret which is used to encode certificate private keys when
+    # they are uploaded via certificate storage.
+    # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
+    privateCertificateEncodingSecret: ""
+
 mdcb:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
   nameOverride: ""
@@ -292,11 +298,6 @@ mdcb:
 
     # location to pem encoded certificate
     certificateCertFile: "/etc/certs/tls.crt"
-
-    # Sets the AES256 secret which is used to encode certificate private keys when
-    # they uploaded via certificate storage.
-    # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
-    privateCertificateEncodingSecret: ""
 
     # the name of the secret
     secretName: "mdcb-tls-secret"
