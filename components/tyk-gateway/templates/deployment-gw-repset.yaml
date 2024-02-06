@@ -95,7 +95,12 @@ spec:
           - name: TYK_GW_CONTROLAPIPORT
             value: "{{ .Values.gateway.control.containerPort }}"
           {{- end }}
-
+          - name: TYK_GW_OAS_VALIDATE_EXAMPLES
+            value: "{{ .Values.gateway.oasValidateExamples }}"
+          - name: TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
+            value: "{{ .Values.gateway.oasValidateSchemaDefaults }}"
+          - name: TYK_GW_ENABLE_LEAKY_BUCKET_RATE_LIMITER
+            value: "{{ .Values.gateway.enableLeakyBucketRateLimiter }}"
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"

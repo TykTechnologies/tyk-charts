@@ -228,6 +228,12 @@ dashboard:
   # Enable support for users with the same email for multiple organisations
   # It is used to set TYK_DB_ENABLEMULTIORGUSERS
   enableMultiOrgUsers: true
+  # Enables validation of examples in the OAS spec. Defaults to false.
+  # It is used to set TYK_DB_OAS_VALIDATE_EXAMPLES
+  oasValidateExamples: false
+    # Enables validation of schema defaults in the OAS spec. Defaults to false.
+  # It is used to set TYK_DB_OAS_VALIDATE_SCHEMA_DEFAULTS
+  oasValidateSchemaDefaults: false
 
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
