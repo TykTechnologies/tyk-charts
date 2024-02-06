@@ -244,10 +244,14 @@ pump:
       podMonitorSelector:
         release: prometheus-stack
 
+  # sqlGraphPump configures values to be used to configure tyk sql graph pump.
   sqlGraphPump:
+    # tableName is the name of the table that will be created and used by the sql graph pump
     tableName: "tyk_analytics_graphs"
 
+  # mongoGraphPump configures values to be used to configure tyk mongo graph pump.
   mongoGraphPump:
+    # collectionName is the name of the collection that will be created and used by the mongo graph pump
     collectionName: "tyk_graph_analytics"
 
   # We usually recommend not to specify default resources and to leave this
