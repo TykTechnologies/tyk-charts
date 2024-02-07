@@ -30,7 +30,8 @@ global:
     # mongo-go driver is supported for Tyk 5.0.2+.
     # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
     # For MongoDB versions prior to 4.4, please use the mgo driver.
-    driver: mgo
+    # Since MDCB 2.5.0 the default driver is mongo-go.
+    driver: mongo-go
 
     # Connection URL can also be set using a secret. Provide the name of the secret and key below.
     # connectionURLSecret:
@@ -192,13 +193,13 @@ mdcb:
     # If not set and create is true, a name is generated using the fullname template
     name: ""
 
-
   # securityContext holds pod-level security attributes for Tyk MDCB pod.
   podSecurityContext: {}
   # fsGroup: 2000
 
   # containerSecurityContext holds container-level security attributes for Tyk MDCB container.
-  containerSecurityContext: {}
+  containerSecurityContext:
+    {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -225,7 +226,8 @@ mdcb:
     # className specifies your ingress controller class name below
     className: ""
     # annotations specifies annotations to be added on Ingress resource.
-    annotations: {}
+    annotations:
+      {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     # hosts corresponds to the rules to be added on Ingress rules.
@@ -298,7 +300,8 @@ mdcb:
     certificateCertFile: "/etc/certs/tls.crt"
 
     # the name of the secret
-    secretName: "mdcb-tls-secret"
+    secretName:
+      "mdcb-tls-secret"
 
-     # the name of the volume
-    volumeName: "mdcb-tls-secret-volume"   
+      # the name of the volume
+    volumeName: "mdcb-tls-secret-volume"
