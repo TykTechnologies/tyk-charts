@@ -193,13 +193,13 @@ mdcb:
     # If not set and create is true, a name is generated using the fullname template
     name: ""
 
+
   # securityContext holds pod-level security attributes for Tyk MDCB pod.
   podSecurityContext: {}
   # fsGroup: 2000
 
   # containerSecurityContext holds container-level security attributes for Tyk MDCB container.
-  containerSecurityContext:
-    {}
+  containerSecurityContext: {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -226,8 +226,7 @@ mdcb:
     # className specifies your ingress controller class name below
     className: ""
     # annotations specifies annotations to be added on Ingress resource.
-    annotations:
-      {}
+    annotations: {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     # hosts corresponds to the rules to be added on Ingress rules.
@@ -300,8 +299,7 @@ mdcb:
     certificateCertFile: "/etc/certs/tls.crt"
 
     # the name of the secret
-    secretName:
-      "mdcb-tls-secret"
+    secretName: "mdcb-tls-secret"
 
-      # the name of the volume
-    volumeName: "mdcb-tls-secret-volume"
+     # the name of the volume
+    volumeName: "mdcb-tls-secret-volume"   
