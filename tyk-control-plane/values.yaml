@@ -206,6 +206,19 @@ tyk-gateway:
   gateway:
     # The hostname to bind the Gateway to.
     hostName: &gwHostName tyk-gw.local
+    # Enables validation of examples in the OAS spec. Defaults to false.
+    # It is used to set TYK_GW_OAS_VALIDATE_EXAMPLES
+    oasValidateExamples: false
+    # Enables validation of schema defaults in the OAS spec. Defaults to false.
+    # It is used to set TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
+    oasValidateSchemaDefaults: false
+    # EnableLeakyBucketRateLimiter enables leaky bucket rate limiting.
+    # LeakyBucket will delay requests so they are processed in a FIFO
+    # style queue, ensuring a constant request rate and smoothing out
+    # traffic spikes. This comes at some cost to gateway instances, as
+    # the connections would be held for a longer time, instead of
+    # blocking the requests when they go over the defined rate limits.
+    enableLeakyBucketRateLimiter: false
 
     # If this option is set to true, it will enable polling the Dashboard service for API definitions
     useDashboardAppConfig:
@@ -808,6 +821,12 @@ tyk-dashboard:
     # Enable support for users with the same email for multiple organisations
     # It is used to set TYK_DB_ENABLEMULTIORGUSERS
     enableMultiOrgUsers: true
+    # Enables validation of examples in the OAS spec. Defaults to false.
+    # It is used to set TYK_DB_OAS_VALIDATE_EXAMPLES
+    oasValidateExamples: false
+    # Enables validation of schema defaults in the OAS spec. Defaults to false.
+    # It is used to set TYK_DB_OAS_VALIDATE_SCHEMA_DEFAULTS
+    oasValidateSchemaDefaults: false
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
