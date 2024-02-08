@@ -293,7 +293,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.2.3
+    tag: v5.3.0
 
     # image pull policy
     pullPolicy: Always
