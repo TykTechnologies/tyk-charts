@@ -131,6 +131,19 @@ spec:
               secretKeyRef:
                 name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
                 key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
+
+          #SQL Graph Pump
+          - name: TYK_PMP_PUMPS_SQLGRAPH_TYPE
+            value: "sql-graph"
+          - name: TYK_PMP_PUMPS_SQLGRAPH_META_TYPE
+            value: "postgres"
+          - name: TYK_PMP_PUMPS_SQLGRAPH_META_TABLENAME
+            value: "{{ default "tyk_analytics_graphs" .Values.pump.sqlGraphPump.tableName }}"
+          - name: TYK_PMP_PUMPS_SQLGRAPH_META_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
           {{ end }}
           {{ if or (has "postgres" .Values.pump.backend) (has "postgres-aggregate" .Values.pump.backend) }}
           # SQL Aggregate Pump
@@ -139,6 +152,17 @@ spec:
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_TYPE
             value: "postgres"
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
+
+          # SQL Aggregate Graph Pump
+          - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_TYPE
+            value: "sql-graph-aggregate"
+          - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_META_TYPE
+            value: "postgres"
+          - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
                 name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
@@ -156,6 +180,21 @@ spec:
                 name: {{ include "tyk-pump.mongo_url_secret_name" . }}
                 key: {{ include "tyk-pump.mongo_url_secret_key" . }}
           - name: TYK_PMP_PUMPS_MONGO_META_MONGODRIVERTYPE
+            value: "{{ default "mgo" .Values.global.mongo.driver}}"
+
+          # Mongo Graph Pump
+          - name: TYK_PMP_PUMPS_GRAPHMONGO_TYPE
+            value: "mongo-graph"
+          - name: TYK_PMP_PUMPS_GRAPHMONGO_META_COLLECTIONNAME
+            value: "{{ default "tyk_graph_analytics" .Values.pump.mongoGraphPump.tableName }}"
+          - name: TYK_PMP_PUMPS_GRAPHMONGO_META_MONGOUSESSL
+            value: "{{ default "false" .Values.global.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_GRAPHMONGO_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-pump.mongo_url_secret_name" . }}
+                key: {{ include "tyk-pump.mongo_url_secret_key" . }}
+          - name: TYK_PMP_PUMPS_GRAPHMONGO_META_MONGODRIVERTYPE
             value: "{{ default "mgo" .Values.global.mongo.driver}}"
           {{ end }}
           {{ if or (has "mongo" .Values.pump.backend) (has "mongo-aggregate" .Values.pump.backend) }}
