@@ -93,8 +93,14 @@ global:
     # Enable the MDCB Synchroniser
     # It will be used to set TYK_MDCB_SYNCWORKER_ENABLED in Tyk MDCB deployment.
     enabled: false
-    # If certificates were used, please also set the following.
-    # For more details, please refer to https://tyk.io/docs/tyk-multi-data-centre/mdcb-configuration-options/#securityprivate_certificate_encoding_secret
+
+  # Set to true if you are using a hashed configuration installation of Tyk, otherwise set to false.
+  # It is used to set TYK_MDCB_HASHKEYS and TYK_MDCB_SYNCWORKER_HASHKEYS
+  hashKeys: true
+
+  mtls:
+    # Sets the AES256 secret which is used to encode certificate private keys when
+    # they are uploaded via certificate storage.
     # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
     privateCertificateEncodingSecret: ""
 
@@ -118,10 +124,6 @@ mdcb:
   # This opens a port on MDCB container and MDCB service targets this port.
   # It is used to set TYK_MDCB_LISTENPORT
   listenPort: 9090
-
-  # Set to true if you are using a hashed configuration installation of Tyk, otherwise set to false.
-  # It is used to set TYK_MDCB_HASHKEYS and TYK_MDCB_SYNCWORKER_HASHKEYS
-  hashKeys: true
 
   # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
   # It is used to set TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
@@ -293,7 +295,7 @@ mdcb:
     certificatesMountPath: "/etc/certs"
 
     # location to pem encoded private key
-    certificatekeyFile: "/etc/certs/tls.key"
+    certificateKeyFile: "/etc/certs/tls.key"
 
     # location to pem encoded certificate
     certificateCertFile: "/etc/certs/tls.crt"

@@ -191,8 +191,11 @@ global:
     # Enable the MDCB Synchroniser
     # It will be used to set TYK_MDCB_SYNCWORKER_ENABLED to true in Tyk MDCB deployment.
     enabled: false
-    # If certificates were used, please also set the following.
-    # For more details, please refer to https://tyk.io/docs/tyk-multi-data-centre/mdcb-configuration-options/#securityprivate_certificate_encoding_secret
+
+  mtls:
+    # Sets the AES256 secret which is used to encode certificate private keys when
+    # they are uploaded via certificate storage.
+    # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
     privateCertificateEncodingSecret: ""
 
 tyk-gateway:
@@ -518,11 +521,11 @@ tyk-pump:
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
     #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
-    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
+    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
     #   - "mongo-selective": Enables ONLY Mongo Selective
-    #   - "postgres": Enables Postgres Aggregate and SQL Pump
-    #   - "postgres-aggregate": Enables ONLY SQL Aggregate
-    #   - "postgres-pump": Enables ONLY SQL Pump
+    #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
+    #   - "postgres-aggregate": Enables ONLY SQL Aggregate AND SQL Graph Aggregate
+    #   - "postgres-pump": Enables ONLY SQL Pump AND SQL graph pump
     #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
     #   - "hybrid": Enables Hybrid Pump
     # If you would like to use other backends such as ElasticSearch, please
@@ -566,6 +569,16 @@ tyk-pump:
         #   kubectl describe prometheuses.monitoring.coreos.com <PROMETHEUS_POD>
         podMonitorSelector:
           release: prometheus-stack
+
+    # sqlGraphPump configures values to be used to configure tyk sql graph pump.
+    sqlGraphPump:
+      # tableName is the name of the table that will be created and used by the sql graph pump
+      tableName: "tyk_analytics_graphs"
+
+    # mongoGraphPump configures values to be used to configure tyk mongo graph pump.
+    mongoGraphPump:
+      # collectionName is the name of the collection that will be created and used by the mongo graph pump
+      collectionName: "tyk_graph_analytics"
 
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -966,10 +979,6 @@ tyk-mdcb:
     # It is used to set TYK_MDCB_LISTENPORT
     listenPort: 9090
 
-    # Set to true if you are using a hashed configuration installation of Tyk, otherwise set to false.
-    # It is used to set TYK_MDCB_HASHKEYS
-    hashKeys: true
-
     # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
     # It is used to set TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
     redisSSLInsecureSkipVerify: false
@@ -1131,6 +1140,30 @@ tyk-mdcb:
 
     # affinity for MDCB pod assignment
     affinity: {}
+
+    tls:
+      # enables ssl for mdcb
+      useSSL: false
+
+      # the path to where the keys will be mounted in the pod
+      certificatesMountPath: "/etc/certs"
+
+      # location to pem encoded private key
+      certificateKeyFile: "/etc/certs/tls.key"
+
+      # location to pem encoded certificate
+      certificateCertFile: "/etc/certs/tls.crt"
+
+      # Sets the AES256 secret which is used to encode certificate private keys when
+      # they uploaded via certificate storage.
+      # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
+      privateCertificateEncodingSecret: ""
+
+      # the name of the secret
+      secretName: "mdcb-tls-secret"
+
+      # the name of the volume
+      volumeName: "mdcb-tls-secret-volume"
 
 
 tyk-dev-portal:
