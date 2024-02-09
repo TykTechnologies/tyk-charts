@@ -190,8 +190,11 @@ global:
     # Enable the MDCB Synchroniser
     # It will be used to set TYK_MDCB_SYNCWORKER_ENABLED to true in Tyk MDCB deployment.
     enabled: false
-    # If certificates were used, please also set the following.
-    # For more details, please refer to https://tyk.io/docs/tyk-multi-data-centre/mdcb-configuration-options/#securityprivate_certificate_encoding_secret
+
+  mtls:
+    # Sets the AES256 secret which is used to encode certificate private keys when
+    # they are uploaded via certificate storage.
+    # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
     privateCertificateEncodingSecret: ""
 
 tyk-gateway:
@@ -965,10 +968,6 @@ tyk-mdcb:
     # It is used to set TYK_MDCB_LISTENPORT
     listenPort: 9090
 
-    # Set to true if you are using a hashed configuration installation of Tyk, otherwise set to false.
-    # It is used to set TYK_MDCB_HASHKEYS
-    hashKeys: true
-
     # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
     # It is used to set TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
     redisSSLInsecureSkipVerify: false
@@ -1130,6 +1129,30 @@ tyk-mdcb:
 
     # affinity for MDCB pod assignment
     affinity: {}
+
+    tls:
+      # enables ssl for mdcb
+      useSSL: false
+
+      # the path to where the keys will be mounted in the pod
+      certificatesMountPath: "/etc/certs"
+
+      # location to pem encoded private key
+      certificateKeyFile: "/etc/certs/tls.key"
+
+      # location to pem encoded certificate
+      certificateCertFile: "/etc/certs/tls.crt"
+
+      # Sets the AES256 secret which is used to encode certificate private keys when
+      # they uploaded via certificate storage.
+      # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
+      privateCertificateEncodingSecret: ""
+
+      # the name of the secret
+      secretName: "mdcb-tls-secret"
+
+      # the name of the volume
+      volumeName: "mdcb-tls-secret-volume"
 
 
 tyk-dev-portal:
