@@ -303,5 +303,5 @@ mdcb:
     # the name of the secret
     secretName: "mdcb-tls-secret"
 
-     # the name of the volume
-    volumeName: "mdcb-tls-secret-volume"   
+    # the name of the volume
+    volumeName: "mdcb-tls-secret-volume"
