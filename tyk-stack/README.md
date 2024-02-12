@@ -59,6 +59,10 @@ kubectl create secret generic admin-secrets -n $NAMESPACE \
     --from-literal=adminUserEmail=$ADMIN_EMAIL \
     --from-literal=adminUserPassword=$ADMIN_PASSWORD
 
+
+helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+helm repo update
+
 helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --install --set image.tag=6.2.13
 
 helm upgrade tyk-postgres oci://registry-1.docker.io/bitnamicharts/postgresql --set "auth.database=tyk_analytics" -n $NAMESPACE --install
@@ -106,6 +110,10 @@ kubectl create secret generic admin-secrets -n $NAMESPACE \
     --from-literal=adminUserLastName=User \
     --from-literal=adminUserEmail=$ADMIN_EMAIL \
     --from-literal=adminUserPassword=$ADMIN_PASSWORD
+
+
+helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+helm repo update
 
 helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --install --set image.tag=6.2.13
 
@@ -660,7 +668,8 @@ Please make sure you are installing mongo helm chart that matches these version.
    # mongo-go driver is supported for Tyk 5.0.2+.
    # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
    # For MongoDB versions prior to 4.4, please use the mgo driver.
-    driver: mgo
+   # Since Pump 1.9 the default driver is mongo-go.
+    driver: mongo-go
     
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
