@@ -40,6 +40,15 @@ global:
     # Disables SSL certificate verification
     sslInsecureSkipVerify: true
 
+  mdcbSynchronizer:
+    # Enable the MDCB Synchroniser
+    # It is used to set TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED in Tyk Gateway deployment.
+    enabled: false
+    # keySpaceSyncInterval configures the interval (in seconds) that the worker Gateway will
+    # take to check if there are any changes.
+    # It is used to set TYK_GW_SLAVEOPTIONS_KEYSPACESYNCINTERVAL in Tyk Gateway deployment.
+    keySpaceSyncInterval: 10
+
   tls:
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
@@ -223,6 +232,30 @@ tyk-gateway:
       # annotations for control port service
       annotations: {}
 
+      # Create an ingress object for control API of Tyk Gateway
+      ingress:
+        # if enabled, creates an ingress resource for the gateway control
+        enabled: false
+
+        # specify ingress controller class name
+        className: ""
+
+        # annotations for ingress
+        annotations: {}
+
+        # ingress rules
+        hosts:
+          - host: chart-example-control-api-domain.local
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+
+        # tls configuration for ingress
+        #  - secretName: chart-example-tls
+        #    hosts:
+        #      - chart-example-different-domain-possible.local
+        tls: []
+
     # Creates an ingress object in k8s. Will require an ingress-controller and
     # annotation to that ingress controller.
     ingress:
@@ -299,6 +332,7 @@ tyk-gateway:
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
+    extraEnvs: []
 
     # Sharding gateway allows you to selectively load APIs to specific gateways.
     # If enabled make sure you have at least one gateway that is not sharded.
@@ -449,11 +483,11 @@ tyk-pump:
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
     #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
-    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
+    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
     #   - "mongo-selective": Enables ONLY Mongo Selective
-    #   - "postgres": Enables Postgres Aggregate and SQL Pump
-    #   - "postgres-aggregate": Enables ONLY SQL Aggregate
-    #   - "postgres-pump": Enables ONLY SQL Pump
+    #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
+    #   - "postgres-aggregate": Enables ONLY SQL Aggregate AND SQL Graph Aggregate
+    #   - "postgres-pump": Enables ONLY SQL Pump AND SQL graph pump
     #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
     #   - "hybrid": Enables Hybrid Pump
     # If you would like to use other backends such as ElasticSearch, please
@@ -507,6 +541,16 @@ tyk-pump:
         #   kubectl describe prometheuses.monitoring.coreos.com <PROMETHEUS_POD>
         podMonitorSelector:
           release: prometheus-stack
+
+    # sqlGraphPump configures values to be used to configure tyk sql graph pump.
+    sqlGraphPump:
+      # tableName is the name of the table that will be created and used by the sql graph pump
+      tableName: "tyk_analytics_graphs"
+
+    # mongoGraphPump configures values to be used to configure tyk mongo graph pump.
+    mongoGraphPump:
+      # collectionName is the name of the collection that will be created and used by the mongo graph pump
+      collectionName: "tyk_graph_analytics"
 
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts

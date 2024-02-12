@@ -40,6 +40,9 @@ MDCB_OrgId=64cadf60173be900017xxxxx
 MDCB_ConnString=mere-xxxxxxx-hyb.aws-euw2.cloud-ara.tyk.io:443
 MDCB_GroupId=dc-uk-south
 
+helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+helm repo update
+
 helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --create-namespace --install --set image.tag=6.2.13
 
 helm upgrade hybrid-dp tyk-helm/tyk-data-plane -n $NAMESPACE --create-namespace \
@@ -113,6 +116,45 @@ helm show values tyk-helm/tyk-data-plane >  values-data-plane.yaml
 
 You can update any value in your local ` values-data-plane.yaml` file and use `-f [filename]` flag to override default values during installation.
 Alternatively, you can use `--set` flag to set it in Tyk installation.
+
+### Tyk MDCB Synchroniser (Optional)
+
+If Tyk MDCB is deployed with the Synchroniser feature enabled, Tyk Gateway(s), worker gateway(s), in the data plane has to be
+configured as per the documentation: https://tyk.io/docs/product-stack/tyk-enterprise-mdcb/advanced-configurations/synchroniser/.
+
+While deploying Tyk Data Plane through tyk-helm/tyk-data-plane chart, please make sure following fields are set.
+```bash
+TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED=true
+TYK_GW_SLAVEOPTIONS_KEYSPACESYNCINTERVAL=10 # based on your preference
+TYK_GW_SLAVEOPTIONS_GROUPID=YOUR_GROUP_ID   # if you are running a cluster of Gateways
+```
+
+These environment variables can be set through either `global.mdcbSynchronizer` or manually `tyk-gateway.gateway.extraEnvs`
+in tyk-data-plane/values.yaml file.
+
+- Updating `global.mdcbSynchronizer` field in tyk-data-plane/values.yaml file
+```yaml
+global:
+  mdcbSynchronizer:
+      enabled: true
+      keySpaceSyncInterval: 10
+```
+
+- Updating `tyk-gateway.gateway.extraEnvs` field in tyk-data-plane/values.yaml file
+```yaml
+tyk-gateway:
+  gateway:
+  extraEnvs:
+  - name: TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED
+    value: "true"
+  - name: TYK_GW_SLAVEOPTIONS_KEYSPACESYNCINTERVAL
+    value: "10"
+  - name: TYK_GW_SLAVEOPTIONS_GROUPID
+    value: "FOOBAR"
+```
+
+For more details about setting Tyk Gateways in Tyk Data Plane while using Tyk MDCB Synchroniser, please refer to official documentation:
+https://tyk.io/docs/product-stack/tyk-enterprise-mdcb/advanced-configurations/synchroniser/
 
 ### Set Redis Connection Details (Required)
 

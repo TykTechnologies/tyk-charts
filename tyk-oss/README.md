@@ -28,6 +28,9 @@ Quick start using `tyk-oss` and Bitnami Redis chart
 NAMESPACE=tyk-oss
 APISecret=foo
 
+helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+helm repo update
+
 helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --create-namespace --install --set image.tag=6.2.13
 
 helm upgrade tyk-oss tyk-helm/tyk-oss -n $NAMESPACE --create-namespace \
@@ -259,6 +262,9 @@ An Ingress resource is created if `tyk-gateway.gateway.ingress.enabled` is set t
 *Control Port*
 
 Set `tyk-gateway.gateway.control.enabled` to true will allow you to run the [Gateway API](https://tyk.io/docs/tyk-gateway-api/) on a separate port and protect it behind a firewall if needed.
+You can expose it over ingress if needed. Set `tyk-gateway.gateway.control.ingress.enabled` to true to make it possible. The ingress configuration is similar to main tyk ingress mentioned above.
+If needed you can specify a different host name to use. You also may want to specify whitelist IPs as annotation dependent on your ingress type.
+
 
 #### Mounting APIs, Policies, and Middlewares
 
@@ -410,7 +416,8 @@ Add following under the `global` section in `values.yaml`:
     # mongo-go driver is supported for Tyk 5.0.2+.
     # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
     # For MongoDB versions prior to 4.4, please use the mgo driver.
-    driver: mgo
+    # Since Tyk 5.3 the default driver is mongo-go.
+    driver: mongo-go
 
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false
