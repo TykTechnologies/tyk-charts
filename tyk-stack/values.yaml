@@ -22,26 +22,30 @@ global:
     # - adminUserPassword - sets .global.adminUser.password
     useSecretName: ""
 
-    # First name of the admin user
+    # firstName corresponds to the first name of the admin user that will be created during the bootstrapping process.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
     firstName: admin
 
-    # Last name of the admin user
+    # lastName corresponds to the last name of the admin user that will be created during the bootstrapping process.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_LASTNAME
     lastName: user
 
-    # Email address of the admin user
+    # email corresponds to the email of the admin user that will be created during the bootstrapping process.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_EMAILADDRESS
     email: default@example.com
     # Set a password or a random one will be assigned.
     password: "123456"
 
   components:
+    # Determines whether the bootstrap jobs should be run
+    # Those jobs verify the presence of the dashboard license and perform various operations to
+    # make apps such as tyk-dashboard, tyk-portal and tyk-operator ready to use from the get go
+    # If this is set to false, only the hook that checks for dashboard license will be run
+    bootstrap: true
     # Determines whether the pump component should be installed.
     pump: true
+    # Determines whether Tyk Developer Portal component should be installed.
     devPortal: false
-    dashboard: true
-
-  bootstrap:
-    # setting this to true bootstraps Tyk Developer Portal.
-    devPortal: true
 
   servicePorts:
     # The port at which the dashboard service can be found at
@@ -51,10 +55,6 @@ global:
 
   tls:
     # If set to true the Dashboard will use SSL connection.
-    # You will also need to set the:
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-    # variables in extraEnvs object array to define your SSL cert and key files.
     dashboard: false
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
@@ -63,37 +63,12 @@ global:
     # a custom TLS certificate to avoid overwriting yours
     useDefaultTykCertificate: true
 
-  remoteControlPlane:
-    # useSecretName can be used if you don't want to store plaintext values for remote control plane configurations in
-    # the Helm value file and would rather provide the k8s Secret externally.
-    # You should set following fields in the secret
-    # - orgId - Sets slave_options.rpc_key of Tyk Gateway
-    # - userApiKey - Sets slave_options.api_key of Tyk Gateway
-    # - groupID - Sets slave_options.group_id of Tyk Gateway
-    useSecretName: ""
-
-    enabled: false
-    # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
-    connectionString: ""
-    # orgID of your dashboard user
-    orgId: ""
-    # API key of your dashboard user
-    userApiKey: ""
-    # needed in case you want to have multiple single-dcs connected to the same redis instance
-    groupID: ""
-    # enable/disable ssl
-    useSSL: false
-    # Disables SSL certificate verification
-    sslInsecureSkipVerify: true
-
   secrets:
     # APISecret sets node_secret and secret in tyk.conf
     # tyk_analytics.conf tyk_api_config.secret
     # tyk_analytics.conf shared_node_secret
     APISecret: CHANGEME
     # tyk_analytics.conf admin_secret
-    # tib.conf TykAPISettings.GatewayConfig.AdminSecret
-    # tib.conf TykAPISettings.DashboardConfig.AdminSecret
     AdminSecret: "12345"
     # If you don't want to store plaintext secrets in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below
@@ -101,9 +76,13 @@ global:
     # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
-    # DevPortalLicense - Tyk Developer Portal License
-    # DevPortalStorageConnectionString - Tyk Developer Portal connection string to the selected database.
     useSecretName: ""
+    # devPortal secret is used to bootstrap the Portal which should include Tyk Dashboard credentials.
+    # You can set to empty to skip portal bootstrapping.
+    # It should include the followings:
+    # - TYK_ORG: Tyk Dashboard Organisation ID
+    # - TYK_AUTH: Tyk Dashboard API Access Credentials
+    devPortal: tyk-dev-portal-conf
 
   redis:
     # The addrs value will allow you to set your Redis addresses.
@@ -114,16 +93,16 @@ global:
     # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
     # the endpoints of the redis instances or use the cluster configuration endpoint.
     #
-    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+    # Default value: redis.{{ .Release.Namespace }}.svc:6379
     # addrs:
     #   Example using tyk simple redis chart
-    #   - redis.tyk.svc.cluster.local:6379
+    #   - redis.tyk.svc:6379
     #   Example using bitnami/redis
-    #   - tyk-redis-master.tyk.svc.cluster.local:6379
+    #   - tyk-redis-master.tyk.svc:6379
     #   Example using bitnami/redis with sentinel
-    #   - tyk-redis.tyk.svc.cluster.local:26379
+    #   - tyk-redis.tyk.svc:26379
     #   Example using bitnami/redis-cluster
-    #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
+    #   - tyk-redis-redis-cluster.tyk.svc:6379
 
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
@@ -165,15 +144,11 @@ global:
   # for the list of supported MongoDB versions.
   mongo:
     # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
 
     # If your MongoDB has a password you can add the username and password to the url
-    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
-
-    # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-    # Default value: false
-    # mongoURL: ""
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc:27017/tyk_analytics?authSource=admin
 
     # mongo-go driver is supported for Tyk 5.0.2+.
     # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
@@ -191,12 +166,19 @@ global:
 
   # Postgres connection string parameters.
   postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    # host corresponds to the host name of postgres
+    host: tyk-postgres-postgresql.tyk.svc
+    # port corresponds to the port of postgres
     port: 5432
+    # user corresponds to the user of postgres
     user: postgres
+    # password corresponds to the password of the given postgres user in selected database
     password:
+    # database corresponds to the database to be used in postgres
     database: tyk_analytics
-    sslmode:
+    # sslmode corresponds to if postgres runs in sslmode (https)
+    sslmode: disable
+
     # Connection string can also be set using a secret. Provide the name of the secret and key below.
     # connectionStringSecret:
     #   name: ""
@@ -204,6 +186,13 @@ global:
 
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
   storageType: &globalStorageType postgres
+
+  # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
+  # The Dashboard will now operate in a mode that is compatible with key hashing.
+  # This takes precedence over the dashboard value i.e `dashboard.hashKeys`
+  # It is used to set TYK_DB_HASHKEYS
+  # It will enable hashkeys in both gateway and dashboard.
+  hashKeys: true
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
@@ -225,13 +214,31 @@ tyk-gateway:
     # The hostname to bind the Gateway to.
     hostName: &gwHostName tyk-gw.local
 
+    # If this option is set to true, it will enable polling the Dashboard service for API definitions
+    useDashboardAppConfig:
+      enabled: true
+      # Set it to the URL to your Dashboard instance (or a load balanced instance) if and only if
+      # Tyk Dashboard runs with custom service name, for instance; using `fullnameOverride` in `tyk-dashboard` section.
+      # The URL needs to be formatted as: http://dashboard_host:port
+      # It is used to set TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
+      dashboardConnectionString: ""
+
+      # This option is required if Policy source is set to Tyk Dashboard (`service`) if and only if
+      # Tyk Dashboard runs with custom service name, for instance; using `fullnameOverride` in `tyk-dashboard` section.
+      # Set this to the URL of your Tyk Dashboard installation.
+      # The URL needs to be formatted as: http://dashboard_host:port.
+      # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
+      policyConnectionString: ""
+
     tls:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
       secretName: tyk-default-tls-secret
       # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
       insecureSkipVerify: false
 
+      # certificatesMountPath corresponds to the mount path of the secret.
       certificatesMountPath: "/etc/certs/tyk-gateway"
+      # certificates is an array of strings, used to set TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
       certificates:
         - domain_name: "*"
           cert_file: "/etc/certs/tyk-gateway/tls.crt"
@@ -270,7 +277,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.2.1
+      tag: v5.2.3
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -283,7 +290,7 @@ tyk-gateway:
 
     service:
       # type of service
-      type: NodePort
+      type: ClusterIP
 
       # external traffic policy of the service. Set it only if you are using LoadBalancer service type
       externalTrafficPolicy: Local
@@ -372,29 +379,73 @@ tyk-gateway:
     # affinity for gateway pod assignment
     affinity: {}
 
+    # opentelemetry is used to configure opentelemetry for Tyk Gateway
+    opentelemetry:
+      # Used to enable/disable opentelemetry
+      enabled: false
+      # exporter is used to define the type of the exporter to sending data in OTLP protocol
+      # Valid values are "grpc" or "http"
+      exporter: grpc
+      # endpoint defines OpenTelemetry collector endpoint to connect to.
+      endpoint: localhost:4317
+      # A map of headers that will be sent with HTTP requests to the collector.
+      # It should be set to map of string to string
+      headers: {}
+      # Timeout for establishing a connection to the collector
+      connectionTimeout: 1
+      # Name of the resource that will be used to identify the resource.
+      resourceName: tyk
+      # Type of the span processor to use. Valid values are “simple” or “batch”.
+      spanProcessorType: batch
+      # Type of the context propagator to use. Valid values are "tracecontext" and "b3".
+      contextPropagation: tracecontext
+      # TLS configuration for the exporter.
+      tls:
+        # Flag that can be used to enable TLS
+        enabled: false
+        # Flag that can be used to skip TLS verification if TLS is enabled
+        insecureSkipVerify: true
+        # Maximum TLS version that is supported.
+        maxVersion: 1.3
+        # Minimum TLS version that is supported
+        minVersion: 1.2
+        # Path to the cert file
+        certFileName: ""
+        # Path to the key file
+        keyFileName: ""
+        # Path to CA file
+        caFileName: ""
+        # Existing secret that stores TLS and CA Certificate
+        certificateSecretName: ""
+        # Mount path on which certificate secret should be mounted
+        secretMountPath: ""
+      sampling:
+        # Refers to the policy used by OpenTelemetry to determine whether a particular trace should be sampled or not.
+        type: "AlwaysOn"
+        # Parameter for the TraceIDRatioBased sampler type and represents the percentage of traces to be sampled.
+        rate: 0.5
+        # Rule that ensures that if we decide to record data for a particular operation, we’ll also record data for
+        # all the subsequent work that operation causes
+        parentBased: false
+
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
-    extraEnvs:
-      - name: TYK_GW_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: secrets-tyk-stack
-            key: APISecret
+    extraEnvs: []
 
-    ## extraVolumes is a list of volumes to be added to the pod
-    ## extraVolumes:
-    ##   - name: ca-certs
-    ##     secret:
-    ##       defaultMode: 420
-    ##       secretName: ca-certs
+    # extraVolumes is a list of volumes to be added to the pod
+    # extraVolumes:
+    #   - name: ca-certs
+    #     secret:
+    #       defaultMode: 420
+    #       secretName: ca-certs
     extraVolumes: []
 
-    ## extraVolumeMounts is a list of volume mounts to be added to the pod
-    ## extraVolumeMounts:
-    ##   - name: ca-certs
-    ##     mountPath: /etc/ssl/certs/ca-certs.crt
-    ##     readOnly: true
+    # extraVolumeMounts is a list of volume mounts to be added to the pod
+    # extraVolumeMounts:
+    #   - name: ca-certs
+    #     mountPath: /etc/ssl/certs/ca-certs.crt
+    #     readOnly: true
     extraVolumeMounts: []
 
 tyk-pump:
@@ -448,7 +499,7 @@ tyk-pump:
       enabled: false
 
       # type specifies type of the service.
-      type: NodePort
+      type: ClusterIP
 
       # port specifies the port exposed by the service.
       port: 9090
@@ -558,19 +609,19 @@ tyk-pump:
     #   value: 30
     extraEnvs: []
 
-    ## extraVolumes is a list of volumes to be added to the pod
-    ## extraVolumes:
-    ##   - name: ca-certs
-    ##     secret:
-    ##       defaultMode: 420
-    ##       secretName: ca-certs
+    # extraVolumes is a list of volumes to be added to the pod
+    # extraVolumes:
+    #   - name: ca-certs
+    #     secret:
+    #       defaultMode: 420
+    #       secretName: ca-certs
     extraVolumes: []
 
-    ## extraVolumeMounts is a list of volume mounts to be added to the pod
-    ## extraVolumeMounts:
-    ##   - name: ca-certs
-    ##     mountPath: /etc/ssl/certs/ca-certs.crt
-    ##     readOnly: true
+    # extraVolumeMounts is a list of volume mounts to be added to the pod
+    # extraVolumeMounts:
+    #   - name: ca-certs
+    #     mountPath: /etc/ssl/certs/ca-certs.crt
+    #     readOnly: true
     extraVolumeMounts: []
 
 tyk-bootstrap:
@@ -591,7 +642,7 @@ tyk-bootstrap:
     sslInsecureSkipVerify: false
 
     # Trigger to control if we want to create the tyk-operator secret
-    operatorSecret: true
+    operatorSecret: tyk-operator-conf
 
     # jobs field includes configurations for Helm Hooks.
     jobs:
@@ -602,7 +653,12 @@ tyk-bootstrap:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
-          tag: v2.0.0-beta1
+          tag: v2.0.1
+
+        # extraEnvs is used to set extra environment variables to pre-install job.
+        # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
+        #   value: "yourlicense"
+        extraEnvs: []
 
       # postInstall configures post-install Helm hook
       postInstall:
@@ -611,7 +667,12 @@ tyk-bootstrap:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
-          tag: v2.0.0-beta1
+          tag: v2.0.1
+
+        # extraEnvs is used to set extra environment variables to post-install job.
+        # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
+        #   value: "burak"
+        extraEnvs: []
 
       # preDelete configures pre-delete Helm hook
       preDelete:
@@ -620,7 +681,12 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: v2.0.0-beta1
+          tag: v2.0.1
+
+        # extraEnvs is used to set extra environment variables to pre-delete job.
+        # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
+        #   value: "tyk-operator-conf"
+        extraEnvs: []
 
     org:
       # The name for your organization inside Tyk
@@ -640,8 +706,11 @@ tyk-bootstrap:
     #     key: value
     #     post: install
     podAnnotations:
+      # preInstallPodAnnotations specifies annotations to be added to Tyk Bootstrap pre-install hook's job pods.
       preInstallPodAnnotations: {}
+      # postInstallPodAnnotations specifies annotations to be added to Tyk Bootstrap post-install hook's job pods.
       postInstallPodAnnotations: {}
+      # preDeletePodAnnotations specifies annotations to be added to Tyk Bootstrap pre-delete hook's job pods.
       preDeletePodAnnotations: {}
 
 tyk-dashboard:
@@ -652,30 +721,96 @@ tyk-dashboard:
   fullnameOverride: ""
 
   dashboard:
+    # This is the URL of your Tyk Gateway node, which is used to set TYK_DB_TYKAPI_HOST.
+    # The Dashboard controls Tyk using the Gateway API and only requires visibility to one node. In a sharded environment,
+    # the Gateway node specified here must not be sharded.
+    # - If you are using tyk-stack chart, it is automatically set to the gateway service URL.
+    #   HOWEVER, if Tyk Gateway runs with custom service name, please override with the correct URL using this field.
+    # - If you are using tyk-dashboard chart, you need to set the correct Gateway URL here too.
+    # The URL needs to be formatted as: http://gateway_host
+    tykApiHost: ""
+    # enableOwnership specifies if API Ownership for Self-Managed installations is enabled or not.
+    # It is used to set TYK_DB_ENABLEOWNERSHIP
     enableOwnership: true
+    # defaultPageSize specifies the page size that the dashboard should use.
+    # It is used to set TYK_DB_PAGESIZE
     defaultPageSize: 10
+    # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
+    # It is used to set TYK_DB_NOTIFYONCHANGE
     notifyOnChange: true
+    # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
+    # The Dashboard will now operate in a mode that is compatible with key hashing.
+    # It is used to set TYK_DB_HASHKEYS
     hashKeys: true
+    # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
+    # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
+    # It is used to set TYK_DB_ENABLEDUPLICATESLUGS
     enableDuplicateSlugs: true
+    # showOrgId determines whether the Org ID will be shown in the Users -> Username detail page.
+    # This can be useful for quickly identifying your Org ID.
+    # It is used to set TYK_DB_SHOWORGID
     showOrgId: true
     hostConfig:
+      # Enable this option to have the Dashboard only allow access on a specific domain and 404 on any other host access
+      # It is used to set TYK_DB_HOSTCONFIG_ENABLEHOSTNAMES
       enableHostNames: true
+      # By default, for developer portal, Tyk will add orgID prefix. Set to true if you have single tenant application or each portal on separate domain.
+      # It is used to set TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX
       disableOrgSlugPrefix: true
-      overrideHostname: "dashboard-svc-tyk-pro.tyk.svc.cluster.local"
+      # Set this value to whatever hostname your Tyk Gateway is running on.
+      # It is used to set TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
+      overrideHostname: *gwHostName
+    # The path to the home directory of Tyk Dashboard, this must be set in order for Portal templates and other files to be loadable.
+    # It is used to set TYK_DB_HOMEDIR
     homeDir: "/opt/tyk-dashboard"
+    # If using the mongo-pump-selective pump, where data is written to org-id-specific collections in MongoDB,
+    # then enabling this option will switch querying for analytics over to the independent collection entries.
+    # It is used to set TYK_DB_USESHARDEDANALYTICS
     useShardedAnalytics: false
+    # If using the new Aggregate Pump, Tyk Analytics can make use of the newer, faster Analytics lookup,
+    # to ensure that this can be made backwards compatible.This option must be set to true,
+    # in conjunction with the aggregate_lookup_cutoff value.
+    # It is used to set TYK_DB_ENABLEAGGREGATELOOKUPS
     enableAggregateLookups: true
+    # enableAnalyticsCache enables the caching of analytics data queries.
+    # When this field is set to true, the Tyk Dashboard will cache the results of analytics queries in Redis,
+    # which can significantly improve performance by reducing the load on the underlying MongoDB or PostgreSQL database
+    # that stores this data.
+    # It is used to set TYK_DB_ENABLEANALYTICSCACHE
     enableAnalyticsCache: true
+    # Set this value to true if you are planning to use Tyk Sync or Tyk Operator
+    # It is used to set TYK_DB_ALLOWEXPLICITPOLICYID
     allowExplicitPolicyId: true
+    # oAuth redirect URI separator
+    # It is used to set TYK_DB_OAUTHREDIRECTURISEPARATOR
     oauthRedirectUriSeparator: ";"
+    # keyRequestFields enables administrators to collect necessary information for API key issuance, enforce policies,
+    # and provide the flexibility to customize the key request process according to evolving business needs.
+    # It is used to set TYK_DB_KEYREQUESTFIELDS
     keyRequestFields: "appName;appType"
+    # Dashboard session lifetime
+    # It is used to set TYK_DB_DASHBOARDSESSIONLIFETIME
     dashboardSessionLifetime: 43200
+    # When enabled, if dashboard already have user with given email found, it will be used for the login process
+    # It is used to set TYK_DB_SSOENABLEUSERLOOKUP
     ssoEnableUserLookup: true
+    # notificationsListenPort specifies the port that the Tyk Dashboard listens on for webhook notifications sent from Tyk Gateways.
+    # It is used to set TYK_DB_NOTIFICATIONSLISTENPORT
     notificationsListenPort: 5000
+    # To delete a key by its hash, set this option to true
+    # It is used to set TYK_DB_ENABLEDELETEKEYBYHASH
     enableDeleteKeyByHash: true
+    # To update a key by its hash, set this option to true.
+    # It is used to set TYK_DB_ENABLEUPDATEKEYBYHASH
     enableUpdateKeyByHash: true
+    # To retrieve a list of all key hash listings, set this option to true.
+    # It is used to set TYK_DB_ENABLEHASHEDKEYSLISTING
     enableHashedKeysListing: true
+    # Enable support for users with the same email for multiple organisations
+    # It is used to set TYK_DB_ENABLEMULTIORGUSERS
     enableMultiOrgUsers: true
+
+    # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
     # podAnnotations is annotations to be added to Tyk Dashboard pod.
@@ -692,7 +827,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.2.1
+      tag: v5.2.3
 
       # image pull policy
       pullPolicy: Always
@@ -701,25 +836,30 @@ tyk-dashboard:
     imagePullSecrets: []
 
     service:
-      type: NodePort
+      type: ClusterIP
       externalTrafficPolicy: Local
       annotations: {}
 
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
+    #  resources:
+    #   limits:
+    #    cpu: 100m
+    #    memory: 128Mi
+    #   requests:
+    #    cpu: 100m
+    #    memory: 128Mi
     resources: {}
-      # We usually recommend not to specify default resources and to leave this
-      # as a conscious choice for the user. This also increases chances charts
-      # run on environments with little resources, such as Minikube. If you do
-      # want to specify resources, uncomment the following lines, adjust them
-      # as necessary, and remove the curly braces after 'resources:'.
-      # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
+
+    # securityContext holds pod-level security attributes for Tyk Dashboard pod.
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
+
+    # containerSecurityContext holds container-level security attributes for Tyk Dashboard container.
     containerSecurityContext:
       runAsNonRoot: true
       allowPrivilegeEscalation: false
@@ -728,37 +868,36 @@ tyk-dashboard:
       capabilities:
         drop:
         - all
+
+    # nodeSelector is a selector which must be true for Tyk Dashboard pod to fit on a specific node.
     nodeSelector: {}
+    # tolerations specifies tolerations to be applied on Tyk Dashboard pods.
     tolerations: []
+    # affinity specifies affinity and anti-affinity constraints.
     affinity: {}
 
-    extraEnvs:
-    - name: "TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME"
-      value: *gwHostName
+    # extraEnvs is used to set extra environment variables to Tyk Dashboard pod.
+    # - name: TYK_DB_PAGESIZE
+    #   value: "10"
+    extraEnvs: []
 
-    ## extraVolumes A list of volumes to be added to the pod
-    ## extraVolumes:
-    ##   - name: ca-certs
-    ##     secret:
-    ##       defaultMode: 420
-    ##       secretName: ca-certs
+    # extraVolumes is a list of volumes to be added to the pod
+    # extraVolumes:
+    #   - name: ca-certs
+    #     secret:
+    #       defaultMode: 420
+    #       secretName: ca-certs
     extraVolumes: []
 
-    ## extraVolumeMounts A list of volume mounts to be added to the pod
-    ## extraVolumeMounts:
-    ##   - name: ca-certs
-    ##     mountPath: /etc/ssl/certs/ca-certs.crt
-    ##     readOnly: true
+    # extraVolumeMounts is a list of volume mounts to be added to the pod
+    # extraVolumeMounts:
+    #   - name: ca-certs
+    #     mountPath: /etc/ssl/certs/ca-certs.crt
+    #     readOnly: true
     extraVolumeMounts: []
 
     # The hostname to bind the Dashboard to.
     hostName: tyk-dashboard.local
-
-    # If set to true the Dashboard will use SSL connection.
-    # You will also need to set the:
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-    # variables in extraEnvs object array to define your SSL cert and key files.
 
     tls:
       # The name of the secret which should contain the TLS certificate you want to use with the dashboard deployment
@@ -766,13 +905,57 @@ tyk-dashboard:
       # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
       insecureSkipVerify: false
 
+      # certificatesMountPath corresponds to the mount path of the secret.
       certificatesMountPath: "/etc/certs/tyk-dashboard"
+      # certificates is an array of strings, used to set TYK_DB_HTTPSERVEROPTIONS_CERTIFICATES
       certificates:
         - domain_name: "*"
           cert_file: "/etc/certs/tyk-dashboard/tls.crt"
           key_file: "/etc/certs/tyk-dashboard/tls.key"
 
+    # ingress specifies Ingress rules for Tyk Dashboard Service.
+    # Ingress is disabled by default.
+    ingress:
+      enabled: false
+      # specify your ingress controller class name below
+      className: ""
+      annotations: {}
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+      hosts:
+        - host: chart-example.local
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls: []
+
+  portal:
+    ingress:
+      enabled: false
+      # specify your ingress controller class name below
+      className: ""
+      annotations: {}
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+      hosts:
+        - host: chart-example.local
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls: []
+  # tib is used to configure Tyk Identity Broker(TIB) connection details
+  tib:
+    # enabled is used to enable/disable embedded TIB
+    enabled: false
+
 tyk-dev-portal:
+  # Sensitive configuration of Portal could be set using k8s secret
+  # You can set following fields:
+  # - DevPortalLicense - Sets LicenseKey for Developer Portal
+  # - DevPortalDatabaseConnectionString - Sets database connectionString for Developer Portal
+  # - DevPortalAwsAccessKeyId - Sets AWS S3 Access Key ID
+  # - DevPortalAwsSecretAccessKey - Sets AWS S3 Secret Access Key
+  useSecretName: ""
   # The hostname to bind the Developer Portal to.
   hostName: tyk-dev-portal.local
   # Developer Portal license.
@@ -782,17 +965,11 @@ tyk-dev-portal:
   storage:
     # User can set the storage type for portal.
     # Supported types: fs, s3, db
-    type: "fs"
-    database:
-      dialect: "sqlite3"
-      connectionString: "db/portal.db"
-      enableLogs: false
-      maxRetries: 3
-      retryDelay: 5000
+    type: "db"
     # Configuration values for using s3 as storage for Tyk Developer Portal
     # In case you want to provide the key ID and access key via secrets please
-    # refer to the existing secret inside the helmchart or the
-    # .Values.global.secrets.useSecretName variable
+    # refer to the existing secret inside the helm chart or the
+    # .Values.useSecretName field
     s3:
       awsAccessKeyid: your-access-key
       awsSecretAccessKey: your-secret-key
@@ -810,40 +987,67 @@ tyk-dev-portal:
       annotations: {}
       labels: {}
       selector: {}
+  database:
+    # This selects the SQL dialect to be used
+    # The supported values are mysql, postgres and sqlite3
+    dialect: "sqlite3"
+    connectionString: "db/portal.db"
+    enableLogs: false
+    maxRetries: 3
+    retryDelay: 5000
+
+  # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
+
+  # containerPort specifies the container port for Tyk Developer Portal container.
+  # Also, it is used to set PORTAL_HOST_PORT
   containerPort: 3001
   image:
+    # image repository for Tyk Developer Portal.
     repository: tykio/portal
+
     # Developer portal < v1.2 is not supported
-    tag: v1.7.0
+    tag: v1.8.0
+    # image pull policy
     pullPolicy: Always
 
   # image pull secrets to use when pulling images from repository
   imagePullSecrets: []
 
   service:
-    type: NodePort
+    # type corresponds to the service type of Tyk Developer Portal Service.
+    type: ClusterIP
+    # The port at which Tyk Developer Portal service can be found
     port: 3001
+    # externalTrafficPolicy corresponds to the external traffic policy if the service type is load balancer
     externalTrafficPolicy: Local
+    # annotations corresponds to the annotations which will be added into Tyk Dashboard Service.
     annotations: {}
-  # Creates an ingress object in k8s. Will require an ingress-controller and
-  # annotation to that ingress controller.
+
+  # ingress specifies Ingress rules for Tyk Developer Portal Service.
+  # Ingress is disabled by default.
   ingress:
+    # enabled specifies whether ingress is enabled or not.
+    # Set it to true to enable Ingress for Tyk Dashboard Service.
     enabled: false
     # specify your ingress controller class name below
     className: ""
+
+    # annotations specifies annotations to be added on Ingress resource.
     annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+
+    # hosts corresponds to the rules to be added on Ingress rules.
     hosts:
       - host: chart-example.local
         paths:
           - path: /
             pathType: ImplementationSpecific
+
+    # tls corresponds to the tls configuration if Ingress rules use TLS
     tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+
   resources: {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -853,12 +1057,15 @@ tyk-dev-portal:
     # limits:
     #  cpu: 100m
     #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  # securityContext holds pod-level security attributes for Tyk Developer Portal pod.
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
+  # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod.
   containerSecurityContext:
     runAsNonRoot: true
     allowPrivilegeEscalation: false
@@ -867,26 +1074,36 @@ tyk-dev-portal:
     capabilities:
       drop:
         - all
+  # nodeSelector is a selector which must be true for Tyk Developer Portal pod to fit on a specific node.
   nodeSelector: {}
+  # tolerations specifies tolerations to be applied on Tyk Developer Portal pods.
   tolerations: []
+  # affinity specifies affinity and anti-affinity constraints.
   affinity: {}
+  # extraEnvs is used to set extra environment variables to Tyk Developer Portal pod.
+  # - name: PORTAL_REFRESHINTERVAL
+  #   value: "10"
   extraEnvs: []
-  ## extraVolumes A list of volumes to be added to the pod
-  ## extraVolumes:
-  ##   - name: ca-certs
-  ##     secret:
-  ##       defaultMode: 420
-  ##       secretName: ca-certs
+  # extraVolumes is a list of volumes to be added to the pod
+  # extraVolumes:
+  #   - name: ca-certs
+  #     secret:
+  #       defaultMode: 420
+  #       secretName: ca-certs
   extraVolumes: []
-  ## extraVolumeMounts A list of volume mounts to be added to the pod
-  ## extraVolumeMounts:
-  ##   - name: ca-certs
-  ##     mountPath: /etc/ssl/certs/ca-certs.crt
-  ##     readOnly: true
+  # extraVolumeMounts is a list of volume mounts to be added to the pod
+  # extraVolumeMounts:
+  #   - name: ca-certs
+  #     mountPath: /etc/ssl/certs/ca-certs.crt
+  #     readOnly: true
   extraVolumeMounts: []
 
+  # livenessProve includes details about liveness probe used in Tyk Developer Portal
   livenessProbe:
+    # initialDelaySeconds specifies the seconds used in liveness probe as initial delay.
     initialDelaySeconds: 60
 
+  # readinessProbe includes details about readiness probe used in Tyk Developer Portal
   readinessProbe:
+    # initialDelaySeconds specifies the seconds used in readiness probe as initial delay.
     initialDelaySeconds: 60

@@ -1,6 +1,6 @@
 apk --no-cache add curl jq
 
-TYK_GW_ADDR="${TYK_GW_PROTO}://${TYK_GW_SVC}.${TYK_POD_NAMESPACE}.svc.cluster.local:${TYK_GW_LISTENPORT}"
+TYK_GW_ADDR="${TYK_GW_PROTO}://${TYK_GW_SVC}.${TYK_POD_NAMESPACE}.svc:${TYK_GW_LISTENPORT}"
 TYK_GW_SECRET=${TYK_GW_SECRET}
 
 checkGateway() {
@@ -34,9 +34,9 @@ checkGateway() {
 
   if [[ $count -ge 10 ]]
   then
-    echo "All components required for the Tyk MDCB Data Plane to work are NOT available"
+    echo "All components required for the Tyk Data Plane to work are NOT available"
   else
-    echo "All components required for the Tyk MDCB Data Plane to work are available"
+    echo "All components required for the Tyk Data Plane to work are available"
   fi
 }
 

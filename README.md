@@ -4,19 +4,19 @@ This is a repository for new Tyk helm charts. We will roll out new component cha
 ## Umbrella Charts
 Helm umbrella chart (chart of charts) is an easy and really flexible way of installing multiple components as a single one. We have following umbrella charts that help you to install group of related tyk components based on your deployment need.
 
-| Umbrella Charts | Description | Status |
-|-----------------|-------------|--------|
-| [tyk-oss](./tyk-oss)                | Tyk Open Source | Stable              |
-| [tyk-stack](./tyk-stack)            | Tyk Self Managed | Beta            |
-| tyk-control-plane | Tyk Self Managed (MDCB) Control Plane | Coming Soon     |
-| [tyk-data-plane](./tyk-data-plane)    | Tyk Self Managed (MDCB) Data Plane <br> Tyk Hybrid Data Plane | Stable              |
+| Umbrella Charts                          | Description                                                   | Status |
+|------------------------------------------|---------------------------------------------------------------|--------|
+| [tyk-oss](./tyk-oss)                     | Tyk Open Source                                               | Stable |
+| [tyk-stack](./tyk-stack)                 | Tyk Self Managed                                              | Stable |
+| [tyk-control-plane](./tyk-control-plane) | Tyk Self Managed (MDCB) Control Plane                         | Beta   |
+| [tyk-data-plane](./tyk-data-plane)       | Tyk Self Managed (MDCB) Data Plane <br> Tyk Hybrid Data Plane | Stable |
 
 ## Component Charts
 * [tyk-gateway](./components/tyk-gateway)
 * [tyk-pump](./components/tyk-pump)
 * [tyk-dashboard](./components/tyk-dashboard)
 * [tyk-dev-portal](./components/tyk-dev-portal)
-* tyk-mdcb (Coming soon!)
+* [tyk-mdcb](./components/tyk-mdcb)
 * tyk-tib (Coming soon!)
 * tyk-operator (Coming soon!)
 

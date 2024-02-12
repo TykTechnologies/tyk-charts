@@ -1,4 +1,4 @@
-{{- if .Values.bootstrap -}}
+{{- if .Values.global.components.bootstrap -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -36,14 +36,17 @@ spec:
           command: [ './app/bin/bootstrap-app-pre-delete' ]
           imagePullPolicy: IfNotPresent
           env:
-            - name: OPERATOR_SECRET_NAME
-              value: "tyk-operator-conf"
-            - name: DEVELOPER_PORTAL_SECRET_NAME
+            - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
+              value: {{ .Values.bootstrap.operatorSecret }}
+            - name: TYK_K8SBOOTSTRAP_DEVPORTALKUBERNETESSECRETNAME
               value: {{ .Values.global.secrets.devPortal }}
-            - name: TYK_POD_NAMESPACE
+            - name: TYK_K8SBOOTSTRAP_K8S_RELEASENAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+          {{- if .Values.bootstrap.jobs.preDelete.extraEnvs }}
+          {{- include "tyk-bootstrap.tplvalues.render" ( dict "value" .Values.bootstrap.jobs.preDelete.extraEnvs "context" $ ) | nindent 12 }}
+          {{- end }}
       terminationGracePeriodSeconds: 0
       restartPolicy: Never
 {{- end }}

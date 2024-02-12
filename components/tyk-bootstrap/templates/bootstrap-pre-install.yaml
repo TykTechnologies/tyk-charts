@@ -1,4 +1,3 @@
-{{- if .Values.bootstrap.dashboard -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -33,7 +32,7 @@ spec:
           command: ['/app/bin/bootstrap-app-pre-install']
           imagePullPolicy: IfNotPresent
           env:
-            - name: TYK_DB_LICENSEKEY
+            - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
               {{ if .Values.global.secrets.useSecretName }}
               valueFrom:
                 secretKeyRef:
@@ -42,7 +41,8 @@ spec:
               {{ else }}
               value: {{ .Values.global.license.dashboard | quote }}
               {{ end }}
+          {{- if .Values.bootstrap.jobs.preInstall.extraEnvs }}
+          {{- include "tyk-bootstrap.tplvalues.render" ( dict "value" .Values.bootstrap.jobs.preInstall.extraEnvs "context" $ ) | nindent 12 }}
+          {{- end }}
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
-{{- end }}
-      

@@ -1,6 +1,6 @@
 apk --no-cache add curl jq
 
-TYK_GW_ADDR="${TYK_GW_PROTO}://${TYK_GW_SVC}.${TYK_POD_NAMESPACE}.svc.cluster.local:${TYK_GW_LISTENPORT}"
+TYK_GW_ADDR="${TYK_GW_PROTO}://${TYK_GW_SVC}.${TYK_POD_NAMESPACE}.svc:${TYK_GW_LISTENPORT}"
 TYK_GW_SECRET=${TYK_GW_SECRET}
 
 checkGateway() {
@@ -34,10 +34,10 @@ checkGateway() {
 
   if [[ $count -ge 30 ]]
   then
-    echo "All components required for the Tyk single dc to work are NOT available"
+    echo "All components required for the Tyk stack to work are NOT available"
     exit 1
   else
-    echo "All components required for the Tyk single dc to work are available"
+    echo "All components required for the Tyk stack to work are available"
   fi
 }
 

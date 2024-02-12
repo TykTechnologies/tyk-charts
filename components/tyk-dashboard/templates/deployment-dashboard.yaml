@@ -47,6 +47,15 @@ spec:
       {{- with .Values.dashboard.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
+      {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+      initContainers:
+        - name: init-analytics-conf
+          image: busybox:1.32
+          args: ["sh", "-c", 'touch /etc/tyk-dashboard/tyk_analytics.conf && echo "{}" > /etc/tyk-dashboard/tyk_analytics.conf']
+          volumeMounts:
+            - mountPath: /etc/tyk-dashboard
+              name: analytics-conf
+      {{- end }}
       containers:
       - image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
         imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
@@ -64,7 +73,11 @@ spec:
           - name: "TYK_DB_NOTIFYONCHANGE"
             value: "{{ .Values.dashboard.notifyOnChange }}"
           - name: "TYK_DB_HASHKEYS"
-            value: "{{ .Values.dashboard.hashKeys }}"
+            {{- if .Values.global.hashKeys  }}
+            value: {{ .Values.global.hashKeys | quote }}
+            {{- else }}
+            value: {{ .Values.dashboard.hashKeys | quote }}
+            {{- end }}
           - name: "TYK_DB_ENABLEDUPLICATESLUGS"
             value: "{{ .Values.dashboard.enableDuplicateSlugs }}"
           - name: "TYK_DB_SHOWORGID"
@@ -108,10 +121,13 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           - name: TYK_DB_TYKAPI_HOST
-            # this needs to be setup from values
-            value: {{ include "tyk-dashboard.gateway_url" .}}
+            {{- if .Values.dashboard.tykApiHost  }}
+            value: {{ .Values.dashboard.tykApiHost | quote }}
+            {{- else }}
+            value: {{ include "tyk-dashboard.gw_proto" . }}://{{ include "tyk-dashboard.gateway_host" .}}
+            {{- end }}
           - name: TYK_DB_TYKAPI_PORT
-            value: "{{ .Values.global.servicePorts.dashboard }}"
+            value: "{{ .Values.global.servicePorts.gateway }}"
           - name: TYK_DB_TYKAPI_SECRET
             valueFrom:
               secretKeyRef:
@@ -158,10 +174,9 @@ spec:
 
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dashboard.hostName }}"
-
+          - name: "TYK_DB_ENABLEAGGREGATELOOKUPS"
+            value: "{{ .Values.dashboard.enableAggregateLookups }}"
           {{ if eq "postgres" (include "tyk-dashboard.storageType" .) }}
-          - name: TYK_DB_ENABLEAGGREGATELOOKUPS
-            value: "false"
           - name: TYK_DB_STORAGE_MAIN_TYPE
             value: "postgres"
           - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
@@ -195,20 +210,32 @@ spec:
                 key: {{ include "tyk-dashboard.mongo_url_secret_key" . }}
           - name: TYK_DB_MONGOUSESSL
             value: "{{ default "false" .Values.global.mongo.useSSL }}"
-          - name: "TYK_DB_ENABLEAGGREGATELOOKUPS"
-            value: "{{ .Values.dashboard.enableAggregateLookups }}"
           - name: TYK_DB_MONGODRIVER
             value: "{{ default "mgo" .Values.global.mongo.driver}}"
           {{ end }}
+
+          {{- if .Values.tib }}
+          - name:  TYK_DB_TIB_ENABLED
+            value: {{ .Values.tib.enabled | quote }}
+          {{- end }}
+
           {{- if .Values.dashboard.extraEnvs }}
           {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraEnvs "context" $) | nindent 10 }}
           {{- end }}
         resources:
 {{ toYaml .Values.dashboard.resources | indent 12 }}
+        {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+        command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
+        {{- else }}
         command: ["/opt/tyk-dashboard/tyk-analytics"]
+        {{- end }}
         ports:
         - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
+          {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+          - name: analytics-conf
+            mountPath: /etc/tyk-dashboard
+          {{- end }}
           {{ if .Values.global.tls.dashboard }}
           - name: {{ .Values.dashboard.tls.secretName }}
             mountPath: {{ .Values.dashboard.tls.certificatesMountPath }}
@@ -239,6 +266,10 @@ spec:
       {{- toYaml .Values.dashboard.securityContext | nindent 10 }}
       {{- end }}
       volumes:
+        {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+        - name: analytics-conf
+          emptyDir: {}
+        {{- end }}
         {{ if .Values.global.tls.dashboard }}
         - name: {{ .Values.dashboard.tls.secretName }}
           secret:

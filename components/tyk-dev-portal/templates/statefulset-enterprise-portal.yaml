@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: {{ .Values.kind }}
 metadata:
-  name: {{ include "tyk-dev-portal.fullname" . }}
+  name: portal-{{ include "tyk-dev-portal.fullname" . }}
   labels:
     app: {{ include "tyk-dev-portal.fullname" . }}
     chart: {{ include "tyk-dev-portal.chart" . }}
@@ -57,8 +57,8 @@ spec:
           - name: PORTAL_LICENSEKEY
             valueFrom:
               secretKeyRef:
-                {{ if .Values.global.secrets.useSecretName }}
-                name: {{ .Values.global.secrets.useSecretName }}
+                {{ if .Values.useSecretName }}
+                name: {{ .Values.useSecretName }}
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
@@ -86,30 +86,30 @@ spec:
           - name: PORTAL_STORAGE
             value: "{{ .Values.storage.type }}"
           - name: PORTAL_DATABASE_DIALECT
-            value: "{{ .Values.storage.database.dialect }}"
+            value: "{{ .Values.database.dialect }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                {{ if .Values.global.secrets.useSecretName }}
-                name: "{{ .Values.global.secrets.useSecretName }}"
+                {{ if .Values.useSecretName }}
+                name: "{{ .Values.useSecretName }}"
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
-                key: "DevPortalStorageConnectionString"
+                key: "DevPortalDatabaseConnectionString"
           {{ if eq .Values.storage.type "db" }}
           - name: PORTAL_DATABASE_ENABLELOGS
-            value: "{{ .Values.storage.database.enableLogs }}"
+            value: "{{ .Values.database.enableLogs }}"
           - name: PORTAL_DATABASE_MAXRETRIES
-            value: "{{.Values.storage.database.maxRetries }}"
+            value: "{{.Values.database.maxRetries }}"
           - name: PORTAL_DATABASE_RETRYDELAY
-            value: "{{ .Values.storage.database.retryDelay }}"
+            value: "{{ .Values.database.retryDelay }}"
           {{ end }}
           {{ if eq .Values.storage.type "s3" }}
           - name: PORTAL_S3_AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
-                {{ if .Values.global.secrets.useSecretName }}
-                name: {{ .Values.global.secrets.useSecretName }}
+                {{ if .Values.useSecretName }}
+                name: {{ .Values.useSecretName }}
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
@@ -117,8 +117,8 @@ spec:
           - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                {{ if .Values.global.secrets.useSecretName }}
-                name: {{ .Values.global.secrets.useSecretName }}
+                {{ if .Values.useSecretName }}
+                name: {{ .Values.useSecretName }}
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
                 {{ end }}
@@ -144,11 +144,8 @@ spec:
           - name: PROVIDER_NAME
             value: "tyk"
           - name: TYK_URL
-          {{ if ne .Values.overrideTykDashUrl ""}}
-            value: {{ .Values.overrideTykDashUrl}}
-          {{ else}}
-            value: "http{{ if .Values.global.tls.dashboard }}s{{ end }}://dashboard-svc-{{ .Release.Name }}-tyk-dashboard.{{ .Release.Namespace }}.svc:{{ .Values.global.servicePorts.dashboard }}"
-          {{- end }}
+            value: {{ include "tyk-dev-portal.dashboardUrl" . | quote }}
+            {{- if (.Values.global.secrets).devPortal }}
           - name: TYK_AUTH
             valueFrom:
               secretKeyRef:
@@ -159,6 +156,7 @@ spec:
               secretKeyRef:
                 name: {{ .Values.global.secrets.devPortal}}
                 key: TYK_ORG
+          {{- end }}
         {{- if .Values.extraEnvs }}
         {{- range $env := .Values.extraEnvs }}
           - name: {{ $env.name }}
@@ -168,7 +166,7 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         command: ["/opt/portal/dev-portal"]
-        {{- if .Values.global.bootstrap.devPortal }}
+        {{- if and .Values.global.components.bootstrap (.Values.global.secrets).devPortal}}
         args: ["--bootstrap", "--provider-data={\"URL\":\"$(TYK_URL)\",\"Secret\":\"$(TYK_AUTH)\",\"OrgID\":\"$(TYK_ORG)\"}", "-user=$(ADMIN_EMAIL)", "-pass=$(ADMIN_PASSWORD)"]
         {{- end }}
         workingDir: /opt/portal
@@ -204,7 +202,7 @@ spec:
             mountPath: /opt/portal/themes
             subPath: themes
           {{- end }}
-          {{- if eq .Values.storage.database.dialect "sqlite3" }}
+          {{- if eq .Values.database.dialect "sqlite3" }}
           - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
             mountPath: /opt/portal/db
             subPath: db
@@ -215,18 +213,18 @@ spec:
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
-            path: /
+            path: /live
             port: {{ .Values.containerPort }}
-          initialDelaySeconds: {{ default 60 .Values.livenessProbe.initialDelaySeconds}}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds}}
           periodSeconds: 2
           timeoutSeconds: 3
           failureThreshold: 2
         readinessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.devPortal }}S{{ end }}"
-            path: /
+            path: /ready
             port: {{ .Values.containerPort }}
-          initialDelaySeconds: {{ default 60 .Values.readinessProbe.initialDelaySeconds}}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds}}
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3

@@ -39,16 +39,16 @@ global:
     # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
     # the endpoints of the redis instances or use the cluster configuration endpoint.
     #
-    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+    # Default value: redis.{{ .Release.Namespace }}.svc:6379
     # addrs:
     #   Example using tyk simple redis chart
-    #   - redis.tyk.svc.cluster.local:6379
+    #   - redis.tyk.svc:6379
     #   Example using bitnami/redis
-    #   - tyk-redis-master.tyk.svc.cluster.local:6379
+    #   - tyk-redis-master.tyk.svc:6379
     #   Example using bitnami/redis with sentinel
-    #   - tyk-redis.tyk.svc.cluster.local:26379
+    #   - tyk-redis.tyk.svc:26379
     #   Example using bitnami/redis-cluster
-    #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
+    #   - tyk-redis-redis-cluster.tyk.svc:6379
 
     # Redis password
     # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
@@ -86,6 +86,9 @@ global:
     storage:
       database: 0
 
+  # hashKeys is used to enable/disable key hashing.
+  hashKeys: true
+
 tyk-gateway:
   ## Default values for tyk-gateway chart.
   ## This is a YAML-formatted file.
@@ -112,7 +115,9 @@ tyk-gateway:
       # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
       insecureSkipVerify: false
 
+      # certificatesMountPath corresponds to the mount path of the secret.
       certificatesMountPath: "/etc/certs/tyk-gateway"
+      # certificates is an array of strings, used to set TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
       certificates:
         - domain_name: "*"
           cert_file: "/etc/certs/tyk-gateway/tls.crt"
@@ -165,7 +170,7 @@ tyk-gateway:
       repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.2.1
+      tag: v5.2.3
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -178,7 +183,7 @@ tyk-gateway:
 
     service:
       # type of service
-      type: NodePort
+      type: ClusterIP
 
       # external traffic policy of the service. Set it only if you are using LoadBalancer service type
       externalTrafficPolicy: Local
@@ -270,24 +275,73 @@ tyk-gateway:
     # If set to empty or nil, analytics will be enabled/disabled based on `global.components.pump`.
     analyticsEnabled: ""
 
+    # opentelemetry is used to configure opentelemetry for Tyk Gateway
+    opentelemetry:
+      # Used to enable/disable opentelemetry
+      enabled: false
+      # exporter is used to define the type of the exporter to sending data in OTLP protocol
+      # Valid values are "grpc" or "http"
+      exporter: grpc
+      # endpoint defines OpenTelemetry collector endpoint to connect to.
+      endpoint: localhost:4317
+      # A map of headers that will be sent with HTTP requests to the collector.
+      # It should be set to map of string to string
+      headers: {}
+      # Timeout for establishing a connection to the collector
+      connectionTimeout: 1
+      # Name of the resource that will be used to identify the resource.
+      resourceName: tyk
+      # Type of the span processor to use. Valid values are “simple” or “batch”.
+      spanProcessorType: batch
+      # Type of the context propagator to use. Valid values are "tracecontext" and "b3".
+      contextPropagation: tracecontext
+      # TLS configuration for the exporter.
+      tls:
+        # Flag that can be used to enable TLS
+        enabled: false
+        # Flag that can be used to skip TLS verification if TLS is enabled
+        insecureSkipVerify: true
+        # Maximum TLS version that is supported.
+        maxVersion: 1.3
+        # Minimum TLS version that is supported
+        minVersion: 1.2
+        # Path to the cert file
+        certFileName: ""
+        # Path to the key file
+        keyFileName: ""
+        # Path to CA file
+        caFileName: ""
+        # Existing secret that stores TLS and CA Certificate
+        certificateSecretName: ""
+        # Mount path on which certificate secret should be mounted
+        secretMountPath: ""
+      sampling:
+        # Refers to the policy used by OpenTelemetry to determine whether a particular trace should be sampled or not.
+        type: "AlwaysOn"
+        # Parameter for the TraceIDRatioBased sampler type and represents the percentage of traces to be sampled.
+        rate: 0.5
+        # Rule that ensures that if we decide to record data for a particular operation, we’ll also record data for
+        # all the subsequent work that operation causes
+        parentBased: false
+
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
     extraEnvs: []
 
-    ## extraVolumes is a list of volumes to be added to the pod
-    ## extraVolumes:
-    ##   - name: ca-certs
-    ##     secret:
-    ##       defaultMode: 420
-    ##       secretName: ca-certs
+    # extraVolumes is a list of volumes to be added to the pod
+    # extraVolumes:
+    #   - name: ca-certs
+    #     secret:
+    #       defaultMode: 420
+    #       secretName: ca-certs
     extraVolumes: []
 
-    ## extraVolumeMounts is a list of volume mounts to be added to the pod
-    ## extraVolumeMounts:
-    ##   - name: ca-certs
-    ##     mountPath: /etc/ssl/certs/ca-certs.crt
-    ##     readOnly: true
+    # extraVolumeMounts is a list of volume mounts to be added to the pod
+    # extraVolumeMounts:
+    #   - name: ca-certs
+    #     mountPath: /etc/ssl/certs/ca-certs.crt
+    #     readOnly: true
     extraVolumeMounts: []
 
 tyk-pump:
@@ -341,7 +395,7 @@ tyk-pump:
       enabled: false
 
       # type specifies type of the service.
-      type: NodePort
+      type: ClusterIP
 
       # port specifies the port exposed by the service.
       port: 9090
@@ -450,17 +504,17 @@ tyk-pump:
     #   value: 30
     extraEnvs: []
 
-    ## extraVolumes is a list of volumes to be added to the pod
-    ## extraVolumes:
-    ##   - name: ca-certs
-    ##     secret:
-    ##       defaultMode: 420
-    ##       secretName: ca-certs
+    # extraVolumes is a list of volumes to be added to the pod
+    # extraVolumes:
+    #   - name: ca-certs
+    #     secret:
+    #       defaultMode: 420
+    #       secretName: ca-certs
     extraVolumes: []
 
-    ## extraVolumeMounts is a list of volume mounts to be added to the pod
-    ## extraVolumeMounts:
-    ##   - name: ca-certs
-    ##     mountPath: /etc/ssl/certs/ca-certs.crt
-    ##     readOnly: true
+    # extraVolumeMounts is a list of volume mounts to be added to the pod
+    # extraVolumeMounts:
+    #   - name: ca-certs
+    #     mountPath: /etc/ssl/certs/ca-certs.crt
+    #     readOnly: true
     extraVolumeMounts: []
