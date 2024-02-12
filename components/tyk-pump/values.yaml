@@ -79,7 +79,8 @@ global:
     # mongo-go driver is supported for Tyk 5.0.2+.
     # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
     # For MongoDB versions prior to 4.4, please use the mgo driver.
-    driver: mgo
+    # Since Tyk-Pump 1.9 the default driver is mongo-go.
+    driver: mongo-go
 
     # Connection URL can also be set using a secret. Provide the name of the secret and key below.
     # connectionURLSecret:
@@ -92,11 +93,17 @@ global:
 
   # If postgres pump is in use, please set the connection details of Postgres in the below field.
   postgres:
+    # host corresponds to the host name of postgres
     host: tyk-postgres-postgresql.tyk.svc
+    # port corresponds to the port of postgres
     port: 5432
+    # user corresponds to the user of postgres
     user: postgres
+    # password corresponds to the password of the given postgres user in selected database
     password:
+    # database corresponds to the database to be used in postgres
     database: tyk_analytics
+    # sslmode corresponds to if postgres runs in sslmode (https)
     sslmode: disable
 
     # Connection string can also be set using a secret. Provide the name of the secret and key below.
@@ -161,7 +168,7 @@ pump:
     enabled: false
 
     # type specifies type of the service.
-    type: NodePort
+    type: ClusterIP
 
     # port specifies the port exposed by the service.
     port: 9090
@@ -180,11 +187,11 @@ pump:
   # backend defines the pumps to be created by default, as an array of string.
   # Supported backends are:
   #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
-  #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
+  #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
   #   - "mongo-selective": Enables ONLY Mongo Selective
-  #   - "postgres": Enables Postgres Aggregate and SQL Pump
-  #   - "postgres-aggregate": Enables ONLY SQL Aggregate
-  #   - "postgres-pump": Enables ONLY SQL Pump
+  #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
+  #   - "postgres-aggregate": Enables ONLY SQL Aggregate AND SQL Graph Aggregate
+  #   - "postgres-pump": Enables ONLY SQL Pump AND SQL graph pump
   #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
   #   - "hybrid": Enables Hybrid Pump
   # If you would like to use other backends such as ElasticSearch, please
@@ -238,6 +245,16 @@ pump:
       podMonitorSelector:
         release: prometheus-stack
 
+  # sqlGraphPump configures values to be used to configure tyk sql graph pump.
+  sqlGraphPump:
+    # tableName is the name of the table that will be created and used by the sql graph pump
+    tableName: "tyk_analytics_graphs"
+
+  # mongoGraphPump configures values to be used to configure tyk mongo graph pump.
+  mongoGraphPump:
+    # collectionName is the name of the collection that will be created and used by the mongo graph pump
+    collectionName: "tyk_graph_analytics"
+
   # We usually recommend not to specify default resources and to leave this
   # as a conscious choice for the user. This also increases chances charts
   # run on environments with little resources, such as Minikube. If you do
@@ -280,17 +297,17 @@ pump:
   #   value: 30
   extraEnvs: []
 
-  ## extraVolumes is a list of volumes to be added to the pod
-  ## extraVolumes:
-  ##   - name: ca-certs
-  ##     secret:
-  ##       defaultMode: 420
-  ##       secretName: ca-certs
+  # extraVolumes is a list of volumes to be added to the pod
+  # extraVolumes:
+  #   - name: ca-certs
+  #     secret:
+  #       defaultMode: 420
+  #       secretName: ca-certs
   extraVolumes: []
 
-  ## extraVolumeMounts is a list of volume mounts to be added to the pod
-  ## extraVolumeMounts:
-  ##   - name: ca-certs
-  ##     mountPath: /etc/ssl/certs/ca-certs.crt
-  ##     readOnly: true
+  # extraVolumeMounts is a list of volume mounts to be added to the pod
+  # extraVolumeMounts:
+  #   - name: ca-certs
+  #     mountPath: /etc/ssl/certs/ca-certs.crt
+  #     readOnly: true
   extraVolumeMounts: []

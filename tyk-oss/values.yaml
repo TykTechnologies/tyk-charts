@@ -86,6 +86,9 @@ global:
     storage:
       database: 0
 
+  # hashKeys is used to enable/disable key hashing.
+  hashKeys: true
+
 tyk-gateway:
   ## Default values for tyk-gateway chart.
   ## This is a YAML-formatted file.
@@ -112,7 +115,9 @@ tyk-gateway:
       # This options allows you to skip verifying the TLS certificate. This is typically enabled when using self-signed certs.
       insecureSkipVerify: false
 
+      # certificatesMountPath corresponds to the mount path of the secret.
       certificatesMountPath: "/etc/certs/tyk-gateway"
+      # certificates is an array of strings, used to set TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
       certificates:
         - domain_name: "*"
           cert_file: "/etc/certs/tyk-gateway/tls.crt"
@@ -169,7 +174,7 @@ tyk-gateway:
 
     service:
       # type of service
-      type: NodePort
+      type: ClusterIP
 
       # external traffic policy of the service. Set it only if you are using LoadBalancer service type
       externalTrafficPolicy: Local
@@ -277,10 +282,10 @@ tyk-gateway:
       connectionTimeout: 1
       # Name of the resource that will be used to identify the resource.
       resourceName: tyk
-      # Type of the span processor to use
+      # Type of the span processor to use. Valid values are “simple” or “batch”.
       spanProcessorType: batch
-      # Type of the context propagator to use
-      contextPropogation: tracecontext
+      # Type of the context propagator to use. Valid values are "tracecontext" and "b3".
+      contextPropagation: tracecontext
       # TLS configuration for the exporter.
       tls:
         # Flag that can be used to enable TLS
@@ -315,19 +320,19 @@ tyk-gateway:
     #   value: "true"
     extraEnvs: []
 
-    ## extraVolumes is a list of volumes to be added to the pod
-    ## extraVolumes:
-    ##   - name: ca-certs
-    ##     secret:
-    ##       defaultMode: 420
-    ##       secretName: ca-certs
+    # extraVolumes is a list of volumes to be added to the pod
+    # extraVolumes:
+    #   - name: ca-certs
+    #     secret:
+    #       defaultMode: 420
+    #       secretName: ca-certs
     extraVolumes: []
 
-    ## extraVolumeMounts is a list of volume mounts to be added to the pod
-    ## extraVolumeMounts:
-    ##   - name: ca-certs
-    ##     mountPath: /etc/ssl/certs/ca-certs.crt
-    ##     readOnly: true
+    # extraVolumeMounts is a list of volume mounts to be added to the pod
+    # extraVolumeMounts:
+    #   - name: ca-certs
+    #     mountPath: /etc/ssl/certs/ca-certs.crt
+    #     readOnly: true
     extraVolumeMounts: []
 
 tyk-pump:
@@ -381,7 +386,7 @@ tyk-pump:
       enabled: false
 
       # type specifies type of the service.
-      type: NodePort
+      type: ClusterIP
 
       # port specifies the port exposed by the service.
       port: 9090
@@ -400,11 +405,11 @@ tyk-pump:
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
     #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
-    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
+    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
     #   - "mongo-selective": Enables ONLY Mongo Selective
-    #   - "postgres": Enables Postgres Aggregate and SQL Pump
-    #   - "postgres-aggregate": Enables ONLY SQL Aggregate
-    #   - "postgres-pump": Enables ONLY SQL Pump
+    #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
+    #   - "postgres-aggregate": Enables ONLY SQL Aggregate AND SQL Graph Aggregate
+    #   - "postgres-pump": Enables ONLY SQL Pump AND SQL graph pump
     #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
     #   - "hybrid": Enables Hybrid Pump
     # If you would like to use other backends such as ElasticSearch, please
@@ -448,6 +453,16 @@ tyk-pump:
         podMonitorSelector:
           release: prometheus-stack
 
+    # sqlGraphPump configures values to be used to configure tyk sql graph pump.
+    sqlGraphPump:
+      # tableName is the name of the table that will be created and used by the sql graph pump
+      tableName: "tyk_analytics_graphs"
+
+    # mongoGraphPump configures values to be used to configure tyk mongo graph pump.
+    mongoGraphPump:
+      # collectionName is the name of the collection that will be created and used by the mongo graph pump
+      collectionName: "tyk_graph_analytics"
+
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
     # run on environments with little resources, such as Minikube. If you do
@@ -490,17 +505,17 @@ tyk-pump:
     #   value: 30
     extraEnvs: []
 
-    ## extraVolumes is a list of volumes to be added to the pod
-    ## extraVolumes:
-    ##   - name: ca-certs
-    ##     secret:
-    ##       defaultMode: 420
-    ##       secretName: ca-certs
+    # extraVolumes is a list of volumes to be added to the pod
+    # extraVolumes:
+    #   - name: ca-certs
+    #     secret:
+    #       defaultMode: 420
+    #       secretName: ca-certs
     extraVolumes: []
 
-    ## extraVolumeMounts is a list of volume mounts to be added to the pod
-    ## extraVolumeMounts:
-    ##   - name: ca-certs
-    ##     mountPath: /etc/ssl/certs/ca-certs.crt
-    ##     readOnly: true
+    # extraVolumeMounts is a list of volume mounts to be added to the pod
+    # extraVolumeMounts:
+    #   - name: ca-certs
+    #     mountPath: /etc/ssl/certs/ca-certs.crt
+    #     readOnly: true
     extraVolumeMounts: []

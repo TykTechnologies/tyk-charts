@@ -1,0 +1,43 @@
+{{- if .Values.mdcb.ingress.enabled -}}
+{{- $fullName := printf "mdcb-svc-%s" (include "tyk-mdcb.fullname" .) -}}
+{{- $svcPort := .Values.mdcb.service.port -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "tyk-mdcb.labels" . | nindent 4 }}
+  {{- with .Values.mdcb.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.mdcb.ingress.className }}
+  ingressClassName: {{ .Values.mdcb.ingress.className }}
+  {{- end }}
+  {{- if .Values.mdcb.ingress.tls }}
+  tls:
+    {{- range .Values.mdcb.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.mdcb.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+          {{- end }}
+    {{- end }}
+{{- end }}

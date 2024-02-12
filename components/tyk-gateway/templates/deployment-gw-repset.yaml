@@ -74,7 +74,7 @@ spec:
         {{- end }}
         env:
           - name: TYK_GW_LISTENPORT
-            value: "{{ .Values.global.servicePorts.gateway }}"
+            value: "{{.Values.gateway.containerPort}}"
           {{ if .Values.gateway.useDashboardAppConfig.enabled }}
           - name: TYK_GW_USEDBAPPCONFIGS
             value: "true"
@@ -226,7 +226,11 @@ spec:
             value: "/mnt/tyk-gateway/policies/policies.json"
         {{- end}}
           - name: TYK_GW_HASHKEYS
-            value: "true"
+            {{- if .Values.global.hashKeys }}
+            value: {{ .Values.global.hashKeys | toString | quote }}
+            {{- else }}
+            value: {{ .Values.gateway.hashKeys | toString | quote }}
+            {{- end }}
           - name: TYK_GW_HASHKEYFUNCTION
             value: "{{ .Values.gateway.hashKeyFunction }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEWEBSOCKETS
@@ -277,7 +281,7 @@ spec:
           - name: TYK_GW_OPENTELEMETRY_SPANPROCESSORTYPE
             value: "{{ .Values.gateway.opentelemetry.spanProcessorType }}"
           - name: TYK_GW_OPENTELEMETRY_CONTEXTPROPAGATION
-            value: "{{ .Values.gateway.opentelemetry.contextPropogation }}"
+            value: "{{ .Values.gateway.opentelemetry.contextPropagation }}"
 
           {{- if (.Values.gateway.opentelemetry.tls).enabled }}
           - name: TYK_GW_OPENTELEMETRY_TLS_ENABLE
@@ -303,7 +307,7 @@ spec:
           - name: TYK_GW_OPENTELEMETRY_TLS_MAXVERSION
             value: "{{ .Values.gateway.opentelemetry.tls.maxVersion}}"
           - name: TYK_GW_OPENTELEMETRY_TLS_MINVERSION
-            value:  "{{ .Values.gateway.opentelemetry.tls.minVersion}}" 
+            value:  "{{ .Values.gateway.opentelemetry.tls.minVersion}}"
           {{- end }}
 
           - name: TYK_GW_OPENTELEMETRY_SAMPLING_TYPE
@@ -314,13 +318,22 @@ spec:
             value: "{{ .Values.gateway.opentelemetry.sampling.parentBased }}"
         {{- end }}
 
+        {{- if (.Values.global.mdcbSynchronizer).enabled}}
+          - name: TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED
+            value: "{{ .Values.global.mdcbSynchronizer.enabled }}"
+          {{- if (.Values.global.mdcbSynchronizer).keySpaceSyncInterval }}
+          - name: TYK_GW_SLAVEOPTIONS_KEYSPACESYNCINTERVAL
+            value: "{{ .Values.global.mdcbSynchronizer.keySpaceSyncInterval }}"
+          {{- end }}
+        {{- end }}
+
         {{- if .Values.gateway.extraEnvs }}
         {{- include "tyk-gateway.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
         command: ["/opt/tyk-gateway/tyk"]
         workingDir: /opt/tyk-gateway
         ports:
-        - containerPort: {{ .Values.global.servicePorts.gateway }}
+        - containerPort: {{ .Values.gateway.containerPort }}
         {{- if .Values.gateway.control.enabled }}
         - containerPort: {{ .Values.gateway.control.containerPort }}
         {{- end }}
@@ -349,7 +362,7 @@ spec:
             {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
             port: {{ .Values.gateway.control.containerPort }}
             {{- else }}
-            port: {{ .Values.global.servicePorts.gateway }}
+            port: {{ .Values.gateway.containerPort }}
             {{- end }}
           initialDelaySeconds: 5
           periodSeconds: 2
@@ -362,7 +375,7 @@ spec:
             {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
             port: {{ .Values.gateway.control.containerPort }}
             {{- else }}
-            port: {{ .Values.global.servicePorts.gateway }}
+            port: {{ .Values.gateway.containerPort }}
             {{- end }}
           initialDelaySeconds: 1
           periodSeconds: 10
