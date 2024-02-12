@@ -241,7 +241,7 @@ tyk-gateway:
         className: ""
 
         # annotations for ingress
-        annotations: { }
+        annotations: {}
 
         # ingress rules
         hosts:
