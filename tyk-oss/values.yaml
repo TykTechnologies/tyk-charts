@@ -198,6 +198,30 @@ tyk-gateway:
       # annotations for control port service
       annotations: {}
 
+      # control ingress
+      ingress:
+        # if enabled, creates an ingress resource for the gateway control
+        enabled: false
+
+        # specify ingress controller class name
+        className: ""
+
+        # annotations for ingress
+        annotations: { }
+
+        # ingress rules
+        hosts:
+          - host: chart-example-control-api-domain.local
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+
+        # tls configuration for ingress
+        #  - secretName: chart-example-tls
+        #    hosts:
+        #      - chart-example-different-domain-possible.local
+        tls: []
+
     # Creates an ingress object in k8s. Will require an ingress-controller and
     # annotation to that ingress controller.
     ingress:
