@@ -40,6 +40,9 @@ MDCB_OrgId=64cadf60173be900017xxxxx
 MDCB_ConnString=mere-xxxxxxx-hyb.aws-euw2.cloud-ara.tyk.io:443
 MDCB_GroupId=dc-uk-south
 
+helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+helm repo update
+
 helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --create-namespace --install --set image.tag=6.2.13
 
 helm upgrade hybrid-dp tyk-helm/tyk-data-plane -n $NAMESPACE --create-namespace \

@@ -28,6 +28,9 @@ Quick start using `tyk-oss` and Bitnami Redis chart
 NAMESPACE=tyk-oss
 APISecret=foo
 
+helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+helm repo update
+
 helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --create-namespace --install --set image.tag=6.2.13
 
 helm upgrade tyk-oss tyk-helm/tyk-oss -n $NAMESPACE --create-namespace \
