@@ -194,6 +194,13 @@ global:
     # For more details, please refer to https://tyk.io/docs/tyk-multi-data-centre/mdcb-configuration-options/#securityprivate_certificate_encoding_secret
     privateCertificateEncodingSecret: ""
 
+  # Enables validation of examples in the OAS spec. Defaults to false.
+  # It is used to set TYK_GW_OAS_VALIDATE_EXAMPLES and TYK_DB_OAS_VALIDATE_EXAMPLES
+  oasValidateExamples: false
+  # Enables validation of schema defaults in the OAS spec. Defaults to false.
+  # It is used to set TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS and TYK_DB_OAS_VALIDATE_SCHEMA_DEFAULTS
+  oasValidateSchemaDefaults: false
+
 tyk-gateway:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
   # Default value: tyk-gateway.name
@@ -206,12 +213,6 @@ tyk-gateway:
   gateway:
     # The hostname to bind the Gateway to.
     hostName: &gwHostName tyk-gw.local
-    # Enables validation of examples in the OAS spec. Defaults to false.
-    # It is used to set TYK_GW_OAS_VALIDATE_EXAMPLES
-    oasValidateExamples: false
-    # Enables validation of schema defaults in the OAS spec. Defaults to false.
-    # It is used to set TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
-    oasValidateSchemaDefaults: false
     # EnableLeakyBucketRateLimiter enables leaky bucket rate limiting.
     # LeakyBucket will delay requests so they are processed in a FIFO
     # style queue, ensuring a constant request rate and smoothing out
@@ -821,12 +822,7 @@ tyk-dashboard:
     # Enable support for users with the same email for multiple organisations
     # It is used to set TYK_DB_ENABLEMULTIORGUSERS
     enableMultiOrgUsers: true
-    # Enables validation of examples in the OAS spec. Defaults to false.
-    # It is used to set TYK_DB_OAS_VALIDATE_EXAMPLES
-    oasValidateExamples: false
-    # Enables validation of schema defaults in the OAS spec. Defaults to false.
-    # It is used to set TYK_DB_OAS_VALIDATE_SCHEMA_DEFAULTS
-    oasValidateSchemaDefaults: false
+
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1

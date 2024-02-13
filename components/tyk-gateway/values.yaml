@@ -113,15 +113,17 @@ global:
     # Disables SSL certificate verification
     sslInsecureSkipVerify: true
 
-gateway:
-  # The hostname to bind the Gateway to.
-  hostName: tyk-gw.local
   # Enables validation of examples in the OAS spec. Defaults to false.
   # It is used to set TYK_GW_OAS_VALIDATE_EXAMPLES
   oasValidateExamples: false
   # Enables validation of schema defaults in the OAS spec. Defaults to false.
   # It is used to set TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
   oasValidateSchemaDefaults: false
+
+gateway:
+  # The hostname to bind the Gateway to.
+  hostName: tyk-gw.local
+
   # EnableLeakyBucketRateLimiter enables leaky bucket rate limiting.
   # LeakyBucket will delay requests so they are processed in a FIFO
   # style queue, ensuring a constant request rate and smoothing out

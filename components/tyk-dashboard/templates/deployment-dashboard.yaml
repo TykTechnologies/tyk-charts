@@ -118,9 +118,9 @@ spec:
           - name: TYK_DB_LISTENPORT
             value: "{{ .Values.global.servicePorts.dashboard }}"
           - name: TYK_DB_OAS_VALIDATE_EXAMPLES
-            value: "{{ .Values.dashboard.oasValidateExamples }}"
+            value: "{{ .Values.global.oasValidateExamples }}"
           - name: TYK_DB_OAS_VALIDATE_SCHEMA_DEFAULTS
-            value: "{{ .Values.dashboard.oasValidateSchemaDefaults }}"
+            value: "{{ .Values.global.oasValidateSchemaDefaults }}"
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"

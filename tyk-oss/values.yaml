@@ -89,6 +89,13 @@ global:
   # hashKeys is used to enable/disable key hashing.
   hashKeys: true
 
+  # Enables validation of examples in the OAS spec. Defaults to false.
+  # It is used to set TYK_GW_OAS_VALIDATE_EXAMPLES
+  oasValidateExamples: false
+  # Enables validation of schema defaults in the OAS spec. Defaults to false.
+  # It is used to set TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
+  oasValidateSchemaDefaults: false
+
 tyk-gateway:
   ## Default values for tyk-gateway chart.
   ## This is a YAML-formatted file.
@@ -108,12 +115,7 @@ tyk-gateway:
   gateway:
     # The hostname to bind the Gateway to.
     hostName: tyk-gw.local
-    # Enables validation of examples in the OAS spec. Defaults to false.
-    # It is used to set TYK_GW_OAS_VALIDATE_EXAMPLES
-    oasValidateExamples: false
-    # Enables validation of schema defaults in the OAS spec. Defaults to false.
-    # It is used to set TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
-    oasValidateSchemaDefaults: false
+
     # EnableLeakyBucketRateLimiter enables leaky bucket rate limiting.
     # LeakyBucket will delay requests so they are processed in a FIFO
     # style queue, ensuring a constant request rate and smoothing out
