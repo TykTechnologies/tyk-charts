@@ -1,0 +1,24 @@
+{{- if and .Values.gateway.pdb .Values.gateway.pdb.enabled }}
+{{- if and .Values.gateway.pdb.minAvailable .Values.gateway.pdb.maxUnavailable }}
+{{- print "If gateway.pdb.minAvailable and gateway.pdb.maxUnavailable are set at the same time, minAvailable takes precedence." }}
+{{- end }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: gateway-{{ include "tyk-gateway.fullname" . }}
+  labels:
+    app: gateway-{{ include "tyk-gateway.fullname" . }}
+    chart: {{ include "tyk-gateway.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  {{- if .Values.gateway.pdb.minAvailable }}
+  minAvailable: {{ .Values.gateway.pdb.minAvailable }}
+  {{- else if .Values.gateway.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.gateway.pdb.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: gateway-{{ include "tyk-gateway.fullname" . }}
+      release: {{ .Release.Name }}
+{{- end}}
