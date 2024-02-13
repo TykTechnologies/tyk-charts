@@ -28,6 +28,9 @@ Quick start using `tyk-oss` and Bitnami Redis chart
 NAMESPACE=tyk-oss
 APISecret=foo
 
+helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+helm repo update
+
 helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --create-namespace --install --set image.tag=6.2.13
 
 helm upgrade tyk-oss tyk-helm/tyk-oss -n $NAMESPACE --create-namespace \
@@ -410,7 +413,8 @@ Add following under the `global` section in `values.yaml`:
     # mongo-go driver is supported for Tyk 5.0.2+.
     # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
     # For MongoDB versions prior to 4.4, please use the mgo driver.
-    driver: mgo
+    # Since Tyk 5.3 the default driver is mongo-go.
+    driver: mongo-go
 
     # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
     # Default value: false

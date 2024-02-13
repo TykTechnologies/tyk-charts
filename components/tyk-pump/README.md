@@ -130,7 +130,8 @@ Add following under the `global` section in `values.yaml`:
      # mongo-go driver is supported for Tyk 5.0.2+.
      # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
      # For MongoDB versions prior to 4.4, please use the mgo driver.
-      driver: mgo
+     # Since Pump 1.9 the default driver is mongo-go.
+      driver: mongo-go
 
       # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
       # Default value: false
