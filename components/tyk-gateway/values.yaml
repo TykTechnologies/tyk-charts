@@ -69,13 +69,13 @@ global:
     #   name: ""
     #   keyName: ""
 
-    # Setting this to true to use SSL when connecting to the DB.
+    # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
     useSSL: false
 
-    # Set this to `true` to tell Pump to ignore database's cert validation.
-    # Default value: false
-    sslInsecureSkipVerify: false
+    # Set this to `true` to tell Gateway to ignore database's cert validation.
+    # Default value: true
+    redisInsecureSkipVerify: true
 
     # Path to the CA file.
     sslCAFile: ""
@@ -90,22 +90,6 @@ global:
     # Path to the key file.
     sslKeyFile: "/etc/certs/tls.key"
 
-    # Maximum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
-    # Default value: 1.3
-    sslMaxVersion: "1.3"
-
-    # Minimum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
-    # Default value: 1.2
-    sslMinVersion: "1.2"    
-
-    # Deprecated: use useSSL instead.
-    # Default value: false
-    redisUseSSL: false
-
-    # Deprecated: use sslInsecureSkipVerify instead.
-    # Default value: false
-    redisInsecureSkipVerify: false
-
     # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
     # Default value: gw-tls-secret 
     secretName: "gw-tls-secret"
@@ -113,6 +97,14 @@ global:
     # Name of the volume where the secret will be mounted
     # Default value: gw-tls-secret-volume 
     volumeName: "gw-tls-secret-volume"
+
+    # Maximum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
+    # Default value: 1.3
+    sslMaxVersion: "1.3"
+
+    # Minimum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
+    # Default value: 1.2
+    sslMinVersion: "1.2"
 
     # If using "Redis Cluster" set enableCluster to true
     # (e.g. if using bitnami/redis-cluster)

@@ -65,7 +65,7 @@ spec:
             - name: {{ .Values.mdcb.tls.volumeName }}
               mountPath: {{ .Values.mdcb.tls.certificatesMountPath }}
             {{- end }}
-            {{- if or .Values.global.redis.useSSL .Values.global.redis.redisInsecureSkipVerify }}
+            {{- if and .Values.global.redis.volumeName .Values.global.redis.certificatesMountPath }}
             - name: {{ .Values.global.redis.volumeName }}
               mountPath: {{ .Values.global.redis.certificatesMountPath }}
             {{- end }}                    
@@ -89,24 +89,26 @@ spec:
               value: "{{ .Values.global.hashKeys }}"
 
             # Redis TLS configurations
+            {{- if .Values.global.redis.useSSL }}
             - name: TYK_MDCB_STORAGE_USESSL
               value: "{{ .Values.global.redis.useSSL }}"
-            - name: TYK_MDCB_STORAGE_SSLINSECURESKIPVERIFY
-              value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
-            - name: TYK_MDCB_STORAGE_SSLCAFILE
-              value: "{{ .Values.global.redis.sslCAFile }}"
-            - name: TYK_MDCB_STORAGE_SSLCERTFILE
-              value: "{{ .Values.global.redis.sslCertFile }}"
-            - name: TYK_MDCB_STORAGE_SSLKEYFILE
-              value: "{{ .Values.global.redis.sslKeyFile }}"
             - name: TYK_MDCB_STORAGE_SSLMAXVERSION
               value: "{{ .Values.global.redis.sslMaxVersion }}"
             - name: TYK_MDCB_STORAGE_SSLMINVERSION
-              value: "{{ .Values.global.redis.sslMinVersion }}" 
-            - name: TYK_MDCB_STORAGE_REDISUSESSL
-              value: "{{ .Values.global.redis.redisUseSSL }}"
-            - name: TYK_MDCB_STORAGE_REDISINSECURESKIPVERIFY
-              value: "{{ .Values.global.redis.redisInsecureSkipVerify }}" 
+              value: "{{ .Values.global.redis.sslMinVersion }}"
+            {{- end }}
+
+            {{- if .Values.global.redis.sslCAFile }}
+            - name: TYK_MDCB_STORAGE_SSLCAFILE
+              value: "{{ .Values.global.redis.sslCAFile }}"       
+            {{- end }} 
+
+            {{- if and .Values.global.redis.sslCertFile .Values.global.redis.sslKeyFile }}
+            - name: TYK_MDCB_STORAGE_SSLCERTFILE
+              value: "{{ .Values.global.redis.sslCertFile }}"
+            - name: TYK_MDCB_STORAGE_SSLKEYFILE
+              value: "{{ .Values.global.redis.sslKeyFile }}"         
+            {{- end }}                    
 
             {{- if .Values.mdcb.tls.useSSL }}
             - name: TYK_MDCB_SERVEROPTIONS_USESSL
@@ -171,7 +173,7 @@ spec:
           secret:
             secretName: {{ .Values.mdcb.tls.secretName }}
         {{- end }}
-        {{- if or .Values.global.redis.useSSL .Values.global.redis.redisInsecureSkipVerify }}
+        {{- if and  .Values.global.redis.volumeName  .Values.global.redis.secretName  }}
         - name: {{ .Values.global.redis.volumeName }}
           secret:
             secretName: {{ .Values.global.redis.secretName }}

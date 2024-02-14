@@ -229,25 +229,28 @@ spec:
             value: "{{ default "mongo-go" .Values.global.mongo.driver}}"
           {{ end }}
 
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISSSLINSECURESKIPVERIFY
+            value: "{{ .Values.global.redis.redisInsecureSkipVerify }}"  
+
           # Redis TLS configurations
-          - name: TYK_PMP_STORAGE_USESSL
-            value: "{{ .Values.global.redis.useSSL }}"
-          - name: TYK_PMP_STORAGE_SSLINSECURESKIPVERIFY
-            value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
-          - name: TYK_PMP_STORAGE_SSLCAFILE
-            value: "{{ .Values.global.redis.sslCAFile }}"
-          - name: TYK_PMP_STORAGE_SSLCERTFILE
-            value: "{{ .Values.global.redis.sslCertFile }}"
-          - name: TYK_PMP_STORAGE_SSLKEYFILE
-            value: "{{ .Values.global.redis.sslKeyFile }}"
-          - name: TYK_PMP_STORAGE_SSLMAXVERSION
+          {{- if .Values.global.redis.useSSL }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLMAXVERSION
             value: "{{ .Values.global.redis.sslMaxVersion }}"
-          - name: TYK_PMP_STORAGE_SSLMINVERSION
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLMINVERSION
             value: "{{ .Values.global.redis.sslMinVersion }}" 
-          - name: TYK_PMP_STORAGE_REDISUSESSL
-            value: "{{ .Values.global.redis.redisUseSSL }}"
-          - name: TYK_PMP_STORAGE_REDISINSECURESKIPVERIFY
-            value: "{{ .Values.global.redis.redisInsecureSkipVerify }}"     
+          {{- end }}
+
+          {{- if .Values.global.redis.sslCAFile }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLCAFILE
+            value: "{{ .Values.global.redis.sslCAFile }}"        
+          {{- end }}
+
+          {{- if and .Values.global.redis.sslCertFile .Values.global.redis.sslKeyFile }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLCERTFILE
+            value: "{{ .Values.global.redis.sslCertFile }}"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLKEYFILE
+            value: "{{ .Values.global.redis.sslKeyFile }}"         
+          {{- end }}                      
 
           # Uptime Pump configurations
           {{ if eq "disabled" (include "tyk-pump.uptimePump" .) }}
@@ -328,7 +331,7 @@ spec:
           {{- if .Values.pump.extraVolumeMounts }}
           {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
-          {{- if or .Values.global.redis.useSSL .Values.global.redis.redisInsecureSkipVerify }}
+          {{- if and .Values.global.redis.volumeName .Values.global.redis.certificatesMountPath }}
           - name: {{ .Values.global.redis.volumeName }}
             mountPath: {{ .Values.global.redis.certificatesMountPath }}
           {{- end }}          
@@ -342,7 +345,7 @@ spec:
         {{- if .Values.pump.extraVolumes }}
         {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
-        {{- if or .Values.global.redis.useSSL .Values.global.redis.redisInsecureSkipVerify }}
+        {{- if and .Values.global.redis.volumeName  .Values.global.redis.secretName }}
         - name: {{ .Values.global.redis.volumeName }}
           secret:
             secretName: {{ .Values.global.redis.secretName }}

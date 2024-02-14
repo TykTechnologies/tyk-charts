@@ -371,7 +371,7 @@ spec:
             mountPath: {{ .Values.gateway.tls.certificatesMountPath }}
           {{ end }}
 
-          {{- if or .Values.global.redis.useSSL .Values.global.redis.redisInsecureSkipVerify }}
+          {{- if and .Values.global.redis.volumeName .Values.global.redis.certificatesMountPath }}
           - name: {{ .Values.global.redis.volumeName }}
             mountPath: {{ .Values.global.redis.certificatesMountPath }}
           {{- end }}          
@@ -432,7 +432,7 @@ spec:
           secret:
             secretName: {{ .Values.gateway.opentelemetry.tls.certificateSecretName }}
         {{- end }}
-        {{- if or .Values.global.redis.useSSL .Values.global.redis.redisInsecureSkipVerify }}
+        {{- if and .Values.global.redis.secretName  .Values.global.redis.volumeName }}
         - name: {{ .Values.global.redis.volumeName }}
           secret:
             secretName: {{ .Values.global.redis.secretName }}
