@@ -69,8 +69,7 @@ spec:
             {{- with .Values.global.redis }}
             {{- if and .useSSL .volumeName .certificatesMountPath }}
             - name: {{ .volumeName }}
-              secret:
-                mountPath: {{ .certificatesMountPath }}
+              mountPath: {{ .certificatesMountPath }}
             {{- end }}
             {{- end }}
 
