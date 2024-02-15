@@ -104,7 +104,7 @@ spec:
             value: "{{ .Values.gateway.enableLeakyBucketRateLimiter }}"
 
           - name: TYK_GW_STORAGE_SSLINSECURESKIPVERIFY
-            value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
+            value: "{{ default "true" .Values.global.redis.sslInsecureSkipVerify }}"
           
           # Redis TLS configurations
           {{- if .Values.global.redis.useSSL }}
@@ -119,12 +119,14 @@ spec:
             value: "{{ .Values.global.redis.sslCAFile }}"
           {{- end }}
 
-          {{- if and .Values.global.redis.sslCertFile .Values.global.redis.sslKeyFile }}
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .sslCertFile .sslKeyFile }}
           - name: TYK_GW_STORAGE_SSLCERTFILE
-            value: "{{ .Values.global.redis.sslCertFile }}"
+            value: "{{ .sslCertFile }}"
           - name: TYK_GW_STORAGE_SSLKEYFILE
-            value: "{{ .Values.global.redis.sslKeyFile }}"            
+            value: "{{ .sslKeyFile }}"  
           {{- end }}
+          {{- end }}            
 
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
@@ -371,10 +373,13 @@ spec:
             mountPath: {{ .Values.gateway.tls.certificatesMountPath }}
           {{ end }}
 
-          {{- if and .Values.global.redis.volumeName .Values.global.redis.certificatesMountPath }}
-          - name: {{ .Values.global.redis.volumeName }}
-            mountPath: {{ .Values.global.redis.certificatesMountPath }}
-          {{- end }}          
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .volumeName .certificatesMountPath }}
+          - name: {{ .volumeName }}
+            secret:
+              mountPath: {{ .certificatesMountPath }}
+          {{- end }}
+          {{- end }}         
 
           {{- if (.Values.gateway.opentelemetry.tls).certificateSecretName}}
           - name: {{.Values.gateway.opentelemetry.tls.certificateSecretName}}
@@ -432,8 +437,10 @@ spec:
           secret:
             secretName: {{ .Values.gateway.opentelemetry.tls.certificateSecretName }}
         {{- end }}
-        {{- if and .Values.global.redis.secretName  .Values.global.redis.volumeName }}
-        - name: {{ .Values.global.redis.volumeName }}
+        {{- with .Values.global.redis }}
+        {{- if and .useSSL .secretName .volumeName }}
+        - name: {{ .volumeName }}
           secret:
-            secretName: {{ .Values.global.redis.secretName }}
+            secretName: {{ .secretName }}
+        {{- end }}
         {{- end }}

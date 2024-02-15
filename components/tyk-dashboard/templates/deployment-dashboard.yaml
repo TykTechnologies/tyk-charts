@@ -155,9 +155,6 @@ spec:
 
           - name: TYK_DB_REDISADDRS
             value: {{ include "tyk-dashboard.redis_url" . | quote }}
-
-          - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
-            value: "{{ .Values.global.redis.sslInsecureSkipVerify }}" 
         
           {{- if .Values.global.redis.useSSL }}
           - name: TYK_DB_REDISSSLMAXVERSION
@@ -171,12 +168,14 @@ spec:
             value: "{{ .Values.global.redis.sslCAFile }}"         
           {{- end }}
 
-          {{- if and .Values.global.redis.sslCertFile .Values.global.redis.sslKeyFile }}
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .sslCertFile .sslKeyFile }}
           - name: TYK_DB_REDISSSLCERTFILE
-            value: "{{ .Values.global.redis.sslCertFile }}"
+            value: "{{ .sslCertFile }}"
           - name: TYK_DB_REDISSSLKEYFILE
-            value: "{{ .Values.global.redis.sslKeyFile }}"          
-          {{- end }}                                                                                                    
+            value: "{{ .sslKeyFile }}"   
+          {{- end }}
+          {{- end }}                                                                                                             
           
           - name: TYK_DB_ENABLECLUSTER
             value: "{{ default "false" .Values.global.redis.enableCluster }}"
@@ -188,7 +187,7 @@ spec:
           - name: TYK_DB_REDISUSESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
-            value: "true"
+            value: "{{ default "true" .Values.global.redis.sslInsecureSkipVerify }}"
 
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.global.tls.dashboard }}"
@@ -259,10 +258,14 @@ spec:
         ports:
         - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
-          {{- if and  .Values.global.redis.volumeName  .Values.global.redis.certificatesMountPath  }}
-          - name: {{ .Values.global.redis.volumeName }}
-            mountPath: {{ .Values.global.redis.certificatesMountPath }}
-          {{- end }}        
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .volumeName .certificatesMountPath }}
+          - name: {{ .volumeName }}
+            secret:
+              mountPath: {{ .certificatesMountPath }}
+          {{- end }}
+          {{- end }} 
+      
           {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
           - name: analytics-conf
             mountPath: /etc/tyk-dashboard
@@ -297,11 +300,14 @@ spec:
       {{- toYaml .Values.dashboard.securityContext | nindent 10 }}
       {{- end }}
       volumes:
-        {{- if and .Values.global.redis.secretName  .Values.global.redis.volumeName }}
-        - name: {{ .Values.global.redis.volumeName }}
+        {{- with .Values.global.redis }}
+        {{- if and .useSSL .secretName .volumeName }}
+        - name: {{ .volumeName }}
           secret:
-            secretName: {{ .Values.global.redis.secretName }}
+            secretName: {{ .secretName }}
         {{- end }}
+        {{- end }}   
+
         {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
         - name: analytics-conf
           emptyDir: {}

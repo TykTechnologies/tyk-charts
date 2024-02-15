@@ -112,8 +112,8 @@ global:
     useSSL: false
 
     # Set this to `true` to tell Dashboard to ignore database's cert validation.
-    # Default value: false
-    sslInsecureSkipVerify: false
+    # Default value: true
+    sslInsecureSkipVerify: true
 
     # Path to the CA file.
     sslCAFile: ""

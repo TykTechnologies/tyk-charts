@@ -230,7 +230,7 @@ spec:
           {{ end }}
 
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISSSLINSECURESKIPVERIFY
-            value: "{{ .Values.global.redis.redisInsecureSkipVerify }}"  
+            value: "{{ default "true" .Values.global.redis.sslInsecureSkipVerify }}"  
 
           # Redis TLS configurations
           {{- if .Values.global.redis.useSSL }}
@@ -245,12 +245,14 @@ spec:
             value: "{{ .Values.global.redis.sslCAFile }}"        
           {{- end }}
 
-          {{- if and .Values.global.redis.sslCertFile .Values.global.redis.sslKeyFile }}
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .sslCertFile .sslKeyFile }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLCERTFILE
-            value: "{{ .Values.global.redis.sslCertFile }}"
+            value: "{{ .sslCertFile }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLKEYFILE
-            value: "{{ .Values.global.redis.sslKeyFile }}"         
-          {{- end }}                      
+            value: "{{ .sslKeyFile }}"   
+          {{- end }}
+          {{- end }}                                 
 
           # Uptime Pump configurations
           {{ if eq "disabled" (include "tyk-pump.uptimePump" .) }}
@@ -331,10 +333,15 @@ spec:
           {{- if .Values.pump.extraVolumeMounts }}
           {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
-          {{- if and .Values.global.redis.volumeName .Values.global.redis.certificatesMountPath }}
-          - name: {{ .Values.global.redis.volumeName }}
-            mountPath: {{ .Values.global.redis.certificatesMountPath }}
-          {{- end }}          
+
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .volumeName .certificatesMountPath }}
+          - name: {{ .volumeName }}
+            secret:
+              mountPath: {{ .certificatesMountPath }}
+          {{- end }}
+          {{- end }}
+
         resources:
 {{ toYaml .Values.pump.resources | indent 12 }}
       {{- if .Values.pump.securityContext }}
@@ -345,8 +352,10 @@ spec:
         {{- if .Values.pump.extraVolumes }}
         {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
-        {{- if and .Values.global.redis.volumeName  .Values.global.redis.secretName }}
-        - name: {{ .Values.global.redis.volumeName }}
+        {{- with .Values.global.redis }}
+        {{- if and .useSSL .secretName .volumeName }}
+        - name: {{ .volumeName }}
           secret:
-            secretName: {{ .Values.global.redis.secretName }}
-        {{- end }}        
+            secretName: {{ .secretName }}
+        {{- end }}
+        {{- end }}              
