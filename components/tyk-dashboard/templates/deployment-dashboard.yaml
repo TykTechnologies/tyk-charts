@@ -72,12 +72,12 @@ spec:
             value: "{{ .Values.dashboard.defaultPageSize }}"
           - name: "TYK_DB_NOTIFYONCHANGE"
             value: "{{ .Values.dashboard.notifyOnChange }}"
-          - name: "TYK_DB_HASHKEYS"
-            {{- if .Values.global.hashKeys  }}
-            value: {{ .Values.global.hashKeys | quote }}
-            {{- else }}
+          - name: "TYK_DB_HASHKEYS"            
+          {{- if .Values.dashboard.hashKeys }}
             value: {{ .Values.dashboard.hashKeys | quote }}
-            {{- end }}
+          {{- else }}   
+            value: {{ .Values.global.hashKeys | quote }}         
+          {{- end }}   
           - name: "TYK_DB_ENABLEDUPLICATESLUGS"
             value: "{{ .Values.dashboard.enableDuplicateSlugs }}"
           - name: "TYK_DB_SHOWORGID"
