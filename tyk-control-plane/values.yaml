@@ -197,6 +197,12 @@ global:
     # they are uploaded via certificate storage.
     # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
     privateCertificateEncodingSecret: ""
+  # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
+  # The Dashboard and MDCB will now operate in a mode that is compatible with key hashing.
+  # This takes precedence over the dashboard value i.e `dashboard.hashKeys`
+  # It is used to set TYK_DB_HASHKEYS and TYK_MDCB_HASHKEYS
+  # It will enable hashkeys in both mdcb and dashboard.
+  hashKeys: true
 
   # Enables validation of examples in the OAS spec. Defaults to false.
   # It is used to set TYK_GW_OAS_VALIDATE_EXAMPLES and TYK_DB_OAS_VALIDATE_EXAMPLES

@@ -119,6 +119,9 @@ global:
   # Enables validation of schema defaults in the OAS spec. Defaults to false.
   # It is used to set TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
   oasValidateSchemaDefaults: false
+  # hashKeys is used to enable/disable key hashing.
+  # It is used to set TYK_GW_HASHKEYS
+  hashKeys: true
 
 gateway:
   # The hostname to bind the Gateway to.
