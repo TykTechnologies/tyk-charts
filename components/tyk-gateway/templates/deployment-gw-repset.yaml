@@ -231,11 +231,7 @@ spec:
             value: "/mnt/tyk-gateway/policies/policies.json"
         {{- end}}
           - name: TYK_GW_HASHKEYS
-          {{- if eq .Values.global.hashKeys nil }}
-            value: {{ .Values.gateway.hashKeys | quote }}
-          {{- else }}
             value: {{ .Values.global.hashKeys | quote }}
-          {{- end }}
           - name: TYK_GW_HASHKEYFUNCTION
             value: "{{ .Values.gateway.hashKeyFunction }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEWEBSOCKETS

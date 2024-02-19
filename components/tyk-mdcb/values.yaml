@@ -88,10 +88,6 @@ global:
     # then this value should be omitted or explicitly set to 0.
     storage:
       database: 0
-    
-  # Set to true if you are using a hashed configuration installation of Tyk, otherwise set to false.
-  # It is used to set TYK_MDCB_HASHKEYS
-  hashKeys: true    
 
   mdcbSynchronizer:
     # Enable the MDCB Synchroniser
