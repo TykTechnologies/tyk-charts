@@ -116,7 +116,7 @@ global:
     sslInsecureSkipVerify: true
 
     # Path to the CA file.
-    sslCAFile: ""
+    sslCAFile: "/etc/certs/CA.crt"
 
     # The Volume mount path
     # Default value: /etc/certs 

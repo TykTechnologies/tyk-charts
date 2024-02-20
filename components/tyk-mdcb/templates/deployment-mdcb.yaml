@@ -100,10 +100,12 @@ spec:
               value: "{{ .Values.global.redis.sslMinVersion }}"
             {{- end }}
 
-            {{- if .Values.global.redis.sslCAFile }}
+            {{- with .Values.global.redis }}
+            {{- if and .useSSL .sslCAFile }}
             - name: TYK_MDCB_STORAGE_REDISSSLCAFILE
-              value: "{{ .Values.global.redis.sslCAFile }}"       
-            {{- end }} 
+              value: "{{ .sslCAFile }}"  
+            {{- end }}
+            {{- end }}              
 
             {{- with .Values.global.redis }}
             {{- if and .useSSL .sslCertFile .sslKeyFile }}

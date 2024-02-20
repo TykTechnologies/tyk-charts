@@ -240,10 +240,12 @@ spec:
             value: "{{ .Values.global.redis.sslMinVersion }}" 
           {{- end }}
 
-          {{- if .Values.global.redis.sslCAFile }}
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .sslCAFile }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLCAFILE
-            value: "{{ .Values.global.redis.sslCAFile }}"        
+            value: "{{ .sslCAFile }}"
           {{- end }}
+          {{- end }}          
 
           {{- with .Values.global.redis }}
           {{- if and .useSSL .sslCertFile .sslKeyFile }}

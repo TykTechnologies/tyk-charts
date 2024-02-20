@@ -74,15 +74,16 @@ global:
     useSSL: false
 
     # Set this to `true` to tell Gateway to ignore database's cert validation.
+    # This should also be set to true if you're using a self signed certificate.
     # Default value: true
-    redisInsecureSkipVerify: true
-
-    # Path to the CA file.
-    sslCAFile: ""
+    sslInsecureSkipVerify: true
 
     # The Volume mount path
     # Default value: /etc/certs 
-    certificatesMountPath: "/etc/certs"    
+    certificatesMountPath: "/etc/certs"  
+
+    # Path to the CA file.
+    sslCAFile: "/etc/certs/CA.crt"  
 
     # Path to the cert file.
     sslCertFile: "/etc/certs/tls.crt"  

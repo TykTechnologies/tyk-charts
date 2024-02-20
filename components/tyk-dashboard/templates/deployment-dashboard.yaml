@@ -163,10 +163,12 @@ spec:
             value: "{{ .Values.global.redis.sslMinVersion }}"  
           {{- end}}  
 
-          {{- if .Values.global.redis.sslCAFile }}
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .sslCAFile }}
           - name: TYK_DB_REDISSSLCAFILE
-            value: "{{ .Values.global.redis.sslCAFile }}"         
+            value: "{{ .sslCAFile }}"   
           {{- end }}
+          {{- end }}            
 
           {{- with .Values.global.redis }}
           {{- if and .useSSL .sslCertFile .sslKeyFile }}
@@ -187,7 +189,7 @@ spec:
           - name: TYK_DB_REDISUSESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
-            value: "{{ default "true" .Values.global.redis.sslInsecureSkipVerify }}"
+            value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
 
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.global.tls.dashboard }}"

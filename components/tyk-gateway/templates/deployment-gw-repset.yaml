@@ -104,26 +104,28 @@ spec:
             value: "{{ .Values.gateway.enableLeakyBucketRateLimiter }}"
 
           - name: TYK_GW_STORAGE_SSLINSECURESKIPVERIFY
-            value: "{{ default "true" .Values.global.redis.sslInsecureSkipVerify }}"
+            value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
           
           # Redis TLS configurations
           {{- if .Values.global.redis.useSSL }}
-          - name: TYK_GW_STORAGE_SSLMAXVERSION
+          - name: TYK_GW_STORAGE_MAXVERSION
             value: "{{ .Values.global.redis.sslMaxVersion }}"
-          - name: TYK_GW_STORAGE_SSLMINVERSION
+          - name: TYK_GW_STORAGE_MINVERSION
             value: "{{ .Values.global.redis.sslMinVersion }}"
           {{- end }}
 
-          {{- if .Values.global.redis.sslCAFile }}
-          - name: TYK_GW_STORAGE_SSLCAFILE
-            value: "{{ .Values.global.redis.sslCAFile }}"
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .sslCAFile }}
+          - name: TYK_GW_STORAGE_CAFILE
+            value: "{{ .sslCAFile }}"
           {{- end }}
+          {{- end }}          
 
           {{- with .Values.global.redis }}
           {{- if and .useSSL .sslCertFile .sslKeyFile }}
-          - name: TYK_GW_STORAGE_SSLCERTFILE
+          - name: TYK_GW_STORAGE_CERTFILE
             value: "{{ .sslCertFile }}"
-          - name: TYK_GW_STORAGE_SSLKEYFILE
+          - name: TYK_GW_STORAGE_KEYFILE
             value: "{{ .sslKeyFile }}"  
           {{- end }}
           {{- end }}            
