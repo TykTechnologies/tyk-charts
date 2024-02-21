@@ -58,7 +58,7 @@ spec:
       {{- end }}
       initContainers:
       - name: "setup-directories"
-        image: busybox:1.32
+        image: "{{ .Values.gateway.initContainers.setupDirectories.repository }}:{{ .Values.gateway.initContainers.setupDirectories.tag }}"
         command: ['sh','-c','mkdir -p apps middleware policies && touch policies/policies.json']
         workingDir: /mnt/tyk-gateway
         volumeMounts:

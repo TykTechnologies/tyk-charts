@@ -219,6 +219,12 @@ tyk-gateway:
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
 
+    initContainers:
+      # image configuration for the initContainer that setups up the tyk directory structure
+      setupDirectories:
+        repository: busybox
+        tag: 1.32
+
     # image pull secrets to use when pulling images from repository
     imagePullSecrets: []
 
