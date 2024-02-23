@@ -130,6 +130,9 @@ global:
   # It is used to set TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS and TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
   oasValidateSchemaDefaults: false
 
+  # Set to true if you are using a hashed configuration installation of Tyk, otherwise set to false.
+  hashKeys: true
+
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
