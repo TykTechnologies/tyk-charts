@@ -52,8 +52,8 @@ global:
     # addrs:
     #   Example using tyk simple redis chart
     #   - redis.tyk.svc:6379
-    #   Example using bitnami/redis
-    #   - tyk-redis-master.tyk.svc:6379
+    # Example using bitnami/redis
+    # - tyk-redis-master.tyk.svc:6379
     #   Example using bitnami/redis with sentinel
     #   - tyk-redis.tyk.svc:26379
     #   Example using bitnami/redis-cluster
@@ -79,17 +79,17 @@ global:
     sslInsecureSkipVerify: true
 
     # The Volume mount path
-    # Default value: /etc/certs 
-    certificatesMountPath: "/etc/certs"  
+    # Default value: /tls 
+    certificatesMountPath: "/tls"  
 
     # Path to the CA file.
-    sslCAFile: "/etc/certs/CA.crt"  
+    sslCAFile: "/tls/ca.crt"  
 
     # Path to the cert file.
-    sslCertFile: "/etc/certs/tls.crt"  
+    sslCertFile: "/tls/redis.crt"  
 
     # Path to the key file.
-    sslKeyFile: "/etc/certs/tls.key"
+    sslKeyFile: "/tls/redis.key"
 
     # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
     # Default value: gw-tls-secret 

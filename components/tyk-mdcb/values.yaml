@@ -73,17 +73,17 @@ global:
     useSSL: false
 
     # Path to the CA file.
-    sslCAFile: "/etc/certs/CA.crt"
+    sslCAFile: "/etc/certs/ca.crt"
 
     # The Volume mount path
     # Default value: /etc/certs 
     certificatesMountPath: "/etc/certs"    
 
     # Path to the cert file.
-    sslCertFile: "/etc/certs/tls.crt"  
+    sslCertFile: "/etc/certs/redis.crt"  
 
     # Path to the key file.
-    sslKeyFile: "/etc/certs/tls.key"
+    sslKeyFile: "/etc/certs/redis.key"
 
     # Maximum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
     # Default value: 1.3
