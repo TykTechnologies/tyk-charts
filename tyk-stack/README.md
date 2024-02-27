@@ -381,16 +381,16 @@ global:
   mongo:
     connectionURLSecret:
        name: "yourSecret"
-       keyName: "redisPassKey"
+       keyName: "mongoConnectionURLkey"
 ```
 
 - Postgres:
 ```yaml
 global:
   postgres:
-    connectionURLSecret:
+    connectionStringSecret:
        name: "yourSecret"
-       keyName: "redisPassKey"
+       keyName: "postgreConnectionURLkey"
 ```
 
 ### Gateway Configurations
