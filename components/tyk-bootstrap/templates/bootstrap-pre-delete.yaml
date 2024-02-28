@@ -29,7 +29,9 @@ spec:
         {{ toYaml .Values.bootstrap.podAnnotations.preDeletePodAnnotations | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: k8s-bootstrap-role
+    {{- if and .Values.bootstrap .Values.global.serviceAccountName }}
+      serviceAccountName: "{{ .Values.global.serviceAccountName }}"
+    {{- end }}
       containers:
         - name: bootstrap-tyk-pre-delete
           image: {{ .Values.bootstrap.jobs.preDelete.image.repository }}:{{ .Values.bootstrap.jobs.preDelete.image.tag }}

@@ -25,7 +25,9 @@ spec:
         {{ toYaml .Values.bootstrap.podAnnotations.preInstallPodAnnotations | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: k8s-bootstrap-role
+    {{- if and .Values.bootstrap .Values.global.serviceAccountName }}
+      serviceAccountName: "{{ .Values.global.serviceAccountName }}"
+    {{- end }}
       containers:
         - name: bootstrap-tyk-pre-install
           image: {{ .Values.bootstrap.jobs.preInstall.image.repository }}:{{ .Values.bootstrap.jobs.preInstall.image.tag }}

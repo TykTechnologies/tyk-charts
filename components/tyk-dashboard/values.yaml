@@ -151,6 +151,8 @@ global:
   # It is used to set TYK_DB_HASHKEYS
   hashKeys: true
 
+  serviceAccountName: ""
+
 dashboard:
   # This is the URL of your Tyk Gateway node, which is used to set TYK_DB_TYKAPI_HOST.
   # The Dashboard controls Tyk using the Gateway API and only requires visibility to one node. In a sharded environment,

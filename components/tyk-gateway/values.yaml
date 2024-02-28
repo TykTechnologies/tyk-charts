@@ -123,6 +123,8 @@ global:
   # It is used to set TYK_GW_HASHKEYS
   hashKeys: true
 
+  serviceAccountName: ""
+
 gateway:
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
