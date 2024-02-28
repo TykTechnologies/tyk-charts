@@ -154,14 +154,6 @@ tyk-gateway:
     # The hostname to bind the Gateway to.
     hostName: tyk-gw.local
 
-    # EnableLeakyBucketRateLimiter enables leaky bucket rate limiting.
-    # LeakyBucket will delay requests so they are processed in a FIFO
-    # style queue, ensuring a constant request rate and smoothing out
-    # traffic spikes. This comes at some cost to gateway instances, as
-    # the connections would be held for a longer time, instead of
-    # blocking the requests when they go over the defined rate limits.
-    enableLeakyBucketRateLimiter: false
-
     tls:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
       secretName: tyk-default-tls-secret
