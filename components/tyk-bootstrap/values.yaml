@@ -52,6 +52,9 @@ global:
     useSecretName: ""
     devPortal: tyk-dev-portal-conf
 
+  # The default name for the sa is k8s-bootstrap-role
+  serviceAccountName: "k8s-bootstrap-role"
+
 bootstrap:
   # Trigger to control if we want to bootstrap the Developer Portal component using tyk-bootstrap
   devPortal: true

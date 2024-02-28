@@ -41,6 +41,9 @@ global:
     # - TYK_ORG: Tyk Dashboard Organisation ID
     # - TYK_AUTH: Tyk Dashboard API Access Credentials
     devPortal: tyk-dev-portal-conf
+  
+  # Service account should be manually created
+  serviceAccountName: ""
 
 # Sensitive configuration of Portal could be set using k8s secret
 # You can set following fields:

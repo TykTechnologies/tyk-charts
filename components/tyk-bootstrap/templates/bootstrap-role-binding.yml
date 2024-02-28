@@ -1,4 +1,4 @@
-{{- if .Values.bootstrap -}}
+{{- if and .Values.bootstrap .Values.global.serviceAccountName -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -9,7 +9,7 @@ metadata:
     helm.sh/hook-weight: "-10"
 subjects:
 - kind: ServiceAccount
-  name: k8s-bootstrap-role
+  name: "{{ .Values.global.serviceAccountName }}"
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role

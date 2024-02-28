@@ -41,6 +41,9 @@ spec:
         app: gateway-{{ include "tyk-gateway.fullname" . }}
         release: {{ .Release.Name }}
     spec:
+    {{- if .Values.global.serviceAccountName }}
+      serviceAccountName: "{{ .Values.global.serviceAccountName }}"
+    {{- end }}    
 {{- if .Values.gateway.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.gateway.nodeSelector | indent 8 }}
