@@ -311,3 +311,7 @@ pump:
   #     mountPath: /etc/ssl/certs/ca-certs.crt
   #     readOnly: true
   extraVolumeMounts: []
+
+  # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
+  # If a service account is to be used for Tyk Pump, it should be manually created
+  serviceAccountName: ""

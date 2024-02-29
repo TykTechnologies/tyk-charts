@@ -30,6 +30,9 @@ spec:
         app: {{ include "tyk-dev-portal.fullname" . }}
         release: {{ .Release.Name }}
     spec:
+    {{- if .Values.serviceAccountName }}
+      serviceAccountName: "{{ .Values.serviceAccountName }}"
+    {{- end }}      
 {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
