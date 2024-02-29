@@ -99,6 +99,33 @@ spec:
             value: "{{ .Values.global.oasValidateExamples }}"
           - name: TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
             value: "{{ .Values.global.oasValidateSchemaDefaults }}"
+
+          - name: TYK_GW_ENABLE_LEAKY_BUCKET_RATE_LIMITER
+            value: "{{ .Values.gateway.enableLeakyBucketRateLimiter }}"
+
+          - name: TYK_GW_STORAGE_SSLINSECURESKIPVERIFY
+            value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
+          
+          # Redis TLS configurations
+          {{- if .Values.global.redis.useSSL }}
+          - name: TYK_GW_STORAGE_SSLMAXVERSION
+            value: "{{ .Values.global.redis.sslMaxVersion }}"
+          - name: TYK_GW_STORAGE_SSLMINVERSION
+            value: "{{ .Values.global.redis.sslMinVersion }}"
+          {{- end }}
+
+          {{- if .Values.global.redis.sslCAFile }}
+          - name: TYK_GW_STORAGE_SSLCAFILE
+            value: "{{ .Values.global.redis.sslCAFile }}"
+          {{- end }}
+
+          {{- if and .Values.global.redis.sslCertFile .Values.global.redis.sslKeyFile }}
+          - name: TYK_GW_STORAGE_SSLCERTFILE
+            value: "{{ .Values.global.redis.sslCertFile }}"
+          - name: TYK_GW_STORAGE_SSLKEYFILE
+            value: "{{ .Values.global.redis.sslKeyFile }}"            
+          {{- end }}
+
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
@@ -344,6 +371,11 @@ spec:
             mountPath: {{ .Values.gateway.tls.certificatesMountPath }}
           {{ end }}
 
+          {{- if or .Values.global.redis.useSSL .Values.global.redis.redisInsecureSkipVerify }}
+          - name: {{ .Values.global.redis.volumeName }}
+            mountPath: {{ .Values.global.redis.certificatesMountPath }}
+          {{- end }}          
+
           {{- if (.Values.gateway.opentelemetry.tls).certificateSecretName}}
           - name: {{.Values.gateway.opentelemetry.tls.certificateSecretName}}
             mountPath: "/etc/ssl/certs/"
@@ -399,4 +431,9 @@ spec:
         - name: {{ .Values.gateway.opentelemetry.tls.certificateSecretName }}
           secret:
             secretName: {{ .Values.gateway.opentelemetry.tls.certificateSecretName }}
+        {{- end }}
+        {{- if or .Values.global.redis.useSSL .Values.global.redis.redisInsecureSkipVerify }}
+        - name: {{ .Values.global.redis.volumeName }}
+          secret:
+            secretName: {{ .Values.global.redis.secretName }}
         {{- end }}

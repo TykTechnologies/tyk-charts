@@ -155,6 +155,26 @@ spec:
 
           - name: TYK_DB_REDISADDRS
             value: {{ include "tyk-dashboard.redis_url" . | quote }}
+
+          - name: TYK_DB_STORAGE_REDISUSESSL
+            value: "{{ .Values.global.redis.useSSL }}"
+          - name: TYK_DB_STORAGE_REDISSSLINSECURESKIPVERIFY
+            value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
+          - name: TYK_DB_STORAGE_REDISSSLCAFILE
+            value: "{{ .Values.global.redis.sslCAFile }}"
+          - name: TYK_DB_STORAGE_REDISSSLCERTFILE
+            value: "{{ .Values.global.redis.sslCertFile }}"
+          - name: TYK_DB_STORAGE_REDISSSLKEYFILE
+            value: "{{ .Values.global.redis.sslKeyFile }}"
+          - name: TYK_DB_STORAGE_REDISSSLMAXVERSION
+            value: "{{ .Values.global.redis.sslMaxVersion }}"
+          - name: TYK_DB_STORAGE_REDISSSLMINVERSION
+            value: "{{ .Values.global.redis.sslMinVersion }}" 
+          - name: TYK_DB_STORAGE_REDISUSESSL
+            value: "{{ .Values.global.redis.redisUseSSL }}"
+          - name: TYK_DB_STORAGE_REDISINSECURESKIPVERIFY
+            value: "{{ .Values.global.redis.redisInsecureSkipVerify }}"                                                                                               
+          
           - name: TYK_DB_ENABLECLUSTER
             value: "{{ default "false" .Values.global.redis.enableCluster }}"
           - name: TYK_DB_REDISPASSWORD
@@ -236,6 +256,10 @@ spec:
         ports:
         - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
+          {{- if or .Values.global.redis.useSSL .Values.global.redis.redisInsecureSkipVerify }}
+          - name: {{ .Values.global.redis.volumeName }}
+            mountPath: {{ .Values.global.redis.certificatesMountPath }}
+          {{- end }}        
           {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
           - name: analytics-conf
             mountPath: /etc/tyk-dashboard
@@ -270,6 +294,11 @@ spec:
       {{- toYaml .Values.dashboard.securityContext | nindent 10 }}
       {{- end }}
       volumes:
+        {{- if or .Values.global.redis.useSSL .Values.global.redis.redisInsecureSkipVerify }}
+        - name: {{ .Values.global.redis.volumeName }}
+          secret:
+            secretName: {{ .Values.global.redis.secretName }}
+        {{- end }}
         {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
         - name: analytics-conf
           emptyDir: {}
