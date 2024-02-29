@@ -123,8 +123,6 @@ global:
   # It is used to set TYK_GW_HASHKEYS
   hashKeys: true
 
-  serviceAccountName: ""
-
 gateway:
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
@@ -422,3 +420,7 @@ gateway:
   # hashKeys is used to enable/disable key hashing.
   # It is used to set TYK_GW_HASHKEYS
   hashKeys: true
+
+  # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
+  # If a service account is to be used for Tyk Gateway, it should be manually created
+  serviceAccountName: ""

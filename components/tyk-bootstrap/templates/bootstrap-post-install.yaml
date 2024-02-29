@@ -26,9 +26,7 @@ spec:
         {{ toYaml .Values.bootstrap.podAnnotations.postInstallPodAnnotations | nindent 8 }}
         {{- end }}
     spec:
-    {{- if and .Values.bootstrap .Values.global.serviceAccountName }}
-      serviceAccountName: "{{ .Values.global.serviceAccountName }}"
-    {{- end }}
+      serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
       containers:
         - name: bootstrap-tyk-post-install
           image: {{ .Values.bootstrap.jobs.postInstall.image.repository }}:{{ .Values.bootstrap.jobs.postInstall.image.tag }}

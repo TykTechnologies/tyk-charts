@@ -151,8 +151,6 @@ global:
   # It is used to set TYK_DB_HASHKEYS
   hashKeys: true
 
-  serviceAccountName: ""
-
 dashboard:
   # This is the URL of your Tyk Gateway node, which is used to set TYK_DB_TYKAPI_HOST.
   # The Dashboard controls Tyk using the Gateway API and only requires visibility to one node. In a sharded environment,
@@ -374,6 +372,10 @@ dashboard:
 
     # tls corresponds to the tls configuration if Ingress rules use TLS
     tls: []
+
+  # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
+  # If a service account is to be used for Tyk Dashboard, it should be manually created
+  serviceAccountName: ""
 
 portal:
   # ingress specifies Ingress rules for Tyk Classic Portal
