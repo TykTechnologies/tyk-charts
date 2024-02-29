@@ -9,7 +9,7 @@ metadata:
     helm.sh/hook-weight: "-10"
 subjects:
 - kind: ServiceAccount
-  name: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
+  name: k8s-bootstrap-role
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role

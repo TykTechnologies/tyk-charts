@@ -373,10 +373,6 @@ dashboard:
     # tls corresponds to the tls configuration if Ingress rules use TLS
     tls: []
 
-  # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
-  # If a service account is to be used for Tyk Dashboard, it should be manually created
-  serviceAccountName: ""
-
 portal:
   # ingress specifies Ingress rules for Tyk Classic Portal
   # Ingress is disabled by default.
