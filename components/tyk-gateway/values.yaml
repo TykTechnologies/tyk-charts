@@ -52,8 +52,8 @@ global:
     # addrs:
     #   Example using tyk simple redis chart
     #   - redis.tyk.svc:6379
-    # Example using bitnami/redis
-    # - tyk-redis-master.tyk.svc:6379
+    #   Example using bitnami/redis
+    #   - tyk-redis-master.tyk.svc:6379
     #   Example using bitnami/redis with sentinel
     #   - tyk-redis.tyk.svc:26379
     #   Example using bitnami/redis-cluster

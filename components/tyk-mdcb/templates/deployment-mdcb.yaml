@@ -136,7 +136,7 @@ spec:
             - name: TYK_MDCB_STORAGE_REDISUSESSL
               value: "{{ default "false" .Values.global.redis.useSSL }}"
             - name: TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
-              value: "{{ .Values.mdcb.redisSSLInsecureSkipVerify }}"
+              value: "{{ .Values.global.redis.redisSSLInsecureSkipVerify }}"
             - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
               value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
             - name: TYK_MDCB_LICENSE

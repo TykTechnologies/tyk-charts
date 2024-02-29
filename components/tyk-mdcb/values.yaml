@@ -72,6 +72,10 @@ global:
     # Default value: false
     useSSL: false
 
+    # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
+    # It is used to set TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
+    redisSSLInsecureSkipVerify: false    
+
     # Path to the CA file.
     sslCAFile: "/etc/certs/ca.crt"
 
@@ -153,10 +157,6 @@ mdcb:
   # This opens a port on MDCB container and MDCB service targets this port.
   # It is used to set TYK_MDCB_LISTENPORT
   listenPort: 9090
-
-  # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
-  # It is used to set TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
-  redisSSLInsecureSkipVerify: false
 
   # When it is set to true, instead of sending analytics directly to MongoDB,
   # MDCB can send analytics to Redis. This will allow tyk-pump to pull
@@ -333,4 +333,4 @@ mdcb:
     secretName: "mdcb-tls-secret"
 
     # the name of the volume
-    volumeName: "mdcb-tls-secret-volume"
+    volumeName: "mdcb-tls-secret-volume"    
