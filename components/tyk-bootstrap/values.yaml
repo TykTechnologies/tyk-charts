@@ -52,9 +52,6 @@ global:
     useSecretName: ""
     devPortal: tyk-dev-portal-conf
 
-  # The default name for the sa is k8s-bootstrap-role
-  serviceAccountName: "k8s-bootstrap-role"
-
 bootstrap:
   # Trigger to control if we want to bootstrap the Developer Portal component using tyk-bootstrap
   devPortal: true
@@ -70,6 +67,10 @@ bootstrap:
 
   # Trigger to control if we want to create the tyk-operator secret
   operatorSecret: tyk-operator-conf
+
+  # The default name for the sa is k8s-bootstrap-role
+  # serviceAccountName field configures the name of the ServiceAccount that is going to be created for bootstrapping Jobs
+  serviceAccountName: "k8s-bootstrap-role"
 
   # jobs field includes configurations for Helm Hooks.
   jobs:

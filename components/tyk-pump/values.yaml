@@ -166,8 +166,6 @@ global:
     # Disables SSL certificate verification
     sslInsecureSkipVerify: true
 
-  serviceAccountName: ""
-
 # If pump is enabled the Gateway will create and collect analytics data to send
 # to a data store of your choice. These can be set up in the pump config. The
 # possible pump configs can be found here:
@@ -346,3 +344,7 @@ pump:
   #     mountPath: /etc/ssl/certs/ca-certs.crt
   #     readOnly: true
   extraVolumeMounts: []
+
+  # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
+  # If a service account is to be used for Tyk Pump, it should be manually created
+  serviceAccountName: ""

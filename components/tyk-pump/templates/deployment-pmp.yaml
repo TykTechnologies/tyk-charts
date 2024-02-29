@@ -22,8 +22,8 @@ spec:
         app: pump-{{ include "tyk-pump.fullname" . }}
         release: {{ .Release.Name }}
     spec:
-    {{- if .Values.global.serviceAccountName }}
-      serviceAccountName: "{{ .Values.global.serviceAccountName }}"
+    {{- if .Values.pump.serviceAccountName }}
+      serviceAccountName: "{{ .Values.pump.serviceAccountName }}"
     {{- end }}
 {{- if .Values.pump.nodeSelector }}
       nodeSelector:

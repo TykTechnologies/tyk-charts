@@ -32,8 +32,8 @@ spec:
       {{- end }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
     spec:
-    {{- if .Values.global.serviceAccountName }}
-      serviceAccountName: "{{ .Values.global.serviceAccountName }}"
+    {{- if .Values.dashboard.serviceAccountName }}
+      serviceAccountName: "{{ .Values.dashboard.serviceAccountName }}"
     {{- end }}    
 {{- if .Values.dashboard.nodeSelector }}
       nodeSelector:
