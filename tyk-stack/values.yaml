@@ -129,6 +129,36 @@ global:
     # Default value: false
     useSSL: false
 
+    # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
+    # sslInsecureSkipVerify: false
+
+    # Path to the CA file.
+    # sslCAFile: ""
+
+    # The Volume mount path
+    # Default value: /etc/certs
+    # certificatesMountPath: ""
+
+    # Path to the cert file.
+    # sslCertFile: ""
+
+    # Path to the key file.
+    # sslKeyFile: ""
+
+    # Maximum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
+    # Default value: 1.3
+    # sslMaxVersion: "1.3"
+
+    # Minimum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
+    # Default value: 1.2
+    # sslMinVersion: "1.2"
+
+    # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
+    # secretName: ""
+
+    # Name of the volume where the secret will be mounted
+    # volumeName: ""
+
     # The enableCluster value will allow you to indicate to Tyk whether you are
     # running a Redis cluster or not.
     # Default value: false

@@ -71,7 +71,7 @@ global:
 
     # Set this to `true` to tell Pump to ignore database's cert validation.
     # Default value: true
-    redisInsecureSkipVerify: true
+    sslInsecureSkipVerify: true
 
     # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
     # Default value: pmp-tls-secret 

@@ -74,7 +74,7 @@ global:
 
     # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
     # It is used to set TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
-    redisSSLInsecureSkipVerify: false    
+    sslInsecureSkipVerify: false    
 
     # Path to the CA file.
     sslCAFile: "/etc/certs/ca.crt"
