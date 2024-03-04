@@ -141,6 +141,23 @@ spec:
             {{- end }}
             - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
               value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
+            - name: TYK_MDCB_ENABLEMULTIPLEANALYTICSKEYS
+              value: "{{ .Values.mdcb.enableMultipleAnalyticsKey }}"
+            - name: TYK_MDCB_DONTSTORESELECTIVE
+              value: "{{ .Values.mdcb.dontStoreSelective }}"
+            - name: TYK_MDCB_DONTSTOREAGGREGATES
+              value: "{{ .Values.mdcb.dontStoreAggregate }}"
+          {{- if .Values.mdcb.ignoreTagPrefixList }}
+            - name: TYK_MDCB_IGNORETAGPREFIXLIST
+              value: |
+                {{- range .Values.mdcb.ignoreTagPrefixList }}
+                {{ . }}
+                {{- end }}
+          {{- end }}
+            - name: TYK_MDCB_TRACKALLPATHS
+              value: "{{ .Values.mdcb.trackAllPaths }}"
+            - name: TYK_MDCB_STOREANALYTICSPERMINUTE
+              value: "{{ .Values.mdcb.storeAnalyticsPerMinute }}"                                                     
             - name: TYK_MDCB_LICENSE
               valueFrom:
                 secretKeyRef:

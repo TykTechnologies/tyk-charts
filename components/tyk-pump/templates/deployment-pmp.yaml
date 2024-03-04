@@ -103,6 +103,10 @@ spec:
           - name: TYK_PMP_PUMPS_HYBRID_META_CALLTIMEOUT
             value: "{{ .Values.pump.hybridPump.callTimeout }}"
             {{ end }}
+            {{ if .Values.pump.hybridPump.enableAggregateAnalytics }}
+          - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
+            value: "{{ .Values.pump.hybridPump.enableAggregateAnalytics }}"
+            {{ end }}            
             {{ if .Values.pump.hybridPump.poolSize }}
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCPOOLSIZE
             value: "{{ .Values.pump.hybridPump.poolSize }}"

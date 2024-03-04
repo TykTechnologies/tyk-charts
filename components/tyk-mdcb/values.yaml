@@ -164,6 +164,28 @@ mdcb:
   # It is used to set TYK_MDCB_FORWARDANALYTICSTOPUMP
   forwardAnalyticsToPump: true
 
+
+  # This enables saving analytics in multiple keys as oppose to just having one.
+  # It is useful when using a Redis cluster.
+  # It also only works when TYK_MDCB_FORWARDANALYTICSTOPUMP is set to true.
+  enableMultipleAnalyticsKey: true
+
+  # This should be set to true if you choose not to store selective analytics
+  dontStoreSelective: false
+
+  # This should be set to true if you choose not to store aggregate analytics
+  dontStoreAggregate: false
+
+  # If set to true then it will not store analytics for tags having prefix specified in the list.
+  # NB: Prefix “key-” is added in the list by default. This tag is added by gateway for keys.
+  ignoreTagPrefixList: []
+
+  # If enabled, it will store analytics for all the endpoints, irrespective of Track Endpoint plugin.
+  trackAllPaths: false
+
+  # If enabled, aggregate data will be generated per minute.
+  storeAnalyticsPerMinute: false   
+
   probes:
     # This port lets MDCB allow standard health checks.
     # It also defines the path for liveness and readiness probes.
