@@ -83,13 +83,13 @@ global:
     certificatesMountPath: "/tls"  
 
     # Path to the CA file.
-    sslCAFile: "/tls/ca.crt"  
+    caFile: "/tls/ca.crt"  
 
     # Path to the cert file.
-    sslCertFile: "/tls/redis.crt"  
+    certFile: "/tls/redis.crt"  
 
     # Path to the key file.
-    sslKeyFile: "/tls/redis.key"
+    keyFile: "/tls/redis.key"
 
     # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
     # Default value: gw-tls-secret 
@@ -101,11 +101,11 @@ global:
 
     # Maximum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
     # Default value: 1.3
-    sslMaxVersion: "1.3"
+    tlsMaxVersion: "1.3"
 
     # Minimum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
     # Default value: 1.2
-    sslMinVersion: "1.2"
+    tlsMinVersion: "1.2"
 
     # If using "Redis Cluster" set enableCluster to true
     # (e.g. if using bitnami/redis-cluster)

@@ -108,25 +108,25 @@ spec:
           
           # Redis TLS configurations
           {{- if .Values.global.redis.useSSL }}
-          - name: TYK_GW_STORAGE_MAXVERSION
-            value: "{{ .Values.global.redis.sslMaxVersion }}"
-          - name: TYK_GW_STORAGE_MINVERSION
-            value: "{{ .Values.global.redis.sslMinVersion }}"
+          - name: TYK_GW_STORAGE_TLSMAXVERSION
+            value: "{{ .Values.global.redis.tlsMaxVersion }}"
+          - name: TYK_GW_STORAGE_TLSMINVERSION
+            value: "{{ .Values.global.redis.tlsMinVersion }}"
           {{- end }}
 
           {{- with .Values.global.redis }}
-          {{- if and .useSSL .sslCAFile }}
+          {{- if and .useSSL .caFile }}
           - name: TYK_GW_STORAGE_CAFILE
-            value: "{{ .sslCAFile }}"
+            value: "{{ .caFile }}"
           {{- end }}
           {{- end }}          
 
           {{- with .Values.global.redis }}
-          {{- if and .useSSL .sslCertFile .sslKeyFile }}
+          {{- if and .useSSL .certFile .keyFile }}
           - name: TYK_GW_STORAGE_CERTFILE
-            value: "{{ .sslCertFile }}"
+            value: "{{ .certFile }}"
           - name: TYK_GW_STORAGE_KEYFILE
-            value: "{{ .sslKeyFile }}"  
+            value: "{{ .keyFile }}"  
           {{- end }}
           {{- end }}            
 

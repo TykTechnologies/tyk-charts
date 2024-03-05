@@ -157,25 +157,25 @@ spec:
             value: {{ include "tyk-dashboard.redis_url" . | quote }}
         
           {{- if .Values.global.redis.useSSL }}
-          - name: TYK_DB_REDISSSLMAXVERSION
-            value: "{{ .Values.global.redis.sslMaxVersion }}"
-          - name: TYK_DB_REDISSSLMINVERSION
-            value: "{{ .Values.global.redis.sslMinVersion }}"  
+          - name: TYK_DB_REDISTLSMAXVERSION
+            value: "{{ .Values.global.redis.tlsMaxVersion }}"
+          - name: TYK_DB_REDISTLSMINVERSION
+            value: "{{ .Values.global.redis.tlsMinVersion }}"  
           {{- end}}  
 
           {{- with .Values.global.redis }}
-          {{- if and .useSSL .sslCAFile }}
-          - name: TYK_DB_REDISSSLCAFILE
-            value: "{{ .sslCAFile }}"   
+          {{- if and .useSSL .caFile }}
+          - name: TYK_DB_REDISCAFILE
+            value: "{{ .caFile }}"   
           {{- end }}
           {{- end }}            
 
           {{- with .Values.global.redis }}
-          {{- if and .useSSL .sslCertFile .sslKeyFile }}
-          - name: TYK_DB_REDISSSLCERTFILE
-            value: "{{ .sslCertFile }}"
-          - name: TYK_DB_REDISSSLKEYFILE
-            value: "{{ .sslKeyFile }}"   
+          {{- if and .useSSL .certFile .keyFile }}
+          - name: TYK_DB_REDISCERTFILE
+            value: "{{ .certFile }}"
+          - name: TYK_DB_REDISKEYFILE
+            value: "{{ .keyFile }}"   
           {{- end }}
           {{- end }}                                                                                                             
           
