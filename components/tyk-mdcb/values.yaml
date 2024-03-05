@@ -70,7 +70,40 @@ global:
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
-    # useSSL: true
+    useSSL: false
+
+    # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
+    # It is used to set TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
+    sslInsecureSkipVerify: false    
+
+    # Path to the CA file.
+    sslCAFile: "/etc/certs/ca.crt"
+
+    # The Volume mount path
+    # Default value: /etc/certs 
+    certificatesMountPath: "/etc/certs"    
+
+    # Path to the cert file.
+    sslCertFile: "/etc/certs/redis.crt"  
+
+    # Path to the key file.
+    sslKeyFile: "/etc/certs/redis.key"
+
+    # Maximum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
+    # Default value: 1.3
+    sslMaxVersion: "1.3"
+
+    # Minimum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
+    # Default value: 1.2
+    sslMinVersion: "1.2"
+
+    # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
+    # Default value: mdcb-tls-secret 
+    secretName: "mdcb-tls-secret"
+
+    # Name of the volume where the secret will be mounted
+    # Default value: mdcb-tls-secret-volume 
+    volumeName: "mdcb-tls-secret-volume"
 
     # If using "Redis Cluster" set enableCluster to true
     # (e.g. if using bitnami/redis-cluster)
@@ -124,10 +157,6 @@ mdcb:
   # This opens a port on MDCB container and MDCB service targets this port.
   # It is used to set TYK_MDCB_LISTENPORT
   listenPort: 9090
-
-  # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
-  # It is used to set TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
-  redisSSLInsecureSkipVerify: false
 
   # When it is set to true, instead of sending analytics directly to MongoDB,
   # MDCB can send analytics to Redis. This will allow tyk-pump to pull
@@ -304,4 +333,4 @@ mdcb:
     secretName: "mdcb-tls-secret"
 
     # the name of the volume
-    volumeName: "mdcb-tls-secret-volume"
+    volumeName: "mdcb-tls-secret-volume"    

@@ -18,4 +18,3 @@ type: application
 version: 1.0.0
 sources:
   - https://github.com/TykTechnologies/tyk-charts/tree/main/components/tyk-bootstrap
-

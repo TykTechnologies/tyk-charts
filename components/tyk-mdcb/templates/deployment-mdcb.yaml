@@ -64,7 +64,15 @@ spec:
             {{- if .Values.mdcb.tls.useSSL }}
             - name: {{ .Values.mdcb.tls.volumeName }}
               mountPath: {{ .Values.mdcb.tls.certificatesMountPath }}
-            {{- end }}             
+            {{- end }}
+
+            {{- with .Values.global.redis }}
+            {{- if and .useSSL .volumeName .certificatesMountPath }}
+            - name: {{ .volumeName }}
+              mountPath: {{ .certificatesMountPath }}
+            {{- end }}
+            {{- end }}
+
             - name: mdcb-conf
               mountPath: /etc/tyk-sink
               {{- if .Values.mdcb.extraVolumeMounts }}
@@ -83,6 +91,31 @@ spec:
               value: {{ include "mdcb.redis_url" . | quote }}
             - name: TYK_MDCB_HASHKEYS
               value: "{{ .Values.global.hashKeys }}"
+
+            # Redis TLS configurations
+            {{- if .Values.global.redis.useSSL }}
+            - name: TYK_MDCB_STORAGE_REDISSSLMAXVERSION
+              value: "{{ .Values.global.redis.sslMaxVersion }}"
+            - name: TYK_MDCB_STORAGE_REDISSSLMINVERSION
+              value: "{{ .Values.global.redis.sslMinVersion }}"
+            {{- end }}
+
+            {{- with .Values.global.redis }}
+            {{- if and .useSSL .sslCAFile }}
+            - name: TYK_MDCB_STORAGE_REDISSSLCAFILE
+              value: "{{ .sslCAFile }}"  
+            {{- end }}
+            {{- end }}              
+
+            {{- with .Values.global.redis }}
+            {{- if and .useSSL .sslCertFile .sslKeyFile }}
+            - name: TYK_MDCB_STORAGE_REDISSSLCERTFILE
+              value: "{{ .sslCertFile }}"
+            - name: TYK_MDCB_STORAGE_REDISSSLKEYFILE
+              value: "{{ .sslKeyFile }}"   
+            {{- end }}
+            {{- end }}                                
+
             {{- if .Values.mdcb.tls.useSSL }}
             - name: TYK_MDCB_SERVEROPTIONS_USESSL
               value: "{{ .Values.mdcb.tls.useSSL }}"
@@ -103,7 +136,7 @@ spec:
             - name: TYK_MDCB_STORAGE_REDISUSESSL
               value: "{{ default "false" .Values.global.redis.useSSL }}"
             - name: TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
-              value: "{{ .Values.mdcb.redisSSLInsecureSkipVerify }}"
+              value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
             - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
               value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
             - name: TYK_MDCB_LICENSE
@@ -145,7 +178,16 @@ spec:
         - name: {{ .Values.mdcb.tls.volumeName }}
           secret:
             secretName: {{ .Values.mdcb.tls.secretName }}
-        {{- end }}         
+        {{- end }}
+
+        {{- with .Values.global.redis }}
+        {{- if and .useSSL .secretName .volumeName }}
+        - name: {{ .volumeName }}
+          secret:
+            secretName: {{ .secretName }}
+        {{- end }}
+        {{- end }}
+
         - name: mdcb-conf
           configMap:
             name: mdcb-conf-{{ include "tyk-mdcb.fullname" . }}
