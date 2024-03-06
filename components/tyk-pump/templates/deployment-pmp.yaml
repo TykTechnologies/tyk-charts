@@ -229,8 +229,10 @@ spec:
             value: "{{ default "mongo-go" .Values.global.mongo.driver}}"
           {{ end }}
 
+          {{- if .Values.global.redis.sslInsecureSkipVerify }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISSSLINSECURESKIPVERIFY
-            value: "{{ default "true" .Values.global.redis.sslInsecureSkipVerify }}"  
+            value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"  
+          {{- end}}
 
           # Redis TLS configurations
           {{- if .Values.global.redis.useSSL }}
