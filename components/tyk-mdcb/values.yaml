@@ -162,8 +162,7 @@ mdcb:
   # MDCB can send analytics to Redis. This will allow tyk-pump to pull
   # analytics from Redis and send to your own data sinks.
   # It is used to set TYK_MDCB_FORWARDANALYTICSTOPUMP
-  forwardAnalyticsToPump: true
-
+  forwardAnalyticsToPump: false
 
   # This enables saving analytics in multiple keys as oppose to just having one.
   # It is useful when using a Redis cluster.

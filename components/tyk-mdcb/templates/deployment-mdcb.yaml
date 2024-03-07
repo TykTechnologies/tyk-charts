@@ -146,7 +146,7 @@ spec:
             - name: TYK_MDCB_DONTSTORESELECTIVE
               value: "{{ .Values.mdcb.dontStoreSelective }}"
             - name: TYK_MDCB_DONTSTOREAGGREGATES
-              value: "{{ .Values.mdcb.dontStoreAggregate }}"
+              value: "{{ .Values.mdcb.dontStoreAggregate }}"            
           {{- if .Values.mdcb.ignoreTagPrefixList }}
             - name: TYK_MDCB_IGNORETAGPREFIXLIST
               value: |
