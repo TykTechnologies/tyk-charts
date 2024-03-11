@@ -100,11 +100,10 @@ spec:
           - name: TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
             value: "{{ .Values.global.oasValidateSchemaDefaults }}"
 
-          - name: TYK_GW_ENABLE_LEAKY_BUCKET_RATE_LIMITER
-            value: "{{ .Values.gateway.enableLeakyBucketRateLimiter }}"
-
+          {{- if .Values.global.redis.sslInsecureSkipVerify }}
           - name: TYK_GW_STORAGE_SSLINSECURESKIPVERIFY
             value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
+          {{- end }}
           
           # Redis TLS configurations
           {{- if .Values.global.redis.useSSL }}
