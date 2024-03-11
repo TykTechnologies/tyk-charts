@@ -188,8 +188,11 @@ spec:
                 key: {{ include "tyk-dashboard.redis_secret_key" . }}
           - name: TYK_DB_REDISUSESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
+
+          {{- if .Values.global.redis.sslInsecureSkipVerify }}
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
             value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
+          {{- end}}
 
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.global.tls.dashboard }}"

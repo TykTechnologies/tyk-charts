@@ -135,8 +135,10 @@ spec:
                   key: {{ include "mdcb.redis_secret_key" . }}
             - name: TYK_MDCB_STORAGE_REDISUSESSL
               value: "{{ default "false" .Values.global.redis.useSSL }}"
+            {{- if .Values.global.redis.sslInsecureSkipVerify }}
             - name: TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
               value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
+            {{- end }}
             - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
               value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
             - name: TYK_MDCB_LICENSE
