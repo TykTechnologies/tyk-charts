@@ -99,8 +99,37 @@ spec:
             value: "{{ .Values.global.oasValidateExamples }}"
           - name: TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
             value: "{{ .Values.global.oasValidateSchemaDefaults }}"
+
           - name: TYK_GW_ENABLE_LEAKY_BUCKET_RATE_LIMITER
             value: "{{ .Values.gateway.enableLeakyBucketRateLimiter }}"
+
+          - name: TYK_GW_STORAGE_SSLINSECURESKIPVERIFY
+            value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
+          
+          # Redis TLS configurations
+          {{- if .Values.global.redis.useSSL }}
+          - name: TYK_GW_STORAGE_TLSMAXVERSION
+            value: "{{ .Values.global.redis.tlsMaxVersion }}"
+          - name: TYK_GW_STORAGE_TLSMINVERSION
+            value: "{{ .Values.global.redis.tlsMinVersion }}"
+          {{- end }}
+
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .caFile }}
+          - name: TYK_GW_STORAGE_CAFILE
+            value: "{{ .caFile }}"
+          {{- end }}
+          {{- end }}          
+
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .certFile .keyFile }}
+          - name: TYK_GW_STORAGE_CERTFILE
+            value: "{{ .certFile }}"
+          - name: TYK_GW_STORAGE_KEYFILE
+            value: "{{ .keyFile }}"  
+          {{- end }}
+          {{- end }}            
+
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
@@ -346,6 +375,13 @@ spec:
             mountPath: {{ .Values.gateway.tls.certificatesMountPath }}
           {{ end }}
 
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .volumeName .certificatesMountPath }}
+          - name: {{ .volumeName }}
+            mountPath: {{ .certificatesMountPath }}
+          {{- end }}
+          {{- end }}         
+
           {{- if (.Values.gateway.opentelemetry.tls).certificateSecretName}}
           - name: {{.Values.gateway.opentelemetry.tls.certificateSecretName}}
             mountPath: "/etc/ssl/certs/"
@@ -401,4 +437,11 @@ spec:
         - name: {{ .Values.gateway.opentelemetry.tls.certificateSecretName }}
           secret:
             secretName: {{ .Values.gateway.opentelemetry.tls.certificateSecretName }}
+        {{- end }}
+        {{- with .Values.global.redis }}
+        {{- if and .useSSL .secretName .volumeName }}
+        - name: {{ .volumeName }}
+          secret:
+            secretName: {{ .secretName }}
+        {{- end }}
         {{- end }}

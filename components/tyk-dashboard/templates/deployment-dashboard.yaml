@@ -155,6 +155,30 @@ spec:
 
           - name: TYK_DB_REDISADDRS
             value: {{ include "tyk-dashboard.redis_url" . | quote }}
+        
+          {{- if .Values.global.redis.useSSL }}
+          - name: TYK_DB_REDISTLSMAXVERSION
+            value: "{{ .Values.global.redis.tlsMaxVersion }}"
+          - name: TYK_DB_REDISTLSMINVERSION
+            value: "{{ .Values.global.redis.tlsMinVersion }}"  
+          {{- end}}  
+
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .caFile }}
+          - name: TYK_DB_REDISCAFILE
+            value: "{{ .caFile }}"   
+          {{- end }}
+          {{- end }}            
+
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .certFile .keyFile }}
+          - name: TYK_DB_REDISCERTFILE
+            value: "{{ .certFile }}"
+          - name: TYK_DB_REDISKEYFILE
+            value: "{{ .keyFile }}"   
+          {{- end }}
+          {{- end }}                                                                                                             
+          
           - name: TYK_DB_ENABLECLUSTER
             value: "{{ default "false" .Values.global.redis.enableCluster }}"
           - name: TYK_DB_REDISPASSWORD
@@ -165,7 +189,7 @@ spec:
           - name: TYK_DB_REDISUSESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
-            value: "true"
+            value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
 
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.global.tls.dashboard }}"
@@ -236,6 +260,13 @@ spec:
         ports:
         - containerPort: {{ .Values.global.servicePorts.dashboard }}
         volumeMounts:
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .volumeName .certificatesMountPath }}
+          - name: {{ .volumeName }}
+            mountPath: {{ .certificatesMountPath }}
+          {{- end }}
+          {{- end }} 
+      
           {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
           - name: analytics-conf
             mountPath: /etc/tyk-dashboard
@@ -270,6 +301,14 @@ spec:
       {{- toYaml .Values.dashboard.securityContext | nindent 10 }}
       {{- end }}
       volumes:
+        {{- with .Values.global.redis }}
+        {{- if and .useSSL .secretName .volumeName }}
+        - name: {{ .volumeName }}
+          secret:
+            secretName: {{ .secretName }}
+        {{- end }}
+        {{- end }}   
+
         {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
         - name: analytics-conf
           emptyDir: {}

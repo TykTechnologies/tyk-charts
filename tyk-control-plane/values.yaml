@@ -126,7 +126,37 @@ global:
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
-    useSSL: false
+    # useSSL: false
+
+    # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
+    # sslInsecureSkipVerify: false
+
+    # Path to the CA file.
+    # sslCAFile: ""
+
+    # The Volume mount path
+    # Default value: /etc/certs
+    # certificatesMountPath: ""
+
+    # Path to the cert file.
+    # sslCertFile: ""
+
+    # Path to the key file.
+    # sslKeyFile: ""
+
+    # Maximum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
+    # Default value: 1.3
+    # sslMaxVersion: "1.3"
+
+    # Minimum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
+    # Default value: 1.2
+    # sslMinVersion: "1.2"
+
+    # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
+    # secretName: ""
+
+    # Name of the volume where the secret will be mounted
+    # volumeName: ""
 
     # The enableCluster value will allow you to indicate to Tyk whether you are
     # running a Redis cluster or not.
@@ -223,13 +253,6 @@ tyk-gateway:
   gateway:
     # The hostname to bind the Gateway to.
     hostName: &gwHostName tyk-gw.local
-    # EnableLeakyBucketRateLimiter enables leaky bucket rate limiting.
-    # LeakyBucket will delay requests so they are processed in a FIFO
-    # style queue, ensuring a constant request rate and smoothing out
-    # traffic spikes. This comes at some cost to gateway instances, as
-    # the connections would be held for a longer time, instead of
-    # blocking the requests when they go over the defined rate limits.
-    enableLeakyBucketRateLimiter: false
 
     # If this option is set to true, it will enable polling the Dashboard service for API definitions
     useDashboardAppConfig:
@@ -1013,10 +1036,6 @@ tyk-mdcb:
     # This opens a port on MDCB container and MDCB service targets this port.
     # It is used to set TYK_MDCB_LISTENPORT
     listenPort: 9090
-
-    # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
-    # It is used to set TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
-    redisSSLInsecureSkipVerify: false
 
     # When it is set to true, instead of sending analytics directly to MongoDB,
     # MDCB can send analytics to Redis. This will allow tyk-pump to pull
