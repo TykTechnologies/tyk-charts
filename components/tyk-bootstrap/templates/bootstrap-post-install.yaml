@@ -96,6 +96,10 @@ spec:
             {{- end }}
             - name: TYK_K8SBOOTSTRAP_BOOTSTRAPPORTAL
               value: {{ .Values.bootstrap.portal | quote }}
+            {{- if .Values.bootstrap.org.hybrid.enabled }}
+            - name: TYK_K8SBOOTSTRAP_TYK_ORG_HYBRID_ENABLED
+              value: {{ .Values.bootstrap.org.hybrid.enabled | quote }}
+            {{- end }}
            {{- if .Values.bootstrap.jobs.postInstall.extraEnvs }}
            {{- include "tyk-bootstrap.tplvalues.render" ( dict "value" .Values.bootstrap.jobs.postInstall.extraEnvs "context" $ ) | nindent 12 }}
            {{- end }}
