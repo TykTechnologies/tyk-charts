@@ -22,6 +22,9 @@ spec:
         app: pump-{{ include "tyk-pump.fullname" . }}
         release: {{ .Release.Name }}
     spec:
+    {{- if .Values.pump.serviceAccountName }}
+      serviceAccountName: "{{ .Values.pump.serviceAccountName }}"
+    {{- end }}
 {{- if .Values.pump.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.pump.nodeSelector | indent 8 }}
