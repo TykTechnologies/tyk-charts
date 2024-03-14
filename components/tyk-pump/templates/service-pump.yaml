@@ -16,7 +16,7 @@ spec:
     - port: {{ .Values.pump.service.port }}
       targetPort: {{ .Values.pump.containerPort }}
       protocol: TCP
-      name: "http"
+      name: {{ default "http" .Values.pump.service.portName | quote }}
   type: {{ .Values.pump.service.type }}
   {{- if eq .Values.pump.service.type "LoadBalancer" }}
   externalTrafficPolicy: {{ .Values.pump.service.externalTrafficPolicy }}

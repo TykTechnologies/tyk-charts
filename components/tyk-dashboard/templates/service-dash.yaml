@@ -19,7 +19,7 @@ spec:
   - port: {{ .Values.global.servicePorts.dashboard }}
     targetPort: {{ .Values.global.servicePorts.dashboard }}
     protocol: TCP
-    name: http
+    name: {{ default "http" .Values.dashboard.service.portName | quote }}
   selector:
     app: dashboard-{{ include "tyk-dashboard.fullname" . }}
     release: {{ .Release.Name }}
