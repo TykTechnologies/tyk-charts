@@ -225,3 +225,7 @@ livenessProbe:
 readinessProbe:
   # initialDelaySeconds specifies the seconds used in readiness probe as initial delay.
   initialDelaySeconds: 60
+
+# serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
+# If a service account is to be used for Tyk Developer Portal, it should be manually created
+serviceAccountName: ""

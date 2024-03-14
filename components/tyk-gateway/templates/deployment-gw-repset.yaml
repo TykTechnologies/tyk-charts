@@ -41,6 +41,9 @@ spec:
         app: gateway-{{ include "tyk-gateway.fullname" . }}
         release: {{ .Release.Name }}
     spec:
+    {{- if .Values.gateway.serviceAccountName }}
+      serviceAccountName: "{{ .Values.gateway.serviceAccountName }}"
+    {{- end }}    
 {{- if .Values.gateway.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.gateway.nodeSelector | indent 8 }}
@@ -58,7 +61,7 @@ spec:
       {{- end }}
       initContainers:
       - name: "setup-directories"
-        image: busybox:1.32
+        image: "{{ .Values.gateway.initContainers.setupDirectories.repository }}:{{ .Values.gateway.initContainers.setupDirectories.tag }}"
         command: ['sh','-c','mkdir -p apps middleware policies && touch policies/policies.json']
         workingDir: /mnt/tyk-gateway
         volumeMounts:
@@ -100,11 +103,10 @@ spec:
           - name: TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
             value: "{{ .Values.global.oasValidateSchemaDefaults }}"
 
-          - name: TYK_GW_ENABLE_LEAKY_BUCKET_RATE_LIMITER
-            value: "{{ .Values.gateway.enableLeakyBucketRateLimiter }}"
-
+          {{- if .Values.global.redis.sslInsecureSkipVerify }}
           - name: TYK_GW_STORAGE_SSLINSECURESKIPVERIFY
             value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
+          {{- end }}
           
           # Redis TLS configurations
           {{- if .Values.global.redis.useSSL }}
