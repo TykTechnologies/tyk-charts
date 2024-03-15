@@ -349,7 +349,9 @@ dashboard:
   # extraEnvs is used to set extra environment variables to Tyk Dashboard pod.
   # - name: TYK_DB_PAGESIZE
   #   value: "10"
-  extraEnvs: []
+  extraEnvs:
+  - name: TYK_DB_ALLOWUNSAFEOAS
+    value: "false"
 
   # extraVolumes is a list of volumes to be added to the pod
   # extraVolumes:
