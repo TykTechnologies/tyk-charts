@@ -307,6 +307,8 @@ dashboard:
     externalTrafficPolicy: Local
     # annotations corresponds to the annotations which will be added into Tyk Dashboard Service.
     annotations: {}
+    # The name given to the service port
+    portName: ""    
 
   # We usually recommend not to specify default resources and to leave this
   # as a conscious choice for the user. This also increases the chances of charts to

@@ -213,6 +213,9 @@ pump:
     # annotations specifies annotations to be added Tyk Pump service.
     annotations: {}
 
+    # The name for the service port
+    portName: ""    
+
   # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
   # The default port is 9090.
   containerPort: 9090

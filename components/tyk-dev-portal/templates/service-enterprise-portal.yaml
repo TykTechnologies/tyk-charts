@@ -18,7 +18,7 @@ spec:
   - port: {{ .Values.service.port }}
     targetPort: {{ .Values.containerPort }}
     protocol: TCP
-    name: http
+    name: {{ default "http" .Values.service.portName | quote }}
   type: {{ .Values.service.type }}
   selector:
     app: {{ include "tyk-dev-portal.fullname" . }}
