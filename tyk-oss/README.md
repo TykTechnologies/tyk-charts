@@ -22,26 +22,7 @@ Also, you can set the version of each component through `image.tag`. You could f
 * Redis should already be installed or accessible by the gateway. For Redis installations instruction, follow the [Redis installation](#set-redis-connection-details-required) guide below.
 
 ## Quick Start
-Quick start using `tyk-oss` and Bitnami Redis chart
-
-```bash
-NAMESPACE=tyk-oss
-APISecret=foo
-
-helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-helm repo update
-
-helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --create-namespace --install --set image.tag=6.2.13
-
-helm upgrade tyk-oss tyk-helm/tyk-oss -n $NAMESPACE --create-namespace \
-  --install \
-  --set global.secrets.APISecret="$APISecret" \
-  --set global.redis.addrs="{tyk-redis-master.$NAMESPACE.svc:6379}" \
-  --set global.redis.passSecret.name=tyk-redis \
-  --set global.redis.passSecret.keyName=redis-password
-```
-
-Gateway is now accessible through service `gateway-svc-tyk-oss-tyk-gateway` at port `8080`.
+Please visit tyk.io for [Quick Start with Tyk OSS Helm Chart](https://tyk.io/docs/tyk-oss/ce-helm-chart-new/)
 
 ## Installing the Chart
 
@@ -88,6 +69,17 @@ helm show values tyk-helm/tyk-oss > values.yaml
 
 You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation.
 Alternatively, you can use `--set` flag to set it in Tyk installation.
+
+To configure Tyk components, users can utilize both config files and [environment variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/). Notably, environment variables take precedence over config files. To maintain simplicity and consistency, the Tyk Helm Charts deploy components with an empty config file while setting container environment variables based on user-defined [values](https://helm.sh/docs/chart_best_practices/values/). This approach ensures seamless integration with Kubernetes practices, allowing for efficient management of configurations. For a comprehensive overview of available configurations, please refer to the [configuration documentation](https://tyk.io/docs/tyk-environment-variables/). Additionally, should any environment variables not be set by the Helm Chart, users can easily add them under the `extraEnvs` section within the charts for further customization. Values set under `extraEnvs` would take precedence over all configurations.
+
+Example of setting extra environment variable to gateway:
+```yaml
+tyk-gateway:
+  gateway:
+    extraEnvs:
+    - name: TYK_GW_LOGLEVEL
+      value: debug
+```
 
 ### Set Redis Connection Details (Required)
 
