@@ -22,8 +22,12 @@ Also, you can set the version of each component through `image.tag`. You could f
 * Redis should already be installed or accessible by the gateway. For Redis installations instruction, follow the [Redis installation](#set-redis-connection-details-required) guide below.
 
 ## Quick Start
-Quick start using `tyk-oss` and Bitnami Redis chart
+The following quick start guide explains how to use the Tyk OSS Helm chart to configure the Tyk Gateway that includes:
+- Redis for key storage
 
+At the end of this quickstart Tyk Gateway should be accessible through service `gateway-svc-tyk-oss-tyk-gateway` at port `8080`.
+
+1. Install Redis and Tyk
 ```bash
 NAMESPACE=tyk-oss
 APISecret=foo
@@ -31,17 +35,20 @@ APISecret=foo
 helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
 helm repo update
 
-helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --create-namespace --install --set image.tag=6.2.13
+helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --install
 
 helm upgrade tyk-oss tyk-helm/tyk-oss -n $NAMESPACE --create-namespace \
   --install \
   --set global.secrets.APISecret="$APISecret" \
-  --set global.redis.addrs="{tyk-redis-master.$NAMESPACE.svc:6379}" \
+  --set global.redis.addrs="{tyk-redis-master.$NAMESPACE.svc.cluster.local:6379}" \
   --set global.redis.passSecret.name=tyk-redis \
   --set global.redis.passSecret.keyName=redis-password
 ```
 
-Gateway is now accessible through service `gateway-svc-tyk-oss-tyk-gateway` at port `8080`.
+2. Done!
+
+Now Tyk Gateway should be accessible through service `gateway-svc-tyk-oss-tyk-gateway` at port `8080`.
+
 
 ## Installing the Chart
 
