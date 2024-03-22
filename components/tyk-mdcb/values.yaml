@@ -156,7 +156,7 @@ mdcb:
   # The rpc port which worker gateways will connect to.
   # This opens a port on MDCB container and MDCB service targets this port.
   # It is used to set TYK_MDCB_LISTENPORT
-  listenPort: 9090
+  listenPort: 9091
 
   # When it is set to true, instead of sending analytics directly to MongoDB,
   # MDCB can send analytics to Redis. This will allow tyk-pump to pull
