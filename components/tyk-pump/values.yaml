@@ -242,7 +242,7 @@ pump:
   # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
   # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
   hybridPump:
-    # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
+    # This wiil allow tyk-pump to pull analytics from Redis and send to your own data sinks.
     enableAggregateAnalytics: true
     # Hybrid pump RPC calls timeout in seconds. If not specified, default value will be picked up by Tyk Pump.
     callTimeout: 10
