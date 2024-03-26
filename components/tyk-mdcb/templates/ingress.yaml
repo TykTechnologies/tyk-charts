@@ -1,5 +1,5 @@
 {{- if .Values.mdcb.ingress.enabled -}}
-{{- $fullName := printf "mdcb-svc-%s" (include "tyk-mdcb.fullname" .) -}}
+{{- $fullName := printf "mdcb-ing-%s" (include "tyk-mdcb.fullname" .) -}}
 {{- $svcPort := .Values.mdcb.service.port -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
