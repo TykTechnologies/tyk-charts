@@ -322,7 +322,7 @@ dashboard:
     annotations: {}
     # The name for the service port
     # If this is not provided or is empty, it will be set to “http” by default.
-    portName: "http"  
+    portName: "http"
 
   # We usually recommend not to specify default resources and to leave this
   # as a conscious choice for the user. This also increases the chances of charts to

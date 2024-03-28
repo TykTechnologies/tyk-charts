@@ -282,6 +282,10 @@ tyk-gateway:
       # annotations for service
       annotations: {}
 
+      # The name for the service port
+      # If this is not provided or is empty, it will be set to “http” by default.
+      portName: "http"
+
     control:
       # If enabled, exposes control port of the gateway
       enabled: false
@@ -547,6 +551,10 @@ tyk-pump:
 
       # annotations specifies annotations to be added Tyk Pump service.
       annotations: {}
+
+      # The name for the service port
+      # If this is not provided or is empty, it will be set to “http” by default.
+      portName: "http"
 
     # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
     # The default port is 9090.
