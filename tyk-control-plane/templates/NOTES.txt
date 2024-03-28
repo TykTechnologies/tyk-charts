@@ -40,7 +40,6 @@ If the worker gateway will be deployed via Helm, tyk-data-plane chart helps to f
 1- First obtain required connection details from Tyk MDCB:
 
 {{- $tykMDCBSvc := printf "mdcb-svc-%s" (include "tyk-mdcb.fullname" (index .Subcharts "tyk-mdcb")) -}}
-{{- $tykMDCBSvcProto := (include "mdcb.proto" (index .Subcharts "tyk-mdcb")) -}}
 {{- $tykMDCBSvcPort := (include "mdcb.svcPort" (index .Subcharts "tyk-mdcb")) }}
     export MDCB_CONNECTIONSTRING="{{ $tykMDCBSvc }}.{{ .Release.Namespace }}.svc:{{ $tykMDCBSvcPort }}"
     export GROUP_ID=your_group_id # You can use any name for your group.
