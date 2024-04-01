@@ -1337,6 +1337,8 @@ tyk-dev-portal:
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
+    runAsNonRoot: true
+
   # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod.
   containerSecurityContext:
     runAsNonRoot: true

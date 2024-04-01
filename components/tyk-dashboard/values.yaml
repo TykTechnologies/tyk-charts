@@ -328,6 +328,7 @@ dashboard:
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
+    runAsNonRoot: true
 
   # containerSecurityContext holds container-level security attributes for Tyk Dashboard container.
   containerSecurityContext:
