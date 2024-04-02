@@ -1,0 +1,39 @@
+{{- if .Values.mdcb.ingress.enabled -}}
+{{- $fullName := printf "mdcb-svc-%s" (include "tyk-mdcb.fullname" .) -}}
+{{- $svcPort := .Values.mdcb.probes.healthCheckPort -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: health-check-{{ $fullName }}
+  labels:
+    {{- include "tyk-mdcb.labels" . | nindent 4 }}
+  {{- with .Values.mdcb.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.mdcb.ingress.className }}
+  ingressClassName: {{ .Values.mdcb.ingress.className }}
+  {{- end }}
+  {{- if .Values.mdcb.ingress.tls }}
+  tls:
+    {{- range .Values.mdcb.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.mdcb.ingress.healthCheck.host | quote }}
+      http:
+        paths:
+          - path: {{ .Values.mdcb.ingress.healthCheck.path | quote }}
+            pathType: {{ .Values.mdcb.ingress.healthCheck.pathType | quote }}
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+{{- end }}
