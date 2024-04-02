@@ -23,7 +23,7 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
-{{- define "tyk-gateway.gwproto" -}}
+{{- define "tyk-gateway.gw_proto" -}}
 {{- if .Values.global.tls.gateway -}}
 https
 {{- else -}}
@@ -59,7 +59,7 @@ Create chart name and version as used by the chart label.
 {{- else if and .Values.global.redis.host .Values.global.redis.port -}}
 {{ .Values.global.redis.host }}:{{ .Values.global.redis.port }}
 {{- else -}}
-redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+redis.{{ .Release.Namespace }}.svc:6379
 {{- end -}}
 {{- end -}}
 
@@ -93,4 +93,52 @@ redisPass
     {{- else }}
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
+{{- end -}}
+
+{{- define "otel-headers" -}}
+{{ if (.Values.gateway.opentelemetry).headers }}
+        {{- $list := list -}}
+        {{- range $k, $v := .Values.gateway.opentelemetry.headers  -}}
+        {{- $list = append $list (printf "%s:%s" $k $v) -}}
+        {{- end -}}
+        {{ join "," $list }}
+{{- end -}}
+{{- end -}}
+
+{{- define "otel-secretMountPath" -}}
+    {{- if ((.Values.gateway.opentelemetry).tls).secretMountPath -}}
+        {{ trimSuffix "/" .Values.gateway.opentelemetry.tls.secretMountPath }}
+    {{- else -}}
+        /etc/ssl/certs
+    {{- end -}}
+{{- end -}}
+
+{{- define "otel-tlsCertPath" -}}
+    {{- if .Values.gateway.opentelemetry.tls.certFileName -}}
+        {{- if .Values.gateway.opentelemetry.tls.certificateSecretName -}}
+        {{- printf "%s/%s" ( include "otel-secretMountPath" . ) .Values.gateway.opentelemetry.tls.certFileName -}}
+        {{- else -}}
+        {{ .Values.gateway.opentelemetry.tls.certFileName }}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- define "otel-tlsKeyPath"}}
+    {{- if .Values.gateway.opentelemetry.tls.keyFileName -}}
+        {{- if .Values.gateway.opentelemetry.tls.certificateSecretName -}}
+        {{- printf "%s/%s" ( include "otel-secretMountPath" . ) .Values.gateway.opentelemetry.tls.keyFileName -}}
+        {{- else -}}
+        {{.Values.gateway.opentelemetry.tls.keyFileName}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- define "otel-tlsCAPath"}}
+    {{- if .Values.gateway.opentelemetry.tls.caFileName -}}
+        {{- if .Values.gateway.opentelemetry.tls.certificateSecretName -}}
+        {{- printf "%s/%s" ( include "otel-secretMountPath" . ) .Values.gateway.opentelemetry.tls.caFileName -}}
+        {{- else -}}
+        {{.Values.gateway.opentelemetry.tls.caFileName -}}
+        {{- end -}}
+    {{- end -}}
 {{- end -}}

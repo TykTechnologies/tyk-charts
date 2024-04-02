@@ -1,11 +1,12 @@
-{{- if .Values.bootstrap -}}
+{{- if .Values.global.components.bootstrap -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name:  {{ .Values.bootstrap.jobs.bootstrapJobName }}
+  name: bootstrap-post-install-{{ include "tyk-bootstrap.fullname" . }}
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    tyk.tyk.io/k8s-bootstrap: tyk-k8s-bootstrap-post-install
 
     # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
     # when every app will have its own a chart
@@ -21,21 +22,18 @@ spec:
   template:
     metadata:
       annotations:
-        sidecar.istio.io/inject: “false”
         {{- if .Values.bootstrap.podAnnotations.postInstallPodAnnotations}}
         {{ toYaml .Values.bootstrap.podAnnotations.postInstallPodAnnotations | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: k8s-bootstrap-role
+      serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
       containers:
         - name: bootstrap-tyk-post-install
-          image: tykio/tyk-k8s-bootstrap-post:v1.5.0
+          image: {{ .Values.bootstrap.jobs.postInstall.image.repository }}:{{ .Values.bootstrap.jobs.postInstall.image.tag }}
           command: [ './app/bin/bootstrap-app-post' ]
           imagePullPolicy: IfNotPresent
           env:
-            - name: TYK_DB_OMITCONFIGFILE
-              value: "true"
-            - name: TYK_ADMIN_FIRST_NAME
+            - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
               {{ if .Values.global.adminUser.useSecretName }}
               valueFrom:
                 secretKeyRef:
@@ -44,7 +42,7 @@ spec:
               {{ else }}
               value: {{ .Values.global.adminUser.firstName | quote }}
               {{ end }}
-            - name: TYK_ADMIN_LAST_NAME
+            - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_LASTNAME
               {{ if .Values.global.adminUser.useSecretName }}
               valueFrom:
                 secretKeyRef:
@@ -53,7 +51,7 @@ spec:
               {{ else }}
               value: {{ .Values.global.adminUser.lastName | quote }}
               {{ end }}
-            - name: TYK_ADMIN_EMAIL
+            - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_EMAILADDRESS
               {{ if .Values.global.adminUser.useSecretName }}
               valueFrom:
                 secretKeyRef:
@@ -62,37 +60,20 @@ spec:
               {{ else }}
               value: {{ .Values.global.adminUser.email | quote }}
               {{ end }}
-            - name: TYK_ADMIN_PASSWORD
+            - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ if .Values.global.adminUser.useSecretName }} {{ .Values.global.adminUser.useSecretName }} {{ else }} tyk-dashboard-login-details {{ end }}
                   key: adminUserPassword
-            - name: TYK_POD_NAMESPACE
+            - name: TYK_K8SBOOTSTRAP_K8S_RELEASENAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: TYK_DASHBOARD_PROTO
+            - name: TYK_K8SBOOTSTRAP_K8S_DASHBOARDSVCPROTO
               value: "{{ include "tyk-bootstrap.dash_proto" . }}"
-            - name: TYK_DASHBOARD_SVC
-              {{- if .Values.bootstrap.dashboard.serviceName }}
-              value: {{ .Values.bootstrap.dashboard.serviceName | quote }}
-              {{- else if .Values.global.components.dashboard }}
-              value: "dashboard-svc-{{.Release.Name}}-tyk-dashboard"
-              {{- else }}
-              value: "dashboard-svc-tyk-dashboard"
-              {{- end }}
-            - name: TYK_DB_LISTENPORT
-              value: "{{ .Values.global.servicePorts.dashboard }}"
-            - name: TYK_DB_LICENSEKEY
-              {{ if .Values.global.secrets.useSecretName }}
-              valueFrom:
-                secretKeyRef:
-                  key: DashLicense
-                  name: {{ .Values.global.secrets.useSecretName }}
-              {{ else }}
-              value: {{ .Values.global.license.dashboard | quote }}
-              {{ end }}
-            - name: TYK_ADMIN_SECRET
+            - name: TYK_K8SBOOTSTRAP_INSECURESKIPVERIFY
+              value: {{ default "false" .Values.bootstrap.sslInsecureSkipVerify | quote }}
+            - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_SECRET
               {{- if not .Values.global.secrets.useSecretName }}
               value: {{ .Values.global.secrets.AdminSecret | quote }}
               {{- else }}
@@ -101,36 +82,23 @@ spec:
                   name: {{ .Values.global.secrets.useSecretName | quote }}
                   key: AdminSecret
               {{- end }}
-            - name: TYK_ORG_NAME
+            - name: TYK_K8SBOOTSTRAP_TYK_ORG_NAME
               value: {{ .Values.bootstrap.org.name | quote }}
-            - name: TYK_ORG_CNAME
+            - name: TYK_K8SBOOTSTRAP_TYK_ORG_CNAME
               value: {{ .Values.bootstrap.org.cname | quote }}
-            {{- if .Values.bootstrap.dashboard.enabled }}
-            - name: DASHBOARD_ENABLED
-              value: "true"
-            - name: BOOTSTRAP_DASHBOARD
-              value: "true"
+            - name: TYK_K8SBOOTSTRAP_BOOTSTRAPDASHBOARD
+              value: {{ .Values.bootstrap.dashboard | quote }}
+            - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
+              value: {{ .Values.bootstrap.operatorSecret }}
+            {{- if .Values.bootstrap.devPortal }}
+            - name: TYK_K8SBOOTSTRAP_DEVPORTALKUBERNETESSECRETNAME
+              value: {{ .Values.global.secrets.devPortal}}
             {{- end }}
-            {{- if .Values.bootstrap.operatorSecret }}
-            - name: OPERATOR_SECRET_ENABLED
-              value: "true"
-            - name: OPERATOR_SECRET_NAME
-              value: "tyk-operator-conf"
-            {{- end }}
-            {{- if .Values.global.bootstrap.enterprisePortal }}
-            - name: ENTERPRISE_PORTAL_SECRET_ENABLED
-              value: "true"
-            - name: ENTERPRISE_PORTAL_SECRET_NAME
-              value: {{ .Values.global.secrets.enterprisePortal}}
-            {{- end }}
-            - name: GATEWAY_ADDRESS
-              value: "{{ include "tyk-bootstrap.gateway_url" . }}"
-            {{- if .Values.bootstrap.portal.enabled }}
-            - name: BOOTSTRAP_PORTAL
-              value: "true"
-            {{- end }}
-            - name: TYK_DASHBOARD_DEPLOY
-              value: {{ .Values.bootstrap.dashboard.deploymentName }}
+            - name: TYK_K8SBOOTSTRAP_BOOTSTRAPPORTAL
+              value: {{ .Values.bootstrap.portal | quote }}
+           {{- if .Values.bootstrap.jobs.postInstall.extraEnvs }}
+           {{- include "tyk-bootstrap.tplvalues.render" ( dict "value" .Values.bootstrap.jobs.postInstall.extraEnvs "context" $ ) | nindent 12 }}
+           {{- end }}
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}

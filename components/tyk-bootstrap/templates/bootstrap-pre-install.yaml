@@ -1,11 +1,11 @@
-{{- if .Values.bootstrap.dashboard.enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name:  {{ .Values.bootstrap.jobs.bootstrapPreInstallJobName }}
+  name: bootstrap-pre-install-{{ include "tyk-bootstrap.fullname" . }}
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    tyk.tyk.io/k8s-bootstrap: tyk-k8s-bootstrap-pre-install
 
     # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
     # when every app will have its own a chart
@@ -25,14 +25,14 @@ spec:
         {{ toYaml .Values.bootstrap.podAnnotations.preInstallPodAnnotations | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: k8s-bootstrap-role
+      serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
       containers:
         - name: bootstrap-tyk-pre-install
-          image: tykio/tyk-k8s-bootstrap-pre-install:latest
+          image: {{ .Values.bootstrap.jobs.preInstall.image.repository }}:{{ .Values.bootstrap.jobs.preInstall.image.tag }}
           command: ['/app/bin/bootstrap-app-pre-install']
           imagePullPolicy: IfNotPresent
           env:
-            - name: TYK_DB_LICENSEKEY
+            - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
               {{ if .Values.global.secrets.useSecretName }}
               valueFrom:
                 secretKeyRef:
@@ -41,7 +41,8 @@ spec:
               {{ else }}
               value: {{ .Values.global.license.dashboard | quote }}
               {{ end }}
+          {{- if .Values.bootstrap.jobs.preInstall.extraEnvs }}
+          {{- include "tyk-bootstrap.tplvalues.render" ( dict "value" .Values.bootstrap.jobs.preInstall.extraEnvs "context" $ ) | nindent 12 }}
+          {{- end }}
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
-{{- end }}
-      

@@ -9,7 +9,7 @@
 # Default value: tyk-pump.name
 nameOverride: ""
 
-# Overrides app name. IT is truncated to 63 characters.
+# Overrides app name. It is truncated to 63 characters.
 # Default value: tyk-pump.fullname
 fullnameOverride: ""
 
@@ -23,16 +23,16 @@ global:
     # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
     # the endpoints of the redis instances or use the cluster configuration endpoint.
     #
-    # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+    # Default value: redis.{{ .Release.Namespace }}.svc:6379
     # addrs:
     #   Example using tyk simple redis chart
-    #   - redis.tyk.svc.cluster.local:6379
+    #   - redis.tyk.svc:6379
     #   Example using bitnami/redis
-    #   - tyk-redis-master.tyk.svc.cluster.local:6379
+    #   - tyk-redis-master.tyk.svc:6379
     #   Example using bitnami/redis with sentinel
-    #   - tyk-redis.tyk.svc.cluster.local:26379
+    #   - tyk-redis.tyk.svc:26379
     #   Example using bitnami/redis-cluster
-    #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
+    #   - tyk-redis-redis-cluster.tyk.svc:6379
 
     # Redis password
     # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
@@ -46,7 +46,40 @@ global:
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
-    # useSSL: true
+    useSSL: false
+
+    # Path to the CA file.
+    # sslCAFile: "/etc/certs/ca.crt"
+
+    # The Volume mount path
+    # Default value: /etc/certs 
+    # certificatesMountPath: "/etc/certs"    
+
+    # Path to the cert file.
+    # sslCertFile: "/etc/certs/redis.crt"  
+
+    # Path to the key file.
+    # sslKeyFile: "/etc/certs/redis.key"
+
+    # Maximum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
+    # Default value: 1.3
+    # sslMaxVersion: "1.3"
+
+    # Minimum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
+    # Default value: 1.2
+    # sslMinVersion: "1.2"
+
+    # Set this to `true` to tell Pump to ignore database's cert validation.
+    # Default value: true
+    # sslInsecureSkipVerify: true
+
+    # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
+    # Default value: pmp-tls-secret 
+    # secretName: "pmp-tls-secret"
+
+    # Name of the volume where the secret will be mounted
+    # Default value: pmp-tls-secret-volume 
+    # volumeName: "pmp-tls-secret-volume"
 
     # If using "Redis Cluster" set enableCluster to true
     # (e.g. if using bitnami/redis-cluster)
@@ -67,12 +100,20 @@ global:
       database: 0
 
   # If Mongo pump is in use, please set the connection details of MongoDB in the below field.
+  # Please check https://tyk.io/docs/planning-for-production/database-settings/mongodb/#supported-versions
+  # for the list of supported MongoDB versions.
   mongo:
     # The mongoURL value will allow you to set your MongoDB address.
-    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+    # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc:27017/tyk_analytics
+    # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
     # If your MongoDB has a password you can add the username and password to the url
-    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+    # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc:27017/tyk_analytics?authSource=admin
+
+    # mongo-go driver is supported for Tyk 5.0.2+.
+    # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
+    # For MongoDB versions prior to 4.4, please use the mgo driver.
+    # Since Tyk-Pump 1.9 the default driver is mongo-go.
+    driver: mongo-go
 
     # Connection URL can also be set using a secret. Provide the name of the secret and key below.
     # connectionURLSecret:
@@ -85,11 +126,17 @@ global:
 
   # If postgres pump is in use, please set the connection details of Postgres in the below field.
   postgres:
-    host: tyk-postgres-postgresql.tyk.svc.cluster.local
+    # host corresponds to the host name of postgres
+    host: tyk-postgres-postgresql.tyk.svc
+    # port corresponds to the port of postgres
     port: 5432
+    # user corresponds to the user of postgres
     user: postgres
+    # password corresponds to the password of the given postgres user in selected database
     password:
+    # database corresponds to the database to be used in postgres
     database: tyk_analytics
+    # sslmode corresponds to if postgres runs in sslmode (https)
     sslmode: disable
 
     # Connection string can also be set using a secret. Provide the name of the secret and key below.
@@ -154,7 +201,7 @@ pump:
     enabled: false
 
     # type specifies type of the service.
-    type: NodePort
+    type: ClusterIP
 
     # port specifies the port exposed by the service.
     port: 9090
@@ -166,12 +213,23 @@ pump:
     # annotations specifies annotations to be added Tyk Pump service.
     annotations: {}
 
+    # The name for the service port
+    portName: ""    
+
   # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
   # The default port is 9090.
   containerPort: 9090
 
   # backend defines the pumps to be created by default, as an array of string.
-  # Supported backends are ["mongo", "postgres", "postgres-aggregate", "prometheus","hybrid"]
+  # Supported backends are:
+  #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
+  #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
+  #   - "mongo-selective": Enables ONLY Mongo Selective
+  #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
+  #   - "postgres-aggregate": Enables ONLY SQL Aggregate AND SQL Graph Aggregate
+  #   - "postgres-pump": Enables ONLY SQL Pump AND SQL graph pump
+  #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
+  #   - "hybrid": Enables Hybrid Pump
   # If you would like to use other backends such as ElasticSearch, please
   # configure the backend via environment variables.
   backend:
@@ -223,6 +281,16 @@ pump:
       podMonitorSelector:
         release: prometheus-stack
 
+  # sqlGraphPump configures values to be used to configure tyk sql graph pump.
+  sqlGraphPump:
+    # tableName is the name of the table that will be created and used by the sql graph pump
+    tableName: "tyk_analytics_graphs"
+
+  # mongoGraphPump configures values to be used to configure tyk mongo graph pump.
+  mongoGraphPump:
+    # collectionName is the name of the collection that will be created and used by the mongo graph pump
+    collectionName: "tyk_graph_analytics"
+
   # We usually recommend not to specify default resources and to leave this
   # as a conscious choice for the user. This also increases chances charts
   # run on environments with little resources, such as Minikube. If you do
@@ -265,17 +333,21 @@ pump:
   #   value: 30
   extraEnvs: []
 
-  ## extraVolumes is a list of volumes to be added to the pod
-  ## extraVolumes:
-  ##   - name: ca-certs
-  ##     secret:
-  ##       defaultMode: 420
-  ##       secretName: ca-certs
+  # extraVolumes is a list of volumes to be added to the pod
+  # extraVolumes:
+  #   - name: ca-certs
+  #     secret:
+  #       defaultMode: 420
+  #       secretName: ca-certs
   extraVolumes: []
 
-  ## extraVolumeMounts is a list of volume mounts to be added to the pod
-  ## extraVolumeMounts:
-  ##   - name: ca-certs
-  ##     mountPath: /etc/ssl/certs/ca-certs.crt
-  ##     readOnly: true
+  # extraVolumeMounts is a list of volume mounts to be added to the pod
+  # extraVolumeMounts:
+  #   - name: ca-certs
+  #     mountPath: /etc/ssl/certs/ca-certs.crt
+  #     readOnly: true
   extraVolumeMounts: []
+
+  # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
+  # If a service account is to be used for Tyk Pump, it should be manually created
+  serviceAccountName: ""

@@ -1,0 +1,213 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mdcb-{{ include "tyk-mdcb.fullname" . }}
+  labels:
+    {{- include "tyk-mdcb.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.mdcb.autoscaling.enabled }}
+  replicas: {{ .Values.mdcb.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "tyk-mdcb.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.mdcb.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "tyk-mdcb.labels" . | nindent 8 }}
+        {{- with .Values.mdcb.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.mdcb.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tyk-mdcb.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.mdcb.podSecurityContext | nindent 8 }}
+      containers:
+        - name: mdcb-{{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.mdcb.containerSecurityContext | nindent 12 }}
+          image: "{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
+          imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
+          command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_mdcb.conf"]
+          ports:
+            - containerPort: {{ .Values.mdcb.listenPort }}
+            - containerPort: {{ .Values.mdcb.probes.healthCheckPort }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.mdcb.probes.liveness.path }}
+              port: {{ .Values.mdcb.probes.healthCheckPort}}
+              scheme: "HTTP"
+            initialDelaySeconds: {{ .Values.mdcb.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.mdcb.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.mdcb.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.mdcb.probes.liveness.failureThreshold }}
+          readinessProbe:
+            initialDelaySeconds: {{ .Values.mdcb.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.mdcb.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.mdcb.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.mdcb.probes.readiness.failureThreshold }}
+            httpGet:
+              path: {{ .Values.mdcb.probes.readiness.path }}
+              port: {{ .Values.mdcb.probes.healthCheckPort}}
+              scheme: "HTTP"
+          resources:
+            {{- toYaml .Values.mdcb.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.mdcb.tls.useSSL }}
+            - name: {{ .Values.mdcb.tls.volumeName }}
+              mountPath: {{ .Values.mdcb.tls.certificatesMountPath }}
+            {{- end }}
+
+            {{- with .Values.global.redis }}
+            {{- if and .useSSL .volumeName .certificatesMountPath }}
+            - name: {{ .volumeName }}
+              mountPath: {{ .certificatesMountPath }}
+            {{- end }}
+            {{- end }}
+
+            - name: mdcb-conf
+              mountPath: /etc/tyk-sink
+              {{- if .Values.mdcb.extraVolumeMounts }}
+              {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraVolumeMounts "context" $) | nindent 10 }}
+              {{- end }}
+          env:
+            - name: TYK_MDCB_LISTENPORT
+              value: "{{ .Values.mdcb.listenPort }}"
+            - name: TYK_MDCB_HEALTHCHECKPORT
+              value: "{{ .Values.mdcb.probes.healthCheckPort }}"
+            - name: TYK_MDCB_STORAGE_TYPE
+              value: "redis"
+            - name: TYK_MDCB_STORAGE_ENABLECLUSTER
+              value: "{{ default "false" .Values.global.redis.enableCluster }}"
+            - name: TYK_MDCB_STORAGE_ADDRS
+              value: {{ include "mdcb.redis_url" . | quote }}
+            - name: TYK_MDCB_HASHKEYS
+              value: "{{ .Values.global.hashKeys }}"
+
+            # Redis TLS configurations
+            {{- if .Values.global.redis.useSSL }}
+            - name: TYK_MDCB_STORAGE_REDISSSLMAXVERSION
+              value: "{{ .Values.global.redis.sslMaxVersion }}"
+            - name: TYK_MDCB_STORAGE_REDISSSLMINVERSION
+              value: "{{ .Values.global.redis.sslMinVersion }}"
+            {{- end }}
+
+            {{- with .Values.global.redis }}
+            {{- if and .useSSL .sslCAFile }}
+            - name: TYK_MDCB_STORAGE_REDISSSLCAFILE
+              value: "{{ .sslCAFile }}"  
+            {{- end }}
+            {{- end }}              
+
+            {{- with .Values.global.redis }}
+            {{- if and .useSSL .sslCertFile .sslKeyFile }}
+            - name: TYK_MDCB_STORAGE_REDISSSLCERTFILE
+              value: "{{ .sslCertFile }}"
+            - name: TYK_MDCB_STORAGE_REDISSSLKEYFILE
+              value: "{{ .sslKeyFile }}"   
+            {{- end }}
+            {{- end }}                                
+
+            {{- if .Values.mdcb.tls.useSSL }}
+            - name: TYK_MDCB_SERVEROPTIONS_USESSL
+              value: "{{ .Values.mdcb.tls.useSSL }}"
+            - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+              value: "{{ .Values.mdcb.tls.certificateKeyFile }}"
+            - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+              value: "{{ .Values.mdcb.tls.certificateCertFile }}"                         
+            {{- end }}
+            {{ if .Values.global.mtls.privateCertificateEncodingSecret }}
+            - name: TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
+              value: {{ .Values.global.mtls.privateCertificateEncodingSecret | quote }}
+            {{ end }}
+            - name: TYK_MDCB_STORAGE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mdcb.redis_secret_name" . }}
+                  key: {{ include "mdcb.redis_secret_key" . }}
+            - name: TYK_MDCB_STORAGE_REDISUSESSL
+              value: "{{ default "false" .Values.global.redis.useSSL }}"
+            {{- if .Values.global.redis.sslInsecureSkipVerify }}
+            - name: TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
+              value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
+            {{- end }}
+            - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
+              value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
+            - name: TYK_MDCB_LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.mdcb.useSecretName }} {{ .Values.mdcb.useSecretName }} {{ else }} secrets-{{ include "tyk-mdcb.fullname" . }} {{ end }}
+                  key: MDCBLicense
+            {{ if eq "postgres" (include "mdcb.storageType" .) }}
+            - name: TYK_MDCB_ANALYTICSCONFIG_TYPE
+              value: "postgres"
+            - name: TYK_MDCB_ANALYTICSCONFIG_CONNECTIONSTRING
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mdcb.pg_connection_string_secret_name" . }}
+                  key: {{ include "mdcb.pg_connection_string_secret_key" . }}
+
+            {{ else if eq "mongo" (include "mdcb.storageType" .) }}
+            - name: TYK_MDCB_ANALYTICSCONFIG_TYPE
+              value: "mongo"
+            - name: TYK_MDCB_ANALYTICSCONFIG_MONGOURL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mdcb.mongo_url_secret_name" . }}
+                  key: {{ include "mdcb.mongo_url_secret_key" . }}
+            - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
+              value: "{{ default "false" .Values.global.mongo.useSSL }}"
+            {{ end }}
+            {{ if .Values.global.mdcbSynchronizer.enabled }}
+            - name: TYK_MDCB_SYNCWORKER_ENABLED
+              value: {{ .Values.global.mdcbSynchronizer.enabled | quote }}
+            - name: TYK_MDCB_SYNCWORKER_HASHKEYS
+              value: {{ .Values.global.hashKeys | quote }}
+            {{ end }}
+          {{- if .Values.mdcb.extraEnvs }}
+          {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraEnvs "context" $) | nindent 12 }}
+          {{- end }}
+      volumes:
+        {{- if .Values.mdcb.tls.useSSL }}
+        - name: {{ .Values.mdcb.tls.volumeName }}
+          secret:
+            secretName: {{ .Values.mdcb.tls.secretName }}
+        {{- end }}
+
+        {{- with .Values.global.redis }}
+        {{- if and .useSSL .secretName .volumeName }}
+        - name: {{ .volumeName }}
+          secret:
+            secretName: {{ .secretName }}
+        {{- end }}
+        {{- end }}
+
+        - name: mdcb-conf
+          configMap:
+            name: mdcb-conf-{{ include "tyk-mdcb.fullname" . }}
+            items:
+              - key: tyk_mdcb.conf
+                path: tyk_mdcb.conf
+          {{- if .Values.mdcb.extraVolumes }}
+          {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraVolumes "context" $) | nindent 8 }}
+          {{- end }}
+      {{- with .Values.mdcb.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mdcb.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mdcb.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

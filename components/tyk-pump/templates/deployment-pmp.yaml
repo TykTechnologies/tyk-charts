@@ -22,6 +22,9 @@ spec:
         app: pump-{{ include "tyk-pump.fullname" . }}
         release: {{ .Release.Name }}
     spec:
+    {{- if .Values.pump.serviceAccountName }}
+      serviceAccountName: "{{ .Values.pump.serviceAccountName }}"
+    {{- end }}
 {{- if .Values.pump.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.pump.nodeSelector | indent 8 }}
@@ -59,12 +62,37 @@ spec:
             value: hybrid
           - name: TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING
             value: "{{ .Values.global.remoteControlPlane.connectionString }}"
+          
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCKEY
+          {{- if .Values.global.remoteControlPlane.useSecretName }}
+            valueFrom: 
+              secretKeyRef:
+                name: {{.Values.global.remoteControlPlane.useSecretName}}
+                key: orgId
+          {{- else }}
             value: "{{ .Values.global.remoteControlPlane.orgId }}"
+          {{- end }}
+
           - name: TYK_PMP_PUMPS_HYBRID_META_APIKEY
+          {{- if .Values.global.remoteControlPlane.useSecretName }}
+            valueFrom: 
+              secretKeyRef:
+                name: {{.Values.global.remoteControlPlane.useSecretName}}
+                key: userApiKey
+          {{- else }}
             value: "{{ .Values.global.remoteControlPlane.userApiKey }}"
+          {{- end }}
+
           - name: TYK_PMP_PUMPS_HYBRID_META_GROUPID
+            {{- if .Values.global.remoteControlPlane.useSecretName }}
+            valueFrom: 
+              secretKeyRef:
+                name: {{.Values.global.remoteControlPlane.useSecretName}}
+                key: groupID
+          {{- else }}
             value: "{{ .Values.global.remoteControlPlane.groupID }}"
+          {{- end }}
+
           - name: TYK_PMP_PUMPS_HYBRID_META_USESSL
             value: "{{ .Values.global.remoteControlPlane.useSSL }}"
           - name: TYK_PMP_PUMPS_HYBRID_META_SSLINSECURESKIPVERIFY
@@ -94,13 +122,27 @@ spec:
             value: {{ toYaml .Values.pump.prometheusPump.customMetrics }}
             {{ end }}
           {{ end }}
-          {{ if has "postgres" .Values.pump.backend }}
+
+          {{ if or (has "postgres-pump" .Values.pump.backend) (has "postgres" .Values.pump.backend) }}
           # SQL Pump
           - name: TYK_PMP_PUMPS_SQL_TYPE
             value: "sql"
           - name: TYK_PMP_PUMPS_SQL_META_TYPE
             value: "postgres"
           - name: TYK_PMP_PUMPS_SQL_META_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
+
+          #SQL Graph Pump
+          - name: TYK_PMP_PUMPS_SQLGRAPH_TYPE
+            value: "sql-graph"
+          - name: TYK_PMP_PUMPS_SQLGRAPH_META_TYPE
+            value: "postgres"
+          - name: TYK_PMP_PUMPS_SQLGRAPH_META_TABLENAME
+            value: "{{ default "tyk_analytics_graphs" .Values.pump.sqlGraphPump.tableName }}"
+          - name: TYK_PMP_PUMPS_SQLGRAPH_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
                 name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
@@ -117,6 +159,17 @@ spec:
               secretKeyRef:
                 name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
                 key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
+
+          # SQL Aggregate Graph Pump
+          - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_TYPE
+            value: "sql-graph-aggregate"
+          - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_META_TYPE
+            value: "postgres"
+          - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_META_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
+                key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
           {{ end }}
           {{ if has "mongo" .Values.pump.backend }}
           # Mongo Pump
@@ -129,7 +182,25 @@ spec:
               secretKeyRef:
                 name: {{ include "tyk-pump.mongo_url_secret_name" . }}
                 key: {{ include "tyk-pump.mongo_url_secret_key" . }}
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGODRIVERTYPE
+            value: "{{ default "mongo-go" .Values.global.mongo.driver}}"
 
+          # Mongo Graph Pump
+          - name: TYK_PMP_PUMPS_GRAPHMONGO_TYPE
+            value: "mongo-graph"
+          - name: TYK_PMP_PUMPS_GRAPHMONGO_META_COLLECTIONNAME
+            value: "{{ default "tyk_graph_analytics" .Values.pump.mongoGraphPump.tableName }}"
+          - name: TYK_PMP_PUMPS_GRAPHMONGO_META_MONGOUSESSL
+            value: "{{ default "false" .Values.global.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_GRAPHMONGO_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-pump.mongo_url_secret_name" . }}
+                key: {{ include "tyk-pump.mongo_url_secret_key" . }}
+          - name: TYK_PMP_PUMPS_GRAPHMONGO_META_MONGODRIVERTYPE
+            value: "{{ default "mongo-go" .Values.global.mongo.driver}}"
+          {{ end }}
+          {{ if or (has "mongo" .Values.pump.backend) (has "mongo-aggregate" .Values.pump.backend) }}
           # Mongo Aggregate Pump
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_TYPE
             value: "mongo-pump-aggregate"
@@ -144,7 +215,51 @@ spec:
             value: "tyk_analytics_pump"
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
             value: "true"
+          - name : TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGODRIVERTYPE
+            value: "{{ default "mongo-go" .Values.global.mongo.driver}}"
           {{ end }}
+          {{ if or (has "mongo" .Values.pump.backend) (has "mongo-selective" .Values.pump.backend) }}
+          - name: TYK_PMP_PUMPS_MONGOSELECTIVE_TYPE
+            value: "mongo-pump-selective"
+          - name: TYK_PMP_PUMPS_MONGOSELECTIVE_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-pump.mongo_url_secret_name" . }}
+                key: {{ include "tyk-pump.mongo_url_secret_key" . }}
+          - name: TYK_PMP_PUMPS_MONGOSELECTIVE_META_MONGOUSESSL
+            value: "{{ default "false" .Values.global.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_MONGOSELECTIVE_META_MONGODRIVERTYPE
+            value: "{{ default "mongo-go" .Values.global.mongo.driver}}"
+          {{ end }}
+
+          {{- if .Values.global.redis.sslInsecureSkipVerify }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISSSLINSECURESKIPVERIFY
+            value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"  
+          {{- end}}
+
+          # Redis TLS configurations
+          {{- if .Values.global.redis.useSSL }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLMAXVERSION
+            value: "{{ .Values.global.redis.sslMaxVersion }}"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLMINVERSION
+            value: "{{ .Values.global.redis.sslMinVersion }}" 
+          {{- end }}
+
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .sslCAFile }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLCAFILE
+            value: "{{ .sslCAFile }}"
+          {{- end }}
+          {{- end }}          
+
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .sslCertFile .sslKeyFile }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLCERTFILE
+            value: "{{ .sslCertFile }}"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLKEYFILE
+            value: "{{ .sslKeyFile }}"   
+          {{- end }}
+          {{- end }}                                 
 
           # Uptime Pump configurations
           {{ if eq "disabled" (include "tyk-pump.uptimePump" .) }}
@@ -172,7 +287,9 @@ spec:
                 name: {{ include "tyk-pump.mongo_url_secret_name" . }}
                 key: {{ include "tyk-pump.mongo_url_secret_key" . }}
           - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
+            value: "{{ default "false" .Values.global.mongo.useSSL }}"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGODRIVERTYPE
+            value: "{{ default "mongo-go" .Values.global.mongo.driver}}"
           {{ end }}
           {{ end }}
 
@@ -222,6 +339,14 @@ spec:
           {{- if .Values.pump.extraVolumeMounts }}
           {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
+
+          {{- with .Values.global.redis }}
+          {{- if and .useSSL .volumeName .certificatesMountPath }}
+          - name: {{ .volumeName }}
+            mountPath: {{ .certificatesMountPath }}
+          {{- end }}
+          {{- end }}
+
         resources:
 {{ toYaml .Values.pump.resources | indent 12 }}
       {{- if .Values.pump.securityContext }}
@@ -232,3 +357,10 @@ spec:
         {{- if .Values.pump.extraVolumes }}
         {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
+        {{- with .Values.global.redis }}
+        {{- if and .useSSL .secretName .volumeName }}
+        - name: {{ .volumeName }}
+          secret:
+            secretName: {{ .secretName }}
+        {{- end }}
+        {{- end }}              

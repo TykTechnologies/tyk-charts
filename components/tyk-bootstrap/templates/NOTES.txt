@@ -1,0 +1,7 @@
+Thank you for installing Tyk Bootstrap Chart.
+
+Tyk Bootstrap chart comes with Kubernetes Jobs to bootstrap
+- Pre-install Helm Chart hook to validate Tyk Dashboard license,
+- Tyk Dashboard,
+- Tyk Classic Portal,
+- Kubernetes Secrets for Tyk Developer Portal and Tyk Operator.

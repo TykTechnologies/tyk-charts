@@ -1,6 +1,13 @@
 # Default values for tyk-bootstrap.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+
+# fullnameOverride overrides App name. It is truncated to 63 characters.
+fullnameOverride: ""
+
+# nameOverride overrides the Chart name. It is truncated to 63 characters.
+nameOverride: ""
+
 global:
   license:
     # The license key needed for the Tyk Dashboard.
@@ -14,81 +21,105 @@ global:
     # adminUserEmail - sets .global.adminUser.email
     useSecretName: ""
 
+    # firstName corresponds to the first name of the admin user that will be created during the bootstrapping process.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
     firstName: admin
+    # lastName corresponds to the last name of the admin user that will be created during the bootstrapping process.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_LASTNAME
     lastName: user
+    # email corresponds to the email of the admin user that will be created during the bootstrapping process.
+    # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_EMAILADDRESS
     email: default@example.com
 
-  bootstrap:
-    enterprisePortal: true
-    dashboard: true
-
-  servicePorts:
-    # The port at which the dashboard service can be found at
-    dashboard: 3000
-    # The port at which the gateway service can be found at
-    gateway: 8080
-
   components:
-    # Enables/disables the dashboard component and also used to detect when the bootstrapping needs to be done
-    # for a separate Tyk Dashboard installation or for an umbrella chart installation
-    dashboard: false
-    enterprisePortal: false
+    # Determines whether the bootstrap jobs should be run
+    # Those jobs verify the presence of the dashboard license and perform various operations to
+    # make apps such as tyk-dashboard, tyk-portal and tyk-operator ready to use from the get go
+    # If this is set to false, only the hook that checks for dashboard license will be run
+    bootstrap: true
 
   tls:
     # If set to true the Dashboard will use SSL connection.
-    # You will also need to set the:
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-    # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-    # variables in extraEnvs object array to define your SSL cert and key files.
-    # When true, sets the dashboard protocol to HTTPS.
     dashboard: false
-    # When true, sets the gateway protocol to HTTPS.
-    gateway: false
 
   secrets:
     # tyk_analytics.conf admin_secret
-    # tib.conf TykAPISettings.GatewayConfig.AdminSecret
-    # tib.conf TykAPISettings.DashboardConfig.AdminSecret
     AdminSecret: "12345"
     # If you don't want to store plaintext secrets in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below
     # You can set following fields in the secret
     # AdminSecret - Admin user secret key
     useSecretName: ""
-    enterprisePortal: tyk-enterprise-portal-conf
+    devPortal: tyk-dev-portal-conf
 
 bootstrap:
-  dashboard:
-    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
-    enabled: true
-    # Name of the deployment that we want to bootstrap
-    deploymentName: dashboard-tyk-dashboard
+  # Trigger to control if we want to bootstrap the Developer Portal component using tyk-bootstrap
+  devPortal: true
 
-    # Specify if dashboard has custom service name.
-    serviceName: ""
-  portal:
-    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
-    enabled: true
-  gateway:
-    # Name of the gateway deployment
-    deploymentName: gateway-tyk-gateway
+  # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+  dashboard: true
 
+  # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+  portal: true
+
+  # Skip validating the SSL certificates. Usually needed when using self-signed certs.
+  sslInsecureSkipVerify: false
+
+  # Trigger to control if we want to create the tyk-operator secret
+  operatorSecret: tyk-operator-conf
+
+  # The default name for the sa is k8s-bootstrap-role
+  # serviceAccountName field configures the name of the ServiceAccount that is going to be created for bootstrapping Jobs
+  serviceAccountName: "k8s-bootstrap-role"
+
+  # jobs field includes configurations for Helm Hooks.
   jobs:
-    # Name of bootstrap job created when running the tyk-bootstrap chart. (needed for cleanup)
-    bootstrapJobName: bootstrap-post-install
-    bootstrapPreInstallJobName: bootstrap-pre-install
+    # preInstall configures pre-install Helm hook
+    preInstall:
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of pre-install job.
+        repository: tykio/tyk-k8s-bootstrap-pre-install
+        # tag specifies image tag of pre-install job.
+        tag: v2.0.1
 
+      # extraEnvs is used to set extra environment variables to pre-install job.
+      # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
+      #   value: "yourlicense"
+      extraEnvs: []
+
+    # postInstall configures post-install Helm hook
+    postInstall:
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of post-install job.
+        repository: tykio/tyk-k8s-bootstrap-post
+        # tag specifies image tag of post-install job.
+        tag: v2.0.1
+
+      # extraEnvs is used to set extra environment variables to post-install job.
+      # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
+      #   value: "burak"
+      extraEnvs: []
+
+    # preDelete configures pre-delete Helm hook
+    preDelete:
+      # image specifies image repository of bootstrap images
+      image:
+        # repository specifies image repository of pre-delete job.
+        repository: tykio/tyk-k8s-bootstrap-pre-delete
+        # tag specifies image tag of pre-delete job.
+        tag: v2.0.1
+
+      # extraEnvs is used to set extra environment variables to pre-delete job.
+      # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
+      #   value: "tyk-operator-conf"
+      extraEnvs: []
   org:
     # The name for your organization inside Tyk
     name: Default Org
     # The hostname to bind the Portal to.
     cname: tyk-portal.local
-
-  # Trigger to control if we want to create the tyk-operator secret
-  operatorSecret: true
-
-  fullnameOverride: ""
-  nameOverride: ""
 
   # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
   # It takes key-value pairs.
@@ -102,6 +133,9 @@ bootstrap:
   #     key: value
   #     post: install
   podAnnotations:
+    # preInstallPodAnnotations specifies annotations to be added to Tyk Bootstrap pre-install hook's job pods.
     preInstallPodAnnotations: {}
+    # postInstallPodAnnotations specifies annotations to be added to Tyk Bootstrap post-install hook's job pods.
     postInstallPodAnnotations: {}
+    # preDeletePodAnnotations specifies annotations to be added to Tyk Bootstrap pre-delete hook's job pods.
     preDeletePodAnnotations: {}

@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: k8s-bootstrap-role
+  name: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
   annotations:
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: before-hook-creation
@@ -36,5 +36,9 @@ rules:
   - list
 - apiGroups: ["apps"]
   resources: ["deployments"]
-  verbs: ["get","update","patch"]
+  verbs:
+  - get
+  - update
+  - patch
+  - list
 {{- end }}

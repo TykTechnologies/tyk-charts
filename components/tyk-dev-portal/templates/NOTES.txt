@@ -1,0 +1,40 @@
+{{ $svcName := printf "dev-portal-svc-%v" (include "tyk-dev-portal.fullname" .)  }}
+Thank you for installing Tyk Developer Portal Chart. Your release is named '{{ .Release.Name }}'.
+At this point, Tyk Developer Portal is fully installed and should be accessible.
+
+To quickly test everything is ok, you can port-forward Tyk Developer Portal:
+
+    kubectl port-forward service/{{- $svcName }} --namespace {{ .Release.Namespace }} {{ .Values.service.port }}:{{ .Values.service.port }}
+
+    Visit http://localhost:{{ .Values.service.port }}
+
+OR,
+{{ if .Values.ingress.enabled }}
+Since Tyk Enterprise Portal enabled Ingress:
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- else if contains "NodePort" .Values.service.type }}
+Since Tyk Enterprise Portal uses NodePort type service:
+
+    export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ $svcName }})
+    export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+    curl http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.service.type }}
+Since Tyk Enterprise Portal uses LoadBalancer type service:
+
+NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc ${{ $svcName }} -w'
+
+    export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ $svcName }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+
+    curl http://$SERVICE_IP:{{ .Values.service.port }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+Since Tyk Enterprise Portal uses ClusterIP type service:
+
+    kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ $svcName }} {{ .Values.service.port }}:{{ .Values.containerPort }}
+
+    Visit http://127.0.0.1:{{ .Values.service.port }}
+{{- end }}

@@ -1,4 +1,4 @@
-{{- if .Values.bootstrap -}}
+{{- if .Values.global.components.bootstrap -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    tyk.tyk.io/k8s-bootstrap: tyk-k8s-bootstrap-pre-delete
 
     # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
     # when every app will have its own a chart
@@ -24,28 +25,28 @@ spec:
   template:
     metadata:
       annotations:
-        sidecar.istio.io/inject: “false”
         {{- if .Values.bootstrap.podAnnotations.preDeletePodAnnotations}}
         {{ toYaml .Values.bootstrap.podAnnotations.preDeletePodAnnotations | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: k8s-bootstrap-role
+      serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
       containers:
         - name: bootstrap-tyk-pre-delete
-          image: tykio/tyk-k8s-bootstrap-pre-delete:latest
+          image: {{ .Values.bootstrap.jobs.preDelete.image.repository }}:{{ .Values.bootstrap.jobs.preDelete.image.tag }}
           command: [ './app/bin/bootstrap-app-pre-delete' ]
           imagePullPolicy: IfNotPresent
           env:
-            - name: OPERATOR_SECRET_NAME
-              value: "tyk-operator-conf"
-            - name: ENTERPRISE_PORTAL_SECRET_NAME
-              value: "tyk-enterprise-portal-conf"
-            - name: TYK_POD_NAMESPACE
+            - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
+              value: {{ .Values.bootstrap.operatorSecret }}
+            - name: TYK_K8SBOOTSTRAP_DEVPORTALKUBERNETESSECRETNAME
+              value: {{ .Values.global.secrets.devPortal }}
+            - name: TYK_K8SBOOTSTRAP_K8S_RELEASENAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: BOOTSTRAP_JOB_NAME
-              value: {{ .Values.bootstrap.jobs.bootstrapJobName }}
+          {{- if .Values.bootstrap.jobs.preDelete.extraEnvs }}
+          {{- include "tyk-bootstrap.tplvalues.render" ( dict "value" .Values.bootstrap.jobs.preDelete.extraEnvs "context" $ ) | nindent 12 }}
+          {{- end }}
       terminationGracePeriodSeconds: 0
       restartPolicy: Never
 {{- end }}

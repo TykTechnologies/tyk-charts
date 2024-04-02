@@ -1,1 +1,8 @@
-You have deployed Tyk Pump successfully!!
+Thank you for installing Tyk Pump Chart. Your release is named '{{ .Release.Name }}'.
+At this point, Tyk Pump is fully installed and should be accessible.
+
+===================================================
+  Manage Ingress resources and APIs on Kubernetes
+===================================================
+You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
+Please check Tyk Operator documentation at https://tyk.io/docs/tyk-operator/
