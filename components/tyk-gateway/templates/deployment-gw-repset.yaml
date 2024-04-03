@@ -34,8 +34,14 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      {{- if or .Values.gateway.podAnnotations (not .Values.global.secrets.useSecretName) }}
+      annotations:
+      {{- if not .Values.global.secrets.useSecretName }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+      {{- end }}
       {{- if .Values.gateway.podAnnotations }}
-      annotations: {{ toYaml .Values.gateway.podAnnotations | nindent 8 }}
+      {{ toYaml .Values.gateway.podAnnotations | nindent 8 }}
+      {{- end }}
       {{- end }}
       labels:
         app: gateway-{{ include "tyk-gateway.fullname" . }}
