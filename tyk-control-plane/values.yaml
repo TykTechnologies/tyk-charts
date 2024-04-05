@@ -723,7 +723,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
-          tag: v2.0.1
+          tag: v2.1.0
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -737,7 +737,7 @@ tyk-bootstrap:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
-          tag: v2.0.1
+          tag: v2.1.0
 
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
@@ -751,7 +751,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: v2.0.1
+          tag: v2.1.0
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
@@ -763,6 +763,11 @@ tyk-bootstrap:
       name: Default Org
       # The hostname to bind the Portal to.
       cname: tyk-portal.local
+      # hybrid configures whether hybrid organisation is enabled during bootstrap or not.
+      hybrid:
+        # Enabling hybrid allows a worker gateways to login as an organisation member into MDCB.
+        # Set this field to true while using MDCB control plane.
+        enabled: true
 
     # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
     # It takes key-value pairs.
