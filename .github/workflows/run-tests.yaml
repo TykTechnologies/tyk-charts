@@ -65,12 +65,12 @@ jobs:
           kubectl create namespace ${{ env.TYK_OSS_NS }}
           
           # Do not change the name
-          helm install redis simple-redis --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
+          helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
           
           helm dependency update ./tyk-oss
 
       - name: Run chart-testing (install)
-        run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true"
+        run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true"  --helm-extra-set-args "--set=global.redis.passSecret.name=redis" --helm-extra-set-args "--set=global.redis.passSecret.keyName=redis-password" 
 
       - if: failure()
         name: Check logs in case of failure
@@ -88,15 +88,17 @@ jobs:
 
           # Do not change the name
           # Install redis
-          helm install redis simple-redis --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }}
+           helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
          
           # Install mongo
-          helm install mongo simple-mongodb --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }}
+          helm install mongo mongodb --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 15.1.0
+
+          MONGODB_ROOT_PASSWORD=$(kubectl get secret --namespace default mongo-mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 -d)
 
           helm dependency update ./tyk-stack
 
           helm install --namespace ${{ env.TYK_STACK_NS }} tyk-stack ./tyk-stack \
-            --set "global.mongo.mongoURL=mongodb://mongo.tyk-stack.svc:27017/tyk_analytics" \
+            --set "global.mongo.mongoURL=mongodb://root:$MONGODB_ROOT_PASSWORD@mongo.tyk-stack.svc:27017/tyk_analytics" \
             --set "global.redis.addrs[0]=redis.tyk-stack.svc:6379" \
             --set "global.license.dashboard=${{ secrets.DASH_LICENSE }}" \
             --set "global.storageType=mongo" \
