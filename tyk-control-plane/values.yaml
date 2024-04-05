@@ -706,7 +706,7 @@ tyk-bootstrap:
     dashboard: true
 
     # Trigger to control if we want to bootstrap the classic portal component using tyk-bootstrap
-    portal: true
+    portal: false
 
     # Skip validating the SSL certificates. Usually needed when using self-signed certs.
     sslInsecureSkipVerify: false
