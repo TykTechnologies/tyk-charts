@@ -205,7 +205,8 @@ dashboard:
   # hashKeys is used to enable/disable key hashing. It should match with the value set in Gateway configuration.
   # The Dashboard will now operate in a mode that is compatible with key hashing.
   # It is used to set TYK_DB_HASHKEYS
-  # This will be deprecated in future and will be replaced with .global.hashKeys
+  # Deprecated:
+  #   This will be deprecated in future and will be replaced with .global.hashKeys
   hashKeys: true
   # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
   # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
@@ -292,7 +293,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.2.3
+    tag: v5.3.0
 
     # image pull policy
     pullPolicy: Always

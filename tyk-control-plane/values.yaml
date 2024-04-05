@@ -6,8 +6,8 @@ global:
     # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
 
-  # adminUser specifies credentials for Tyk Dashboard admin user while bootstrapping Tyk Dashboard.
-  # Dashboard admin information.
+  # adminUser specifies credentials for Tyk Dashboard and Dev Portal admin user while bootstrapping.
+  # Dashboard and Dev Portal admin information.
   adminUser:
     # If you don't want to store plaintext secrets for admin user in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below.
@@ -227,11 +227,11 @@ global:
     # they are uploaded via certificate storage.
     # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
     privateCertificateEncodingSecret: ""
-  # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
-  # The Dashboard and MDCB will now operate in a mode that is compatible with key hashing.
-  # This takes precedence over the dashboard value i.e `dashboard.hashKeys`
-  # It is used to set TYK_DB_HASHKEYS and TYK_MDCB_HASHKEYS
-  # It will enable hashkeys in both mdcb and dashboard.
+
+  # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true, so it matches.
+  # The Dashboard will now operate in a mode that is compatible with key hashing.
+  # It will enable hash keys for Tyk Gateway
+  # It is used to set TYK_GW_HASHKEYS
   hashKeys: true
 
   # Enables validation of examples in the OAS spec. Defaults to false.
@@ -317,7 +317,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.2.3
+      tag: v5.3.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -546,7 +546,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.8.3
+      tag: v1.9.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -700,12 +700,12 @@ tyk-bootstrap:
 
   bootstrap:
     # Trigger to control if we want to bootstrap the Developer Portal component using tyk-bootstrap
-    devPortal: false
+    devPortal: true
 
     # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
     dashboard: true
 
-    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+    # Trigger to control if we want to bootstrap the classic portal component using tyk-bootstrap
     portal: false
 
     # Skip validating the SSL certificates. Usually needed when using self-signed certs.
@@ -723,7 +723,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
-          tag: v2.0.1
+          tag: v2.1.0
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -737,7 +737,7 @@ tyk-bootstrap:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
-          tag: v2.0.1
+          tag: v2.1.0
 
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
@@ -751,7 +751,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: v2.0.1
+          tag: v2.1.0
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
@@ -763,6 +763,11 @@ tyk-bootstrap:
       name: Default Org
       # The hostname to bind the Portal to.
       cname: tyk-portal.local
+      # hybrid configures whether hybrid organisation is enabled during bootstrap or not.
+      hybrid:
+        # Enabling hybrid allows a worker gateways to login as an organisation member into MDCB.
+        # Set this field to true while using MDCB control plane.
+        enabled: true
 
     # podAnnotations specifies annotations to be added Tyk Bootstrap job pods.
     # It takes key-value pairs.
@@ -808,9 +813,13 @@ tyk-dashboard:
     # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
     # It is used to set TYK_DB_NOTIFYONCHANGE
     notifyOnChange: true
-    # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
+    # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true, so it matches.
     # The Dashboard will now operate in a mode that is compatible with key hashing.
     # It is used to set TYK_DB_HASHKEYS
+    #
+    # Deprecated:
+    #   This field will be deprecated in the next release, please set `global.hashKeys` for configuring hash keys feature
+    #     of Tyk Dashboard.
     hashKeys: true
     # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
     # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
@@ -898,7 +907,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.2.3
+      tag: v5.3.0
 
       # image pull policy
       pullPolicy: Always
@@ -1035,7 +1044,7 @@ tyk-mdcb:
     # The rpc port which worker gateways will connect to.
     # This opens a port on MDCB container and MDCB service targets this port.
     # It is used to set TYK_MDCB_LISTENPORT
-    listenPort: 9090
+    listenPort: 9091
 
     # When it is set to true, instead of sending analytics directly to MongoDB,
     # MDCB can send analytics to Redis. This will allow tyk-pump to pull
@@ -1080,7 +1089,7 @@ tyk-mdcb:
       # image repository for Tyk MDCB
       repository: tykio/tyk-mdcb-docker
       # image tag for Tyk MDCB
-      tag: v2.4.2
+      tag: v2.5.0
       # image pull policy
       pullPolicy: IfNotPresent
 
@@ -1121,7 +1130,7 @@ tyk-mdcb:
       # type corresponds to the service type of Tyk MDCB Service.
       type: ClusterIP
       # The port at which the MDCB service can be found
-      port: 9090
+      port: 9091
       # externalTrafficPolicy corresponds to the external traffic policy if the service type is load balancer
       externalTrafficPolicy: Local
       # annotations corresponds to the annotations which will be added into Tyk Dashboard Service.
@@ -1279,7 +1288,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.8.0
+    tag: v1.8.3
     # image pull policy
     pullPolicy: Always
 
