@@ -31,111 +31,10 @@ Also, you can set the version of each component through `image.tag`. You could f
 * [MongoDB](https://www.mongodb.com) or [PostgreSQL](https://www.postgresql.org) should already be installed or accessible by the gateway.
 
 ## Quick Start with PostgreSQL
-The following quick start guide explains how to use the Tyk Stack Helm chart to configure a Dashboard that includes:
-- Redis for key storage
-- PostgreSQL for app config
-- Tyk Pump to send analytics to PostgreSQL and Prometheus
-
-At the end of this quickstart Tyk Dashboard should be accessible through service `dashboard-svc-tyk-tyk-dashboard` at port `3000`. You can login to Dashboard using the admin email and password to start managing APIs. Tyk Gateway will be accessible through service `gateway-svc-tyk-tyk-gateway.tyk.svc` at port `8080`.
-
-```bash
-NAMESPACE=tyk
-API_SECRET=changeit
-ADMIN_KEY=changeit
-TYK_LICENSE=changeit
-ADMIN_EMAIL=admin@default.com
-ADMIN_PASSWORD=changeit
-
-kubectl create namespace $NAMESPACE
-
-kubectl create secret generic my-secrets -n $NAMESPACE \
-    --from-literal=APISecret=$API_SECRET \
-    --from-literal=AdminSecret=$ADMIN_KEY \
-    --from-literal=DashLicense=$TYK_LICENSE
-
-kubectl create secret generic admin-secrets -n $NAMESPACE \
-    --from-literal=adminUserFirstName=Admin \
-    --from-literal=adminUserLastName=User \
-    --from-literal=adminUserEmail=$ADMIN_EMAIL \
-    --from-literal=adminUserPassword=$ADMIN_PASSWORD
-
-
-helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-helm repo update
-
-helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --install --set image.tag=6.2.13
-
-helm upgrade tyk-postgres oci://registry-1.docker.io/bitnamicharts/postgresql --set "auth.database=tyk_analytics" -n $NAMESPACE --install
-
-POSTGRESQLURL=host=tyk-postgres-postgresql.$NAMESPACE.svc\ port=5432\ user=postgres\ password=$(kubectl get secret --namespace $NAMESPACE tyk-postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)\ database=tyk_analytics\ sslmode=disable
-
-kubectl create secret generic postgres-secrets  -n $NAMESPACE --from-literal=postgresUrl=$POSTGRESQLURL
-
-helm upgrade tyk tyk-helm/tyk-stack -n $NAMESPACE \
-  --install \
-  --set global.adminUser.useSecretName=admin-secrets \
-  --set global.secrets.useSecretName=my-secrets \
-  --set global.redis.addrs="{tyk-redis-master.$NAMESPACE.svc:6379}" \
-  --set global.redis.passSecret.name=tyk-redis \
-  --set global.redis.passSecret.keyName=redis-password \
-  --set global.postgres.connectionStringSecret.name=postgres-secrets \
-  --set global.postgres.connectionStringSecret.keyName=postgresUrl
-```
+Please visit tyk.io for [Quick Start with Helm Chart and PostgreSQL](https://tyk.io/docs/deployment-and-operations/tyk-self-managed/deployment-lifecycle/installations/kubernetes/tyk-helm-tyk-stack-postgresql/)
 
 ## Quick Start with MongoDB
-The following quick start guide explains how to use the Tyk Stack Helm chart to configure a Dashboard that includes:
-- Redis for key storage
-- MongoDB for app config
-- Tyk Pump to send analytics to MongoDB and Prometheus
-
-At the end of this quickstart Tyk Dashboard should be accessible through service `dashboard-svc-tyk-tyk-dashboard` at port `3000`. You can login to Dashboard using the admin email and password to start managing APIs. Tyk Gateway will be accessible through service `gateway-svc-tyk-tyk-gateway.tyk.svc` at port `8080`.
-
-```bash
-NAMESPACE=tyk
-API_SECRET=changeit
-ADMIN_KEY=changeit
-TYK_LICENSE=changeit
-ADMIN_EMAIL=admin@default.com
-ADMIN_PASSWORD=changeit
-
-kubectl create namespace $NAMESPACE
-
-kubectl create secret generic my-secrets -n $NAMESPACE \
-    --from-literal=APISecret=$API_SECRET \
-    --from-literal=AdminSecret=$ADMIN_KEY \
-    --from-literal=DashLicense=$TYK_LICENSE
-
-kubectl create secret generic admin-secrets -n $NAMESPACE \
-    --from-literal=adminUserFirstName=Admin \
-    --from-literal=adminUserLastName=User \
-    --from-literal=adminUserEmail=$ADMIN_EMAIL \
-    --from-literal=adminUserPassword=$ADMIN_PASSWORD
-
-
-helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-helm repo update
-
-helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --install --set image.tag=6.2.13
-
-helm upgrade tyk-mongo oci://registry-1.docker.io/bitnamicharts/mongodb -n $NAMESPACE --install
-
-MONGOURL=mongodb://root:$(kubectl get secret --namespace $NAMESPACE tyk-mongo-mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 -d)@tyk-mongo-mongodb.$NAMESPACE.svc:27017/tyk_analytics?authSource=admin
-
-kubectl create secret generic mongourl-secrets --from-literal=mongoUrl=$MONGOURL -n $NAMESPACE
-
-helm upgrade tyk tyk-helm/tyk-stack -n $NAMESPACE \
-  --install \
-  --set global.adminUser.useSecretName=admin-secrets \
-  --set global.secrets.useSecretName=my-secrets \
-  --set global.redis.addrs="{tyk-redis-master.$NAMESPACE.svc:6379}" \
-  --set global.redis.passSecret.name=tyk-redis \
-  --set global.redis.passSecret.keyName=redis-password \
-  --set global.mongo.driver=mongo-go \
-  --set global.mongo.connectionURLSecret.name=mongourl-secrets \
-  --set global.mongo.connectionURLSecret.keyName=mongoUrl \
-  --set global.storageType=mongo \
-  --set tyk-pump.pump.backend='{prometheus,mongo}' 
-```
+Please visit tyk.io for [Quick Start with Helm Chart and PostgreSQL](https://tyk.io/docs/deployment-and-operations/tyk-self-managed/deployment-lifecycle/installations/kubernetes/tyk-helm-tyk-stack-mongodb/)
 
 ## Installing the Chart
 
@@ -187,6 +86,18 @@ helm show values tyk-helm/tyk-stack > values.yaml
 
 You can update any value in your local `values.yaml` file and use `-f [filename]` flag to override default values during installation. 
 Alternatively, you can use `--set` flag to set it in Tyk installation. See [Using Helm](https://helm.sh/docs/intro/using_helm/) for examples.
+
+To configure Tyk components, users can utilize both config files and [environment variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/). Notably, environment variables take precedence over config files. To maintain simplicity and consistency, the Tyk Helm Charts deploy components with an empty config file while setting container environment variables based on user-defined [values](https://helm.sh/docs/chart_best_practices/values/). This approach ensures seamless integration with Kubernetes practices, allowing for efficient management of configurations. For a comprehensive overview of available configurations, please refer to the [configuration documentation](https://tyk.io/docs/tyk-environment-variables/). Additionally, should any environment variables not be set by the Helm Chart, users can easily add them under the `extraEnvs` section within the charts for further customization. Values set under `extraEnvs` would take precedence over all configurations.
+
+Example of setting extra environment variable to gateway:
+```yaml
+tyk-gateway:
+  gateway:
+    extraEnvs:
+    - name: TYK_GW_LOGLEVEL
+      value: debug
+```
+
 
 ### Set Redis connection details (Required)
 
