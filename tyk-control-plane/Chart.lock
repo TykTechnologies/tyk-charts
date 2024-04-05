@@ -13,9 +13,9 @@ dependencies:
   version: 1.1.0
 - name: tyk-mdcb
   repository: file://../components/tyk-mdcb
-  version: 1.0.0
+  version: 1.0.0-beta2
 - name: tyk-dev-portal
   repository: file://../components/tyk-dev-portal
   version: 1.1.0
-digest: sha256:00301fc05e8d3298e1864e319c8b47badfe0afd9e7a0ab9ded9bbfc44349b191
-generated: "2024-04-05T15:45:11.319295+03:00"
+digest: sha256:29cf732bda13f21b50ca380650c6d9bee636ef88ca67055d2dd6ee769267299f
+generated: "2024-04-05T15:47:48.203604+03:00"

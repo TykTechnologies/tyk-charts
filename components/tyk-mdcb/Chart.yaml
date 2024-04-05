@@ -1,6 +1,6 @@
 apiVersion: v2
 name: tyk-mdcb
-version: 1.0.0
+version: 1.0.0-beta2
 description: A Helm chart for deploying Tyk MDCB.
 icon: https://tyk.io/wp-content/uploads/2023/11/Tyk-helm-icon-02.png
 home: https://tyk.io/
