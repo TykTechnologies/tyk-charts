@@ -3,6 +3,8 @@
 # Declare variables to be passed into your templates.
 
 global:
+  # adminUser specifies credentials for Tyk Dashboard and Dev Portal admin user while bootstrapping.
+  # Dashboard and Dev Portal admin information.
   adminUser:
     # If you don't want to store plaintext secrets for admin user in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below
@@ -117,7 +119,7 @@ image:
   # image repository for Tyk Developer Portal.
   repository: tykio/portal
   # Developer portal < v1.2 is not supported
-  tag: v1.8.0
+  tag: v1.8.3
   # image pull policy
   pullPolicy: Always
 
@@ -127,8 +129,12 @@ imagePullSecrets: []
 service:
   # type corresponds to the service type of Tyk Developer Portal Service.
   type: ClusterIP
+  
   # The port at which Tyk Developer Portal service can be found
   port: 3001
+
+  # the name given to this service port
+  portName: ""
 
   # externalTrafficPolicy corresponds to the external traffic policy if the service type is load balancer
   externalTrafficPolicy: Local

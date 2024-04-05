@@ -236,7 +236,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.2.3
+    tag: v5.3.0
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
@@ -263,12 +263,18 @@ gateway:
     # annotations for service
     annotations: {}
 
+    # Name for the service Port
+    portName: ""    
+
   control:
     # If enabled, exposes control port of the gateway
     enabled: false
 
     # control port of gateway
     containerPort: 9696
+
+    # Name for the service Port
+    name: ""
 
     # port number for control port service
     port: 9696

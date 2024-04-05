@@ -10,8 +10,8 @@ global:
     # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
 
-  # adminUser specifies credentials for Tyk Dashboard admin user while bootstrapping Tyk Dashboard.
-  # Dashboard admin information.
+  # adminUser specifies credentials for Tyk Dashboard and Dev Portal admin user while bootstrapping.
+  # Dashboard and Dev Portal admin information.
   adminUser:
     # If you don't want to store plaintext secrets for admin user in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below.
@@ -218,11 +218,10 @@ global:
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
   storageType: &globalStorageType postgres
 
-  # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
+  # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true, so it matches.
   # The Dashboard will now operate in a mode that is compatible with key hashing.
-  # This takes precedence over the dashboard value i.e `dashboard.hashKeys`
-  # It is used to set TYK_DB_HASHKEYS
-  # It will enable hashkeys in both gateway and dashboard.
+  # It will enable hash keys for Tyk Gateway
+  # It is used to set TYK_GW_HASHKEYS
   hashKeys: true
 
   # Enables validation of examples in the OAS spec. Defaults to false.
@@ -315,7 +314,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.2.3
+      tag: v5.3.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -538,7 +537,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.8.3
+      tag: v1.9.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -697,7 +696,7 @@ tyk-bootstrap:
     # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
     dashboard: true
 
-    # Trigger to control if we want to bootstrap the dashboard component using tyk-bootstrap
+    # Trigger to control if we want to bootstrap the classic portal component using tyk-bootstrap
     portal: true
 
     # Skip validating the SSL certificates. Usually needed when using self-signed certs.
@@ -800,9 +799,13 @@ tyk-dashboard:
     # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
     # It is used to set TYK_DB_NOTIFYONCHANGE
     notifyOnChange: true
-    # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true so it matches.
+    # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true, so it matches.
     # The Dashboard will now operate in a mode that is compatible with key hashing.
     # It is used to set TYK_DB_HASHKEYS
+    #
+    # Deprecated:
+    #   This field will be deprecated in the next release, please set `global.hashKeys` for configuring hash keys feature
+    #     of Tyk Dashboard.
     hashKeys: true
     # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
     # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
@@ -889,7 +892,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.2.3
+      tag: v5.3.0
 
       # image pull policy
       pullPolicy: Always
@@ -1069,7 +1072,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.8.0
+    tag: v1.8.3
     # image pull policy
     pullPolicy: Always
 

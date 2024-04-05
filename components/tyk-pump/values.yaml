@@ -188,7 +188,7 @@ pump:
     repository: docker.tyk.io/tyk-pump/tyk-pump
 
     # tag for Tyk pump
-    tag: v1.8.3
+    tag: v1.9.0
 
     # image pull policy
     pullPolicy: IfNotPresent
@@ -212,6 +212,9 @@ pump:
 
     # annotations specifies annotations to be added Tyk Pump service.
     annotations: {}
+
+    # The name for the service port
+    portName: ""    
 
   # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
   # The default port is 9090.
