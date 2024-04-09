@@ -105,7 +105,7 @@ global:
 
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
-    # pass: ""
+    pass: ""
 
     # Enables sentinel connection mode for Redis. If enabled, provide both
     # mandatory values for sentinelPass and masterName.
