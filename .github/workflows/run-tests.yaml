@@ -70,7 +70,7 @@ jobs:
           helm dependency update ./tyk-oss
 
       - name: Run chart-testing (install)
-        run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true"  "--set=global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379},global.redis.passSecret.name=redis,global.redis.passSecret.keyName=redis-password"
+        run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true" --helm-extra-set-args "--set=global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379},global.redis.passSecret.name=redis,global.redis.passSecret.keyName=redis-password"
 
       - if: failure()
         name: Check logs in case of failure
