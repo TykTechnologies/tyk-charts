@@ -88,18 +88,20 @@ jobs:
 
           # Do not change the name
           # Install redis
-           helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
+           helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
          
           # Install mongo
-          helm install mongo mongodb --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 15.1.0
+          helm install mongo mongodb --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 15.1.2
 
-          MONGODB_ROOT_PASSWORD=$(kubectl get secret --namespace default mongo-mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 -d)
+          MONGODB_ROOT_PASSWORD=$(kubectl get secret -n ${{ env.TYK_STACK_NS }} mongo-mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 -d)
 
           helm dependency update ./tyk-stack
 
           helm install --namespace ${{ env.TYK_STACK_NS }} tyk-stack ./tyk-stack \
-            --set "global.mongo.mongoURL=mongodb://root:$MONGODB_ROOT_PASSWORD@mongo.tyk-stack.svc:27017/tyk_analytics" \
-            --set "global.redis.addrs[0]=redis.tyk-stack.svc:6379" \
+            --set "global.mongo.mongoURL=mongodb://root:$MONGODB_ROOT_PASSWORD@mongo-mongodb.${{ env.TYK_STACK_NS }}.svc:27017/tyk_analytics" \
+            --set "global.redis.addrs={redis-master.${{ env.TYK_STACK_NS }}.svc:6379"} \
+            --set "global.redis.passSecret.name=redis" \
+            --set "global.redis.passSecret.keyName=redis-password" \
             --set "global.license.dashboard=${{ secrets.DASH_LICENSE }}" \
             --set "global.storageType=mongo" \
             --timeout=${{ env.TIMEOUT }}
