@@ -88,7 +88,7 @@ jobs:
 
           # Do not change the name
           # Install redis
-           helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
+          helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
          
           # Install mongo
           helm install mongo mongodb --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }}
@@ -126,11 +126,14 @@ jobs:
           kubectl create namespace ${{ env. TYK_DATAPLANE_NS }}
           
           # Do not change the name
-          helm install redis simple-redis --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
+          helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
           
           helm dependency update ./tyk-data-plane
           
           helm install --namespace ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait \
+            --set "global.redis.addrs={redis-master.${{ env. TYK_DATAPLANE_NS }}.svc:6379"} \
+            --set "global.redis.passSecret.name=redis" \
+            --set "global.redis.passSecret.keyName=redis-password" \
             --set global.remoteControlPlane.orgId=${{ secrets.HYBRID_RPC_KEY }} \
             --set global.remoteControlPlane.userApiKey=${{ secrets.HYBRID_API_KEY }} \
             --set global.remoteControlPlane.connectionString=${{ secrets.HYBRID_MDCB_HOST }}
