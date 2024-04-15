@@ -29,40 +29,7 @@ You could find the list of version tags available from [Docker hub](https://hub.
 * Connection details to remote control plane. See [Quick Start](#obtain-your-remote-control-plane-connection-details) on how to obtain them from Tyk Cloud.
 
 ## Quick Start
-
-Quick start using `tyk-data-plane` and Bitnami Redis chart:
-
-```bash
-NAMESPACE=tyk
-APISecret=foo
-MDCB_UserKey=9d20907430e440655f15b851e41xxxxx
-MDCB_OrgId=64cadf60173be900017xxxxx
-MDCB_ConnString=mere-xxxxxxx-hyb.aws-euw2.cloud-ara.tyk.io:443
-MDCB_GroupId=dc-uk-south
-
-helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-helm repo update
-
-helm upgrade tyk-redis oci://registry-1.docker.io/bitnamicharts/redis -n $NAMESPACE --create-namespace --install --set image.tag=6.2.13
-
-helm upgrade hybrid-dp tyk-helm/tyk-data-plane -n $NAMESPACE --create-namespace \
-  --install \
-  --set global.remoteControlPlane.enabled=true \
-  --set global.remoteControlPlane.userApiKey=$MDCB_UserKey \
-  --set global.remoteControlPlane.orgId=$MDCB_OrgId \
-  --set global.remoteControlPlane.connectionString=$MDCB_ConnString \
-  --set global.remoteControlPlane.groupID=$MDCB_GroupId \
-  --set global.remoteControlPlane.useSSL=true \
-  --set global.remoteControlPlane.sslInsecureSkipVerify=true \
-  --set global.secrets.APISecret="$APISecret" \
-  --set global.redis.addrs="{tyk-redis-master.$NAMESPACE.svc:6379}" \
-  --set global.redis.passSecret.name=tyk-redis \
-  --set global.redis.passSecret.keyName=redis-password
-```
-
-Gateway is now accessible through service `gateway-svc-hybrid-dp-tyk-gateway` at port `8080`.
-
-Pump is also configured with Hybrid Pump which sends aggregated analytics to MDCB or Tyk Cloud, and Prometheus Pump which expose metrics locally at `:9090/metrics`.
+Please visit tyk.io for [Quick Start guide for deploying data planes in Kubernetes with Helm Chart](https://tyk.io/docs/tyk-cloud/environments-deployments/hybrid-gateways/#deploy-in-kubernetes-with-helm-chart).
 
 ### Obtain your Remote Control Plane Connection Details
 
@@ -116,6 +83,18 @@ helm show values tyk-helm/tyk-data-plane >  values-data-plane.yaml
 
 You can update any value in your local ` values-data-plane.yaml` file and use `-f [filename]` flag to override default values during installation.
 Alternatively, you can use `--set` flag to set it in Tyk installation.
+
+To configure Tyk components, users can utilize both config files and [environment variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/). Notably, environment variables take precedence over config files. To maintain simplicity and consistency, the Tyk Helm Charts deploy components with an empty config file while setting container environment variables based on user-defined [values](https://helm.sh/docs/chart_best_practices/values/). This approach ensures seamless integration with Kubernetes practices, allowing for efficient management of configurations. For a comprehensive overview of available configurations, please refer to the [configuration documentation](https://tyk.io/docs/tyk-environment-variables/). Additionally, should any environment variables not be set by the Helm Chart, users can easily add them under the `extraEnvs` section within the charts for further customization. Values set under `extraEnvs` would take precedence over all configurations.
+
+Example of setting extra environment variable to gateway:
+```yaml
+tyk-gateway:
+  gateway:
+    extraEnvs:
+    - name: TYK_GW_LOGLEVEL
+      value: debug
+```
+
 
 ### Tyk MDCB Synchroniser (Optional)
 
@@ -439,7 +418,7 @@ Add `hybrid` to `tyk-pump.pump.backend`, and add remoteControlPlane details unde
   # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
   # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
   hybridPump:
-    # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
+    # Send aggregated analytics data to Tyk MDCB
     enableAggregateAnalytics: true
     # Hybrid pump RPC calls timeout in seconds.
     callTimeout: 10

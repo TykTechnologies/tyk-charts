@@ -236,7 +236,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.2.3
+      tag: v5.3.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -499,7 +499,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.8.3
+      tag: v1.9.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -551,7 +551,7 @@ tyk-pump:
     # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
     # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
     hybridPump:
-      # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
+      # Send aggregated analytics data to Tyk MDCB
       enableAggregateAnalytics: true
       # Hybrid pump RPC calls timeout in seconds. If not specified, default value will be picked up by Tyk Pump.
       callTimeout: 10

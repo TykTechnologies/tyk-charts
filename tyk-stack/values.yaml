@@ -10,8 +10,8 @@ global:
     # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
 
-  # adminUser specifies credentials for Tyk Dashboard admin user while bootstrapping Tyk Dashboard.
-  # Dashboard admin information.
+  # adminUser specifies credentials for Tyk Dashboard and Dev Portal admin user while bootstrapping.
+  # Dashboard and Dev Portal admin information.
   adminUser:
     # If you don't want to store plaintext secrets for admin user in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below.
@@ -314,7 +314,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.2.3
+      tag: v5.3.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -538,7 +538,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.8.3
+      tag: v1.9.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -699,7 +699,7 @@ tyk-bootstrap:
     dashboard: true
 
     # Trigger to control if we want to bootstrap the classic portal component using tyk-bootstrap
-    portal: true
+    portal: false
 
     # Skip validating the SSL certificates. Usually needed when using self-signed certs.
     sslInsecureSkipVerify: false
@@ -716,7 +716,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
-          tag: v2.0.1
+          tag: v2.1.0
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -730,7 +730,7 @@ tyk-bootstrap:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
-          tag: v2.0.1
+          tag: v2.1.0
 
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
@@ -744,7 +744,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: v2.0.1
+          tag: v2.1.0
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
@@ -894,7 +894,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.2.3
+      tag: v5.3.0
 
       # image pull policy
       pullPolicy: Always
@@ -1075,7 +1075,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.8.0
+    tag: v1.8.3
     # image pull policy
     pullPolicy: Always
 
