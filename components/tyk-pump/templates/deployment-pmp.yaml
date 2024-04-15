@@ -240,9 +240,9 @@ spec:
           # Redis TLS configurations
           {{- if .Values.global.redis.useSSL }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLMAXVERSION
-            value: "{{ .Values.global.redis.sslMaxVersion }}"
+            value: "{{ .Values.global.redis.tlsMaxVersion }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLMINVERSION
-            value: "{{ .Values.global.redis.sslMinVersion }}" 
+            value: "{{ .Values.global.redis.tlsMinVersion }}" 
           {{- end }}
 
           {{- with .Values.global.redis }}
