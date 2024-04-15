@@ -61,7 +61,6 @@ jobs:
 
       # Tyk OSS tests
       - name: Deploy Tyk OSS and Dependencies
-        id: deploy-oss
         run: |
           kubectl create namespace ${{ env.TYK_OSS_NS }}
           
@@ -71,21 +70,11 @@ jobs:
           helm dependency update ./tyk-oss
 
       - name: Run chart-testing (install)
-        id: test-oss
-        run: |
-          helm install --namespace ${{ env.TYK_OSS_NS }} ./tyk-oss  \
-            --set "global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379}" \
-            --set "global.redis.passSecret.name=redis" \
-            --set "global.redis.passSecret.keyName=redis-passwor"
+        run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true" --helm-extra-set-args "--set=global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379},global.redis.passSecret.name=redis,global.redis.passSecret.keyName=redis-password"
 
       - if: failure()
         name: Check logs in case of failure
-        run: |
-          if [ ${{ steps.deploy-oss.conclusion }} == 'failure']; then
-            kubectl logs -n ${{ env.TYK_OSS_NS }} deployment/gateway-tyk-oss-tyk-gateway
-          elif [ ${{ steps.test-oss.conclusion }} == 'failure']; then
-            kubectl logs -n ${{ env.TYK_OSS_NS}}  tyk-oss-test-tyk-oss
-          fi
+        run: kubectl logs -n ${{ env.TYK_OSS_NS}} tyk-oss-test-tyk-oss
 
       - name: Uninstall Tyk OSS Dependencies
         run: |
@@ -125,10 +114,10 @@ jobs:
       - if: failure()
         name: Check logs in case of failure
         run: |
-          if [steps.deploy-stack.conclusion == 'failure']; then
+          if [ ${{ steps.deploy-stack.conclusion }} == 'failure' ]; then
             kubectl logs -n ${{ env.TYK_STACK_NS }} deployment/dashboard-tyk-stack-tyk-dashboard
             kubectl logs -n ${{ env.TYK_STACK_NS }} job.batch/bootstrap-post-install-tyk-stack-tyk-bootstrap
-          elif [steps.test-stack.conclusion == 'failure']; then
+          elif [ ${{ steps.test-stack.conclusion }} == 'failure' ]; then
             kubectl logs -n ${{ env.TYK_STACK_NS }} tyk-stack-test-tyk-stack
           fi
 
@@ -165,9 +154,9 @@ jobs:
       - if: failure()
         name: Check logs in case of failure
         run: |
-          if [steps.deploy-data-plane.conclusion == 'failure']; then
+          if [ ${{ steps.deploy-data-plane.conclusion }} == 'failure' ]; then
             kubectl logs -n ${{ env. TYK_DATAPLANE_NS }} deployment/gateway-tyk-data-plane-tyk-gateway
-          elif [steps.test-data-plane.conclusion == 'failure']; then
+          elif [ ${{ steps.test-data-plane.conclusion }} == 'failure' ]; then
             kubectl logs -n ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane-test-tyk-data-plane
           fi
 
