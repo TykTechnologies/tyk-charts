@@ -111,7 +111,10 @@ jobs:
 
       - if: failure()
         name: Check logs in case of failure
-        run: kubectl logs -n ${{ env.TYK_STACK_NS }} tyk-stack-test-tyk-stack
+        run: |
+          kubectl logs -n ${{ env.TYK_STACK_NS }} tyk-stack-test-tyk-stack
+          kubectl logs -n ${{ env.TYK_STACK_NS }} deployment/dashboard-tyk-stack-tyk-dashboard
+          kubectl logs -n ${{ env.TYK_STACK_NS }} job.batch/bootstrap-post-install-tyk-stack-tyk-bootstrap
 
       - name: Uninstall Tyk Stack Dependencies
         run: |
