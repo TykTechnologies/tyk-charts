@@ -39,7 +39,7 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1.4.0
       
-      - name: Deploy Tyk OSS and Dependencies
+      - name: Deploy OSS Dependencies
         run: |
           kubectl create namespace ${{ env.TYK_OSS_NS }}
           
@@ -72,6 +72,9 @@ jobs:
         uses: azure/setup-helm@v3
         with:
           version: v3.11.2
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.4.0
       
       - name: Deploy Tyk Stack and dependencies
         id: deploy-stack
@@ -131,6 +134,9 @@ jobs:
         uses: azure/setup-helm@v3
         with:
           version: v3.11.2
+      
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.4.0
 
       - name: Deploy Tyk Data Plane and Dependencies
         id: deploy-data-plane
