@@ -1,0 +1,174 @@
+name: Integration Test
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  push:
+    branches:
+      - master
+
+env:
+  TIMEOUT: 15m
+  TYK_OSS_NS: tyk-oss
+  TYK_DATAPLANE_NS: tyk-dataplane
+  TYK_STACK_NS: tyk-stack
+
+jobs:
+  tyk-oss:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.11.2
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          check-latest: true
+      
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.0
+        
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.4.0
+      
+      - name: Deploy Tyk OSS and Dependencies
+        run: |
+          kubectl create namespace ${{ env.TYK_OSS_NS }}
+          
+          # Do not change the name
+          helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
+          
+          helm dependency update ./tyk-oss
+
+      - name: Run chart-testing (install)
+        run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true" --helm-extra-set-args "--set=global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379},global.redis.passSecret.name=redis,global.redis.passSecret.keyName=redis-password"
+
+      - if: failure()
+        name: Check logs in case of failure
+        run: kubectl logs -n ${{ env.TYK_OSS_NS}} tyk-oss-test-tyk-oss
+
+      - name: Uninstall Tyk OSS Dependencies
+        run: |
+          helm uninstall redis -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace ${{ env.TYK_OSS_NS }}
+      
+  tyk-stack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.11.2
+      
+      - name: Deploy Tyk Stack and dependencies
+        id: deploy-stack
+        run: |
+          kubectl create namespace ${{ env.TYK_STACK_NS }}
+
+          # Do not change the name
+          # Install redis
+          helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
+         
+          # Install mongo
+          helm install mongo mongodb --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 15.1.2
+
+          MONGODB_ROOT_PASSWORD=$(kubectl get secret -n ${{ env.TYK_STACK_NS }} mongo-mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 -d)
+
+          helm dependency update ./tyk-stack
+
+          helm install --namespace ${{ env.TYK_STACK_NS }} tyk-stack ./tyk-stack \
+            --set "global.mongo.mongoURL=mongodb://root:$MONGODB_ROOT_PASSWORD@mongo-mongodb.${{ env.TYK_STACK_NS }}.svc:27017/tyk_analytics?authSource=admin" \
+            --set "global.redis.addrs={redis-master.${{ env.TYK_STACK_NS }}.svc:6379"} \
+            --set "global.redis.passSecret.name=redis" \
+            --set "global.redis.passSecret.keyName=redis-password" \
+            --set "global.license.dashboard=${{ secrets.DASH_LICENSE }}" \
+            --set "global.storageType=mongo" \
+            --timeout=${{ env.TIMEOUT }}
+
+      - name: Run integration tests for Tyk Stack
+        id: test-stack
+        run: helm test -n ${{ env.TYK_STACK_NS }} tyk-stack
+
+      - if: failure()
+        name: Check logs in case of failure
+        run: |
+          if [ ${{ steps.deploy-stack.conclusion }} == 'failure' ]; then
+            kubectl logs -n ${{ env.TYK_STACK_NS }} deployment/dashboard-tyk-stack-tyk-dashboard
+            kubectl logs -n ${{ env.TYK_STACK_NS }} job.batch/bootstrap-post-install-tyk-stack-tyk-bootstrap
+          elif [ ${{ steps.test-stack.conclusion }} == 'failure' ]; then
+            kubectl logs -n ${{ env.TYK_STACK_NS }} tyk-stack-test-tyk-stack
+          fi
+        
+      - name: Uninstall Tyk Stack Dependencies
+        run: |
+          helm uninstall redis -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }}
+          helm uninstall mongo -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} 
+          helm uninstall tyk-stack -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} 
+          kubectl delete namespace ${{ env.TYK_STACK_NS }}
+
+  tyk-data-plane:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.11.2
+
+      - name: Deploy Tyk Data Plane and Dependencies
+        id: deploy-data-plane
+        run: |
+          kubectl create namespace ${{ env. TYK_DATAPLANE_NS }}
+          
+          # Do not change the name
+          helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
+          
+          helm dependency update ./tyk-data-plane
+          
+          helm install --namespace ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait \
+            --set "global.redis.addrs={redis-master.${{ env. TYK_DATAPLANE_NS }}.svc:6379"} \
+            --set "global.redis.passSecret.name=redis" \
+            --set "global.redis.passSecret.keyName=redis-password" \
+            --set global.remoteControlPlane.orgId=${{ secrets.HYBRID_RPC_KEY }} \
+            --set global.remoteControlPlane.userApiKey=${{ secrets.HYBRID_API_KEY }} \
+            --set global.remoteControlPlane.connectionString=${{ secrets.HYBRID_MDCB_HOST }}
+
+      - name: Run integration tests for Tyk Data Plane
+        id: test-data-plane
+        run: helm test -n ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane
+
+      - if: failure()
+        name: Check logs in case of failure
+        run: |
+          if [ ${{ steps.deploy-data-plane.conclusion }} == 'failure' ]; then
+            kubectl logs -n ${{ env. TYK_DATAPLANE_NS }} deployment/gateway-tyk-data-plane-tyk-gateway
+          elif [ ${{ steps.test-data-plane.conclusion }} == 'failure' ]; then
+            kubectl logs -n ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane-test-tyk-data-plane
+          fi
+
+      - name: Uninstall Tyk Data Plane Dependencies
+        run: |
+          helm uninstall tyk-data-plane -n ${{ env. TYK_DATAPLANE_NS }}
+          helm uninstall redis -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace ${{ env. TYK_DATAPLANE_NS }}
+
+      
+    
+  
