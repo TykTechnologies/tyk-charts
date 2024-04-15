@@ -364,6 +364,7 @@ gateway:
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
+    runAsNonRoot: true
 
   # containerSecurityContext values for gateway container
   containerSecurityContext:
