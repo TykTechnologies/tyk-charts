@@ -76,7 +76,7 @@ jobs:
           helm install --namespace ${{ env.TYK_OSS_NS }} ./tyk-oss  \
             --set "global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379}" \
             --set "global.redis.passSecret.name=redis" \
-            --set "global.redis.passSecret.keyName=redis-password"
+            --set "global.redis.passSecret.keyName=redis-passwor"
 
       - if: failure()
         name: Check logs in case of failure
