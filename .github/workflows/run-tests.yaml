@@ -98,7 +98,7 @@ jobs:
           helm dependency update ./tyk-stack
 
           helm install --namespace ${{ env.TYK_STACK_NS }} tyk-stack ./tyk-stack \
-            --set "global.mongo.mongoURL=mongodb://root:$MONGODB_ROOT_PASSWORD@mongo-mongodb.${{ env.TYK_STACK_NS }}.svc:27017/tyk_analytics" \
+            --set "global.mongo.mongoURL=mongodb://root:$MONGODB_ROOT_PASSWORD@mongo-mongodb.${{ env.TYK_STACK_NS }}.svc:27017/tyk_analytics?authSource=admin" \
             --set "global.redis.addrs={redis-master.${{ env.TYK_STACK_NS }}.svc:6379"} \
             --set "global.redis.passSecret.name=redis" \
             --set "global.redis.passSecret.keyName=redis-password" \
