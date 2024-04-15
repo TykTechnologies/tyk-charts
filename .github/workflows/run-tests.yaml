@@ -81,9 +81,9 @@ jobs:
       - if: failure()
         name: Check logs in case of failure
         run: |
-          if [steps.deploy-oss.conclusion == 'failure']; then
+          if [ ${{ steps.deploy-oss.conclusion }} == 'failure']; then
             kubectl logs -n ${{ env.TYK_OSS_NS }} deployment/gateway-tyk-oss-tyk-gateway
-          elif [steps.test-oss.conclusion == 'failure']; then
+          elif [ ${{ steps.test-oss.conclusion }} == 'failure']; then
             kubectl logs -n ${{ env.TYK_OSS_NS}}  tyk-oss-test-tyk-oss
           fi
 
