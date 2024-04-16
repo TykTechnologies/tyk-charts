@@ -21,6 +21,9 @@ spec:
       labels:
         app: pump-{{ include "tyk-pump.fullname" . }}
         release: {{ .Release.Name }}
+        {{- with .Values.pump.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}        
     spec:
     {{- if .Values.pump.serviceAccountName }}
       serviceAccountName: "{{ .Values.pump.serviceAccountName }}"

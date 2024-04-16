@@ -145,3 +145,6 @@ bootstrap:
     postInstallPodAnnotations: {}
     # preDeletePodAnnotations specifies annotations to be added to Tyk Bootstrap pre-delete hook's job pods.
     preDeletePodAnnotations: {}
+
+  # podLabels specifies labels to be added in bootstrap Pod
+  podLabels: {}
