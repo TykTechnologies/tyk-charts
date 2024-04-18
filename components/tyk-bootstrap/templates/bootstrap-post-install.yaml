@@ -26,7 +26,7 @@ spec:
         {{ toYaml .Values.bootstrap.podAnnotations.postInstallPodAnnotations | nindent 8 }}
         {{- end }}
       labels:
-        {{- with .Values.bootstrap.podLabels }}
+        {{- with .Values.bootstrap.podLabels.postInstallPodLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }} 
     spec:
