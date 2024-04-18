@@ -3,6 +3,8 @@
 # Declare variables to be passed into your templates.
 
 global:
+  # adminUser specifies credentials for Tyk Dashboard and Dev Portal admin user while bootstrapping.
+  # Dashboard and Dev Portal admin information.
   adminUser:
     # If you don't want to store plaintext secrets for admin user in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below
@@ -117,7 +119,7 @@ image:
   # image repository for Tyk Developer Portal.
   repository: tykio/portal
   # Developer portal < v1.2 is not supported
-  tag: v1.8.0
+  tag: v1.8.3
   # image pull policy
   pullPolicy: Always
 
@@ -182,6 +184,7 @@ resources: {}
 securityContext:
   runAsUser: 1000
   fsGroup: 2000
+  runAsNonRoot: true
 
 # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod.
 containerSecurityContext:
