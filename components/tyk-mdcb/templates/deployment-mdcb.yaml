@@ -95,9 +95,9 @@ spec:
             # Redis TLS configurations
             {{- if .Values.global.redis.useSSL }}
             - name: TYK_MDCB_STORAGE_REDISSSLMAXVERSION
-              value: "{{ .Values.global.redis.sslMaxVersion }}"
+              value: "{{ .Values.global.redis.tlsMaxVersion }}"
             - name: TYK_MDCB_STORAGE_REDISSSLMINVERSION
-              value: "{{ .Values.global.redis.sslMinVersion }}"
+              value: "{{ .Values.global.redis.tlsMinVersion }}"
             {{- end }}
 
             {{- with .Values.global.redis }}
