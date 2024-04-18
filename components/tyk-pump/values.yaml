@@ -183,6 +183,9 @@ pump:
   #   image: yourhub
   podAnnotations: {}
 
+  # podLabels specifies labels to be added in pump Pod
+  podLabels: {}
+
   image:
     # image repository for Tyk pump
     repository: docker.tyk.io/tyk-pump/tyk-pump
