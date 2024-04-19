@@ -288,6 +288,9 @@ dashboard:
   #   image: yourhub
   podAnnotations: {}
 
+  # podLabels specifies labels to be added in dashboard Pod
+  podLabels: {}
+
   image:
     # image repository for Tyk Dashboard.
     repository: tykio/tyk-dashboard

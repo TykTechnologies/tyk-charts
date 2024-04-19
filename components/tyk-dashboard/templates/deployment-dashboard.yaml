@@ -28,6 +28,9 @@ spec:
       labels:
         app: dashboard-{{ include "tyk-dashboard.fullname" . }}
         release: {{ .Release.Name }}
+        {{- with .Values.dashboard.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}        
       annotations:
       {{- if .Values.dashboard.podAnnotations }}
       {{ toYaml .Values.dashboard.podAnnotations | nindent 8 }}

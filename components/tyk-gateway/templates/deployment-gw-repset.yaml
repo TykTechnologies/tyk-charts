@@ -46,6 +46,9 @@ spec:
       labels:
         app: gateway-{{ include "tyk-gateway.fullname" . }}
         release: {{ .Release.Name }}
+        {{- with .Values.gateway.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}        
     spec:
     {{- if .Values.gateway.serviceAccountName }}
       serviceAccountName: "{{ .Values.gateway.serviceAccountName }}"
