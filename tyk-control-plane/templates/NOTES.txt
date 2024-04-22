@@ -70,32 +70,32 @@ in tyk-data-plane chart.
 
 If data plane is deployed in the same cluster, it can be accessed via this connection string:
 
+{{- $tykMDCBFullName := (include "tyk-mdcb.fullname" (index .Subcharts "tyk-mdcb")) -}}
 {{- $tykMDCBSvc := printf "mdcb-svc-%s" (include "tyk-mdcb.fullname" (index .Subcharts "tyk-mdcb")) -}}
 {{- $tykMDCBSvcPort := (include "mdcb.svcPort" (index .Subcharts "tyk-mdcb")) }}
     export MDCB_CONNECTIONSTRING="{{ $tykMDCBSvc }}.{{ .Release.Namespace }}.svc:{{ $tykMDCBSvcPort }}"
 
-If data plane is deployed in the same cluster as control plane, get the connection string according to how MDCB service is exposed.
+If data plane is not deployed in the same cluster as control plane, get the connection string according to how MDCB service is exposed.
 
-{{- if index .Values "tyk-mdcb" "mdcb" "ingress" "enabled" }}
+{{- if contains "NodePort" (index .Values "tyk-mdcb" "mdcb" "service" "type") }}
+Node Port:
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ $tykMDCBSvc }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  export MDCB_CONNECTIONSTRING="$NODE_IP:$NODE_PORT"
+{{- else if contains "LoadBalancer" (index .Values "tyk-mdcb" "mdcb" "service" "type") }}
+TCP LoadBalancer:
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ $tykMDCBFullName }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ $tykMDCBSvc }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  export MDCB_CONNECTIONSTRING=$SERVICE_IP:{{ index .Values "tyk-mdcb" "mdcb" "service" "port" }}
+{{- else if index .Values "tyk-mdcb" "mdcb" "ingress" "enabled" }}
 Ingress:
 {{- range $host := index .Values "tyk-mdcb" "mdcb" "ingress" "hosts" }}
   {{- range .paths }}
   http{{ if index .Values "tyk-mdcb" "mdcb" "ingress" "tls" }}s{{ end }}://{{ $host.host }}{{ .path }}
   {{- end }}
 {{- end }}
-{{- else if contains "NodePort" (index .Values "tyk-mdcb" "mdcb" "service" "type") }}
-Node Port:
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ $tykMDCBSvc }})
-  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-  export MDCB_CONNECTIONSTRING="$NODE_IP:$NODE_PORT"
-{{- else if contains "LoadBalancer" index .Values "tyk-mdcb" "mdcb" "service" "type" }}
-Load Balancer:
-     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "tyk-mdcb.fullname" . }}'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "tyk-mdcb.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-  echo http://$SERVICE_IP:{{ index .Values "tyk-mdcb" "mdcb" "service" "port" }}
 {{- end }}
-
 
 For more detail about tyk-data-plane chart, please refer to the https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-data-plane
 
