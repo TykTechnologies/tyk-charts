@@ -66,7 +66,8 @@ NOTE: You can find your organisation id and user api key through Tyk Dashboard, 
 3- Refer this Kubernetes secret (tyk-data-plane-details) while installing worker gateways through `global.remoteControlPlane.useSecretName`
 in tyk-data-plane chart.
 
-4- Set `global.remoteControlPlane.connectionString` in tyk-data-plane chart to access MDCB service.
+4- Set `global.remoteControlPlane.connectionString`, `global.remoteControlPlane.useSSL` and `global.remoteControlPlane.sslInsecureSkipVerify`
+ in tyk-data-plane chart to access MDCB service.
 
 If data plane is deployed in the same cluster, it can be accessed via this connection string:
 
