@@ -12,7 +12,6 @@ env:
   TIMEOUT: 15m
   TYK_OSS_NS: tyk-oss
   TYK_DATAPLANE_NS: tyk-dataplane
-  TYK_STACK_NS: tyk-stack
 
 jobs:
   lint-test:
@@ -58,29 +57,32 @@ jobs:
 
       - name: Deploy Tyk OSS and Dependencies
         run: |
-          kubectl create namespace tyk-oss
+          kubectl create namespace ${{ env.TYK_OSS_NS }}
 
           # Do not change the name
-          helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-oss --timeout ${{ env.TIMEOUT }}
+          helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
 
           helm dependency update ./tyk-oss
-          helm install tyk-oss ./tyk-oss -n tyk-oss --timeout ${{ env.TIMEOUT }}
+          helm install tyk-oss ./tyk-oss -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} \
+            --set global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379} \
+            --set global.redis.passSecret.name=redis \
+            --set global.redis.passSecret.keyName=redis-password
 
       - name: Upgrade Tyk OSS
         run: |
-          helm upgrade -n tyk-oss tyk-oss ./tyk-oss --set tyk-gateway.gateway.kind=DaemonSet
+          helm upgrade -n ${{ env.TYK_OSS_NS }} tyk-oss ./tyk-oss --set tyk-gateway.gateway.kind=DaemonSet
 
       - name: Uninstall Tyk OSS
         run: |
-          helm uninstall tyk-oss -n tyk-oss --timeout ${{ env.TIMEOUT }}
-          kubectl delete namespace tyk-oss
+          helm uninstall tyk-oss -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace ${{ env.TYK_OSS_NS }}
 
       - name: Deploy Tyk Data Plane
         run: |
           kubectl create namespace ${{ env. TYK_DATAPLANE_NS }}
 
           # Do not change the name
-          helm install redis simple-redis --wait --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
+          helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
 
           helm dependency update ./tyk-data-plane
 
@@ -88,6 +90,9 @@ jobs:
             --set global.remoteControlPlane.orgId=${{ secrets.HYBRID_RPC_KEY }} \
             --set global.remoteControlPlane.userApiKey=${{ secrets.HYBRID_API_KEY }} \
             --set global.remoteControlPlane.connectionString=${{ secrets.HYBRID_MDCB_HOST }}
+            --set global.redis.addrs={redis-master.${{ env.TYK_DATAPLANE_NS }}.svc:6379} \
+            --set global.redis.passSecret.name=redis \
+            --set global.redis.passSecret.keyName=redis-password
 
       - name: Upgrade Tyk Data Plane
         run: |
