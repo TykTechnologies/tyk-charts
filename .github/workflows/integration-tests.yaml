@@ -36,6 +36,8 @@ jobs:
         
       - name: Create kind cluster
         uses: helm/kind-action@v1.9.0
+        with:
+          node_image: "kindest/node:v1.29.1"
       
       - name: Deploy OSS Dependencies
         run: |
@@ -71,6 +73,8 @@ jobs:
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.9.0
+        with:
+          node_image: "kindest/node:v1.29.1"
       
       - name: Deploy Tyk Stack and dependencies
         id: deploy-stack
@@ -131,6 +135,8 @@ jobs:
       
       - name: Create kind cluster
         uses: helm/kind-action@v1.9.0
+        with:
+          node_image: "kindest/node:v1.29.1"
 
       - name: Deploy Tyk Data Plane and Dependencies
         id: deploy-data-plane
