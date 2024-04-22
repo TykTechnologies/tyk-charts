@@ -88,13 +88,6 @@ TCP LoadBalancer:
            You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ $tykMDCBFullName }}'
   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ $tykMDCBSvc }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
   export MDCB_CONNECTIONSTRING=$SERVICE_IP:{{ index .Values "tyk-mdcb" "mdcb" "service" "port" }}
-{{- else if index .Values "tyk-mdcb" "mdcb" "ingress" "enabled" }}
-Ingress:
-{{- range $host := index .Values "tyk-mdcb" "mdcb" "ingress" "hosts" }}
-  {{- range .paths }}
-  http{{ if index .Values "tyk-mdcb" "mdcb" "ingress" "tls" }}s{{ end }}://{{ $host.host }}{{ .path }}
-  {{- end }}
-{{- end }}
 {{- end }}
 
 For more detail about tyk-data-plane chart, please refer to the https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-data-plane
