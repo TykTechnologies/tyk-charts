@@ -418,7 +418,7 @@ Add `hybrid` to `tyk-pump.pump.backend`, and add remoteControlPlane details unde
   # hybridPump configures Tyk Pump to forward Tyk metrics to a Tyk Control Plane.
   # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
   hybridPump:
-    # Specify the frequency of the aggregation in minutes or simply turn it on by setting it to true
+    # Send aggregated analytics data to Tyk MDCB
     enableAggregateAnalytics: true
     # Hybrid pump RPC calls timeout in seconds.
     callTimeout: 10

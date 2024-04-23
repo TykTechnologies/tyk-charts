@@ -21,6 +21,9 @@ spec:
       labels:
         app: pump-{{ include "tyk-pump.fullname" . }}
         release: {{ .Release.Name }}
+        {{- with .Values.pump.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}        
     spec:
     {{- if .Values.pump.serviceAccountName }}
       serviceAccountName: "{{ .Values.pump.serviceAccountName }}"
@@ -240,9 +243,9 @@ spec:
           # Redis TLS configurations
           {{- if .Values.global.redis.useSSL }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLMAXVERSION
-            value: "{{ .Values.global.redis.sslMaxVersion }}"
+            value: "{{ .Values.global.redis.tlsMaxVersion }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SSLMINVERSION
-            value: "{{ .Values.global.redis.sslMinVersion }}" 
+            value: "{{ .Values.global.redis.tlsMinVersion }}" 
           {{- end }}
 
           {{- with .Values.global.redis }}
@@ -335,7 +338,6 @@ spec:
         {{- include "tyk-pump.tplvalues.render" ( dict "value" .Values.pump.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
 
-        command: ["/opt/tyk-pump/tyk-pump"]
         volumeMounts:
           {{- if .Values.pump.extraVolumeMounts }}
           {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumeMounts "context" $) | nindent 10 }}

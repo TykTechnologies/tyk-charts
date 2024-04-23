@@ -34,12 +34,21 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      {{- if or .Values.gateway.podAnnotations (not .Values.global.secrets.useSecretName) }}
+      annotations:
+      {{- if not .Values.global.secrets.useSecretName }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+      {{- end }}
       {{- if .Values.gateway.podAnnotations }}
-      annotations: {{ toYaml .Values.gateway.podAnnotations | nindent 8 }}
+      {{ toYaml .Values.gateway.podAnnotations | nindent 8 }}
+      {{- end }}
       {{- end }}
       labels:
         app: gateway-{{ include "tyk-gateway.fullname" . }}
         release: {{ .Release.Name }}
+        {{- with .Values.gateway.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}        
     spec:
     {{- if .Values.gateway.serviceAccountName }}
       serviceAccountName: "{{ .Values.gateway.serviceAccountName }}"
@@ -362,7 +371,6 @@ spec:
         {{- if .Values.gateway.extraEnvs }}
         {{- include "tyk-gateway.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
-        command: ["/opt/tyk-gateway/tyk"]
         workingDir: /opt/tyk-gateway
         ports:
         - containerPort: {{ .Values.gateway.containerPort }}
