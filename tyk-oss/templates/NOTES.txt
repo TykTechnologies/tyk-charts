@@ -1,17 +1,11 @@
 Thank you for installing Tyk OSS Chart. Your release is named {{ .Release.Name }}.
 At this point, Tyk Gateway {{- if .Values.global.components.pump }} and Tyk Pump are {{- else }} is {{- end }} fully installed and should be accessible.
 
-{{- if index .Values "tyk-gateway" "gateway" "control" "enabled" }}
-{{ $gwSvcName := printf "gateway-control-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  }}
+{{ $gwSvcName := (include "tyk-oss.gwControlServiceName" . )  }}
+{{- $port := (include "tyk-oss.gwControlPort" . ) -}}
 To quickly test everything is ok, you can port-forward Tyk Gateway pod:
-    kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ $gwSvcName }} {{ index .Values "tyk-gateway" "gateway" "control" "port" }}:{{ index .Values "tyk-gateway" "gateway" "control" "containerPort" }}
-    curl localhost:{{ index .Values "tyk-gateway" "gateway" "control" "port" }}/hello
-{{- else }}
-{{ $gwSvcName := printf "gateway-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  }}
-To quickly test everything is ok, you can port-forward Tyk Gateway pod:
-    kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ $gwSvcName }} {{ index .Values "global" "servicePorts" "gateway" }}:{{ index .Values "global" "servicePorts" "gateway" }}
-    curl localhost:{{ index .Values "global" "servicePorts" "gateway" }}/hello
-{{- end }}
+    kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ $gwSvcName }} {{ $port }}:{{ $port }}
+    curl localhost:{{ $port }}/hello
 
 === API Secret (TYK_GW_SECRET) ===
 {{- if not .Values.global.secrets.useSecretName -}}

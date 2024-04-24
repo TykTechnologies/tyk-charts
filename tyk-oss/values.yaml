@@ -4,6 +4,9 @@ nameOverride: ""
 # fullnameOverride overrides App name. It is truncated to 63 characters.
 fullnameOverride: ""
 
+# createOperatorSecret controls if a secret needed to connect to Operator will be created
+createOperatorSecret: true
+
 global:
   components:
     # Determines whether the pump component should be installed.
