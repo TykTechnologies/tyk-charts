@@ -57,17 +57,19 @@ If the worker gateway will be deployed via Helm, tyk-data-plane chart helps to f
 
 NOTE: You can find your organisation id and user api key through Tyk Dashboard, under your user account details.
 {{ end }}
-2- Create a Kubernetes Secret based on credentials.
-    kubectl create secret --namespace {{ .Release.Namespace }} generic tyk-data-plane-details \
+2- Create a Kubernetes Secret based on credentials in data plane's namespace, e.g. `tyk-dp`.
+
+    kubectl create namespace tyk-dp
+
+    kubectl create secret generic tyk-data-plane-details \
     --from-literal "orgId=$ORG_ID" \
     --from-literal "userApiKey=$USER_API_KEY" \
-    --from-literal "groupID=$GROUP_ID"
+    --from-literal "groupID=$GROUP_ID" \
+    --namespace tyk-dp
 
-3- Refer this Kubernetes secret (tyk-data-plane-details) while installing worker gateways through `global.remoteControlPlane.useSecretName`
-in tyk-data-plane chart.
+3- Refer this Kubernetes secret (tyk-data-plane-details) while installing worker gateways through `global.remoteControlPlane.useSecretName` in tyk-data-plane chart.
 
-4- Set `global.remoteControlPlane.connectionString`, `global.remoteControlPlane.useSSL` and `global.remoteControlPlane.sslInsecureSkipVerify`
- in tyk-data-plane chart to access MDCB service.
+4- Set `global.remoteControlPlane.connectionString`, `global.remoteControlPlane.useSSL` and `global.remoteControlPlane.sslInsecureSkipVerify` in tyk-data-plane chart to access MDCB service.
 
 If data plane is deployed in the same cluster, it can be accessed via this connection string:
 
