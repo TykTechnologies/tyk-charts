@@ -1,4 +1,4 @@
-name: Integration Test
+name: Lint and Smoke Tests
 
 on:
   pull_request:
@@ -12,10 +12,96 @@ env:
   TIMEOUT: 15m
   TYK_OSS_NS: tyk-oss
   TYK_DATAPLANE_NS: tyk-dataplane
-  TYK_STACK_NS: tyk-stack
 
 jobs:
-  tyk-oss:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.7
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.0.1
+        with:
+          version: v3.3.0
+
+      - name: Run chart-testing (lint)
+        run: ct lint --config ct.yaml --all
+
+  smoke-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        k8s_version: ["v1.26.13", "v1.27.10","v1.28.6","v1.29.1"]
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Create Kind Cluster
+        uses: helm/kind-action@v1.9.0
+        with:
+          node_image: "kindest/node:${{ matrix.k8s_version }}"
+
+      - name: Install helm
+        uses: azure/setup-helm@v4
+
+      - name: Deploy Tyk OSS and Dependencies
+        run: |
+          kubectl create namespace ${{ env.TYK_OSS_NS }}
+
+          # Do not change the name
+          helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
+
+          helm dependency update ./tyk-oss
+          helm install tyk-oss ./tyk-oss -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} \
+            --set global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379} \
+            --set global.redis.passSecret.name=redis \
+            --set global.redis.passSecret.keyName=redis-password
+
+      - name: Upgrade Tyk OSS
+        run: |
+          helm upgrade -n ${{ env.TYK_OSS_NS }} tyk-oss ./tyk-oss --set tyk-gateway.gateway.kind=DaemonSet
+
+      - name: Uninstall Tyk OSS
+        run: |
+          helm uninstall tyk-oss -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace ${{ env.TYK_OSS_NS }}
+
+      - name: Deploy Tyk Data Plane
+        run: |
+          kubectl create namespace ${{ env. TYK_DATAPLANE_NS }}
+
+          # Do not change the name
+          helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
+
+          helm dependency update ./tyk-data-plane
+
+          helm install --namespace ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait \
+            --set global.remoteControlPlane.orgId=${{ secrets.HYBRID_RPC_KEY }} \
+            --set global.remoteControlPlane.userApiKey=${{ secrets.HYBRID_API_KEY }} \
+            --set global.remoteControlPlane.connectionString=${{ secrets.HYBRID_MDCB_HOST }} \
+            --set global.redis.addrs={redis-master.${{ env.TYK_DATAPLANE_NS }}.svc:6379} \
+            --set global.redis.passSecret.name=redis \
+            --set global.redis.passSecret.keyName=redis-password
+
+      - name: Upgrade Tyk Data Plane
+        run: |
+          helm upgrade -n ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --set tyk-gateway.gateway.kind=DaemonSet
+
+      - name: Uninstall Tyk Data Plane
+        run: |
+          helm uninstall tyk-data-plane -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace ${{ env. TYK_DATAPLANE_NS }}
+          
+  integration-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,7 +134,7 @@ jobs:
           
           helm dependency update ./tyk-oss
 
-      - name: Run chart-testing (install)
+      - name: Run OSS chart-testing (install)
         run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true" --helm-extra-set-args "--set=global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379},global.redis.passSecret.name=redis,global.redis.passSecret.keyName=redis-password"
 
       - if: failure()
@@ -59,22 +145,6 @@ jobs:
         run: |
           helm uninstall redis -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
           kubectl delete namespace ${{ env.TYK_OSS_NS }}
-      
-  tyk-stack:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Set up Helm
-        uses: azure/setup-helm@v4
-
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.9.0
-        with:
-          node_image: "kindest/node:v1.29.1"
       
       - name: Deploy Tyk Stack and dependencies
         id: deploy-stack
@@ -122,22 +192,6 @@ jobs:
           helm uninstall tyk-stack -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} 
           kubectl delete namespace ${{ env.TYK_STACK_NS }}
 
-  tyk-data-plane:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Helm
-        uses: azure/setup-helm@v4
-      
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.9.0
-        with:
-          node_image: "kindest/node:v1.29.1"
-
       - name: Deploy Tyk Data Plane and Dependencies
         id: deploy-data-plane
         run: |
@@ -174,7 +228,3 @@ jobs:
           helm uninstall tyk-data-plane -n ${{ env. TYK_DATAPLANE_NS }}
           helm uninstall redis -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
           kubectl delete namespace ${{ env. TYK_DATAPLANE_NS }}
-
-      
-    
-  
