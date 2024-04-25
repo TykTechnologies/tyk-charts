@@ -4,8 +4,13 @@ nameOverride: ""
 # fullnameOverride overrides App name. It is truncated to 63 characters.
 fullnameOverride: ""
 
-# createOperatorSecret controls if a secret needed to connect to Operator will be created
-createOperatorSecret: true
+# operatorSecret controls if a secret needed to connect to Operator will be created
+operatorSecret:
+  # enabled if set to true creates secret
+  enabled: true
+  # OSS doesn't have concept of OrgID. But we need to support some features (eg. basic auth key) in OSS
+  # You can set it to any arbitary value
+  orgID: test
 
 global:
   components:
