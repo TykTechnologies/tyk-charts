@@ -12,6 +12,7 @@ env:
   TIMEOUT: 15m
   TYK_OSS_NS: tyk-oss
   TYK_DATAPLANE_NS: tyk-dataplane
+  TYK_STACK_NS: tyk-stack
 
 jobs:
   lint-test:
@@ -112,20 +113,13 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v4
 
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          check-latest: true
-      
-      - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.6.0
-        
       - name: Create kind cluster
         uses: helm/kind-action@v1.9.0
         with:
           node_image: "kindest/node:v1.29.1"
       
-      - name: Deploy OSS Dependencies
+      - name: Deploy OSS and Dependencies
+        id: deploy-oss
         run: |
           kubectl create namespace ${{ env.TYK_OSS_NS }}
           
@@ -134,12 +128,24 @@ jobs:
           
           helm dependency update ./tyk-oss
 
-      - name: Run OSS chart-testing (install)
-        run: ct install --namespace ${{ env.TYK_OSS_NS }} --charts ./tyk-oss --helm-extra-set-args "--wait=true" --helm-extra-set-args "--set=global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379},global.redis.passSecret.name=redis,global.redis.passSecret.keyName=redis-password"
+          helm install --namespace ${{ env.TYK_OSS_NS }} tyk-oss ./tyk-oss \
+          --set "global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379}" \
+          --set "global.redis.passSecret.name=redis" \
+          --set "global.redis.passSecret.keyName=redis-password" \
+          --timeout=${{ env.TIMEOUT }} 
 
+      - name: Run integration tests for Tyk OSS
+        id: test-oss
+        run: helm test -n ${{ env.TYK_OSS_NS }} tyk-oss
+          
       - if: failure()
         name: Check logs in case of failure
-        run: kubectl logs -n ${{ env.TYK_OSS_NS}} tyk-oss-test-tyk-oss
+        run: |
+          if [ ${{ steps.deploy-oss.conclusion }} == 'failure' ]; then
+            kubectl logs -n ${{ env.TYK_OSS_NS }} gateway-tyk-oss-tyk-gateway
+          elif [ ${{ steps.test-oss.conclusion }} == 'failure' ]; then
+            kubectl logs -n ${{ env.TYK_OSS_NS }} tyk-oss-test-tyk-oss
+          fi
 
       - name: Uninstall Tyk OSS Dependencies
         run: |
