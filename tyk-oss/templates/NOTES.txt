@@ -21,7 +21,7 @@ To quickly test everything is ok, you can port-forward Tyk Gateway pod:
 You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
 Please check Tyk Operator documentation at https://tyk.io/docs/tyk-operator/
 
-{{ if .Values.createOperatorSecret }}
+{{ if .Values.operatorSecret.enabled }}
 `tyk-operator-conf` secret needed to connect to Operator is already created. 
 If you have set `global.secret.useSecretName`, please set `TYK_AUTH` field in `tyk-operator-conf` secret with Api secret of Tyk gateway.
 {{- end }}
