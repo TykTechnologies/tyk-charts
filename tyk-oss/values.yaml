@@ -10,7 +10,7 @@ operatorSecret:
   enabled: true
   # OSS doesn't have concept of OrgID. But we need to support some features (eg. basic auth key) in OSS
   # You can set it to any arbitary value
-  orgID: test
+  orgID: "orgid"
 
 global:
   components:
