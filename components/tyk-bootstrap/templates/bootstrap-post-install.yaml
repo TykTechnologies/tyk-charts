@@ -25,6 +25,10 @@ spec:
         {{- if .Values.bootstrap.podAnnotations.postInstallPodAnnotations}}
         {{ toYaml .Values.bootstrap.podAnnotations.postInstallPodAnnotations | nindent 8 }}
         {{- end }}
+      labels:
+        {{- with .Values.bootstrap.podLabels.postInstallPodLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }} 
     spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
       containers:
