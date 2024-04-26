@@ -218,10 +218,9 @@ global:
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
   storageType: &globalStorageType postgres
 
-  # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true, so it matches.
-  # The Dashboard will now operate in a mode that is compatible with key hashing.
-  # It will enable hash keys for Tyk Gateway
-  # It is used to set TYK_GW_HASHKEYS
+  # hashKeys specifies if your Tyk Gateway and Dashboard is using hashed keys.
+  # It is used to set TYK_GW_HASHKEYS and TYK_DB_HASHKEYS
+  # When set to true, Dashboard and gateway will operate in a mode that is compatible with key hashing.
   hashKeys: true
 
   # Enables validation of examples in the OAS spec. Defaults to false.
@@ -799,13 +798,8 @@ tyk-dashboard:
     # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
     # It is used to set TYK_DB_NOTIFYONCHANGE
     notifyOnChange: true
-    # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true, so it matches.
-    # The Dashboard will now operate in a mode that is compatible with key hashing.
-    # It is used to set TYK_DB_HASHKEYS
-    #
     # Deprecated:
-    #   This field will be deprecated in the next release, please set `global.hashKeys` for configuring hash keys feature
-    #     of Tyk Dashboard.
+    #   This field is deprecated in from v1.4.0, please set `global.hashKeys` for configuring hash keys feature
     hashKeys: true
     # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
     # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
