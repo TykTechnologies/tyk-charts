@@ -71,7 +71,7 @@ NOTE: You can find your organisation id and user api key through Tyk Dashboard, 
 
 4- Set `global.remoteControlPlane.connectionString`, `global.remoteControlPlane.useSSL` and `global.remoteControlPlane.sslInsecureSkipVerify` in tyk-data-plane chart to access MDCB service.
 
-If data plane is deployed in the same cluster, it can be accessed via this connection string:
+If data plane is deployed in the same cluster, MDCB can be accessed via this connection string:
 
 {{- $tykMDCBFullName := (include "tyk-mdcb.fullname" (index .Subcharts "tyk-mdcb")) -}}
 {{- $tykMDCBSvc := printf "mdcb-svc-%s" (include "tyk-mdcb.fullname" (index .Subcharts "tyk-mdcb")) -}}
@@ -83,14 +83,14 @@ If data plane is not deployed in the same cluster as control plane, get the conn
 {{- if contains "NodePort" (index .Values "tyk-mdcb" "mdcb" "service" "type") }}
 Node Port:
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ $tykMDCBSvc }})
-  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  export NODE_IP=$(kubectl get nodes -o jsonpath="{.items[0].status.addresses[0].address}")
   export MDCB_CONNECTIONSTRING="$NODE_IP:$NODE_PORT"
 {{- else if contains "LoadBalancer" (index .Values "tyk-mdcb" "mdcb" "service" "type") }}
 TCP LoadBalancer:
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ $tykMDCBFullName }}'
+           You can watch the status of service by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ $tykMDCBSvc}}'
   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ $tykMDCBSvc }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-  export MDCB_CONNECTIONSTRING=$SERVICE_IP:{{ index .Values "tyk-mdcb" "mdcb" "service" "port" }}
+  export MDCB_CONNECTIONSTRING=$SERVICE_IP:{{ $tykMDCBSvcPort }}
 {{- end }}
 
 For more detail about tyk-data-plane chart, please refer to the https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-data-plane
