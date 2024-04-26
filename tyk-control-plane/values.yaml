@@ -229,7 +229,7 @@ global:
     privateCertificateEncodingSecret: ""
 
   # hashKeys specifies if your Tyk Control Plane is using hashed keys.
-  # It is used to set TYK_GW_HASHKEYS, TYK_DB_HASHKEYS and TYK_MDCB_HASHKEYS
+  # It is used to set TYK_GW_HASHKEYS, TYK_DB_HASHKEYS, TYK_MDCB_HASHKEYS and TYK_MDCB_SYNCWORKER_HASHKEYS
   # When set to true, Dashboard, MDCB, and management gateway will operate in a mode that is compatible with key hashing.
   hashKeys: true
 
