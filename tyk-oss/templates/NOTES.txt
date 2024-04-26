@@ -22,6 +22,10 @@ You might want to install Tyk Operator next to manage Ingress resources or manag
 Please check Tyk Operator documentation at https://tyk.io/docs/tyk-operator/
 
 {{ if .Values.operatorSecret.enabled }}
-`tyk-operator-conf` secret needed to connect to Operator is already created. 
-If you have set `global.secret.useSecretName`, please set `TYK_AUTH` field in `tyk-operator-conf` secret with Api secret of Tyk gateway.
+=== Tyk Operator Secret (tyk-operator-conf) ===
+The `tyk-operator-conf` secret, required for Tyk Operator to establish a connection with Tyk Gateway, is generated in the {{ .Release.Namespace }} namespace.
+
+If API Secret of Tyk Gateway has configured via `global.secret.useSecretName` field, ensure that the `TYK_AUTH` field in the `tyk-operator-conf` secret contains the API secret of Tyk Gateway. This step ensures that Tyk Operator correctly identifies the API secret.
+
+    NOTE: After updating `tyk-operator-conf`, make sure that Tyk Operator pod is restarted.
 {{- end }}
