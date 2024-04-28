@@ -210,6 +210,9 @@ tyk-gateway:
     #   image: yourhub
     podAnnotations: {}
 
+    # podLabels specifies labels to be added in gateway Pod
+    podLabels: {}
+
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
@@ -493,6 +496,9 @@ tyk-pump:
     #   yourkey: value
     #   image: yourhub
     podAnnotations: {}
+
+    # podLabels specifies labels to be added in pump Pod
+    podLabels: {}
 
     image:
       # image repository for Tyk pump

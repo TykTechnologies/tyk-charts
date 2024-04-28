@@ -266,6 +266,18 @@ tyk-gateway:
       # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
       policyConnectionString: ""
 
+    # podAnnotations is annotations to be added to Tyk Gateway pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Gateway.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
+    podAnnotations: {}
+
+    # podLabels specifies labels to be added in gateway Pod
+    podLabels: {}
+
     tls:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
       secretName: tyk-default-tls-secret
@@ -532,6 +544,9 @@ tyk-pump:
     #   image: yourhub
     podAnnotations: {}
 
+    # podLabels specifies labels to be added in pump Pod
+    podLabels: {}
+
     image:
       # image repository for Tyk pump
       repository: docker.tyk.io/tyk-pump/tyk-pump
@@ -775,6 +790,15 @@ tyk-bootstrap:
       # preDeletePodAnnotations specifies annotations to be added to Tyk Bootstrap pre-delete hook's job pods.
       preDeletePodAnnotations: {}
 
+    # podLabels specifies labels to be added in bootstrap Pod
+    podLabels:
+      # preInstallPodLabels specifies labels to be added to Tyk Bootstrap pre-install hook's job pods.
+      preInstallPodLabels: {}
+      # postInstallPodLabels specifies labels to be added to Tyk Bootstrap post-install hook's job pods.
+      postInstallPodLabels: {}
+      # preDeletePodLabels specifies labels to be added to Tyk Bootstrap pre-delete hook's job pods.
+      preDeletePodLabels: {}
+
 tyk-dashboard:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
   nameOverride: ""
@@ -882,6 +906,9 @@ tyk-dashboard:
     #   yourkey: value
     #   image: yourhub
     podAnnotations: {}
+
+    # podLabels specifies labels to be added in dashboard Pod
+    podLabels: {}
 
     image:
       # image repository for Tyk Dashboard.
@@ -1170,3 +1197,9 @@ tyk-dev-portal:
   readinessProbe:
     # initialDelaySeconds specifies the seconds used in readiness probe as initial delay.
     initialDelaySeconds: 60
+
+  # podAnnotations specifies annotations to be added in Tyk Developer Portal Pod
+  podAnnotations: {}
+
+  # podLabels specifies labels to be added in Tyk Developer Portal Pod
+  podLabels: {}
