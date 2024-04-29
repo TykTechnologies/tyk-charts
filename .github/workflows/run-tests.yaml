@@ -33,6 +33,9 @@ jobs:
         with:
           version: v3.3.0
 
+      - name: Add dependencies
+        run: helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+
       - name: Run chart-testing (lint)
         run: ct lint --config ct.yaml --all
 
