@@ -146,11 +146,11 @@ global:
 
     # Maximum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
     # Default value: 1.3
-    # sslMaxVersion: "1.3"
+    # tlsMaxVersion: "1.3"
 
     # Minimum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
     # Default value: 1.2
-    # sslMinVersion: "1.2"
+    # tlsMinVersion: "1.2"
 
     # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
     # secretName: ""
@@ -410,6 +410,7 @@ tyk-gateway:
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
+      runAsNonRoot: true
 
     # containerSecurityContext values for gateway container
     containerSecurityContext:
@@ -653,6 +654,7 @@ tyk-pump:
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
+      runAsNonRoot: true
 
     # containerSecurityContext values for pump container
     containerSecurityContext:
@@ -933,6 +935,7 @@ tyk-dashboard:
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
+      runAsNonRoot: true
 
     # containerSecurityContext holds container-level security attributes for Tyk Dashboard container.
     containerSecurityContext:
@@ -1233,11 +1236,6 @@ tyk-mdcb:
       # location to pem encoded certificate
       certificateCertFile: "/etc/certs/tls.crt"
 
-      # Sets the AES256 secret which is used to encode certificate private keys when
-      # they uploaded via certificate storage.
-      # It is used to set TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
-      privateCertificateEncodingSecret: ""
-
       # the name of the secret
       secretName: "mdcb-tls-secret"
 
@@ -1362,6 +1360,8 @@ tyk-dev-portal:
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
+    runAsNonRoot: true
+
   # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod.
   containerSecurityContext:
     runAsNonRoot: true

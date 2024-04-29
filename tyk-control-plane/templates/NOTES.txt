@@ -64,7 +64,7 @@ NOTE: You can find your organisation id and user api key through Tyk Dashboard, 
     kubectl create secret --namespace {{ .Release.Namespace }} generic tyk-data-plane-details \
     --from-literal "orgId=$ORG_ID" \
     --from-literal "userApiKey=$USER_API_KEY" \
-    --from-literal "groupID=$GROUP_ID
+    --from-literal "groupID=$GROUP_ID"
 
 3- Refer this Kubernetes secret (tyk-data-plane-details) while installing worker gateways through `global.remoteControlPlane.useSecretName`
 in tyk-data-plane chart.

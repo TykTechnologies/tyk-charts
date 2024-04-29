@@ -1,3 +1,5 @@
+{{- $isSemVer := regexMatch "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-(0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*(?:\\.(0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+(0|[1-9]\\d*|[0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$" .Values.dashboard.image.tag }}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,6 +28,9 @@ spec:
       labels:
         app: dashboard-{{ include "tyk-dashboard.fullname" . }}
         release: {{ .Release.Name }}
+        {{- with .Values.dashboard.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}        
       annotations:
       {{- if .Values.dashboard.podAnnotations }}
       {{ toYaml .Values.dashboard.podAnnotations | nindent 8 }}
@@ -50,7 +55,7 @@ spec:
       {{- with .Values.dashboard.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+      {{- if and $isSemVer (semverCompare "<=5.0.2" .Values.dashboard.image.tag) }}
       initContainers:
         - name: init-analytics-conf
           image: busybox:1.32
@@ -254,7 +259,7 @@ spec:
           {{- end }}
         resources:
 {{ toYaml .Values.dashboard.resources | indent 12 }}
-        {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+        {{- if and  $isSemVer (semverCompare "<=5.0.2" .Values.dashboard.image.tag) }}
         command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
         {{- else }}
         command: ["/opt/tyk-dashboard/tyk-analytics"]
@@ -267,9 +272,9 @@ spec:
           - name: {{ .volumeName }}
             mountPath: {{ .certificatesMountPath }}
           {{- end }}
-          {{- end }} 
-      
-          {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+          {{- end }}
+
+          {{- if and $isSemVer (semverCompare "<=5.0.2" .Values.dashboard.image.tag) }}
           - name: analytics-conf
             mountPath: /etc/tyk-dashboard
           {{- end }}
@@ -309,9 +314,9 @@ spec:
           secret:
             secretName: {{ .secretName }}
         {{- end }}
-        {{- end }}   
+        {{- end }}
 
-        {{- if semverCompare "<=5.0.2" .Values.dashboard.image.tag }}
+        {{- if and $isSemVer (semverCompare "<=5.0.2" .Values.dashboard.image.tag) }}
         - name: analytics-conf
           emptyDir: {}
         {{- end }}

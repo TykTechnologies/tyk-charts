@@ -201,6 +201,9 @@ gateway:
   #   image: yourhub
   podAnnotations: {}
 
+  # podLabels specifies labels to be added in gateway Pod
+  podLabels: {}
+
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
 
@@ -364,6 +367,7 @@ gateway:
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
+    runAsNonRoot: true
 
   # containerSecurityContext values for gateway container
   containerSecurityContext:
