@@ -46,6 +46,10 @@ dependencies:
     version: 1.3.0
     repository: file://../components/tyk-dev-portal
     condition: global.components.devPortal
+  - name: tyk-operator
+    version: 0.17.0
+    repository: https://helm.tyk.io/public/helm/charts/
+    condition: global.components.operator
 annotations:
   artifacthub.io/category: networking
   artifacthub.io/links: |
