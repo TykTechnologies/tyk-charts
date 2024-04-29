@@ -239,7 +239,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.3.0
+    tag: v5.3.1
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
@@ -466,10 +466,6 @@ gateway:
       # Rule that ensures that if we decide to record data for a particular operation, we’ll also record data for
       # all the subsequent work that operation causes
       parentBased: false
-
-  # hashKeys is used to enable/disable key hashing.
-  # It is used to set TYK_GW_HASHKEYS
-  hashKeys: true
 
   # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
   # If a service account is to be used for Tyk Gateway, it should be manually created
