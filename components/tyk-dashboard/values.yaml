@@ -202,11 +202,8 @@ dashboard:
   # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
   # It is used to set TYK_DB_NOTIFYONCHANGE
   notifyOnChange: true
-  # hashKeys is used to enable/disable key hashing. It should match with the value set in Gateway configuration.
-  # The Dashboard will now operate in a mode that is compatible with key hashing.
-  # It is used to set TYK_DB_HASHKEYS
   # Deprecated:
-  #   This will be deprecated in future and will be replaced with .global.hashKeys
+  #   This field is deprecated in from v1.4.0, please set `global.hashKeys` for configuring hash keys feature
   hashKeys: true
   # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
   # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
