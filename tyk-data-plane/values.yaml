@@ -12,11 +12,6 @@ global:
   components:
     # pump determines whether the pump component should be installed.
     pump: true
-    # operator determines whether Tyk Operator component should be installed or not.
-    # Tyk Operator needs cert-manager to be installed beforehand. Make sure that cert-manager is installed.
-    # For further details, please refer to https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator/
-    operator: false
-
 
   servicePorts:
     # The port at which the gateway service can be found at
