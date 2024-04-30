@@ -353,13 +353,13 @@ tyk-gateway:
     #  memory: 128Mi
     resources: {}
 
-    # securityContext values for gateway pod
+    # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
       runAsNonRoot: true
 
-    # containerSecurityContext values for gateway container
+    # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
       allowPrivilegeEscalation: false
@@ -618,13 +618,13 @@ tyk-pump:
     #  memory: 128Mi
     resources: {}
 
-    # securityContext values for pump pod
+    # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
       runAsNonRoot: true
 
-    # containerSecurityContext values for pump container
+    # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
       allowPrivilegeEscalation: false

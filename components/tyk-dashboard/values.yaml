@@ -325,13 +325,13 @@ dashboard:
   #    memory: 128Mi
   resources: {}
 
-  # securityContext holds pod-level security attributes for Tyk Dashboard pod.
+  # securityContext holds pod-level security attributes for Tyk Dashboard pod. All fields from PodSecurityContext object can be added here.
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
     runAsNonRoot: true
 
-  # containerSecurityContext holds container-level security attributes for Tyk Dashboard container.
+  # containerSecurityContext holds container-level security attributes for Tyk Dashboard container. All fields from SecurityContext object can be added here.
   containerSecurityContext:
     runAsNonRoot: true
     allowPrivilegeEscalation: false
