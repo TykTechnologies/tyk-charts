@@ -124,6 +124,18 @@ spec:
             - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
               value: "{{ .Values.mdcb.tls.certificateCertFile }}"                         
             {{- end }}
+  
+            { { - if .Values.mdcb.httpServerOptions.useSSL } }
+            - name: TYK_MDCB_HTTPSERVEROPTIONS_USESSL
+              value: "{{ .Values.mdcb.httpServerOptions.useSSL }}"
+            - name: TYK_MDCB_HTTPSERVEROPTIONS_CERTIFICATE_KEYFILE
+              value: "{{ .Values.mdcb.httpServerOptions.certificateKeyFile }}"
+            - name: TYK_MDCB_HTTPSERVEROPTIONS_CERTIFICATE_CERTFILE
+              value: "{{ .Values.mdcb.httpServerOptions.certificateCertFile }}"
+            - name: TYK_MDCB_HTTPSERVEROPTIONS_MINVERSION
+              value: "{{ .Values.mdcb.httpServerOptions.minVersion }}"
+            { { - end } }
+          
             {{ if .Values.global.mtls.privateCertificateEncodingSecret }}
             - name: TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
               value: {{ .Values.global.mtls.privateCertificateEncodingSecret | quote }}
