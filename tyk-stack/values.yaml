@@ -1198,7 +1198,13 @@ tyk-dev-portal:
     # initialDelaySeconds specifies the seconds used in readiness probe as initial delay.
     initialDelaySeconds: 60
 
-  # podAnnotations specifies annotations to be added in Tyk Developer Portal Pod
+  # podAnnotations specifies annotations to be added in Tyk Developer Portal Pod.
+  # It takes key-value pairs.
+  # There are no required annotation field for Tyk Developer Portal Pod.
+  #
+  # podAnnotations:
+  #   yourkey: value
+  #   image: yourhub
   podAnnotations: {}
 
   # podLabels specifies labels to be added in Tyk Developer Portal Pod

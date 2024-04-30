@@ -508,6 +508,13 @@ tyk-gateway:
     #     readOnly: true
     extraVolumeMounts: []
 
+    # podAnnotations is annotations to be added to Tyk Gateway pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Gateway.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
     podAnnotations: {}
 
     # podLabels specifies labels to be added in gateway Pod
@@ -1431,6 +1438,12 @@ tyk-dev-portal:
     initialDelaySeconds: 60
 
   # podAnnotations specifies annotations to be added in Tyk Developer Portal Pod
+  # It takes key-value pairs.
+  # There are no required annotation field for Tyk Developer Portal.
+  #
+  # podAnnotations:
+  #   yourkey: value
+  #   image: yourhub
   podAnnotations: {}
 
   # podLabels specifies labels to be added in Tyk Developer Portal Pod
