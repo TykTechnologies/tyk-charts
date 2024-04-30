@@ -792,8 +792,8 @@ tyk-dev-portal:
 In order to enable installing Tyk Operator along-side Tyk Stack installation, please set `global.components.operator`
 to `true`.
 
-All other configurations related to Tyk Operator is available under `tyk-operator` section of `values.yaml` file.
+All other configurations related to Tyk Operator are available under `tyk-operator` section of `values.yaml` file.
 
 > [!NOTE]
-> Tyk Operator needs cert-manager to be installed. Make sure that cert-manager is installed as described in the
+> Tyk Operator needs a cert-manager to be installed. Ensure that cert-manager is installed as described in the
 > official documentation: https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator/.
