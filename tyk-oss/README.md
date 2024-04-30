@@ -463,7 +463,7 @@ To setup other backends for pump, refer to this [document](https://github.com/Ty
 In order to enable installing Tyk Operator along-side Tyk OSS installation, please set `global.components.operator`
 to `true`.
 
-All other configurations related to Tyk Operator is available under `tyk-operator` section of `values.yaml` file.
+All other configurations related to Tyk Operator are available under `tyk-operator` section of `values.yaml` file.
 
 > [!NOTE]
 > Tyk Operator needs cert-manager to be installed. Make sure that cert-manager is installed as described in the
