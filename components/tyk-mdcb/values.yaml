@@ -48,7 +48,7 @@ global:
     # the endpoints of the redis instances or use the cluster configuration endpoint.
     #
     # Default value: redis.{{ .Release.Namespace }}.svc:6379
-    addrs: localhost:6379
+    # addrs:
     #   Example using tyk simple redis chart
     #   - redis.tyk.svc:6379
     #   Example using bitnami/redis
