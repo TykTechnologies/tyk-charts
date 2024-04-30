@@ -1100,6 +1100,11 @@ tyk-dashboard:
               pathType: ImplementationSpecific
       tls: []
 
+  # tib is used to configure Tyk Identity Broker(TIB) connection details
+  tib:
+    # enabled is used to enable/disable embedded TIB
+    enabled: false
+
 tyk-mdcb:
   mdcb:
     # nameOverride overrides the Chart name. It is truncated to 63 characters.
