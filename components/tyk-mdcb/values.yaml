@@ -158,7 +158,7 @@ mdcb:
   # It is used to set TYK_MDCB_LISTENPORT
   listenPort: 9091
 
-  # When it is set to true, instead of sending analytics directly to MongoDB,
+  # When it is set to true, instead of sending analytics directly to MongoDB / SQL
   # MDCB can send analytics to Redis. This will allow tyk-pump to pull
   # analytics from Redis and send to your own data sinks.
   # It is used to set TYK_MDCB_FORWARDANALYTICSTOPUMP
