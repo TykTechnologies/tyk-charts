@@ -12,12 +12,14 @@ It includes:
 
 By default, this chart installs following components as subcharts on a [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
 
-| Component                       | Enabled by Default | Flag                        |
-|---------------------------------|--------------------|-----------------------------|
-| Tyk Gateway                     | true               | n/a                         |
-| Tyk Dashboard                   | true               | n/a                         |
-| Tyk Pump                        | true               | global.components.pump      |
-| Tyk Enterprise Developer Portal | false              | global.components.devPortal | 
+| Component            | Enabled by Default | Flag                        |
+|----------------------|--------------------|-----------------------------|
+| Tyk Gateway          | true               | n/a                         |
+| Tyk Dashboard        | true               | n/a                         |
+| Tyk Pump             | true               | global.components.pump      |
+| Tyk Developer Portal | false              | global.components.devPortal | 
+| Tyk Operator         | false              | global.components.operator  |
+
 
 To enable or disable each component, change the corresponding enabled flag.
 
@@ -634,7 +636,7 @@ Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml
 #### Other Pumps
 To set up other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported) and add the required environment variables in `pump.extraEnvs`
 
-### Tyk Dashboard
+### Tyk Dashboard Configurations
 
 #### Tyk Dashboard License (Required)
 
@@ -671,7 +673,7 @@ Starting from Tyk v3.0 TIB has been added as a built-in feature of the Tyk Dashb
 
 User can enable in-built TIB simply by setting `tyk-dashboard.tib.enabled` to true.
 
-### Tyk Bootstrap
+### Tyk Bootstrap Configurations
 
 To enable bootstrapping, set `global.components.bootstrap` to `true`. It would run [tyk-k8s-bootstrap](https://github.com/TykTechnologies/tyk-k8s-bootstrap) to bootstrap `tyk-stack` and to create Kubernetes secrets that can be utilized in Tyk Operator and Tyk Enterprise Developer Portal.
 
@@ -783,3 +785,15 @@ tyk-dev-portal:
   - name: PORTAL_LOG_LEVEL
     value: debug
 ```
+
+
+### Tyk Operator Configurations
+
+In order to enable installing Tyk Operator along-side Tyk Stack installation, please set `global.components.operator`
+to `true`.
+
+All other configurations related to Tyk Operator is available under `tyk-operator` section of `values.yaml` file.
+
+> [!NOTE]
+> Tyk Operator needs cert-manager to be installed. Make sure that cert-manager is installed as described in the
+> official documentation: https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator/.
