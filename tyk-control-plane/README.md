@@ -21,6 +21,7 @@ By default, this chart installs following components as subcharts on a [Kubernet
 | Tyk MDCB                        | true               | n/a                         |
 | Tyk Pump                        | false              | global.components.pump      |
 | Tyk Enterprise Developer Portal | false              | global.components.devPortal | 
+| Tyk Operator                    | false              | global.components.operator  |
 
 To enable or disable each component, change the corresponding enabled flag.
 
@@ -664,3 +665,14 @@ tyk-dev-portal:
   - name: PORTAL_LOG_LEVEL
     value: debug
 ```
+
+### Tyk Operator Configurations
+
+In order to enable installing Tyk Operator along-side Tyk Control Plane installation, please set `global.components.operator`
+to `true`.
+
+All other configurations related to Tyk Operator is available under `tyk-operator` section of `values.yaml` file.
+
+> [!NOTE]
+> Tyk Operator needs cert-manager to be installed. Make sure that cert-manager is installed as described in the
+> official documentation: https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator/.
