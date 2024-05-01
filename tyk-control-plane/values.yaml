@@ -1107,7 +1107,6 @@ tyk-mdcb:
       useSSL: false
       # certificateKeyFile: /path-to-cert-keyfile
       # certificateCertFile: /path-to-certfile
-  
       # For TLS 1.0 use 769, for TLS 1.1 use 770, for TLS 1.2 use 771, for TLS 1.3 use 772
       # minVersion: 771
 
