@@ -410,13 +410,13 @@ tyk-gateway:
     #  memory: 128Mi
     resources: {}
 
-    # securityContext values for gateway pod
+    # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
       runAsNonRoot: true
 
-    # containerSecurityContext values for gateway container
+    # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
       allowPrivilegeEscalation: false
@@ -511,6 +511,18 @@ tyk-gateway:
     #     mountPath: /etc/ssl/certs/ca-certs.crt
     #     readOnly: true
     extraVolumeMounts: []
+
+    # podAnnotations is annotations to be added to Tyk Gateway pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Gateway.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
+    podAnnotations: {}
+
+    # podLabels specifies labels to be added in gateway Pod
+    podLabels: {}
 
 tyk-operator:
   nameOverride: ""
@@ -618,6 +630,9 @@ tyk-pump:
     #   yourkey: value
     #   image: yourhub
     podAnnotations: {}
+
+    # podLabels specifies labels to be added in pump Pod
+    podLabels: {}
 
     image:
       # image repository for Tyk pump
@@ -728,13 +743,13 @@ tyk-pump:
     #  memory: 128Mi
     resources: {}
 
-    # securityContext values for pump pod
+    # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
       runAsNonRoot: true
 
-    # containerSecurityContext values for pump container
+    # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
       allowPrivilegeEscalation: false
@@ -867,6 +882,15 @@ tyk-bootstrap:
       # preDeletePodAnnotations specifies annotations to be added to Tyk Bootstrap pre-delete hook's job pods.
       preDeletePodAnnotations: {}
 
+    # podLabels specifies labels to be added in bootstrap Pod
+    podLabels:
+      # preInstallPodLabels specifies labels to be added to Tyk Bootstrap pre-install hook's job pods.
+      preInstallPodLabels: {}
+      # postInstallPodLabels specifies labels to be added to Tyk Bootstrap post-install hook's job pods.
+      postInstallPodLabels: {}
+      # preDeletePodLabels specifies labels to be added to Tyk Bootstrap pre-delete hook's job pods.
+      preDeletePodLabels: {}
+
 tyk-dashboard:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
   nameOverride: ""
@@ -977,6 +1001,9 @@ tyk-dashboard:
     #   image: yourhub
     podAnnotations: {}
 
+    # podLabels specifies labels to be added in dashboard Pod
+    podLabels: {}
+
     image:
       # image repository for Tyk Dashboard.
       repository: tykio/tyk-dashboard
@@ -1009,13 +1036,13 @@ tyk-dashboard:
     #    memory: 128Mi
     resources: {}
 
-    # securityContext holds pod-level security attributes for Tyk Dashboard pod.
+    # securityContext holds pod-level security attributes for Tyk Dashboard pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
       runAsNonRoot: true
 
-    # containerSecurityContext holds container-level security attributes for Tyk Dashboard container.
+    # containerSecurityContext holds container-level security attributes for Tyk Dashboard container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
       allowPrivilegeEscalation: false
@@ -1215,11 +1242,11 @@ tyk-mdcb:
       name: ""
 
 
-    # securityContext holds pod-level security attributes for Tyk MDCB pod.
+    # securityContext holds pod-level security attributes for Tyk MDCB pod. All fields from PodSecurityContext object can be added here.
     podSecurityContext: {}
     # fsGroup: 2000
 
-    # containerSecurityContext holds container-level security attributes for Tyk MDCB container.
+    # containerSecurityContext holds container-level security attributes for Tyk MDCB container. All fields from SecurityContext object can be added here.
     containerSecurityContext: {}
       # capabilities:
       #   drop:
@@ -1439,13 +1466,13 @@ tyk-dev-portal:
     #  cpu: 100m
   #  memory: 128Mi
 
-  # securityContext holds pod-level security attributes for Tyk Developer Portal pod.
+  # securityContext holds pod-level security attributes for Tyk Developer Portal pod. All fields from PodSecurityContext object can be added here.
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
     runAsNonRoot: true
 
-  # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod.
+  # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod. All fields from SecurityContext object can be added here.
   containerSecurityContext:
     runAsNonRoot: true
     allowPrivilegeEscalation: false
@@ -1487,3 +1514,15 @@ tyk-dev-portal:
   readinessProbe:
     # initialDelaySeconds specifies the seconds used in readiness probe as initial delay.
     initialDelaySeconds: 60
+
+  # podAnnotations specifies annotations to be added in Tyk Developer Portal Pod
+  # It takes key-value pairs.
+  # There are no required annotation field for Tyk Developer Portal.
+  #
+  # podAnnotations:
+  #   yourkey: value
+  #   image: yourhub
+  podAnnotations: {}
+
+  # podLabels specifies labels to be added in Tyk Developer Portal Pod
+  podLabels: {}

@@ -363,13 +363,13 @@ gateway:
   #  memory: 128Mi
   resources: {}
 
-  # securityContext values for gateway pod
+  # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
     runAsNonRoot: true
 
-  # containerSecurityContext values for gateway container
+  # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
   containerSecurityContext:
     runAsNonRoot: true
     allowPrivilegeEscalation: false
