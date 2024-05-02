@@ -246,11 +246,11 @@ mdcb:
     name: ""
 
 
-  # securityContext holds pod-level security attributes for Tyk MDCB pod.
+  # securityContext holds pod-level security attributes for Tyk MDCB pod. All fields from PodSecurityContext object can be added here.
   podSecurityContext: {}
   # fsGroup: 2000
 
-  # containerSecurityContext holds container-level security attributes for Tyk MDCB container.
+  # containerSecurityContext holds container-level security attributes for Tyk MDCB container. All fields from SecurityContext object can be added here.
   containerSecurityContext: {}
     # capabilities:
     #   drop:
