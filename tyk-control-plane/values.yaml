@@ -1102,12 +1102,11 @@ tyk-mdcb:
 
     # If enabled, aggregate data will be generated per minute.
     storeAnalyticsPerMinute: true
-
     probes:
       # This port lets MDCB allow standard health checks.
       # It also defines the path for liveness and readiness probes.
-      # It is used to set TYK_MDCB_HEALTHCHECKPORT
-      healthCheckPort: 8181
+      # It is used to set TYK_MDCB_HTTPPORT
+      httpPort: 8181
       # liveness includes details about liveness probe used in MDCB Deployment.
       liveness:
         # path represents the http path to be used in liveness probe in MDBC deployment.

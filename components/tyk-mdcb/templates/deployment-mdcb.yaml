@@ -81,8 +81,8 @@ spec:
           env:
             - name: TYK_MDCB_LISTENPORT
               value: "{{ .Values.mdcb.listenPort }}"
-            - name: TYK_MDCB_HEALTHCHECKPORT
-              value: "{{ .Values.mdcb.probes.healthCheckPort }}"
+            - name: TYK_MDCB_HTTPPORT
+                value: "{{ .Values.mdcb.probes.httpPort }}"
             - name: TYK_MDCB_STORAGE_TYPE
               value: "redis"
             - name: TYK_MDCB_STORAGE_ENABLECLUSTER
