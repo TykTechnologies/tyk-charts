@@ -1102,7 +1102,7 @@ tyk-mdcb:
 
     # If enabled, aggregate data will be generated per minute.
     storeAnalyticsPerMinute: true
-    
+
     security:
       secret: 1234567890
       enableHttpSecureEndpoints: false
