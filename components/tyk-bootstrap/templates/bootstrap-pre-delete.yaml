@@ -39,6 +39,10 @@ spec:
           image: {{ .Values.bootstrap.jobs.preDelete.image.repository }}:{{ .Values.bootstrap.jobs.preDelete.image.tag }}
           command: [ './app/bin/bootstrap-app-pre-delete' ]
           imagePullPolicy: IfNotPresent
+          {{- if .Values.bootstrap.containerSecurityContext }}
+          securityContext:
+          {{- toYaml .Values.bootstrap.containerSecurityContext | nindent 12 }}
+          {{- end }}
           env:
             - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
               value: {{ .Values.bootstrap.operatorSecret }}
