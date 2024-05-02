@@ -82,7 +82,7 @@ spec:
             - name: TYK_MDCB_LISTENPORT
               value: "{{ .Values.mdcb.listenPort }}"
             - name: TYK_MDCB_HTTPPORT
-                value: "{{ .Values.mdcb.probes.httpPort }}"
+              value: "{{ .Values.mdcb.probes.httpPort }}"
             - name: TYK_MDCB_STORAGE_TYPE
               value: "redis"
             - name: TYK_MDCB_STORAGE_ENABLECLUSTER
@@ -91,7 +91,10 @@ spec:
               value: {{ include "mdcb.redis_url" . | quote }}
             - name: TYK_MDCB_HASHKEYS
               value: "{{ .Values.global.hashKeys }}"
-
+            - name: TYK_MDCB_SECURITY_SECRET
+              value: "{{ .Values.mdcb.security.secret}}"
+            - name: TYK_MDCB_SECURITY_ENABLEHTTPSECUREENDPOINTS
+              value: "{{ .Values.mdcb.security.enableHttpSecureEndpoints}}"
             # Redis TLS configurations
             {{- if .Values.global.redis.useSSL }}
             - name: TYK_MDCB_STORAGE_REDISSSLMAXVERSION

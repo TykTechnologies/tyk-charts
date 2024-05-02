@@ -1102,6 +1102,10 @@ tyk-mdcb:
 
     # If enabled, aggregate data will be generated per minute.
     storeAnalyticsPerMinute: true
+    
+    security:
+      secret: 1234567890
+      enableHttpSecureEndpoints: false
     probes:
       # This port lets MDCB allow standard health checks.
       # It also defines the path for liveness and readiness probes.
