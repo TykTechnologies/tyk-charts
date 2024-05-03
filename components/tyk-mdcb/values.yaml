@@ -252,12 +252,16 @@ mdcb:
 
   # containerSecurityContext holds container-level security attributes for Tyk MDCB container. All fields from SecurityContext object can be added here.
   containerSecurityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
     # runAsNonRoot: true
     # runAsUser: 1000
+    # allowPrivilegeEscalation: false
+    # privileged: false
+    # readOnlyRootFilesystem: true
+    # seccompProfile:
+    #   type: RuntimeDefault
+    # capabilities:
+    #   drop:
+    #     - ALL
 
   service:
     # type corresponds to the service type of Tyk MDCB Service.
