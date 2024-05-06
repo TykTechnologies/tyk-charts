@@ -218,10 +218,9 @@ global:
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
   storageType: &globalStorageType postgres
 
-  # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true, so it matches.
-  # The Dashboard will now operate in a mode that is compatible with key hashing.
-  # It will enable hash keys for Tyk Gateway
-  # It is used to set TYK_GW_HASHKEYS
+  # hashKeys specifies if your Tyk Gateway and Dashboard is using hashed keys.
+  # It is used to set TYK_GW_HASHKEYS and TYK_DB_HASHKEYS
+  # When set to true, Dashboard and gateway will operate in a mode that is compatible with key hashing.
   hashKeys: true
 
   # Enables validation of examples in the OAS spec. Defaults to false.
@@ -266,6 +265,18 @@ tyk-gateway:
       # The URL needs to be formatted as: http://dashboard_host:port.
       # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
       policyConnectionString: ""
+
+    # podAnnotations is annotations to be added to Tyk Gateway pod.
+    # It takes key-value pairs.
+    # There are no required annotation field for Tyk Gateway.
+    #
+    # podAnnotations:
+    #   yourkey: value
+    #   image: yourhub
+    podAnnotations: {}
+
+    # podLabels specifies labels to be added in gateway Pod
+    podLabels: {}
 
     tls:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
@@ -314,7 +325,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.3.0
+      tag: v5.3.1
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -404,21 +415,24 @@ tyk-gateway:
     #  memory: 128Mi
     resources: {}
 
-    # securityContext values for gateway pod
+    # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
       runAsNonRoot: true
 
-    # containerSecurityContext values for gateway container
+    # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
+      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
+      seccompProfile:
+        type: RuntimeDefault
       capabilities:
         drop:
-          - all
+          - ALL
 
     # node labels for gateway pod assignment
     nodeSelector: {}
@@ -533,6 +547,9 @@ tyk-pump:
     #   image: yourhub
     podAnnotations: {}
 
+    # podLabels specifies labels to be added in pump Pod
+    podLabels: {}
+
     image:
       # image repository for Tyk pump
       repository: docker.tyk.io/tyk-pump/tyk-pump
@@ -642,21 +659,24 @@ tyk-pump:
     #  memory: 128Mi
     resources: {}
 
-    # securityContext values for pump pod
+    # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
       runAsNonRoot: true
 
-    # containerSecurityContext values for pump container
+    # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
+      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
+      seccompProfile:
+        type: RuntimeDefault
       capabilities:
         drop:
-          - all
+          - ALL
 
     # node labels for pump pod assignment
     nodeSelector: {}
@@ -776,6 +796,15 @@ tyk-bootstrap:
       # preDeletePodAnnotations specifies annotations to be added to Tyk Bootstrap pre-delete hook's job pods.
       preDeletePodAnnotations: {}
 
+    # podLabels specifies labels to be added in bootstrap Pod
+    podLabels:
+      # preInstallPodLabels specifies labels to be added to Tyk Bootstrap pre-install hook's job pods.
+      preInstallPodLabels: {}
+      # postInstallPodLabels specifies labels to be added to Tyk Bootstrap post-install hook's job pods.
+      postInstallPodLabels: {}
+      # preDeletePodLabels specifies labels to be added to Tyk Bootstrap pre-delete hook's job pods.
+      preDeletePodLabels: {}
+
 tyk-dashboard:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
   nameOverride: ""
@@ -801,13 +830,8 @@ tyk-dashboard:
     # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
     # It is used to set TYK_DB_NOTIFYONCHANGE
     notifyOnChange: true
-    # hashKeys specifies that if your Tyk Gateway is using hashed keys, set this value to true, so it matches.
-    # The Dashboard will now operate in a mode that is compatible with key hashing.
-    # It is used to set TYK_DB_HASHKEYS
-    #
     # Deprecated:
-    #   This field will be deprecated in the next release, please set `global.hashKeys` for configuring hash keys feature
-    #     of Tyk Dashboard.
+    #   This field is deprecated in from v1.4.0, please set `global.hashKeys` for configuring hash keys feature
     hashKeys: true
     # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
     # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
@@ -889,12 +913,15 @@ tyk-dashboard:
     #   image: yourhub
     podAnnotations: {}
 
+    # podLabels specifies labels to be added in dashboard Pod
+    podLabels: {}
+
     image:
       # image repository for Tyk Dashboard.
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.3.0
+      tag: v5.3.1
 
       # image pull policy
       pullPolicy: Always
@@ -921,21 +948,24 @@ tyk-dashboard:
     #    memory: 128Mi
     resources: {}
 
-    # securityContext holds pod-level security attributes for Tyk Dashboard pod.
+    # securityContext holds pod-level security attributes for Tyk Dashboard pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
       runAsNonRoot: true
 
-    # containerSecurityContext holds container-level security attributes for Tyk Dashboard container.
+    # containerSecurityContext holds container-level security attributes for Tyk Dashboard container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
+      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
+      seccompProfile:
+        type: RuntimeDefault
       capabilities:
         drop:
-        - all
+          - ALL
 
     # nodeSelector is a selector which must be true for Tyk Dashboard pod to fit on a specific node.
     nodeSelector: {}
@@ -1075,7 +1105,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.8.3
+    tag: v1.8.5
     # image pull policy
     pullPolicy: Always
 
@@ -1129,20 +1159,23 @@ tyk-dev-portal:
     #  cpu: 100m
     #  memory: 128Mi
 
-  # securityContext holds pod-level security attributes for Tyk Developer Portal pod.
+  # securityContext holds pod-level security attributes for Tyk Developer Portal pod. All fields from PodSecurityContext object can be added here.
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
     runAsNonRoot: true
-  # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod.
+  # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod. All fields from SecurityContext object can be added here.
   containerSecurityContext:
     runAsNonRoot: true
+    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true
+    seccompProfile:
+      type: RuntimeDefault
     capabilities:
       drop:
-        - all
+        - ALL
   # nodeSelector is a selector which must be true for Tyk Developer Portal pod to fit on a specific node.
   nodeSelector: {}
   # tolerations specifies tolerations to be applied on Tyk Developer Portal pods.
@@ -1176,3 +1209,15 @@ tyk-dev-portal:
   readinessProbe:
     # initialDelaySeconds specifies the seconds used in readiness probe as initial delay.
     initialDelaySeconds: 60
+
+  # podAnnotations specifies annotations to be added in Tyk Developer Portal Pod.
+  # It takes key-value pairs.
+  # There are no required annotation field for Tyk Developer Portal Pod.
+  #
+  # podAnnotations:
+  #   yourkey: value
+  #   image: yourhub
+  podAnnotations: {}
+
+  # podLabels specifies labels to be added in Tyk Developer Portal Pod
+  podLabels: {}

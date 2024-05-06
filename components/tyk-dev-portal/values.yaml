@@ -119,7 +119,7 @@ image:
   # image repository for Tyk Developer Portal.
   repository: tykio/portal
   # Developer portal < v1.2 is not supported
-  tag: v1.8.3
+  tag: v1.8.5
   # image pull policy
   pullPolicy: Always
 
@@ -186,21 +186,24 @@ resources: {}
   #  cpu: 100m
   #  memory: 128Mi
 
-# securityContext holds pod-level security attributes for Tyk Developer Portal pod.
+# securityContext holds pod-level security attributes for Tyk Developer Portal pod. All fields from PodSecurityContext object can be added here.
 securityContext:
   runAsUser: 1000
   fsGroup: 2000
   runAsNonRoot: true
 
-# containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod.
+# containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod. All fields from SecurityContext object can be added here.
 containerSecurityContext:
   runAsNonRoot: true
+  runAsUser: 1000
   allowPrivilegeEscalation: false
   privileged: false
   readOnlyRootFilesystem: true
+  seccompProfile:
+    type: RuntimeDefault
   capabilities:
     drop:
-      - all
+      - ALL
 
 # nodeSelector is a selector which must be true for Tyk Developer Portal pod to fit on a specific node.
 nodeSelector: {}

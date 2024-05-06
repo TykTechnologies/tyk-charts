@@ -239,7 +239,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.3.0
+    tag: v5.3.1
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
@@ -363,21 +363,24 @@ gateway:
   #  memory: 128Mi
   resources: {}
 
-  # securityContext values for gateway pod
+  # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
     runAsNonRoot: true
 
-  # containerSecurityContext values for gateway container
+  # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
   containerSecurityContext:
     runAsNonRoot: true
+    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true
+    seccompProfile:
+      type: RuntimeDefault
     capabilities:
       drop:
-        - all
+        - ALL
 
   # node labels for gateway pod assignment
   nodeSelector: {}
@@ -466,10 +469,6 @@ gateway:
       # Rule that ensures that if we decide to record data for a particular operation, we’ll also record data for
       # all the subsequent work that operation causes
       parentBased: false
-
-  # hashKeys is used to enable/disable key hashing.
-  # It is used to set TYK_GW_HASHKEYS
-  hashKeys: true
 
   # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
   # If a service account is to be used for Tyk Gateway, it should be manually created

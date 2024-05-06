@@ -72,3 +72,23 @@ http
 {{- define "tyk-oss.gwServicePort" -}}
 {{ .Values.global.servicePorts.gateway }}
 {{- end -}}
+
+{{- define "tyk-oss.gwControlServiceName" -}}
+{{- if index .Values "tyk-gateway" "gateway" "control" "enabled" -}}
+    {{ printf "gateway-control-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  }}
+{{- else -}}
+    {{ printf "gateway-svc-%v" (include "tyk-gateway.fullname" (index .Subcharts "tyk-gateway"))  }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-oss.gwControlPort" -}}
+{{- if index .Values "tyk-gateway" "gateway" "control" "enabled" -}}
+    {{ index .Values "tyk-gateway" "gateway" "control" "port"  }}
+{{- else -}}
+    {{ .Values.global.servicePorts.gateway }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-oss.gwControlURL" -}}
+    {{ printf "%v://%v.%v.svc:%v" (include "tyk-oss.gw_proto" . ) (include "tyk-oss.gwControlServiceName" . )  .Release.Namespace (include "tyk-oss.gwControlPort" . ) }}
+{{- end -}}

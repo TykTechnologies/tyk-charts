@@ -210,6 +210,9 @@ tyk-gateway:
     #   image: yourhub
     podAnnotations: {}
 
+    # podLabels specifies labels to be added in gateway Pod
+    podLabels: {}
+
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
@@ -236,7 +239,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.3.0
+      tag: v5.3.1
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -350,21 +353,24 @@ tyk-gateway:
     #  memory: 128Mi
     resources: {}
 
-    # securityContext values for gateway pod
+    # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
       runAsNonRoot: true
 
-    # containerSecurityContext values for gateway container
+    # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
+      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
+      seccompProfile:
+        type: RuntimeDefault
       capabilities:
         drop:
-          - all
+          - ALL
 
     # node labels for gateway pod assignment
     nodeSelector: {}
@@ -383,7 +389,6 @@ tyk-gateway:
     extraEnvs: []
 
     # Sharding gateway allows you to selectively load APIs to specific gateways.
-    # If enabled make sure you have at least one gateway that is not sharded.
     # Also be sure to match API segmentation tags with the tags selected below.
     sharding:
       enabled: false
@@ -493,6 +498,9 @@ tyk-pump:
     #   yourkey: value
     #   image: yourhub
     podAnnotations: {}
+
+    # podLabels specifies labels to be added in pump Pod
+    podLabels: {}
 
     image:
       # image repository for Tyk pump
@@ -613,21 +621,24 @@ tyk-pump:
     #  memory: 128Mi
     resources: {}
 
-    # securityContext values for pump pod
+    # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
       fsGroup: 2000
       runAsNonRoot: true
 
-    # containerSecurityContext values for pump container
+    # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
+      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
+      seccompProfile:
+        type: RuntimeDefault
       capabilities:
         drop:
-          - all
+          - ALL
 
     # node labels for pump pod assignment
     nodeSelector: {}

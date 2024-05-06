@@ -60,6 +60,10 @@ spec:
         - name: init-analytics-conf
           image: busybox:1.32
           args: ["sh", "-c", 'touch /etc/tyk-dashboard/tyk_analytics.conf && echo "{}" > /etc/tyk-dashboard/tyk_analytics.conf']
+          {{- if .Values.dashboard.containerSecurityContext }}
+          securityContext:
+          {{- toYaml .Values.dashboard.containerSecurityContext | nindent 12 }}
+          {{- end }}          
           volumeMounts:
             - mountPath: /etc/tyk-dashboard
               name: analytics-conf
@@ -80,12 +84,8 @@ spec:
             value: "{{ .Values.dashboard.defaultPageSize }}"
           - name: "TYK_DB_NOTIFYONCHANGE"
             value: "{{ .Values.dashboard.notifyOnChange }}"
-          - name: "TYK_DB_HASHKEYS"            
-          {{- if .Values.dashboard.hashKeys }}
-            value: {{ .Values.dashboard.hashKeys | quote }}
-          {{- else }}   
-            value: {{ .Values.global.hashKeys | quote }}         
-          {{- end }}   
+          - name: "TYK_DB_HASHKEYS"
+            value: {{ .Values.global.hashKeys | quote }}
           - name: "TYK_DB_ENABLEDUPLICATESLUGS"
             value: "{{ .Values.dashboard.enableDuplicateSlugs }}"
           - name: "TYK_DB_SHOWORGID"

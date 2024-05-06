@@ -202,11 +202,8 @@ dashboard:
   # notifyOnChange specifies whether the Tyk Dashboard will notify all Tyk Gateway nodes to hot-reload when an API definition is changed.
   # It is used to set TYK_DB_NOTIFYONCHANGE
   notifyOnChange: true
-  # hashKeys is used to enable/disable key hashing. It should match with the value set in Gateway configuration.
-  # The Dashboard will now operate in a mode that is compatible with key hashing.
-  # It is used to set TYK_DB_HASHKEYS
   # Deprecated:
-  #   This will be deprecated in future and will be replaced with .global.hashKeys
+  #   This field is deprecated in from v1.4.0, please set `global.hashKeys` for configuring hash keys feature
   hashKeys: true
   # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
   # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
@@ -296,7 +293,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.3.0
+    tag: v5.3.1
 
     # image pull policy
     pullPolicy: Always
@@ -328,21 +325,24 @@ dashboard:
   #    memory: 128Mi
   resources: {}
 
-  # securityContext holds pod-level security attributes for Tyk Dashboard pod.
+  # securityContext holds pod-level security attributes for Tyk Dashboard pod. All fields from PodSecurityContext object can be added here.
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
     runAsNonRoot: true
 
-  # containerSecurityContext holds container-level security attributes for Tyk Dashboard container.
+  # containerSecurityContext holds container-level security attributes for Tyk Dashboard container. All fields from SecurityContext object can be added here.
   containerSecurityContext:
     runAsNonRoot: true
+    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true
+    seccompProfile:
+      type: RuntimeDefault
     capabilities:
       drop:
-      - all
+        - ALL
 
   # nodeSelector is a selector which must be true for Tyk Dashboard pod to fit on a specific node.
   nodeSelector: {}
