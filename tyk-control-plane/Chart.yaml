@@ -1,6 +1,6 @@
 apiVersion: v2
 name: tyk-control-plane
-version: 1.3.0-beta
+version: 1.4.0
 description: |
   A Helm chart for deploying Tyk Control Plane on a cluster.
   It will deploy all required Tyk components with the settings provided in the values.yaml file.
@@ -27,23 +27,23 @@ keywords:
   - mdcb
 dependencies:
   - name: tyk-gateway
-    version: 1.3.0
+    version: 1.4.0
     repository: file://../components/tyk-gateway
   - name: tyk-pump
-    version: 1.3.0
+    version: 1.4.0
     repository: file://../components/tyk-pump
     condition: global.components.pump
   - name: tyk-dashboard
-    version: 1.3.0
+    version: 1.4.0
     repository: file://../components/tyk-dashboard
   - name: tyk-bootstrap
-    version: 1.3.0
+    version: 1.4.0
     repository: file://../components/tyk-bootstrap
   - name: tyk-mdcb
-    version: 1.3.0-beta
+    version: 1.4.0
     repository: file://../components/tyk-mdcb
   - name: tyk-dev-portal
-    version: 1.3.0
+    version: 1.4.0
     repository: file://../components/tyk-dev-portal
     condition: global.components.devPortal
 annotations:
