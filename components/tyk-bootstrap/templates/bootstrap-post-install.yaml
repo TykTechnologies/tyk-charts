@@ -34,7 +34,7 @@ spec:
       containers:
         - name: bootstrap-tyk-post-install
           image: {{ .Values.bootstrap.jobs.postInstall.image.repository }}:{{ .Values.bootstrap.jobs.postInstall.image.tag }}
-          command: [ './app/bin/bootstrap-app-post' ]
+          command: [ '/app/bin/bootstrap-app-post' ]
           imagePullPolicy: IfNotPresent
           {{- if .Values.bootstrap.containerSecurityContext }}
           securityContext:
