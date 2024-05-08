@@ -1298,7 +1298,8 @@ tyk-dev-portal:
     initialDelaySeconds: 60
 
   # annotations be added to the Deployment of Tyk Developer Portal
-  annotations: {}
+  annotations:
+    app: "test123"
 
   # podAnnotations specifies annotations to be added in Tyk Developer Portal Pod.
   # It takes key-value pairs.

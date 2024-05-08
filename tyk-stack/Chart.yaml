@@ -38,7 +38,7 @@ dependencies:
     version: 1.4.0
     repository: file://../components/tyk-bootstrap
   - name: tyk-dev-portal
-    version: 1.4.0
+    # version: 1.4.0
     repository: file://../components/tyk-dev-portal
     condition: global.components.devPortal
   - name: tyk-operator
