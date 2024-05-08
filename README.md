@@ -1,5 +1,5 @@
-# New Tyk Helm Charts
-This is a repository for new Tyk helm charts. We will roll out new component charts and umbrella charts here as they are ready. Please visit the respective pages for each chart to learn how to install the chart and find out all the information relevant to that chart.
+# Tyk Helm Charts
+This is a repository for Tyk helm charts. Please visit the official website to learn about Tyk's [Licensing and deployment models](https://tyk.io/docs/tyk-on-premises/licensing/) and the different [Helm Charts](https://tyk.io/docs/product-stack/tyk-charts/overview/) availble for Kubernetes deployment.
 
 ## Usage
 [Helm](https://helm.sh/) must be installed to use the charts. Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
@@ -18,10 +18,10 @@ Helm umbrella chart (chart of charts) is an easy and really flexible way of inst
 
 | Umbrella Charts                          | Description                                                   | Status |
 |------------------------------------------|---------------------------------------------------------------|--------|
-| [tyk-oss](./tyk-oss)                     | Tyk Open Source                                               | Stable |
-| [tyk-stack](./tyk-stack)                 | Tyk Self Managed                                              | Stable |
-| [tyk-control-plane](./tyk-control-plane) | Tyk Self Managed (MDCB) Control Plane                         | Beta   |
-| [tyk-data-plane](./tyk-data-plane)       | Tyk Self Managed (MDCB) Data Plane <br> Tyk Hybrid Data Plane | Stable |
+| [tyk-oss](https://tyk.io/docs/product-stack/tyk-charts/tyk-oss-chart/)                     | Tyk Open Source                                               | Stable |
+| [tyk-stack](https://tyk.io/docs/product-stack/tyk-charts/tyk-stack-chart/)                 | Tyk Self Managed                                              | Stable |
+| [tyk-control-plane](https://tyk.io/docs/product-stack/tyk-charts/tyk-control-plane-chart/) | Tyk Self Managed (MDCB) Control Plane                         | Stable |
+| [tyk-data-plane](https://tyk.io/docs/product-stack/tyk-charts/tyk-data-plane-chart/)       | Tyk Self Managed (MDCB) Data Plane <br> Tyk Hybrid Data Plane | Stable |
 
 ### Component Charts
 * [tyk-gateway](./components/tyk-gateway)
@@ -29,8 +29,9 @@ Helm umbrella chart (chart of charts) is an easy and really flexible way of inst
 * [tyk-dashboard](./components/tyk-dashboard)
 * [tyk-dev-portal](./components/tyk-dev-portal)
 * [tyk-mdcb](./components/tyk-mdcb)
-* tyk-tib (Coming soon!)
-* tyk-operator (Coming soon!)
+
+### Other Charts
+Tyk Operator's helm chart is managed in [tyk-operator](https://github.com/TykTechnologies/tyk-operator) repository.
 
 ## External Dependencies - Redis and MongoDB/PostgreSQL
 - Redis is required for all of the Tyk installations it must be installed in the cluster or reachable from inside K8s.

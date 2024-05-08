@@ -334,12 +334,15 @@ dashboard:
   # containerSecurityContext holds container-level security attributes for Tyk Dashboard container. All fields from SecurityContext object can be added here.
   containerSecurityContext:
     runAsNonRoot: true
+    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true
+    seccompProfile:
+      type: RuntimeDefault
     capabilities:
       drop:
-      - all
+        - ALL
 
   # nodeSelector is a selector which must be true for Tyk Dashboard pod to fit on a specific node.
   nodeSelector: {}

@@ -73,6 +73,10 @@ spec:
         image: "{{ .Values.gateway.initContainers.setupDirectories.repository }}:{{ .Values.gateway.initContainers.setupDirectories.tag }}"
         command: ['sh','-c','mkdir -p apps middleware policies && touch policies/policies.json']
         workingDir: /mnt/tyk-gateway
+        {{- if .Values.gateway.containerSecurityContext }}
+        securityContext:
+        {{- toYaml .Values.gateway.containerSecurityContext | nindent 12 }}
+        {{- end }}      
         volumeMounts:
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway

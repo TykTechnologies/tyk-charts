@@ -60,6 +60,10 @@ spec:
         - name: init-analytics-conf
           image: busybox:1.32
           args: ["sh", "-c", 'touch /etc/tyk-dashboard/tyk_analytics.conf && echo "{}" > /etc/tyk-dashboard/tyk_analytics.conf']
+          {{- if .Values.dashboard.containerSecurityContext }}
+          securityContext:
+          {{- toYaml .Values.dashboard.containerSecurityContext | nindent 12 }}
+          {{- end }}          
           volumeMounts:
             - mountPath: /etc/tyk-dashboard
               name: analytics-conf
