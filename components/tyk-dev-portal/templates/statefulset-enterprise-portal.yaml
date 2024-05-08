@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: {{ .Values.kind }}
 metadata:
   name: portal-{{ include "tyk-dev-portal.fullname" . }}
+  {{- if .Values.annotations }}
+  annotations:
+  {{- toYaml .Values.annotations | nindent 4 }}
+  {{- end }}
   labels:
     app: {{ include "tyk-dev-portal.fullname" . }}
     chart: {{ include "tyk-dev-portal.chart" . }}

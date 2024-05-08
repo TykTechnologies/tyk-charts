@@ -229,6 +229,9 @@ mdcb:
   # image pull secrets to use when pulling images from repository
   imagePullSecrets: []
 
+  # annotations be added to the Deployment / Statefulset of MDCB
+  annotations: {}
+
   # podAnnotations specifies annotations to be added in MDCB Pod
   podAnnotations: {}
   # podLabels specifies labels to be added in MDCB Pod

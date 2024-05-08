@@ -192,6 +192,9 @@ gateway:
   # kind is type of k8s object to be created for gateway.
   kind: Deployment
 
+  # annotations be added to the Deployment / Statefulset of Tyk Gateway
+  annotations: {}
+
   # podAnnotations is annotations to be added to Tyk Gateway pod.
   # It takes key-value pairs.
   # There are no required annotation field for Tyk Gateway.
