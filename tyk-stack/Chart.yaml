@@ -25,20 +25,20 @@ keywords:
   - api developer portal
 dependencies:
   - name: tyk-gateway
-    version: 1.4.0
+    version: 1.4.1
     repository: file://../components/tyk-gateway
   - name: tyk-pump
-    version: 1.4.0
+    version: 1.4.1
     repository: file://../components/tyk-pump
     condition: global.components.pump
   - name: tyk-dashboard
-    version: 1.4.0
+    version: 1.4.1
     repository: file://../components/tyk-dashboard
   - name: tyk-bootstrap
-    version: 1.4.0
+    version: 1.4.1
     repository: file://../components/tyk-bootstrap
   - name: tyk-dev-portal
-    # version: 1.4.0
+    version: 1.4.1
     repository: file://../components/tyk-dev-portal
     condition: global.components.devPortal
   - name: tyk-operator

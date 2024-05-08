@@ -28,10 +28,10 @@ keywords:
   - tyk mdcb data plane
 dependencies:
   - name: tyk-gateway
-    version: 1.4.0
+    version: 1.4.1
     repository: file://../components/tyk-gateway
   - name: tyk-pump
-    version: 1.4.0
+    version: 1.4.1
     repository: file://../components/tyk-pump
     condition: global.components.pump
 annotations:
