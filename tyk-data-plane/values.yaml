@@ -10,7 +10,7 @@ fullnameOverride: ""
 
 global:
   components:
-    # Determines whether the pump component should be installed.
+    # pump determines whether the pump component should be installed.
     pump: true
 
   servicePorts:

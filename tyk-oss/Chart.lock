@@ -5,5 +5,8 @@ dependencies:
 - name: tyk-pump
   repository: file://../components/tyk-pump
   version: 1.4.0
-digest: sha256:3fbbe22d53aaf78ae796c731d4f2d58e72b7516c017f0bce4944a51710711816
-generated: "2024-05-06T17:29:47.174239+05:30"
+- name: tyk-operator
+  repository: https://helm.tyk.io/public/helm/charts/
+  version: 0.17.1
+digest: sha256:0fdca72203b67c2d682d5f5a09e8d223da082b9fcb1735f28fd47cf31678be64
+generated: "2024-05-09T12:54:19.711073+03:00"
