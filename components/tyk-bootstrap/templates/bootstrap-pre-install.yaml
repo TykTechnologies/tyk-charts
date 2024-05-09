@@ -27,7 +27,7 @@ spec:
       labels:
         {{- with .Values.bootstrap.podLabels.preInstallPodLabels }}
         {{- toYaml . | nindent 8 }}
-        {{- end }}        
+        {{- end }}    
     spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
       containers:
@@ -35,6 +35,10 @@ spec:
           image: {{ .Values.bootstrap.jobs.preInstall.image.repository }}:{{ .Values.bootstrap.jobs.preInstall.image.tag }}
           command: ['/app/bin/bootstrap-app-pre-install']
           imagePullPolicy: IfNotPresent
+          {{- if .Values.bootstrap.containerSecurityContext }}
+          securityContext:
+          {{- toYaml .Values.bootstrap.containerSecurityContext | nindent 12 }}
+          {{- end }}
           env:
             - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
               {{ if .Values.global.secrets.useSecretName }}

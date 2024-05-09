@@ -158,7 +158,7 @@ mdcb:
   # It is used to set TYK_MDCB_LISTENPORT
   listenPort: 9091
 
-  # When it is set to true, instead of sending analytics directly to MongoDB,
+  # When it is set to true, instead of sending analytics directly to MongoDB / SQL
   # MDCB can send analytics to Redis. This will allow tyk-pump to pull
   # analytics from Redis and send to your own data sinks.
   # It is used to set TYK_MDCB_FORWARDANALYTICSTOPUMP
@@ -252,12 +252,16 @@ mdcb:
 
   # containerSecurityContext holds container-level security attributes for Tyk MDCB container. All fields from SecurityContext object can be added here.
   containerSecurityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
     # runAsNonRoot: true
     # runAsUser: 1000
+    # allowPrivilegeEscalation: false
+    # privileged: false
+    # readOnlyRootFilesystem: true
+    # seccompProfile:
+    #   type: RuntimeDefault
+    # capabilities:
+    #   drop:
+    #     - ALL
 
   service:
     # type corresponds to the service type of Tyk MDCB Service.
