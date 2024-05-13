@@ -14,8 +14,12 @@ operatorSecret:
 
 global:
   components:
-    # Determines whether the pump component should be installed.
+    # pump determines whether the pump component should be installed.
     pump: false
+    # operator determines whether Tyk Operator component should be installed or not.
+    # Tyk Operator needs cert-manager to be installed beforehand. Make sure that cert-manager is installed.
+    # For further details, please refer to https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator/
+    operator: false
 
   servicePorts:
     # The port at which the gateway service can be found at
@@ -425,6 +429,81 @@ tyk-gateway:
     #     mountPath: /etc/ssl/certs/ca-certs.crt
     #     readOnly: true
     extraVolumeMounts: []
+
+tyk-operator:
+  nameOverride: ""
+  fullnameOverride: ""
+  # envFrom loads environment variables from the specified resources such as Kubernetes Secret
+  # to the Tyk Operator Controller Manager pod.
+  envFrom:
+    - secretRef:
+        name: tyk-operator-conf
+  # envVars adds environment variables to the Tyk Operator Controller Manager pod.
+  envVars:
+    - name: TYK_HTTPS_INGRESS_PORT
+      value: "8443"
+    - name: TYK_HTTP_INGRESS_PORT
+      value: "8080"
+  image:
+    # image repository for Tyk Operator
+    repository: tykio/tyk-operator
+    # image pull policy
+    pullPolicy: IfNotPresent
+    # image tag for Tyk Operator
+    tag: "v0.17.0"
+  # number for replicas for Tyk Operator deployment.
+  replicaCount: 1
+  # imagePullSecrets specify imagePullSecrets for ServiceAccount
+  imagePullSecrets: []
+  # extraVolumes is a list of volumes to be added to the pod
+  # extraVolumes:
+  #   - name: ca-certs
+  #     secret:
+  #       secretName: ca-certs
+  #   - name: ca-certs
+  #     configMap:
+  #       name: custom-ca-configmap
+  extraVolumes: []
+
+  # extraVolumeMounts is a list of volume mounts to be added to the pod
+  # extraVolumeMounts:
+  #   - name: ca-certs
+  #     mountPath: /etc/ssl/certs/your-cert.pem
+  #     subPath: your-cert.pem
+  #     readOnly: false
+  extraVolumeMounts: []
+
+  # healthProbePort identifies the port the Controller Manager will listen on. Used by liveness and readiness probes
+  healthProbePort: 8081
+  # metricsPort identifies the port on which Tyk Operator metrics are served
+  metricsPort: 8080
+  # webhookPort identifies the port on which webhooks are handled
+  webhookPort: 9443
+
+  annotations: {}
+  podAnnotations: {}
+  podSecurityContext:
+    allowPrivilegeEscalation: false
+  resources: {}
+  nodeSelector: {}
+  hostNetwork: false
+
+  # rbac specifies necessary resources for kube-rbac-proxy.
+  rbac:
+    resources: {}
+    # specify custom/internal repo name for kube-rbac-proxy container
+    image:
+      repository: gcr.io/kubebuilder/kube-rbac-proxy
+      pullPolicy: IfNotPresent
+      tag: "v0.8.0"
+    port: 8443
+
+  # serviceMonitor decides deploying ServiceMonitor if Prometheus Operator scrapes /metrics.
+  # By default it is set to false and set it to true to enable deploying Service Monitor.
+  # Tyk Operator publishes a collection of performance metrics for each controller.
+  # These metrics can be scraped by Prometheus Operator, by deploying ServiceMonitor resource.
+  serviceMonitor: false
+
 
 tyk-pump:
   ## Default values for tyk-pump chart.
