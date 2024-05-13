@@ -1188,7 +1188,6 @@ tyk-mdcb:
     trackAllPaths: false
 
     # If enabled, aggregate data will be generated per minute.
-    
     storeAnalyticsPerMinute: false
     httpServerOptions:
       # if enabled then the endpoints will be served over https
