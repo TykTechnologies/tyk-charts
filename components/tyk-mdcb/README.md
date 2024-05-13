@@ -27,7 +27,7 @@ To install the chart from the Helm repository in namespace `tyk` with the releas
 
 ```bash
 helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-helm show values tyk-helm/tyk-mdcb --devel > values.yaml
+helm show values tyk-helm/tyk-mdcb > values.yaml
 ```
 
 Note:
@@ -36,7 +36,7 @@ Note:
 * The Tyk MDCB also requires a license to be set at `.Values.mdcb.license`
 
 ```bash
-helm install tyk-mdcb tyk-helm/tyk-mdcb -n tyk --create-namespace -f values.yaml --devel
+helm install tyk-mdcb tyk-helm/tyk-mdcb -n tyk --create-namespace -f values.yaml
 ```
 
 ## Uninstalling the Chart
@@ -50,7 +50,7 @@ This removes all the Kubernetes components associated with the chart and deletes
 ## Upgrading Chart
 
 ```bash
-helm upgrade tyk-mdcb tyk-helm/tyk-mdcb -n tyk --devel
+helm upgrade tyk-mdcb tyk-helm/tyk-mdcb -n tyk
 ```
 
 ## Configuration
@@ -60,7 +60,7 @@ To get all configurable options with detailed comments:
 
 ```bash
 helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-helm show values tyk-helm/tyk-mdcb --devel > values.yaml
+helm show values tyk-helm/tyk-mdcb > values.yaml
 ```
 
 You can update any value in your local values.yaml file and use `-f [filename]` flag to override default values during installation.

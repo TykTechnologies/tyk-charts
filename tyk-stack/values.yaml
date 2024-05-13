@@ -424,12 +424,15 @@ tyk-gateway:
     # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
+      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
+      seccompProfile:
+        type: RuntimeDefault
       capabilities:
         drop:
-          - all
+          - ALL
 
     # node labels for gateway pod assignment
     nodeSelector: {}
@@ -665,12 +668,15 @@ tyk-pump:
     # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
+      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
+      seccompProfile:
+        type: RuntimeDefault
       capabilities:
         drop:
-          - all
+          - ALL
 
     # node labels for pump pod assignment
     nodeSelector: {}
@@ -730,7 +736,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
-          tag: v2.1.0
+          tag: v2.1.1
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -744,7 +750,7 @@ tyk-bootstrap:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
-          tag: v2.1.0
+          tag: v2.1.1
 
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
@@ -758,7 +764,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: v2.1.0
+          tag: v2.1.1
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
@@ -951,12 +957,15 @@ tyk-dashboard:
     # containerSecurityContext holds container-level security attributes for Tyk Dashboard container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
+      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
+      seccompProfile:
+        type: RuntimeDefault
       capabilities:
         drop:
-        - all
+          - ALL
 
     # nodeSelector is a selector which must be true for Tyk Dashboard pod to fit on a specific node.
     nodeSelector: {}
@@ -1158,12 +1167,15 @@ tyk-dev-portal:
   # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod. All fields from SecurityContext object can be added here.
   containerSecurityContext:
     runAsNonRoot: true
+    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true
+    seccompProfile:
+      type: RuntimeDefault
     capabilities:
       drop:
-        - all
+        - ALL
   # nodeSelector is a selector which must be true for Tyk Developer Portal pod to fit on a specific node.
   nodeSelector: {}
   # tolerations specifies tolerations to be applied on Tyk Developer Portal pods.
