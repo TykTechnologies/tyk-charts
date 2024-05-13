@@ -372,12 +372,15 @@ gateway:
   # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
   containerSecurityContext:
     runAsNonRoot: true
+    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true
+    seccompProfile:
+      type: RuntimeDefault
     capabilities:
       drop:
-        - all
+        - ALL
 
   # node labels for gateway pod assignment
   nodeSelector: {}
