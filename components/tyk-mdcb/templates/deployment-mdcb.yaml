@@ -125,7 +125,7 @@ spec:
               value: "{{ .Values.mdcb.tls.certificateCertFile }}"                         
             {{- end }}
   
-            { { - if .Values.mdcb.httpServerOptions.useSSL } }
+            {{- if .Values.mdcb.httpServerOptions.useSSL }}
             - name: TYK_MDCB_HTTPSERVEROPTIONS_USESSL
               value: "{{ .Values.mdcb.httpServerOptions.useSSL }}"
             - name: TYK_MDCB_HTTPSERVEROPTIONS_CERTIFICATE_KEYFILE
