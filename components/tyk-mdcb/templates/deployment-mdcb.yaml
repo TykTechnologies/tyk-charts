@@ -39,11 +39,11 @@ spec:
           command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_mdcb.conf"]
           ports:
             - containerPort: {{ .Values.mdcb.listenPort }}
-            - containerPort: {{ .Values.mdcb.probes.healthCheckPort }}
+            - containerPort: {{ .Values.mdcb.probes.httpPort }}
           livenessProbe:
             httpGet:
               path: {{ .Values.mdcb.probes.liveness.path }}
-              port: {{ .Values.mdcb.probes.healthCheckPort}}
+              port: {{ .Values.mdcb.probes.httpPort }}
               scheme: "HTTP"
             initialDelaySeconds: {{ .Values.mdcb.probes.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.mdcb.probes.liveness.periodSeconds }}
@@ -56,7 +56,7 @@ spec:
             failureThreshold: {{ .Values.mdcb.probes.readiness.failureThreshold }}
             httpGet:
               path: {{ .Values.mdcb.probes.readiness.path }}
-              port: {{ .Values.mdcb.probes.healthCheckPort}}
+              port: {{ .Values.mdcb.probes.httpPort }}
               scheme: "HTTP"
           resources:
             {{- toYaml .Values.mdcb.resources | nindent 12 }}

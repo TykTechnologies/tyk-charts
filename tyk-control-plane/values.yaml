@@ -1102,9 +1102,15 @@ tyk-mdcb:
 
     # If enabled, aggregate data will be generated per minute.
     storeAnalyticsPerMinute: true
-
+    # Security configures various security-related options for the MDCB (Multi Data Center Bridge).
+    # It includes settings for enabling mutual TLS, securing HTTP endpoints, and managing access secrets.
     security:
+      # Secret is the key required for accessing secure HTTP endpoints and must be included as the `X-Tyk-Authorization` header.
+      # Ensure confidentiality of the key and avoid exposing management endpoints publicly.
       secret: 1234567890
+      EnableHTTPSecureEndpoints enables HTTP endpoints for monitoring and debugging MDCB.
+      # Secure endpoints providing critical system information are disabled by default for security enhancement.
+      # Authentication via the `Secret` is required for access, e.g., /dataplanes for dataplane details.
       enableHttpSecureEndpoints: false
     probes:
       # This port lets MDCB allow standard health checks.
