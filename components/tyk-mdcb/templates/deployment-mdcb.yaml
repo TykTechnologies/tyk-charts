@@ -134,7 +134,7 @@ spec:
               value: "{{ .Values.mdcb.httpServerOptions.certificateCertFile }}"
             - name: TYK_MDCB_HTTPSERVEROPTIONS_MINVERSION
               value: "{{ .Values.mdcb.httpServerOptions.minVersion }}"
-            { { - end } }
+            {{- end }}
           
             {{ if .Values.global.mtls.privateCertificateEncodingSecret }}
             - name: TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
