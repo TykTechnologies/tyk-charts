@@ -115,6 +115,8 @@ spec:
             value: "{{ .Values.global.oasValidateExamples }}"
           - name: TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
             value: "{{ .Values.global.oasValidateSchemaDefaults }}"
+          - name: TYK_GW_ENABLE_FIXED_WINDOW_RATE_LIMITER
+            value: "{{ .Values.gateway.enableFixedWindowRateLimiter }}"
 
           {{- if .Values.global.redis.sslInsecureSkipVerify }}
           - name: TYK_GW_STORAGE_SSLINSECURESKIPVERIFY

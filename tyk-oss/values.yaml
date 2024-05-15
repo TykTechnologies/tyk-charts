@@ -158,6 +158,13 @@ tyk-gateway:
     # The hostname to bind the Gateway to.
     hostName: tyk-gw.local
 
+    # EnableFixedWindowRateLimiter enables fixed window rate limiting.
+    # FixedWindow will allow requests up to the configured rate limit,
+    # and then block traffic for the remainder of the window duration.
+    # It has minimal impact on redis, however it will not protect against
+    # traffic spikes, it does not have spike arrest behaviour.
+    enableFixedWindowRateLimiter: false
+
     tls:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
       secretName: tyk-default-tls-secret

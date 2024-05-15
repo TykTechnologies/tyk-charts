@@ -161,6 +161,13 @@ gateway:
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
 
+  # EnableFixedWindowRateLimiter enables fixed window rate limiting.
+  # FixedWindow will allow requests up to the configured rate limit,
+  # and then block traffic for the remainder of the window duration.
+  # It has minimal impact on redis, however it will not protect against
+  # traffic spikes, it does not have spike arrest behaviour.
+  enableFixedWindowRateLimiter: false
+
   # If this option is set to true, it will enable polling the Tyk Dashboard service for API definitions
   useDashboardAppConfig:
     enabled: false
