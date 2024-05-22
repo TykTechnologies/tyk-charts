@@ -1205,7 +1205,7 @@ tyk-mdcb:
       # It also defines the path for liveness and readiness probes.
       # It is used to set TYK_MDCB_HEALTHCHECKPORT and TYK_MDCB_HTTPPORT when mdcb >= v2.6.0
       healthCheckPort: 8181
-  
+
       # This is the preferred port setting for MDCB >= v2.6.0.
       # Users should use httpPort instead of healthCheckPort for newer versions.
       # This value is used to set TYK_MDCB_HTTPPORT when MDCB is >= 2.6.0.
