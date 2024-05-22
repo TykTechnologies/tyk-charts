@@ -39,11 +39,11 @@ spec:
           command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_mdcb.conf"]
           ports:
             - containerPort: {{ .Values.mdcb.listenPort }}
-            - containerPort: {{ .Values.mdcb.probes.httpPort }}
+            - containerPort: {{ if .Values.mdcb.probes.httpPort }}{{ .Values.mdcb.probes.httpPort }}{{ else }}{{ .Values.mdcb.probes.healthCheckPort }}{{ end }}
           livenessProbe:
             httpGet:
               path: {{ .Values.mdcb.probes.liveness.path }}
-              port: {{ .Values.mdcb.probes.httpPort }}
+              port: {{ if .Values.mdcb.probes.httpPort }}{{ .Values.mdcb.probes.httpPort }}{{ else }}{{ .Values.mdcb.probes.healthCheckPort }}{{ end }}
               scheme: "HTTP"
             initialDelaySeconds: {{ .Values.mdcb.probes.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.mdcb.probes.liveness.periodSeconds }}
@@ -56,7 +56,7 @@ spec:
             failureThreshold: {{ .Values.mdcb.probes.readiness.failureThreshold }}
             httpGet:
               path: {{ .Values.mdcb.probes.readiness.path }}
-              port: {{ .Values.mdcb.probes.httpPort }}
+              port: {{ if .Values.mdcb.probes.httpPort }}{{ .Values.mdcb.probes.httpPort }}{{ else }}{{ .Values.mdcb.probes.healthCheckPort }}{{ end }}
               scheme: "HTTP"
           resources:
             {{- toYaml .Values.mdcb.resources | nindent 12 }}
@@ -79,10 +79,16 @@ spec:
               {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraVolumeMounts "context" $) | nindent 10 }}
               {{- end }}
           env:
+            {{- $version := regexReplaceAll "^v" .Values.mdcb.image.tag "" }}
+            {{- if  semverCompare ">=2.6.0" $version }}
+              - name: TYK_MDCB_HTTPPORT
+                value: "{{ .Values.mdcb.probes.healthCheckPort }}"
+              {{ - else }}
+              - name: TYK_MDCB_HEALTHCHECKPORT
+                value: "{{ .Values.mdcb.probes.healthCheckPort }}"
+              {{ - end }}
             - name: TYK_MDCB_LISTENPORT
               value: "{{ .Values.mdcb.listenPort }}"
-            - name: TYK_MDCB_HTTPPORT
-              value: "{{ .Values.mdcb.probes.httpPort }}"
             - name: TYK_MDCB_STORAGE_TYPE
               value: "redis"
             - name: TYK_MDCB_STORAGE_ENABLECLUSTER
