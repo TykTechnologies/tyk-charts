@@ -83,10 +83,10 @@ spec:
             {{- if  semverCompare ">=2.6.0" $version }}
             - name: TYK_MDCB_HTTPPORT
               value: "{{ .Values.mdcb.probes.healthCheckPort }}"
-            {{ - else }}
+            {{- else }}
             - name: TYK_MDCB_HEALTHCHECKPORT
               value: "{{ .Values.mdcb.probes.healthCheckPort }}"
-            {{ - end }}
+            {{- end }}
             - name: TYK_MDCB_LISTENPORT
               value: "{{ .Values.mdcb.listenPort }}"
             - name: TYK_MDCB_STORAGE_TYPE
