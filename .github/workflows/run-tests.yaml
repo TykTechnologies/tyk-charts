@@ -165,7 +165,7 @@ jobs:
           helm install redis redis --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
          
           # Install mongo
-          helm install mongo mongodb --wait --repo 'https://charts.bitnami.com/bitnami' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 15.1.2
+          helm install mongo mongodb --wait --repo 'oci://registry-1.docker.io/bitnamicharts' -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 15.1.2
 
           MONGODB_ROOT_PASSWORD=$(kubectl get secret -n ${{ env.TYK_STACK_NS }} mongo-mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 -d)
 
