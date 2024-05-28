@@ -44,7 +44,7 @@ spec:
             httpGet:
               path: {{ .Values.mdcb.probes.liveness.path }}
               port: {{ if .Values.mdcb.probes.httpPort }}{{ .Values.mdcb.probes.httpPort }}{{ else }}{{ .Values.mdcb.probes.healthCheckPort }}{{ end }}
-              scheme: "HTTP"
+              scheme: {{ if .Values.mdcb.httpServerOptions.useSSL }}HTTPS{{ else }}HTTP{{ end }}
             initialDelaySeconds: {{ .Values.mdcb.probes.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.mdcb.probes.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.mdcb.probes.liveness.timeoutSeconds }}
@@ -57,7 +57,7 @@ spec:
             httpGet:
               path: {{ .Values.mdcb.probes.readiness.path }}
               port: {{ if .Values.mdcb.probes.httpPort }}{{ .Values.mdcb.probes.httpPort }}{{ else }}{{ .Values.mdcb.probes.healthCheckPort }}{{ end }}
-              scheme: "HTTP"
+              scheme: {{ if .Values.mdcb.httpServerOptions.useSSL }}HTTPS{{ else }}HTTP{{ end }}
           resources:
             {{- toYaml .Values.mdcb.resources | nindent 12 }}
           volumeMounts:
@@ -133,6 +133,18 @@ spec:
             - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
               value: "{{ .Values.mdcb.tls.certificateCertFile }}"                         
             {{- end }}
+  
+            {{- if .Values.mdcb.httpServerOptions.useSSL }}
+            - name: TYK_MDCB_HTTPSERVEROPTIONS_USESSL
+              value: "{{ .Values.mdcb.httpServerOptions.useSSL }}"
+            - name: TYK_MDCB_HTTPSERVEROPTIONS_CERTIFICATE_KEYFILE
+              value: "{{ .Values.mdcb.httpServerOptions.certificateKeyFile }}"
+            - name: TYK_MDCB_HTTPSERVEROPTIONS_CERTIFICATE_CERTFILE
+              value: "{{ .Values.mdcb.httpServerOptions.certificateCertFile }}"
+            - name: TYK_MDCB_HTTPSERVEROPTIONS_MINVERSION
+              value: "{{ .Values.mdcb.httpServerOptions.minVersion }}"
+            {{- end }}
+          
             {{ if .Values.global.mtls.privateCertificateEncodingSecret }}
             - name: TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET
               value: {{ .Values.global.mtls.privateCertificateEncodingSecret | quote }}
