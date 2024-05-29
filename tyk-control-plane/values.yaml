@@ -1197,11 +1197,26 @@ tyk-mdcb:
       # For TLS 1.0 use 769, for TLS 1.1 use 770, for TLS 1.2 use 771, for TLS 1.3 use 772
       # minVersion: 771
 
+    # Security configures various security-related options for the MDCB (Multi Data Center Bridge).
+    # It includes settings for enabling mutual TLS, securing HTTP endpoints, and managing access secrets.
+    security:
+      # Secret is the key required for accessing secure HTTP endpoints and must be included as the `X-Tyk-Authorization` header.
+      # Ensure confidentiality of the key and avoid exposing management endpoints publicly.
+      secret: 1234567890
+      # EnableHTTPSecureEndpoints enables HTTP endpoints for monitoring and debugging MDCB.
+      # Secure endpoints providing critical system information are disabled by default for security enhancement.
+      # Authentication via the `Secret` is required for access, e.g., /dataplanes for dataplane details.
+      enableHttpSecureEndpoints: false
     probes:
       # This port lets MDCB allow standard health checks.
       # It also defines the path for liveness and readiness probes.
-      # It is used to set TYK_MDCB_HEALTHCHECKPORT
+      # It is used to set TYK_MDCB_HEALTHCHECKPORT and TYK_MDCB_HTTPPORT when mdcb >= v2.6.0
       healthCheckPort: 8181
+
+      # This is the preferred port setting for MDCB >= v2.6.0.
+      # Users should use httpPort instead of healthCheckPort for newer versions.
+      # This value is used to set TYK_MDCB_HTTPPORT when MDCB is >= 2.6.0.
+      # httpPort: 8181
       # liveness includes details about liveness probe used in MDCB Deployment.
       liveness:
         # path represents the http path to be used in liveness probe in MDBC deployment.
