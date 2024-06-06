@@ -328,6 +328,11 @@ gateway:
       #      - chart-example-different-domain-possible.local
       tls: []
 
+    # The health endpoint is exposed on the control port or the service port, depending on image tag.
+    # Set to true to override to having the health endpoint on the control port.
+    # Useful if the tag is not semVer compatible.
+    useForProbes: false
+
   # Creates an ingress object in k8s. Will require an ingress-controller and
   # annotation to that ingress controller.
   ingress:
