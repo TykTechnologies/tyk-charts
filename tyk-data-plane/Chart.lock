@@ -5,5 +5,5 @@ dependencies:
 - name: tyk-pump
   repository: file://../components/tyk-pump
   version: 1.4.0
-digest: sha256:230e2cff4a5919bd09fa6917278d94d625ed8e3daab9fac7fa2b19b33b29fe2f
-generated: "2024-05-08T16:06:40.01131+02:00"
+digest: sha256:3fbbe22d53aaf78ae796c731d4f2d58e72b7516c017f0bce4944a51710711816
+generated: "2024-05-06T17:30:25.004252+05:30"
