@@ -220,7 +220,7 @@ global:
     #   keyName: ""
 
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
-  storageType: &globalStorageType postgres
+  storageType: &globalStorageType mongo
 
   # hashKeys specifies if your Tyk Gateway and Dashboard is using hashed keys.
   # It is used to set TYK_GW_HASHKEYS and TYK_DB_HASHKEYS
