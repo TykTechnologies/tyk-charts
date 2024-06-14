@@ -86,7 +86,7 @@ global:
     # It should include the followings:
     # - TYK_ORG: Tyk Dashboard Organisation ID
     # - TYK_AUTH: Tyk Dashboard API Access Credentials
-    devPortal: tyk-dev-portal-conf
+    devPortal: ""
 
   redis:
     # The addrs value will allow you to set your Redis addresses.
@@ -1326,3 +1326,8 @@ tyk-dev-portal:
 
   # podLabels specifies labels to be added in Tyk Developer Portal Pod
   podLabels: {}
+
+  # bootstrapPortal contains information that'd be used to bootsrap dev portal
+  bootstrapPortal:
+    firstName: "admin"
+    lastName: "tyk"

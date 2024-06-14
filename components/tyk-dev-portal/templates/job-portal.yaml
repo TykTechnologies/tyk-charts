@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dev-portal-job-{{ include "tyk-dev-portal.fullname" . }}
+  labels:
+    app: {{ include "tyk-dev-portal.fullname" . }}
+    chart: {{ include "tyk-dev-portal.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}  
+spec:
+  template:
+    spec:
+      containers:
+      - name: bootstrap-portal
+        image: curlimages/curl:8.8.0
+        env:
+        - name: ADMIN_EMAIL
+          value: "{{ .Values.global.adminUser.email  }}"
+        - name: ADMIN_PASSWORD
+          {{ if .Values.global.adminUser.useSecretName }}
+          valueFrom:
+            secretKeyRef:
+              name: secrets-{{ include "tyk-dev-portal.fullname" . }}
+              key: adminUserPassword
+          {{ else }}
+          value: {{ .Values.global.adminUser.password | quote }}
+          {{ end }}
+        - name: FIRSTNAME
+          value: "{{ .Values.bootstrapPortal.firstName }}"
+        - name: LASTNAME
+          value: "{{ .Values.bootstrapPortal.lastName }}"                    
+        - name: SERVICE_NAME
+          value: "dev-portal-svc-{{ include "tyk-dev-portal.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local"
+        - name: PORT
+          value: "{{ .Values.containerPort }}"   
+        command: 
+          - sh
+          - -c
+          - |
+            echo "Waiting for dev-portal to be ready..."
+            while ! nc -z $SERVICE_NAME $PORT; do
+              echo "dev-portal is not ready yet. Waiting..."
+              sleep 1
+            done
+            echo "dev-portal is ready. Making the API call..."
+            curl --silent --show-error --fail --location --request POST "http://$SERVICE_NAME:$PORT/portal-api/bootstrap" \
+                --header "Content-Type: application/json" \
+                --data-raw '{
+                  "username": "'$ADMIN_EMAIL'",
+                  "password": "'$ADMIN_PASSWORD'",
+                  "first_name": "'$FIRSTNAME'",
+                  "last_name": "'$LASTNAME'"
+                }'
+            echo "API call completed."
+            exit 0;
+      restartPolicy: Never

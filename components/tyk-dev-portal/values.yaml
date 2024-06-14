@@ -248,3 +248,8 @@ readinessProbe:
 # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
 # If a service account is to be used for Tyk Developer Portal, it should be manually created
 serviceAccountName: ""
+
+# bootstrapPortal contains information that'd be used to bootsrap dev portal
+bootstrapPortal:
+  firstName: "admin"
+  lastName: "tyk"
