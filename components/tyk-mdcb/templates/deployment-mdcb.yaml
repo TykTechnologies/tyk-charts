@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mdcb-{{ include "tyk-mdcb.fullname" . }}
+  {{- if .Values.mdcb.annotations }}
+  annotations:
+  {{- toYaml .Values.mdcb.annotations | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "tyk-mdcb.labels" . | nindent 4 }}
 spec:

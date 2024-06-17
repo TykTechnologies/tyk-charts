@@ -276,6 +276,9 @@ dashboard:
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
 
+  # annotations be added to the Deployment / Statefulset of Tyk Dashboard
+  annotations: {}
+
   # podAnnotations is annotations to be added to Tyk Dashboard pod.
   # It takes key-value pairs.
   # There are no required annotation field for Tyk Dashboard.

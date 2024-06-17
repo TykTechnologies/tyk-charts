@@ -277,6 +277,9 @@ tyk-gateway:
       # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
       policyConnectionString: ""
 
+
+    # annotations be added to the Deployment of Tyk Gateway
+    annotations: {}
     # podAnnotations is annotations to be added to Tyk Gateway pod.
     # It takes key-value pairs.
     # There are no required annotation field for Tyk Gateway.
@@ -631,6 +634,9 @@ tyk-pump:
   pump:
     # number for replicas for pump deployment
     replicaCount: 1
+
+    # annotations be added to the Deployment of Tyk Gateway
+    annotations: {}
 
     # podAnnotations is annotations to be added to Tyk Pump pod.
     # It takes key-value pairs.
@@ -998,6 +1004,9 @@ tyk-dashboard:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
+    # annotations be added to the Deployment of Tyk Dashboard
+    annotations: {}
+
     # podAnnotations is annotations to be added to Tyk Dashboard pod.
     # It takes key-value pairs.
     # There are no required annotation field for Tyk Dashboard.
@@ -1304,6 +1313,8 @@ tyk-dev-portal:
     # initialDelaySeconds specifies the seconds used in readiness probe as initial delay.
     initialDelaySeconds: 60
 
+  # annotations be added to the Deployment of Tyk Developer Portal
+  annotations: {}
   # podAnnotations specifies annotations to be added in Tyk Developer Portal Pod.
   # It takes key-value pairs.
   # There are no required annotation field for Tyk Developer Portal Pod.

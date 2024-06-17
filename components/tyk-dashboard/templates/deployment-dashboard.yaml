@@ -4,6 +4,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dashboard-{{ include "tyk-dashboard.fullname" . }}
+  {{- if .Values.dashboard.annotations }}
+  annotations:
+  {{- toYaml .Values.dashboard.annotations | nindent 4 }}
+  {{- end }}
   labels:
     app: dashboard-{{ include "tyk-dashboard.fullname" . }}
     chart: {{ include "tyk-dashboard.chart" . }}
