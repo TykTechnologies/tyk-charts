@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pump-{{ include "tyk-pump.fullname" . }}
+  {{- if .Values.pump.annotations }}
+  annotations:
+  {{- toYaml .Values.pump.annotations | nindent 4 }}
+  {{- end }}
   labels:
     app: pump-{{ include "tyk-pump.fullname" . }}
     chart: {{ include "tyk-pump.chart" . }}

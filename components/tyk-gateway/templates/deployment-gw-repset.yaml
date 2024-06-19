@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: {{ .Values.gateway.kind }}
 metadata:
   name: gateway-{{ include "tyk-gateway.fullname" . }}
+  {{- if .Values.gateway.annotations }}
+  annotations:
+  {{- toYaml .Values.gateway.annotations | nindent 4 }}
+  {{- end }}
   labels:
     app: gateway-{{ include "tyk-gateway.fullname" . }}
     chart: {{ include "tyk-gateway.chart" . }}

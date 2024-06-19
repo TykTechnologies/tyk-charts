@@ -126,6 +126,9 @@ image:
 # image pull secrets to use when pulling images from repository
 imagePullSecrets: []
 
+# annotations be added to the Deployment / Statefulset of Tyk Developer Portal
+annotations: {}
+
 # podAnnotations specifies annotations to be added in Tyk Developer Portal Pod
 podAnnotations: {}
 
