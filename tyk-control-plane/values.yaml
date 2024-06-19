@@ -1168,7 +1168,7 @@ tyk-mdcb:
   # the Helm values file and would rather provide the k8s Secret externally.
   # You should set following fields in the secret
   # - MDCBLicense - Sets MDCB license key
-  # - SecuritySecret - Sets secret required for accessing secure HTTP endpoints
+  # - securitySecret - Sets secret required for accessing secure HTTP endpoints
     useSecretName: ""
 
     # Tyk MDCB license

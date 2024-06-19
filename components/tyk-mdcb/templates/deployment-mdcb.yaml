@@ -102,7 +102,7 @@ spec:
               valueFrom: 
                 secretKeyRef: 
                   name: {{ if .Values.mdcb.useSecretName }}{{ .Values.mdcb.useSecretName }} {{ else }} secrets-{{ include "tyk-mdcb.fullname" . }} {{ end }}
-                  key: SecuritySecret
+                  key: securitySecret
             - name: TYK_MDCB_SECURITY_ENABLEHTTPSECUREENDPOINTS
               value: "{{ .Values.mdcb.security.enableHttpSecureEndpoints}}"
             # Redis TLS configurations
