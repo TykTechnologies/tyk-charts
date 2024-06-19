@@ -1220,7 +1220,7 @@ tyk-mdcb:
       # Secret is the key required for accessing secure HTTP endpoints and must be included as the `X-Tyk-Authorization` header.
       # Ensure confidentiality of the key and avoid exposing management endpoints publicly.
       # This field can be set using k8s secret. Please refer `mdcb.useSecretName` field.
-      secret: 1234567890
+      secret: CHANGEME
       # EnableHTTPSecureEndpoints enables HTTP endpoints for monitoring and debugging MDCB.
       # Secure endpoints providing critical system information are disabled by default for security enhancement.
       # Authentication via the `Secret` is required for access, e.g., /dataplanes for dataplane details.
