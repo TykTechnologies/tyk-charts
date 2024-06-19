@@ -1,3 +1,4 @@
+{{- if .Values.global.components.bootstrap}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -30,9 +31,9 @@ spec:
         - name: LASTNAME
           value: "{{ .Values.bootstrapPortal.lastName }}"                    
         - name: SERVICE_NAME
-          value: "dev-portal-svc-{{ include "tyk-dev-portal.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local"
+          value: "dev-portal-svc-{{ include "tyk-dev-portal.fullname" . }}.{{ .Release.Namespace }}.svc"
         - name: PORT
-          value: "{{ .Values.containerPort }}"   
+          value: "{{ .Values.containerPort }}"
         command: 
           - sh
           - -c
@@ -54,3 +55,4 @@ spec:
             echo "API call completed."
             exit 0;
       restartPolicy: Never
+{{- end}}
