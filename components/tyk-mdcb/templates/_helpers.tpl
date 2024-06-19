@@ -170,6 +170,6 @@ HealthCheckPort will take precedence to avoid breaking change
 {{- if .Values.mdcb.probes.healthCheckPort -}}
 {{ .Values.mdcb.probes.healthCheckPort }}
 {{- else -}}
-{{ .Values.mdcb.probes.httpPort }}
+{{ .Values.mdcb.httpPort }}
 {{- end }}
 {{- end -}}

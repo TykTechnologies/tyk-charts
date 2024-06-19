@@ -206,16 +206,17 @@ mdcb:
     
     # For TLS 1.0 use 769, for TLS 1.1 use 770, for TLS 1.2 use 771, for TLS 1.3 use 772
     # minVersion: 771
+
+  # This is the preferred port setting for MDCB >= v2.6.0.
+  # Users should use httpPort instead of probes.healthCheckPort for newer versions.
+  httpPort: 8181
+
   probes:
     # This port lets MDCB allow standard health checks.
     # It also defines the path for liveness and readiness probes.
     # It is used to set TYK_MDCB_HEALTHCHECKPORT and TYK_MDCB_HTTPPORT when mdcb >= v2.6.0
     # This field will be deprecated in upcoming release. Use `httpPort` instead.
     # healthCheckPort: 8181
-    
-    # This is the preferred port setting for MDCB >= v2.6.0.
-    # Users should use httpPort instead of healthCheckPort for newer versions.
-    httpPort: 8181
 
     # liveness includes details about liveness probe used in MDCB Deployment.
     liveness:

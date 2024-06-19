@@ -13,8 +13,8 @@ spec:
       targetPort: {{ .Values.mdcb.listenPort }}
       protocol: TCP
       name: serviceport
-    - port: {{ if .Values.mdcb.probes.httpPort }}{{ .Values.mdcb.probes.httpPort }}{{ else }}{{ .Values.mdcb.probes.healthCheckPort }}{{ end }}
-      targetPort: {{ if .Values.mdcb.probes.httpPort }}{{ .Values.mdcb.probes.httpPort }}{{ else }}{{ .Values.mdcb.probes.healthCheckPort }}{{ end }}
+    - port: {{ include "mdcb.healthCheckPort" . }}
+      targetPort: {{ include "mdcb.healthCheckPort" . }}
       protocol: TCP
       name: healthport
   selector:
