@@ -40,14 +40,6 @@ global:
     # In the context of the tyk-developer-portal only, this just runs the bootstrapping jobs only for the portal
     bootstrap: true
 
-  secrets:
-    # devPortal secret is used to bootstrap the Portal which should include Tyk Dashboard credentials.
-    # You can set to empty to skip portal bootstrapping.
-    # It should include the followings:
-    # - TYK_ORG: Tyk Dashboard Organisation ID
-    # - TYK_AUTH: Tyk Dashboard API Access Credentials
-    devPortal: tyk-dev-portal-conf
-
 # Sensitive configuration of Portal could be set using k8s secret
 # You can set following fields:
 # - DevPortalLicense - Sets LicenseKey for Developer Portal

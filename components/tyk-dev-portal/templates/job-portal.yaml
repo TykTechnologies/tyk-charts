@@ -39,19 +39,27 @@ spec:
           - -c
           - |
             echo "Waiting for dev-portal to be ready..."
+            start_time=$(date +%s)
+            timeout_duration=$((10 * 60))  # 10 minutes in seconds
             while ! nc -z $SERVICE_NAME $PORT; do
+              current_time=$(date +%s)
+              elapsed_time=$((current_time - start_time))
+              if [ $elapsed_time -ge $timeout_duration ]; then
+                echo "Timeout reached. Exiting."
+                exit 1
+              fi
               echo "dev-portal is not ready yet. Waiting..."
               sleep 1
             done
             echo "dev-portal is ready. Making the API call..."
             curl --silent --show-error --fail --location --request POST "http://$SERVICE_NAME:$PORT/portal-api/bootstrap" \
-                --header "Content-Type: application/json" \
-                --data-raw '{
-                  "username": "'$ADMIN_EMAIL'",
-                  "password": "'$ADMIN_PASSWORD'",
-                  "first_name": "'$FIRSTNAME'",
-                  "last_name": "'$LASTNAME'"
-                }'
+              --header "Content-Type: application/json" \
+              --data-raw '{
+                "username": "'$ADMIN_EMAIL'",
+                "password": "'$ADMIN_PASSWORD'",
+                "first_name": "'$FIRSTNAME'",
+                "last_name": "'$LASTNAME'"
+              }'
             echo "API call completed."
             exit 0;
       restartPolicy: Never
