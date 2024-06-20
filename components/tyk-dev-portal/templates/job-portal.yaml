@@ -27,9 +27,9 @@ spec:
           value: {{ .Values.global.adminUser.password | quote }}
           {{ end }}
         - name: FIRSTNAME
-          value: "{{ .Values.bootstrapPortal.firstName }}"
+          value: "{{ .Values.global.adminUser.firstName }}"
         - name: LASTNAME
-          value: "{{ .Values.bootstrapPortal.lastName }}"                    
+          value: "{{ .Values.global.adminUser.lastName }}"                    
         - name: SERVICE_NAME
           value: "dev-portal-svc-{{ include "tyk-dev-portal.fullname" . }}.{{ .Release.Namespace }}.svc"
         - name: PORT

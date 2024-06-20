@@ -17,6 +17,10 @@ global:
     email: default@example.com
     # password of Developer Portal admin
     password: 123456
+    # firstname of Developer Portal admin
+    firstName: "admin"
+    # lastName of Developer Portal admin
+    lastName: "tyk"
   tls:
     # If set to true the Dashboard will use SSL connection.
     dashboard: false
@@ -248,8 +252,3 @@ readinessProbe:
 # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
 # If a service account is to be used for Tyk Developer Portal, it should be manually created
 serviceAccountName: ""
-
-# bootstrapPortal contains information that'd be used to bootsrap dev portal
-bootstrapPortal:
-  firstName: "admin"
-  lastName: "tyk"

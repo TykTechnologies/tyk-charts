@@ -1326,8 +1326,3 @@ tyk-dev-portal:
 
   # podLabels specifies labels to be added in Tyk Developer Portal Pod
   podLabels: {}
-
-  # bootstrapPortal contains information that'd be used to bootsrap dev portal
-  bootstrapPortal:
-    firstName: "admin"
-    lastName: "tyk"
