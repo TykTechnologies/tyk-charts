@@ -1164,7 +1164,7 @@ tyk-mdcb:
     # fullnameOverride overrides App name. It is truncated to 63 characters.
     fullnameOverride: ""
 
-     # useSecretName can be used if you don't want to store plaintext values for MDCB license and security secret in
+  # useSecretName can be used if you don't want to store plaintext values for MDCB license and security secret in
   # the Helm values file and would rather provide the k8s Secret externally.
   # You should set following fields in the secret
   # - MDCBLicense - Sets MDCB license key
