@@ -20,7 +20,7 @@ global:
     # firstname of Developer Portal admin
     firstName: "admin"
     # lastName of Developer Portal admin
-    lastName: "tyk"
+    lastName: "user"
   tls:
     # If set to true the Dashboard will use SSL connection.
     dashboard: false
