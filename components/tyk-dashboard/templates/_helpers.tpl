@@ -52,7 +52,7 @@ http
 {{- end -}}
 
 {{- define "tyk-dashboard.gateway_host" -}}
-gateway-svc-{{.Release.Name}}-tyk-gateway.{{ .Release.Namespace }}.svc
+gateway-svc-{{ include "tyk-gateway.fullname" . }}.{{ .Release.Namespace }}.svc
 {{- end -}}
 
 {{- define "tyk-dashboard.redis_url" -}}
