@@ -680,7 +680,7 @@ tyk-pump:
 
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
-    #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
+    #   - "mongo": Enables Mongo, Mongo Aggregate and Mongo Selective Pump
     #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
     #   - "mongo-selective": Enables ONLY Mongo Selective
     #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
@@ -951,7 +951,7 @@ tyk-dashboard:
     # If using the mongo-pump-selective pump, where data is written to org-id-specific collections in MongoDB,
     # then enabling this option will switch querying for analytics over to the independent collection entries.
     # It is used to set TYK_DB_USESHARDEDANALYTICS
-    useShardedAnalytics: false
+    useShardedAnalytics: true
     # If using the new Aggregate Pump, Tyk Analytics can make use of the newer, faster Analytics lookup,
     # to ensure that this can be made backwards compatible.This option must be set to true,
     # in conjunction with the aggregate_lookup_cutoff value.

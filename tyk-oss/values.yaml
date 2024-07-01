@@ -593,7 +593,7 @@ tyk-pump:
 
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
-    #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
+    #   - "mongo": Enables Mongo, Mongo Aggregate and Mongo Selective Pump
     #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
     #   - "mongo-selective": Enables ONLY Mongo Selective
     #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
