@@ -17,10 +17,11 @@ spec:
       {{- include "tyk-mdcb.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.mdcb.podAnnotations }}
       annotations:
+      {{- with .Values.mdcb.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret-mdcb.yaml") . | sha256sum }}
       labels:
         {{- include "tyk-mdcb.labels" . | nindent 8 }}
         {{- with .Values.mdcb.podLabels }}
@@ -102,7 +103,10 @@ spec:
             - name: TYK_MDCB_HASHKEYS
               value: "{{ .Values.global.hashKeys }}"
             - name: TYK_MDCB_SECURITY_SECRET
-              value: "{{ .Values.mdcb.security.secret}}"
+              valueFrom: 
+                secretKeyRef: 
+                  name: {{ if .Values.mdcb.useSecretName }}{{ .Values.mdcb.useSecretName }} {{ else }} secrets-{{ include "tyk-mdcb.fullname" . }} {{ end }}
+                  key: securitySecret
             - name: TYK_MDCB_SECURITY_ENABLEHTTPSECUREENDPOINTS
               value: "{{ .Values.mdcb.security.enableHttpSecureEndpoints}}"
             # Redis TLS configurations
