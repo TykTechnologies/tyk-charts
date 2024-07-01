@@ -52,6 +52,15 @@ Create chart name and version as used by the chart label.
 {{- printf "%s" .Values.gateway.image.tag | replace "v" "" -}}
 {{- end -}}
 
+
+{{- define "tyk-gateway.probe-on-control-port" -}}
+{{- if or .Values.gateway.control.useForProbes  (eq .Values.gateway.image.tag "latest") -}}
+true
+{{- else -}}
+{{- or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .)) -}}
+{{- end -}}
+{{- end -}}
+
 {{- define "tyk-gateway.redis_url" -}}
 {{- if .Values.global.redis.addrs -}}
 {{ join "," .Values.global.redis.addrs }}
