@@ -80,12 +80,6 @@ global:
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
     useSecretName: ""
-    # devPortal secret is used to bootstrap the Portal which should include Tyk Dashboard credentials.
-    # You can set to empty to skip portal bootstrapping.
-    # It should include the followings:
-    # - TYK_ORG: Tyk Dashboard Organisation ID
-    # - TYK_AUTH: Tyk Dashboard API Access Credentials
-    devPortal: tyk-dev-portal-conf
 
   redis:
     # The addrs value will allow you to set your Redis addresses.

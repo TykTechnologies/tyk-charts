@@ -159,18 +159,6 @@ spec:
             value: "tyk"
           - name: TYK_URL
             value: {{ include "tyk-dev-portal.dashboardUrl" . | quote }}
-            {{- if (.Values.global.secrets).devPortal }}
-          - name: TYK_AUTH
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.global.secrets.devPortal}}
-                key: TYK_AUTH
-          - name: TYK_ORG
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.global.secrets.devPortal}}
-                key: TYK_ORG
-          {{- end }}
         {{- if .Values.extraEnvs }}
         {{- range $env := .Values.extraEnvs }}
           - name: {{ $env.name }}
@@ -179,10 +167,6 @@ spec:
         {{- end }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
-        command: ["/opt/portal/dev-portal"]
-        {{- if and .Values.global.components.bootstrap (.Values.global.secrets).devPortal}}
-        args: ["--bootstrap", "--provider-data={\"URL\":\"$(TYK_URL)\",\"Secret\":\"$(TYK_AUTH)\",\"OrgID\":\"$(TYK_ORG)\"}", "-user=$(ADMIN_EMAIL)", "-pass=$(ADMIN_PASSWORD)"]
-        {{- end }}
         workingDir: /opt/portal
         ports:
         - containerPort: {{ .Values.containerPort }}
@@ -242,7 +226,6 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
-
       volumes:
       {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
       - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
