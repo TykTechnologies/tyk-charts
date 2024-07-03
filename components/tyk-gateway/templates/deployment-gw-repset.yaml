@@ -418,7 +418,7 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.gateway }}S{{ end }}"
             path: /hello
-            {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
+            {{- if and .Values.gateway.control.enabled }}
             port: {{ .Values.gateway.control.containerPort }}
             {{- else }}
             port: {{ .Values.gateway.containerPort }}
@@ -431,7 +431,7 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.gateway }}S{{ end }}"
             path: /hello
-            {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
+            {{- if and .Values.gateway.control.enabled }}
             port: {{ .Values.gateway.control.containerPort }}
             {{- else }}
             port: {{ .Values.gateway.containerPort }}
