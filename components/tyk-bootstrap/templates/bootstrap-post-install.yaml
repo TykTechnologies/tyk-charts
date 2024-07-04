@@ -98,10 +98,6 @@ spec:
               value: {{ .Values.bootstrap.dashboard | quote }}
             - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
               value: {{ .Values.bootstrap.operatorSecret }}
-            {{- if .Values.bootstrap.devPortal }}
-            - name: TYK_K8SBOOTSTRAP_DEVPORTALKUBERNETESSECRETNAME
-              value: {{ .Values.global.secrets.devPortal}}
-            {{- end }}
             - name: TYK_K8SBOOTSTRAP_BOOTSTRAPPORTAL
               value: {{ .Values.bootstrap.portal | quote }}
             {{- if .Values.bootstrap.org.hybrid.enabled }}

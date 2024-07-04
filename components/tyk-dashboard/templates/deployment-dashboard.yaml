@@ -4,6 +4,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dashboard-{{ include "tyk-dashboard.fullname" . }}
+  {{- if .Values.dashboard.annotations }}
+  annotations:
+  {{- toYaml .Values.dashboard.annotations | nindent 4 }}
+  {{- end }}
   labels:
     app: dashboard-{{ include "tyk-dashboard.fullname" . }}
     chart: {{ include "tyk-dashboard.chart" . }}
@@ -64,6 +68,8 @@ spec:
           securityContext:
           {{- toYaml .Values.dashboard.containerSecurityContext | nindent 12 }}
           {{- end }}          
+          resources:
+          {{- toYaml .Values.dashboard.initContainers.initAnalyticsConf.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /etc/tyk-dashboard
               name: analytics-conf
@@ -98,7 +104,7 @@ spec:
             value: "{{ .Values.dashboard.hostConfig.overrideHostname}}"
           - name: "TYK_DB_HOMEDIR"
             value: "{{ .Values.dashboard.homeDir }}"
-          - name: "TYK_DB_USESHARDEDANALYTICS"
+          - name: "TYK_DB_USESHARDEDANLAYTICS"
             value: "{{ .Values.dashboard.useShardedAnalytics }}"
           - name: "TYK_DB_ENABLEANALYTICSCACHE"
             value: "{{ .Values.dashboard.enableAnalyticsCache }}"

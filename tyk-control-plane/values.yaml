@@ -80,12 +80,6 @@ global:
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
     useSecretName: ""
-    # devPortal secret is used to bootstrap the Portal which should include Tyk Dashboard credentials.
-    # You can set to empty to skip portal bootstrapping.
-    # It should include the followings:
-    # - TYK_ORG: Tyk Dashboard Organisation ID
-    # - TYK_AUTH: Tyk Dashboard API Access Credentials
-    devPortal: tyk-dev-portal-conf
 
   redis:
     # The addrs value will allow you to set your Redis addresses.
@@ -257,6 +251,13 @@ tyk-gateway:
     # The hostname to bind the Gateway to.
     hostName: &gwHostName tyk-gw.local
 
+    # EnableFixedWindowRateLimiter enables fixed window rate limiting.
+    # FixedWindow will allow requests up to the configured rate limit,
+    # and then block traffic for the remainder of the window duration.
+    # It has minimal impact on redis, however it will not protect against
+    # traffic spikes, it does not have spike arrest behaviour.
+    enableFixedWindowRateLimiter: false
+
     # If this option is set to true, it will enable polling the Dashboard service for API definitions
     useDashboardAppConfig:
       enabled: true
@@ -330,6 +331,15 @@ tyk-gateway:
       setupDirectories:
         repository: busybox
         tag: 1.32
+        resources: {}
+        # If you do want to specify resources, uncomment the following
+        # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+        # limits:
+        #   cpu: 100m
+        #   memory: 128Mi
+        # requests:
+        #   cpu: 100m
+        #   memory: 128Mi
 
     # image pull secrets to use when pulling images from repository
     imagePullSecrets: []
@@ -673,7 +683,7 @@ tyk-pump:
 
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
-    #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
+    #   - "mongo": Enables Mongo, Mongo Aggregate and Mongo Selective Pump
     #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
     #   - "mongo-selective": Enables ONLY Mongo Selective
     #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
@@ -823,7 +833,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
-          tag: v2.1.1
+          tag: v2.1.2
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -837,7 +847,7 @@ tyk-bootstrap:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
-          tag: v2.1.1
+          tag: v2.1.2
 
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
@@ -851,7 +861,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: v2.1.1
+          tag: v2.1.2
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
@@ -950,7 +960,7 @@ tyk-dashboard:
     # If using the mongo-pump-selective pump, where data is written to org-id-specific collections in MongoDB,
     # then enabling this option will switch querying for analytics over to the independent collection entries.
     # It is used to set TYK_DB_USESHARDEDANALYTICS
-    useShardedAnalytics: false
+    useShardedAnalytics: true
     # If using the new Aggregate Pump, Tyk Analytics can make use of the newer, faster Analytics lookup,
     # to ensure that this can be made backwards compatible.This option must be set to true,
     # in conjunction with the aggregate_lookup_cutoff value.
@@ -1148,10 +1158,11 @@ tyk-mdcb:
     # fullnameOverride overrides App name. It is truncated to 63 characters.
     fullnameOverride: ""
 
-    # useSecretName can be used if you don't want to store plaintext values for MDCB license in
-    # the Helm value file and would rather provide the k8s Secret externally.
-    # You should set following fields in the secret
-    # - MDCBLicense - Sets MDCB license key
+  # useSecretName can be used if you don't want to store plaintext values for MDCB license and security secret in
+  # the Helm values file and would rather provide the k8s Secret externally.
+  # You should set following fields in the secret
+  # - MDCBLicense - Sets MDCB license key
+  # - securitySecret - Sets secret required for accessing secure HTTP endpoints
     useSecretName: ""
 
     # Tyk MDCB license
@@ -1202,21 +1213,25 @@ tyk-mdcb:
     security:
       # Secret is the key required for accessing secure HTTP endpoints and must be included as the `X-Tyk-Authorization` header.
       # Ensure confidentiality of the key and avoid exposing management endpoints publicly.
-      secret: 1234567890
+      # This field can be set using k8s secret. Please refer `mdcb.useSecretName` field.
+      secret: CHANGEME
       # EnableHTTPSecureEndpoints enables HTTP endpoints for monitoring and debugging MDCB.
       # Secure endpoints providing critical system information are disabled by default for security enhancement.
       # Authentication via the `Secret` is required for access, e.g., /dataplanes for dataplane details.
       enableHttpSecureEndpoints: false
+
+    # This is the preferred port setting for MDCB >= v2.6.0.
+    # Users should use httpPort instead of probes.healthCheckPort for newer versions.
+    # This value is used to set TYK_MDCB_HTTPPORT when MDCB is >= 2.6.0.
+    httpPort: 8181
+
     probes:
       # This port lets MDCB allow standard health checks.
       # It also defines the path for liveness and readiness probes.
       # It is used to set TYK_MDCB_HEALTHCHECKPORT and TYK_MDCB_HTTPPORT when mdcb >= v2.6.0
-      healthCheckPort: 8181
+      # This field will be deprecated in upcoming release. Use `httpPort` instead.
+      # healthCheckPort: 8181
 
-      # This is the preferred port setting for MDCB >= v2.6.0.
-      # Users should use httpPort instead of healthCheckPort for newer versions.
-      # This value is used to set TYK_MDCB_HTTPPORT when MDCB is >= 2.6.0.
-      # httpPort: 8181
       # liveness includes details about liveness probe used in MDCB Deployment.
       liveness:
         # path represents the http path to be used in liveness probe in MDBC deployment.

@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mdcb-{{ include "tyk-mdcb.fullname" . }}
+  {{- if .Values.mdcb.annotations }}
+  annotations:
+  {{- toYaml .Values.mdcb.annotations | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "tyk-mdcb.labels" . | nindent 4 }}
 spec:
@@ -13,10 +17,11 @@ spec:
       {{- include "tyk-mdcb.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.mdcb.podAnnotations }}
       annotations:
+      {{- with .Values.mdcb.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret-mdcb.yaml") . | sha256sum }}
       labels:
         {{- include "tyk-mdcb.labels" . | nindent 8 }}
         {{- with .Values.mdcb.podLabels }}
@@ -38,12 +43,12 @@ spec:
           imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
           command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_mdcb.conf"]
           ports:
-            - containerPort: {{ .Values.mdcb.listenPort }}
-            - containerPort: {{ if .Values.mdcb.probes.httpPort }}{{ .Values.mdcb.probes.httpPort }}{{ else }}{{ .Values.mdcb.probes.healthCheckPort }}{{ end }}
+          - containerPort: {{ .Values.mdcb.listenPort }}
+          - containerPort: {{ include "mdcb.healthCheckPort" . }}
           livenessProbe:
             httpGet:
               path: {{ .Values.mdcb.probes.liveness.path }}
-              port: {{ if .Values.mdcb.probes.httpPort }}{{ .Values.mdcb.probes.httpPort }}{{ else }}{{ .Values.mdcb.probes.healthCheckPort }}{{ end }}
+              port: {{ include "mdcb.healthCheckPort" . }}
               scheme: {{ if .Values.mdcb.httpServerOptions.useSSL }}HTTPS{{ else }}HTTP{{ end }}
             initialDelaySeconds: {{ .Values.mdcb.probes.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.mdcb.probes.liveness.periodSeconds }}
@@ -56,7 +61,7 @@ spec:
             failureThreshold: {{ .Values.mdcb.probes.readiness.failureThreshold }}
             httpGet:
               path: {{ .Values.mdcb.probes.readiness.path }}
-              port: {{ if .Values.mdcb.probes.httpPort }}{{ .Values.mdcb.probes.httpPort }}{{ else }}{{ .Values.mdcb.probes.healthCheckPort }}{{ end }}
+              port: {{ include "mdcb.healthCheckPort" . }}
               scheme: {{ if .Values.mdcb.httpServerOptions.useSSL }}HTTPS{{ else }}HTTP{{ end }}
           resources:
             {{- toYaml .Values.mdcb.resources | nindent 12 }}
@@ -82,10 +87,10 @@ spec:
             {{- $version := regexReplaceAll "^v" .Values.mdcb.image.tag "" }}
             {{- if  semverCompare ">=2.6.0" $version }}
             - name: TYK_MDCB_HTTPPORT
-              value: "{{ .Values.mdcb.probes.healthCheckPort }}"
+              value: {{ include "mdcb.healthCheckPort" . | quote }}
             {{- else }}
             - name: TYK_MDCB_HEALTHCHECKPORT
-              value: "{{ .Values.mdcb.probes.healthCheckPort }}"
+              value: {{ include "mdcb.healthCheckPort" . | quote }}
             {{- end }}
             - name: TYK_MDCB_LISTENPORT
               value: "{{ .Values.mdcb.listenPort }}"
@@ -98,7 +103,10 @@ spec:
             - name: TYK_MDCB_HASHKEYS
               value: "{{ .Values.global.hashKeys }}"
             - name: TYK_MDCB_SECURITY_SECRET
-              value: "{{ .Values.mdcb.security.secret}}"
+              valueFrom: 
+                secretKeyRef: 
+                  name: {{ if .Values.mdcb.useSecretName }}{{ .Values.mdcb.useSecretName }} {{ else }} secrets-{{ include "tyk-mdcb.fullname" . }} {{ end }}
+                  key: securitySecret
             - name: TYK_MDCB_SECURITY_ENABLEHTTPSECUREENDPOINTS
               value: "{{ .Values.mdcb.security.enableHttpSecureEndpoints}}"
             # Redis TLS configurations

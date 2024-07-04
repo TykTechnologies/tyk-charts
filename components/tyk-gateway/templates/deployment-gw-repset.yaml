@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: {{ .Values.gateway.kind }}
 metadata:
   name: gateway-{{ include "tyk-gateway.fullname" . }}
+  {{- if .Values.gateway.annotations }}
+  annotations:
+  {{- toYaml .Values.gateway.annotations | nindent 4 }}
+  {{- end }}
   labels:
     app: gateway-{{ include "tyk-gateway.fullname" . }}
     chart: {{ include "tyk-gateway.chart" . }}
@@ -77,6 +81,8 @@ spec:
         securityContext:
         {{- toYaml .Values.gateway.containerSecurityContext | nindent 12 }}
         {{- end }}      
+        resources:
+        {{- toYaml .Values.gateway.initContainers.setupDirectories.resources | nindent 12 }}
         volumeMounts:
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway
@@ -115,6 +121,8 @@ spec:
             value: "{{ .Values.global.oasValidateExamples }}"
           - name: TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
             value: "{{ .Values.global.oasValidateSchemaDefaults }}"
+          - name: TYK_GW_ENABLEFIXEDWINDOWRATELIMITER
+            value: "{{ .Values.gateway.enableFixedWindowRateLimiter }}"
 
           {{- if .Values.global.redis.sslInsecureSkipVerify }}
           - name: TYK_GW_STORAGE_SSLINSECURESKIPVERIFY
@@ -410,7 +418,7 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.gateway }}S{{ end }}"
             path: /hello
-            {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
+            {{- if and .Values.gateway.control.enabled }}
             port: {{ .Values.gateway.control.containerPort }}
             {{- else }}
             port: {{ .Values.gateway.containerPort }}
@@ -423,7 +431,7 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.gateway }}S{{ end }}"
             path: /hello
-            {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-gateway.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-gateway.gateway-version" .))) }}
+            {{- if and .Values.gateway.control.enabled }}
             port: {{ .Values.gateway.control.containerPort }}
             {{- else }}
             port: {{ .Values.gateway.containerPort }}

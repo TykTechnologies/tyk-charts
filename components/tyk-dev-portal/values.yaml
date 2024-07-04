@@ -17,6 +17,10 @@ global:
     email: default@example.com
     # password of Developer Portal admin
     password: 123456
+    # firstname of Developer Portal admin
+    firstName: "admin"
+    # lastName of Developer Portal admin
+    lastName: "user"
   tls:
     # If set to true the Dashboard will use SSL connection.
     dashboard: false
@@ -35,14 +39,6 @@ global:
     # If this is set to false, only the hook that checks for dashboard license will be run
     # In the context of the tyk-developer-portal only, this just runs the bootstrapping jobs only for the portal
     bootstrap: true
-
-  secrets:
-    # devPortal secret is used to bootstrap the Portal which should include Tyk Dashboard credentials.
-    # You can set to empty to skip portal bootstrapping.
-    # It should include the followings:
-    # - TYK_ORG: Tyk Dashboard Organisation ID
-    # - TYK_AUTH: Tyk Dashboard API Access Credentials
-    devPortal: tyk-dev-portal-conf
 
 # Sensitive configuration of Portal could be set using k8s secret
 # You can set following fields:
@@ -125,6 +121,9 @@ image:
 
 # image pull secrets to use when pulling images from repository
 imagePullSecrets: []
+
+# annotations be added to the Deployment / Statefulset of Tyk Developer Portal
+annotations: {}
 
 # podAnnotations specifies annotations to be added in Tyk Developer Portal Pod
 podAnnotations: {}

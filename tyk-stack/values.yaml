@@ -81,12 +81,6 @@ global:
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
     useSecretName: ""
-    # devPortal secret is used to bootstrap the Portal which should include Tyk Dashboard credentials.
-    # You can set to empty to skip portal bootstrapping.
-    # It should include the followings:
-    # - TYK_ORG: Tyk Dashboard Organisation ID
-    # - TYK_AUTH: Tyk Dashboard API Access Credentials
-    devPortal: tyk-dev-portal-conf
 
   redis:
     # The addrs value will allow you to set your Redis addresses.
@@ -254,6 +248,13 @@ tyk-gateway:
     # The hostname to bind the Gateway to.
     hostName: &gwHostName tyk-gw.local
 
+    # EnableFixedWindowRateLimiter enables fixed window rate limiting.
+    # FixedWindow will allow requests up to the configured rate limit,
+    # and then block traffic for the remainder of the window duration.
+    # It has minimal impact on redis, however it will not protect against
+    # traffic spikes, it does not have spike arrest behaviour.
+    enableFixedWindowRateLimiter: false
+
     # If this option is set to true, it will enable polling the Dashboard service for API definitions
     useDashboardAppConfig:
       enabled: true
@@ -270,6 +271,9 @@ tyk-gateway:
       # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
       policyConnectionString: ""
 
+
+    # annotations be added to the Deployment of Tyk Gateway
+    annotations: {}
     # podAnnotations is annotations to be added to Tyk Gateway pod.
     # It takes key-value pairs.
     # There are no required annotation field for Tyk Gateway.
@@ -339,6 +343,15 @@ tyk-gateway:
       setupDirectories:
         repository: busybox
         tag: 1.32
+        resources: {}
+        # If you do want to specify resources, uncomment the following
+        # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+        # limits:
+        #   cpu: 100m
+        #   memory: 128Mi
+        # requests:
+        #   cpu: 100m
+        #   memory: 128Mi
 
     # image pull secrets to use when pulling images from repository
     imagePullSecrets: []
@@ -616,6 +629,9 @@ tyk-pump:
     # number for replicas for pump deployment
     replicaCount: 1
 
+    # annotations be added to the Deployment of Tyk Gateway
+    annotations: {}
+
     # podAnnotations is annotations to be added to Tyk Pump pod.
     # It takes key-value pairs.
     # There are no required annotation field for Tyk Pump.
@@ -664,7 +680,7 @@ tyk-pump:
 
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
-    #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
+    #   - "mongo": Enables Mongo, Mongo Aggregate and Mongo Selective Pump
     #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
     #   - "mongo-selective": Enables ONLY Mongo Selective
     #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
@@ -814,7 +830,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
-          tag: v2.1.1
+          tag: v2.1.2
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -828,7 +844,7 @@ tyk-bootstrap:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
-          tag: v2.1.1
+          tag: v2.1.2
 
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
@@ -842,7 +858,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: v2.1.1
+          tag: v2.1.2
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
@@ -935,7 +951,7 @@ tyk-dashboard:
     # If using the mongo-pump-selective pump, where data is written to org-id-specific collections in MongoDB,
     # then enabling this option will switch querying for analytics over to the independent collection entries.
     # It is used to set TYK_DB_USESHARDEDANALYTICS
-    useShardedAnalytics: false
+    useShardedAnalytics: true
     # If using the new Aggregate Pump, Tyk Analytics can make use of the newer, faster Analytics lookup,
     # to ensure that this can be made backwards compatible.This option must be set to true,
     # in conjunction with the aggregate_lookup_cutoff value.
@@ -981,6 +997,9 @@ tyk-dashboard:
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
+
+    # annotations be added to the Deployment of Tyk Dashboard
+    annotations: {}
 
     # podAnnotations is annotations to be added to Tyk Dashboard pod.
     # It takes key-value pairs.
@@ -1288,6 +1307,8 @@ tyk-dev-portal:
     # initialDelaySeconds specifies the seconds used in readiness probe as initial delay.
     initialDelaySeconds: 60
 
+  # annotations be added to the Deployment of Tyk Developer Portal
+  annotations: {}
   # podAnnotations specifies annotations to be added in Tyk Developer Portal Pod.
   # It takes key-value pairs.
   # There are no required annotation field for Tyk Developer Portal Pod.

@@ -162,3 +162,14 @@ HTTP Protocol that is used by Tyk MDCB. At the moment, TLS is not supported.
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
 {{- end -}}
+
+{{/*
+HealthCheckPort will take precedence to avoid breaking change
+*/}}
+{{- define "mdcb.healthCheckPort" }}
+{{- if .Values.mdcb.probes.healthCheckPort -}}
+{{ .Values.mdcb.probes.healthCheckPort }}
+{{- else -}}
+{{ .Values.mdcb.httpPort }}
+{{- end }}
+{{- end -}}

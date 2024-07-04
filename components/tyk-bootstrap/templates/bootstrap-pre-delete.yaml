@@ -46,8 +46,6 @@ spec:
           env:
             - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
               value: {{ .Values.bootstrap.operatorSecret }}
-            - name: TYK_K8SBOOTSTRAP_DEVPORTALKUBERNETESSECRETNAME
-              value: {{ .Values.global.secrets.devPortal }}
             - name: TYK_K8SBOOTSTRAP_K8S_RELEASENAMESPACE
               valueFrom:
                 fieldRef:

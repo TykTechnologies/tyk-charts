@@ -276,6 +276,9 @@ dashboard:
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
 
+  # annotations be added to the Deployment / Statefulset of Tyk Dashboard
+  annotations: {}
+
   # podAnnotations is annotations to be added to Tyk Dashboard pod.
   # It takes key-value pairs.
   # There are no required annotation field for Tyk Dashboard.
@@ -297,6 +300,18 @@ dashboard:
 
     # image pull policy
     pullPolicy: Always
+
+  initContainers:
+    initAnalyticsConf:
+      resources: {}
+      # If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
 
   # image pull secrets to use when pulling images from repository
   imagePullSecrets: []

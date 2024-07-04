@@ -184,6 +184,13 @@ tyk-gateway:
     # The hostname to bind the Gateway to.
     hostName: tyk-gw.local
 
+    # EnableFixedWindowRateLimiter enables fixed window rate limiting.
+    # FixedWindow will allow requests up to the configured rate limit,
+    # and then block traffic for the remainder of the window duration.
+    # It has minimal impact on redis, however it will not protect against
+    # traffic spikes, it does not have spike arrest behaviour.
+    enableFixedWindowRateLimiter: false
+
     tls:
       # The name of the secret which should contain the TLS certificate you want to use with the gateway deployment
       secretName: tyk-default-tls-secret
@@ -249,6 +256,15 @@ tyk-gateway:
       setupDirectories:
         repository: busybox
         tag: 1.32
+        resources: {}
+        # If you do want to specify resources, uncomment the following
+        # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+        # limits:
+        #   cpu: 100m
+        #   memory: 128Mi
+        # requests:
+        #   cpu: 100m
+        #   memory: 128Mi
 
     # image pull secrets to use when pulling images from repository
     imagePullSecrets: []
@@ -538,7 +554,7 @@ tyk-pump:
 
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
-    #   - "mongo": Enables Mongo Aggregate and Mongo Selective Pump
+    #   - "mongo": Enables Mongo, Mongo Aggregate and Mongo Selective Pump
     #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
     #   - "mongo-selective": Enables ONLY Mongo Selective
     #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
