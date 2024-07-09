@@ -92,6 +92,10 @@ spec:
             - name: TYK_MDCB_HEALTHCHECKPORT
               value: {{ include "mdcb.healthCheckPort" . | quote }}
             {{- end }}
+            {{- if .Values.mdcb.healthcheck.cache_renewal_period > 0 }}
+            - name: TYK_MDCB_HEALTHCHECK_CACHE_RENEWAL_PERIOD
+              value: "{{ .Values.mdcb.healthcheck.cache_renewal_period }}"
+            {{- end}}
             - name: TYK_MDCB_LISTENPORT
               value: "{{ .Values.mdcb.listenPort }}"
             - name: TYK_MDCB_STORAGE_TYPE

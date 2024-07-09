@@ -1224,7 +1224,12 @@ tyk-mdcb:
     # Users should use httpPort instead of probes.healthCheckPort for newer versions.
     # This value is used to set TYK_MDCB_HTTPPORT when MDCB is >= 2.6.0.
     httpPort: 8181
-
+    
+    # settings for the health checker
+    healthcheck:
+      # represents the time interval (in seconds) at which the healthchecker refreshes its cached health status information (redis and DB).
+      cache_renewal_period: 10
+      
     probes:
       # This port lets MDCB allow standard health checks.
       # It also defines the path for liveness and readiness probes.
