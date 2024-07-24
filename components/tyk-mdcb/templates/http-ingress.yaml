@@ -1,6 +1,6 @@
 {{- if .Values.mdcb.http_ingress.enabled -}}
 {{- $fullName := printf (include "tyk-mdcb.fullname" .) -}}
-{{- $svcPort := .Values.mdcb.http_service.port -}}
+{{- $svcPort := .Values.mdcb.httpPort -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

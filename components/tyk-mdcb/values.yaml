@@ -308,16 +308,6 @@ mdcb:
     # annotations corresponds to the annotations which will be added into Tyk Dashboard Service.
     annotations: {}
   
-  http_service:
-    # type corresponds to the service type of Tyk MDCB Service.
-    type: ClusterIP
-    # The port at which the MDCB http service can be found
-    port: 8181
-    # externalTrafficPolicy corresponds to the external traffic policy if the service type is load balancer
-    externalTrafficPolicy: Local
-    # annotations corresponds to the annotations which will be added into MDCB Service.
-    annotations: {}
-  
   # ingress specifies Ingress rules for Tyk MDCB Service.
   # Ingress is disabled by default.
   ingress:
