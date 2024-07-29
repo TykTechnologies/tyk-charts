@@ -1,6 +1,7 @@
 {{- if .Values.mdcb.http_ingress.enabled -}}
 {{- $fullName := printf (include "tyk-mdcb.fullname" .) -}}
 {{- $svcPort := .Values.mdcb.httpPort -}}
+{{- $svcPort := include "mdcb.healthCheckPort" . -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
