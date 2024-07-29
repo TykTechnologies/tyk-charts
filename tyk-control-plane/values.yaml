@@ -1348,7 +1348,7 @@ tyk-mdcb:
       # className specifies your ingress controller class name below
       className: ""
       # annotations specifies annotations to be added on Ingress resource.
-      annotations: { }
+      annotations: {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
       # hosts corresponds to the rules to be added on Ingress rules.
@@ -1358,7 +1358,7 @@ tyk-mdcb:
             - path: /
               pathType: ImplementationSpecific
       # tls corresponds to the tls configuration if Ingress rules use TLS
-      tls: [ ]
+      tls: []
       #  - secretName: chart-example-tls
       #    hosts:
       #      - chart-example.local
