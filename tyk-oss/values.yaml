@@ -712,3 +712,15 @@ tyk-pump:
     #     mountPath: /etc/ssl/certs/ca-certs.crt
     #     readOnly: true
     extraVolumeMounts: []
+
+# Create a dynamic manifests via values:
+extraObjects: []
+  # - apiVersion: "kubernetes-client.io/v1"
+  #   kind: ExternalSecret
+  #   metadata:
+  #     name: redis-secrets
+  #   spec:
+  #     backendType: gcpSecretsManager
+  #     data:
+  #       - key: redis-ssl-cert
+  #         name: adminPassword
