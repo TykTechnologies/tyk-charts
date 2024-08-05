@@ -354,6 +354,9 @@ tyk-gateway:
       # external traffic policy of the service. Set it only if you are using LoadBalancer service type
       externalTrafficPolicy: Local
 
+      # specify loadBalancerIP if the service type is load balancer
+      loadBalancerIP: ""
+
       # annotations for service
       annotations: {}
 

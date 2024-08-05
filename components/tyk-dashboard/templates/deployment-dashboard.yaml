@@ -130,7 +130,7 @@ spec:
             value: "{{ .Values.dashboard.enableMultiOrgUsers }}"
           ## DEFAULT TYK CONFIGURATION END
           - name: TYK_DB_LISTENPORT
-            value: "{{ .Values.global.servicePorts.dashboard }}"
+            value: "{{ .Values.dashboard.containerPort }}"
           - name: TYK_DB_OAS_VALIDATE_EXAMPLES
             value: "{{ .Values.global.oasValidateExamples }}"
           - name: TYK_DB_OAS_VALIDATE_SCHEMA_DEFAULTS
@@ -275,7 +275,7 @@ spec:
         command: ["/opt/tyk-dashboard/tyk-analytics"]
         {{- end }}
         ports:
-        - containerPort: {{ .Values.global.servicePorts.dashboard }}
+        - containerPort: {{ .Values.dashboard.containerPort }}
         volumeMounts:
           {{- with .Values.global.redis }}
           {{- if and .useSSL .volumeName .certificatesMountPath }}
@@ -299,7 +299,7 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.dashboard }}S{{ end }}"
             path: /hello
-            port: {{ .Values.global.servicePorts.dashboard }}
+            port: {{ .Values.dashboard.containerPort }}
           initialDelaySeconds: 10
           periodSeconds: 2
           timeoutSeconds: 3
@@ -308,7 +308,7 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.dashboard }}S{{ end }}"
             path: /hello
-            port: {{ .Values.global.servicePorts.dashboard }}
+            port: {{ .Values.dashboard.containerPort }}
           initialDelaySeconds: 10
           periodSeconds: 10
           timeoutSeconds: 3

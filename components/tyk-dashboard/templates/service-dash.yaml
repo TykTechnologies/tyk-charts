@@ -17,7 +17,7 @@ spec:
   type: {{ .Values.dashboard.service.type }}
   ports:
   - port: {{ .Values.global.servicePorts.dashboard }}
-    targetPort: {{ .Values.global.servicePorts.dashboard }}
+    targetPort: {{ .Values.dashboard.containerPort }}
     protocol: TCP
     name: {{ default "http" .Values.dashboard.service.portName | quote }}
   selector:
@@ -25,4 +25,5 @@ spec:
     release: {{ .Release.Name }}
 {{- if eq .Values.dashboard.service.type "LoadBalancer" }}
   externalTrafficPolicy: {{ .Values.dashboard.service.externalTrafficPolicy }}
+  loadBalancerIP: {{ .Values.dashboard.service.loadBalancerIP | quote }}
 {{- end }}
