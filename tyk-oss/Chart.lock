@@ -1,12 +1,12 @@
 dependencies:
 - name: tyk-gateway
   repository: file://../components/tyk-gateway
-  version: 1.5.0
+  version: 1.6.0
 - name: tyk-pump
   repository: file://../components/tyk-pump
-  version: 1.5.0
+  version: 1.6.0
 - name: tyk-operator
   repository: https://helm.tyk.io/public/helm/charts/
   version: 0.18.0
-digest: sha256:89a9bc4cf8c6ebc83ae02b165920a6c2dca5ab1b9057c4a8b7a8aba812a74d42
-generated: "2024-07-04T12:38:03.616443+03:00"
+digest: sha256:153c8e85bdcd876381b05221af4014bce58e2db567647fcd02d2edce89f9c194
+generated: "2024-08-14T08:38:16.586544+01:00"
