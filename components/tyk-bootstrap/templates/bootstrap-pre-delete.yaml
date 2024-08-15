@@ -53,6 +53,14 @@ spec:
           {{- if .Values.bootstrap.jobs.preDelete.extraEnvs }}
           {{- include "tyk-bootstrap.tplvalues.render" ( dict "value" .Values.bootstrap.jobs.preDelete.extraEnvs "context" $ ) | nindent 12 }}
           {{- end }}
+          {{- if .Values.bootstrap.extraVolumeMounts }}
+          volumeMounts:
+            {{- include "tyk-bootstrap.tplvalues.render" (dict "value" .Values.bootstrap.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+      {{- if .Values.bootstrap.extraVolumes }}
+      volumes:
+        {{- include "tyk-bootstrap.tplvalues.render" (dict "value" .Values.bootstrap.extraVolumes "context" $) | nindent 8 }}
+      {{- end }}
       terminationGracePeriodSeconds: 0
       restartPolicy: Never
 {{- end }}
