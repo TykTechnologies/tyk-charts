@@ -913,14 +913,14 @@ tyk-bootstrap:
     #     secret:
     #       defaultMode: 420
     #       secretName: ca-certs
-    extraVolumes: [ ]
+    extraVolumes: []
 
     # extraVolumeMounts is a list of volume mounts to be added to the pod
     # extraVolumeMounts:
     #   - name: ca-certs
     #     mountPath: /etc/ssl/certs/ca-certs.crt
     #     readOnly: true
-    extraVolumeMounts: [ ]
+    extraVolumeMounts: []
 
 tyk-dashboard:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
