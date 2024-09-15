@@ -1,0 +1,98 @@
+name: Create PR for CRDs triggered by Operator Workflow
+
+on:
+  repository_dispatch:
+    types: [tag-pushed]
+
+jobs:
+  fetch_crds:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set base URL
+      id: set_base_url
+      run: |
+        echo "BASE_URL=https://api.github.com/repos/TykTechnologies/tyk-operator-internal" >> $GITHUB_ENV
+
+    - name: Extract tag from event
+      id: extract_tag
+      run: |
+        TAG=${{ github.event.client_payload.tag }}
+        TAG=${TAG#refs/tags/}
+        echo "TAG=${TAG}" >> $GITHUB_ENV
+        echo "Extracted tag: ${TAG}"
+
+    - name: Create and switch to a new branch
+      run: |
+        TAG=${{ env.TAG }}
+        git checkout -b "release-tyk-operator-internal-${TAG}"
+
+    - name: Create directory for the tag
+      run: |
+        mkdir -p ${{ github.workspace }}/releases/download/${{ env.TAG }}
+
+    - name: Fetch CRDs from Tyk Operator Internal Repository
+      run: |
+        for file in $(curl -H "Authorization: Bearer ${{ secrets.PAT }}" \
+                        -s "${{ env.BASE_URL }}/contents/crd?ref=${{ env.TAG }}" \
+                        | jq -r '.[] | select(.name | endswith(".yaml")) | .download_url'); do
+          FILE_NAME=$(basename "${file%%\?*}")
+          curl -L $file -o "${{ github.workspace }}/releases/download/${{ env.TAG }}/$FILE_NAME"
+        done
+
+    - name: List files for debugging
+      run: |
+        ls -R ${{ github.workspace }}/releases/download/${{ env.TAG }}
+
+    - name: Fetch user details
+      id: fetch_user
+      run: |
+        COMMIT_SHA=${{ github.event.client_payload.commit_sha }}
+        
+        USER_DATA=$(curl -H "Authorization: Bearer ${{ secrets.PAT }}" \
+                      -s "${{ env.BASE_URL }}/commits/${COMMIT_SHA}")
+        
+        # Extract user name and email
+        USER_NAME=$(echo "$USER_DATA" | jq -r '.author.login')
+        USER_EMAIL=$(echo "$USER_DATA" | jq -r '.commit.author.email')
+        
+        echo "USER_NAME=${USER_NAME}" >> $GITHUB_ENV
+        echo "USER_EMAIL=${USER_EMAIL}" >> $GITHUB_ENV
+
+    - name: Commit and push changes
+      run: |
+        # Configure Git
+        git config --global user.name ${{ env.USER_NAME }}
+        git config --global user.email ${{ env.USER_EMAIL }}
+        
+        # Add changes and commit
+        git add .
+        git status
+        git commit -m "add CRDs for tag ${{ env.TAG }}"
+        
+        # Push changes to the branch
+        git push https://x-access-token:${{ secrets.PAT }}@github.com/TykTechnologies/tyk-charts.git "release-tyk-operator-internal-${{ env.TAG }}"
+
+    - name: Install GitHub CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install gh
+
+    - name: Authenticate GitHub CLI
+      run: |
+        echo "${{ secrets.PAT }}" | gh auth login --with-token
+
+    - name: Create Pull Request
+      run: |
+        gh pr create \
+          --base main \
+          --head "release-tyk-operator-internal-${{ env.TAG }}" \
+          --title "Update Tyk Operator CRD for version ${{ env.TAG }}" \
+          --body "Changes include CRD updates from Tyk-Operator-Internal for ${{ env.TAG }} release.
+
+          Thank you!"
