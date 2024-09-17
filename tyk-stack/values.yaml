@@ -511,6 +511,19 @@ tyk-gateway:
         # all the subsequent work that operation causes
         parentBased: false
 
+    # EnablePathPrefixMatching changes the URL matching from wildcard mode to prefix mode.
+    # If prefix matching is enabled, the match will be performed
+    # - as a prefix match (/json*).
+    # - against the full listen path and versioning URL (/listen-path/v4/json)
+    # - the stripped listen path URL (/v4/json), and the stripped version information (/json).
+    enablePathPrefixMatching: true
+    # EnablePathSuffixMatching changes the URL matching to match as a suffix.
+    # For example, /json is matched as /json$ against
+    # - the full listen path and versioning URL (/listen-path/v4/json)
+    # - the stripped listen path URL (/v4/json)
+    # - the stripped version information (/json)
+    enablePathSuffixMatching: true
+
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
