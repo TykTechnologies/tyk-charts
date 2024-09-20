@@ -26,4 +26,10 @@ spec:
 {{- if eq .Values.gateway.service.type "LoadBalancer" }}
   externalTrafficPolicy: {{ .Values.gateway.service.externalTrafficPolicy }}
   loadBalancerIP: {{ .Values.gateway.service.loadBalancerIP | quote }}
+  {{- with .Values.gateway.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- range . }}
+    - "{{ . }}"
+    {{- end }}
+  {{- end }}
 {{- end }}

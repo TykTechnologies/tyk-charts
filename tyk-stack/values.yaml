@@ -369,6 +369,10 @@ tyk-gateway:
       # specify loadBalancerIP if the service type is load balancer
       loadBalancerIP: ""
 
+      # Sets the firewall rule's source parameter to the IP addresses in the list
+      loadBalancerSourceRanges: []
+      # - 0.0.0.0/0
+
       # annotations for service
       annotations: {}
 
