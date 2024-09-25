@@ -127,6 +127,8 @@ spec:
             value: "{{ .Values.gateway.enablePathPrefixMatching }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEPATHSUFFIXMATCHING
             value: "{{ .Values.gateway.enablePathSuffixMatching }}"
+          - name: TYK_GW_HTTPSERVEROPTIONS_ENABLESTRICTROUTES
+            value: "{{ .Values.gateway.enableStrictRoutes }}"
 
           {{- if .Values.global.redis.sslInsecureSkipVerify }}
           - name: TYK_GW_STORAGE_SSLINSECURESKIPVERIFY

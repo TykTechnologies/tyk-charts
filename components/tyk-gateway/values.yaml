@@ -501,6 +501,11 @@ gateway:
   # - the stripped listen path URL (/v4/json)
   # - the stripped version information (/json)
   enablePathSuffixMatching: true
+  # EnableStrictRoutes changes the routing to avoid nearest-neighbour requests on overlapping routes
+  # - if disabled, `/apple` will route to `/app`, the current default behavior,
+  # - if enabled, `/app` only responds to `/app`, `/app/` and `/app/*` but not `/apple`
+  # Regular expressions and parameterized routes will be left alone regardless of this setting.
+  enableStrictRoutes: true
 
 
   # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
