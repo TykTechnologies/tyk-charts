@@ -8,5 +8,5 @@ dependencies:
 - name: tyk-operator
   repository: https://helm.tyk.io/public/helm/charts/
   version: 0.18.0
-digest: sha256:153c8e85bdcd876381b05221af4014bce58e2db567647fcd02d2edce89f9c194
-generated: "2024-08-14T08:38:16.586544+01:00"
+digest: sha256:f287be5f4c717f2ca596352573240bf399accb6cf79ec0be6f92e05be5607bcd
+generated: "2024-09-26T17:44:07.772684+05:30"
