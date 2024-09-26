@@ -366,6 +366,13 @@ tyk-gateway:
       # external traffic policy of the service. Set it only if you are using LoadBalancer service type
       externalTrafficPolicy: Local
 
+      # specify loadBalancerIP if the service type is load balancer
+      loadBalancerIP: ""
+
+      # Sets the firewall rule's source parameter to the IP addresses in the list
+      loadBalancerSourceRanges: []
+      # - 0.0.0.0/0
+
       # annotations for service
       annotations: {}
 
@@ -1044,6 +1051,8 @@ tyk-dashboard:
     service:
       type: ClusterIP
       externalTrafficPolicy: Local
+      # specify loadBalancerIP if the service type is load balancer
+      loadBalancerIP: ""
       annotations: {}
 
     # We usually recommend not to specify default resources and to leave this
