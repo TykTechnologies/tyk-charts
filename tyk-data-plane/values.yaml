@@ -470,6 +470,24 @@ tyk-gateway:
         # all the subsequent work that operation causes
         parentBased: false
 
+    # EnablePathPrefixMatching changes the URL matching from wildcard mode to prefix mode.
+    # If prefix matching is enabled, the match will be performed
+    # - as a prefix match (/json*).
+    # - against the full listen path and versioning URL (/listen-path/v4/json)
+    # - the stripped listen path URL (/v4/json), and the stripped version information (/json).
+    enablePathPrefixMatching: true
+    # EnablePathSuffixMatching changes the URL matching to match as a suffix.
+    # For example, /json is matched as /json$ against
+    # - the full listen path and versioning URL (/listen-path/v4/json)
+    # - the stripped listen path URL (/v4/json)
+    # - the stripped version information (/json)
+    enablePathSuffixMatching: true
+    # EnableStrictRoutes changes the routing to avoid nearest-neighbour requests on overlapping routes
+    # - if disabled, `/apple` will route to `/app`, the current default behavior,
+    # - if enabled, `/app` only responds to `/app`, `/app/` and `/app/*` but not `/apple`
+    # Regular expressions and parameterized routes will be left alone regardless of this setting.
+    enableStrictRoutes: true
+
     # extraVolumes is a list of volumes to be added to the pod
     # extraVolumes:
     #   - name: ca-certs
