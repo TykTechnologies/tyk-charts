@@ -5,6 +5,11 @@ global:
     # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
     # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
+    # The license key needed by Tyk Operator to work.
+    #
+    # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
+    # that stores the operator license. Please see `.global.secrets.useSecretName`.
+    operator: ""
 
   # adminUser specifies credentials for Tyk Dashboard and Dev Portal admin user while bootstrapping.
   # Dashboard and Dev Portal admin information.
@@ -79,6 +84,7 @@ global:
     # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
+    # OperatorLicense - Tyk Operator license key
     useSecretName: ""
 
   redis:
