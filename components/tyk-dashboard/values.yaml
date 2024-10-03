@@ -296,7 +296,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.5.0
+    tag: v5.3.5
 
     # image pull policy
     pullPolicy: Always
@@ -316,11 +316,16 @@ dashboard:
   # image pull secrets to use when pulling images from repository
   imagePullSecrets: []
 
+  # The port which will be exposed on the container for tyk-dashboard
+  containerPort: 3000
+
   service:
     # type corresponds to the service type of Tyk Dashboard Service.
     type: ClusterIP
     # externalTrafficPolicy corresponds to the external traffic policy if the service type is load balancer
     externalTrafficPolicy: Local
+    # specify loadBalancerIP if the service type is load balancer
+    loadBalancerIP: ""
     # annotations corresponds to the annotations which will be added into Tyk Dashboard Service.
     annotations: {}
     # The name given to the service port

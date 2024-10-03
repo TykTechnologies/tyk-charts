@@ -123,6 +123,12 @@ spec:
             value: "{{ .Values.global.oasValidateSchemaDefaults }}"
           - name: TYK_GW_ENABLEFIXEDWINDOWRATELIMITER
             value: "{{ .Values.gateway.enableFixedWindowRateLimiter }}"
+          - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEPATHPREFIXMATCHING
+            value: "{{ .Values.gateway.enablePathPrefixMatching }}"
+          - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEPATHSUFFIXMATCHING
+            value: "{{ .Values.gateway.enablePathSuffixMatching }}"
+          - name: TYK_GW_HTTPSERVEROPTIONS_ENABLESTRICTROUTES
+            value: "{{ .Values.gateway.enableStrictRoutes }}"
 
           # Log system events configuration
           - name: TYK_GW_LOGFORMAT
