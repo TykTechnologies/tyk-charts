@@ -18,7 +18,7 @@ dependencies:
   repository: file://../components/tyk-dev-portal
   version: 2.0.0
 - name: tyk-operator
-  repository: https://helm.tyk.io/public/helm/charts/
-  version: 0.18.0
-digest: sha256:463bf619200e80a9ea78a2f6b80d72668bcc59e2839c2281714163268a0b7cf5
-generated: "2024-09-26T17:44:45.219606+05:30"
+  repository: file://../components/tyk-operator
+  version: 1.0.0
+digest: sha256:0d87bb259e47763367395aaa34a2dd72ff4d30cbb543a3b18a148c8bb22ad653
+generated: "2024-10-03T20:51:01.210599+05:30"
