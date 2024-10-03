@@ -20,7 +20,7 @@ global:
     # Tyk Operator needs cert-manager to be installed beforehand. Make sure that cert-manager is installed.
     # For further details, please refer to https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator/
     operator: false
-  
+
   license:
     # The license key needed by Tyk Operator to work.
     #
