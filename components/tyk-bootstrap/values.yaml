@@ -12,6 +12,11 @@ global:
   license:
     # The license key needed for the Tyk Dashboard.
     dashboard: ""
+    # The license key needed for Tyk Operator.
+    #
+    # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
+    # that stores the operator license. Please see `.global.secrets.useSecretName`.
+    operator: ""
   adminUser:
     # If you don't want to store plaintext secrets for admin user in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below
@@ -48,7 +53,10 @@ global:
     # If you don't want to store plaintext secrets in the Helm value file and would
     # rather provide the k8s Secret externally please populate the value below
     # You can set following fields in the secret
+    # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
+    # DashLicense - Tyk Dashboard license key
+    # OperatorLicense - Tyk Operator license key
     useSecretName: ""
     devPortal: tyk-dev-portal-conf
 
