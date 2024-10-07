@@ -254,7 +254,7 @@ mdcb:
     # image repository for Tyk MDCB
     repository: tykio/tyk-mdcb-docker
     # image tag for Tyk MDCB
-    tag: v2.7.0
+    tag: v2.7.1
     # image pull policy
     pullPolicy: IfNotPresent
 
