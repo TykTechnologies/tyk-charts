@@ -5,6 +5,11 @@ global:
     # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
     # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
+    # The license key needed by Tyk Operator to work.
+    #
+    # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
+    # that stores the operator license. Please see `.global.secrets.useSecretName`.
+    operator: ""
 
   # adminUser specifies credentials for Tyk Dashboard and Dev Portal admin user while bootstrapping.
   # Dashboard and Dev Portal admin information.
@@ -79,6 +84,7 @@ global:
     # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
+    # OperatorLicense - Tyk Operator license key
     useSecretName: ""
 
   redis:
@@ -578,7 +584,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v0.18.0"
+    tag: "v1.0.0"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -854,7 +860,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
-          tag: v2.1.2
+          tag: v2.2.0
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -868,7 +874,7 @@ tyk-bootstrap:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
-          tag: v2.1.2
+          tag: v2.2.0
 
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
@@ -882,7 +888,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: v2.1.2
+          tag: v2.2.0
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
