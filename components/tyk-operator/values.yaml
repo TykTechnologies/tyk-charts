@@ -8,10 +8,14 @@ envVars:
     value: "8443"
   - name: TYK_HTTP_INGRESS_PORT
     value: "8080"
+    # The license key can also be added as an environment variable, but it is not recommended.
+# - name: TYK_OPERATOR_LICENSEKEY
+#   value: "{YOUR_LICENSE_KEY}"       
+
 image:
   repository: tykio/tyk-operator
   pullPolicy: IfNotPresent
-  tag: "v0.18.0"
+  tag: "v1.0.0"
 # specify imagePullSecrets for ServiceAccount
 imagePullSecrets: []
 nameOverride: ""
