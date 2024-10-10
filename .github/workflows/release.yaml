@@ -1,6 +1,9 @@
 name: Release Helm charts
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
@@ -8,7 +11,7 @@ on:
       - '**/Chart.yaml'
 
 jobs:
- get-list-of-charts:
+  get-list-of-charts:
     runs-on: ubuntu-latest
     name: 'Get list of charts to be released'
     outputs:
@@ -19,33 +22,24 @@ jobs:
           fetch-depth: 0
       - id: get-charts
         name: Get list of charts to be released
+        shell: bash
         run: |
-          # Get list of Chart.yaml files changed in the last commit
-          files_changed="$(git show --pretty="" --name-only | grep Chart.yaml)"
-
-          charts=()
-          for file in $files_changed; do
-            count=$(git show "$file" | grep -c "+version" || true)
-            if [ $count -eq 0 ]; then
-              echo "No version change in $file"
-              continue
-            fi
-
-            charts+=("$(echo "$file" | xargs dirname)")
-          done
-
+          set -e
+          set -x
+          charts=("components/tyk-operator")
+          echo "Charts array: ${charts[@]}"
+          
           if [ ${#charts[@]} -eq 0 ]; then
             echo "No charts to be released"
             echo "charts=none" >> "$GITHUB_OUTPUT"
           else
-          echo "charts=$(jq 'split(" ")' -Rc <(echo ${charts[@]}))" >> "$GITHUB_OUTPUT"
+            echo "charts=$(jq 'split(" ")' -Rc <(echo ${charts[@]}))" >> "$GITHUB_OUTPUT"
           fi
-
- release-charts:
+  release-charts:
     runs-on: ubuntu-latest
     needs: get-list-of-charts
     if: needs.get-list-of-charts.outputs.charts != 'none'
-    
+
     strategy:
       matrix:
         chart: ${{ fromJson(needs.get-list-of-charts.outputs.charts) }}
@@ -78,9 +72,9 @@ jobs:
       - name: Push Helm Chart
         uses: cloudsmith-io/action@v0.5.2
         with:
-         api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-         command: "push"
-         format: "helm"
-         owner: "tyk"
-         repo: "helm"
-         file: "${{ steps.file-name.outputs.fileName }}"
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: "push"
+          format: "helm"
+          owner: "tyk"
+          repo: "helm"
+          file: "${{ steps.file-name.outputs.fileName }}"
