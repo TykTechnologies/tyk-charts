@@ -1,6 +1,6 @@
 apiVersion: v2
 name: tyk-gateway
-version: 2.0.0
+version: 2.1.0
 description: A Helm chart for deploying the open source Tyk Gateway.
   Tyk Gateway is a fully open source Enterprise API Gateway, supporting REST, GraphQL, TCP and gRPC protocols.
   Tyk Gateway is provided ‘Batteries-included’, with no feature lockout. It enables organisations and businesses around
