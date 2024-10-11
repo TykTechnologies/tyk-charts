@@ -211,6 +211,11 @@ tolerations: []
 # affinity specifies affinity and anti-affinity constraints.
 affinity: {}
 
+# extraContainers is a list of containers to be added to the pod
+# - name: sidecar
+#   image: sidecar:latest
+extraContainers: []
+
 # extraEnvs is used to set extra environment variables to Tyk Developer Portal pod.
 # - name: PORTAL_REFRESHINTERVAL
 #   value: "10"

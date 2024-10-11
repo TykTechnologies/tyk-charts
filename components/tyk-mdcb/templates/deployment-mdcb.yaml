@@ -225,6 +225,9 @@ spec:
           {{- if .Values.mdcb.extraEnvs }}
           {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraEnvs "context" $) | nindent 12 }}
           {{- end }}
+        {{- with .Values.mdcb.extraContainers }}
+        {{- include "mdcb.tplvalues.render" (dict "value" . "context" $) | nindent 8 }}
+        {{- end }}
       volumes:
         {{- if .Values.mdcb.tls.useSSL }}
         - name: {{ .Values.mdcb.tls.volumeName }}

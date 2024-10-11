@@ -226,6 +226,9 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+      {{- with .Values.extraContainers }}
+      {{- include "tyk-dev-portal.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
+      {{- end }}
       volumes:
       {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
       - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
