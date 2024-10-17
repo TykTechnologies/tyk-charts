@@ -373,6 +373,11 @@ mdcb:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
+  # extraContainers is a list of containers to be added to the pod
+  # - name: sidecar
+  #   image: sidecar:latest
+  extraContainers: []
+  
   extraEnvs: []
 
   # Additional volumes on the output MDCB Deployment definition.

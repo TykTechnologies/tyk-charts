@@ -446,6 +446,9 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+      {{- with .Values.gateway.extraContainers }}
+      {{- include "tyk-gateway.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
+      {{- end }}
       {{- if .Values.gateway.securityContext }}
       securityContext:
       {{- toYaml .Values.gateway.securityContext | nindent 10 }}

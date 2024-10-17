@@ -313,6 +313,9 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+      {{- with .Values.dashboard.extraContainers }}
+      {{- include "tyk-dashboard.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
+      {{- end }}
       {{- if .Values.dashboard.securityContext }}
       securityContext:
       {{- toYaml .Values.dashboard.securityContext | nindent 10 }}

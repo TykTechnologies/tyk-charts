@@ -357,6 +357,9 @@ spec:
         resources:
 {{ toYaml .Values.pump.resources | indent 12 }}
       {{- if .Values.pump.securityContext }}
+      {{- with .Values.pump.extraContainers }}
+      {{- include "tyk-pump.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
+      {{- end }}
       securityContext:
       {{- toYaml .Values.pump.securityContext | nindent 10 }}
       {{- end }}
