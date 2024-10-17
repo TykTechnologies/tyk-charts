@@ -455,6 +455,11 @@ tyk-gateway:
     # Regular expressions and parameterized routes will be left alone regardless of this setting.
     enableStrictRoutes: true
 
+    # extraContainers is a list of containers to be added to the pod
+    # - name: sidecar
+    #   image: sidecar:latest
+    extraContainers: []
+
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
@@ -721,6 +726,11 @@ tyk-pump:
 
     # affinity for pump pod assignment
     affinity: {}
+
+    # extraContainers is a list of containers to be added to the pod
+    # - name: sidecar
+    #   image: sidecar:latest
+    extraContainers: []
 
     # extraEnvs is used to set environment variables in pump container
     # - name: TYK_PMP_PURGEDELAY
