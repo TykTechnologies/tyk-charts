@@ -439,13 +439,13 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+  {{- toYaml .Values.annotations | nindent 4 }}
+  {{- end }}
   labels:
     control-plane: tyk-operator-controller-manager
   name: {{ include "tyk-operator-helm.fullname" . }}-controller-manager
   namespace: {{ .Release.Namespace }}
-  annotations:
-  {{- toYaml .Values.annotations | nindent 4 }}
-  {{- end }}
 spec:
   replicas: {{default 1 .Values.replicaCount }}
   selector:
