@@ -439,6 +439,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  {{- if .Values.annotations }}
   annotations:
   {{- toYaml .Values.annotations | nindent 4 }}
   {{- end }}
