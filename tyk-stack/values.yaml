@@ -445,6 +445,33 @@ tyk-gateway:
     #  memory: 128Mi
     resources: {}
 
+    # livenessProbe values for gateway pod. All fields from PodLivenessProbe object can be added here.
+    # If set to empty or nil, the default health check on /health will be performed.
+    # livenessProbe:
+    #   httpGet:
+    #     scheme: http
+    #     path: /hello
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 2
+    #   timeoutSeconds: 3
+    #   failureThreshold: 2
+    #   successThreshold: 2
+    livenessProbe: {}
+
+    # readinessProbe values for gateway pod. All fields from PodReadinessProbe object can be added here.
+    # If set to empty or nil, the default health check on /health will be performed.
+    # readinessProbe:
+    #   httpGet:
+    #     scheme: http
+    #     path: /hello
+    #     port: 8080
+    #  initialDelaySeconds: 1
+    #  periodSeconds: 10
+    #  timeoutSeconds: 3
+    #  failureThreshold: 3
+    readinessProbe: {}
+
     # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
