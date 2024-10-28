@@ -458,7 +458,9 @@ spec:
         control-plane: tyk-operator-controller-manager
     spec:
       containers:
-      - command:
+      - args:
+        - --config=controller_manager_config.yaml
+        command:
         - /manager
 {{- with .Values.envVars }}
         env:
