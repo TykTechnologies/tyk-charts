@@ -393,7 +393,7 @@ gateway:
   # If set to empty or nil, the default health check on /health will be performed.
   # livenessProbe:
   #   httpGet:
-  #     scheme: http
+  #     scheme: HTTP
   #     path: /hello
   #     port: 8080
   #   initialDelaySeconds: 5
@@ -407,7 +407,7 @@ gateway:
   # If set to empty or nil, the default health check on /health will be performed.
   # readinessProbe:
   #   httpGet:
-  #     scheme: http
+  #     scheme: HTTP
   #     path: /hello
   #     port: 8080
   #  initialDelaySeconds: 1
