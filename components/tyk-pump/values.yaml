@@ -338,6 +338,11 @@ pump:
   # affinity for pump pod assignment
   affinity: {}
 
+  # extraContainers is a list of containers to be added to the pod
+  # - name: sidecar
+  #   image: sidecar:latest
+  extraContainers: []
+
   # extraEnvs is used to set environment variables in pump container
   # - name: TYK_PMP_PURGEDELAY
   #   value: 30

@@ -98,6 +98,15 @@ spec:
               value: {{ .Values.bootstrap.dashboard | quote }}
             - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
               value: {{ .Values.bootstrap.operatorSecret }}
+            - name: TYK_K8SBOOTSTRAP_OPERATORLICENSEKEY
+              {{ if .Values.global.secrets.useSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  key: OperatorLicense
+                  name: {{ .Values.global.secrets.useSecretName }}
+              {{ else }}
+              value: {{ .Values.global.license.operator | quote }}
+              {{ end }}
             - name: TYK_K8SBOOTSTRAP_BOOTSTRAPPORTAL
               value: {{ .Values.bootstrap.portal | quote }}
             {{- if .Values.bootstrap.org.hybrid.enabled }}

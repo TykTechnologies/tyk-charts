@@ -9,6 +9,11 @@ global:
     # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
     # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
     dashboard: ""
+    # The license key needed by Tyk Operator to work.
+    #
+    # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
+    # that stores the operator license. Please see `.global.secrets.useSecretName`.
+    operator: ""
 
   # adminUser specifies credentials for Tyk Dashboard and Dev Portal admin user while bootstrapping.
   # Dashboard and Dev Portal admin information.
@@ -80,6 +85,7 @@ global:
     # APISecret - Sets node secret in both dashboard and tyk config
     # AdminSecret - Admin user secret key
     # DashLicense - Tyk Dashboard license key
+    # OperatorLicense - Tyk Operator license key
     useSecretName: ""
 
   redis:
@@ -553,6 +559,11 @@ tyk-gateway:
     # Regular expressions and parameterized routes will be left alone regardless of this setting.
     enableStrictRoutes: true
 
+    # extraContainers is a list of containers to be added to the pod
+    # - name: sidecar
+    #   image: sidecar:latest
+    extraContainers: []
+
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
@@ -572,6 +583,13 @@ tyk-gateway:
     #     mountPath: /etc/ssl/certs/ca-certs.crt
     #     readOnly: true
     extraVolumeMounts: []
+
+    # log is used to configure the log system events
+    log:
+      # level is used to set the log verbosity. It is used to set TYK_GW_LOGLEVEL
+      level: "info"
+      # format is used to set the log format. It is used to set TYK_GW_LOGFORMAT
+      format: "default"
 
 tyk-operator:
   nameOverride: ""
@@ -593,7 +611,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v0.18.0"
+    tag: "v1.0.0"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -823,6 +841,11 @@ tyk-pump:
     # affinity for pump pod assignment
     affinity: {}
 
+    # extraContainers is a list of containers to be added to the pod
+    # - name: sidecar
+    #   image: sidecar:latest
+    extraContainers: []
+
     # extraEnvs is used to set environment variables in pump container
     # - name: TYK_PMP_PURGEDELAY
     #   value: 30
@@ -872,7 +895,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
-          tag: v2.1.2
+          tag: v2.2.0
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -886,7 +909,7 @@ tyk-bootstrap:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
-          tag: v2.1.2
+          tag: v2.2.0
 
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
@@ -900,7 +923,7 @@ tyk-bootstrap:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
-          tag: v2.1.2
+          tag: v2.2.0
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
@@ -1130,6 +1153,11 @@ tyk-dashboard:
     # affinity specifies affinity and anti-affinity constraints.
     affinity: {}
 
+    # extraContainers is a list of containers to be added to the pod
+    # - name: sidecar
+    #   image: sidecar:latest
+    extraContainers: []
+
     # extraEnvs is used to set extra environment variables to Tyk Dashboard pod.
     # - name: TYK_DB_PAGESIZE
     #   value: "10"
@@ -1338,6 +1366,12 @@ tyk-dev-portal:
   tolerations: []
   # affinity specifies affinity and anti-affinity constraints.
   affinity: {}
+
+  # extraContainers is a list of containers to be added to the pod
+  # - name: sidecar
+  #   image: sidecar:latest
+  extraContainers: []
+
   # extraEnvs is used to set extra environment variables to Tyk Developer Portal pod.
   # - name: PORTAL_REFRESHINTERVAL
   #   value: "10"

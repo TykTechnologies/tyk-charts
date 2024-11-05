@@ -21,6 +21,13 @@ global:
     # For further details, please refer to https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator/
     operator: false
 
+  license:
+    # The license key needed by Tyk Operator to work.
+    #
+    # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
+    # that stores the operator license. Please see `.global.secrets.useSecretName`.
+    operator: ""
+
   servicePorts:
     # The port at which the gateway service can be found at
     gateway: 8080
@@ -40,6 +47,7 @@ global:
     # rather provide the k8s Secret externally.
     # You can set following fields in the secret
     # - APISecret - Sets node_secret and secret in tyk.conf
+    # - OperatorLicense - Tyk Operator license key
     useSecretName: ""
 
   redis:
@@ -464,6 +472,11 @@ tyk-gateway:
     # Regular expressions and parameterized routes will be left alone regardless of this setting.
     enableStrictRoutes: true
 
+    # extraContainers is a list of containers to be added to the pod
+    # - name: sidecar
+    #   image: sidecar:latest
+    extraContainers: []
+
     # extraEnvs is used to set gateway env variables
     # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
     #   value: "true"
@@ -483,6 +496,13 @@ tyk-gateway:
     #     mountPath: /etc/ssl/certs/ca-certs.crt
     #     readOnly: true
     extraVolumeMounts: []
+
+    # log is used to configure the log system events
+    log:
+      # level is used to set the log verbosity. It is used to set TYK_GW_LOGLEVEL
+      level: "info"
+      # format is used to set the log format. It is used to set TYK_GW_LOGFORMAT
+      format: "default"
 
 tyk-operator:
   nameOverride: ""
@@ -504,7 +524,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v0.18.0"
+    tag: "v1.0.0"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -730,6 +750,11 @@ tyk-pump:
 
     # affinity for pump pod assignment
     affinity: {}
+
+    # extraContainers is a list of containers to be added to the pod
+    # - name: sidecar
+    #   image: sidecar:latest
+    extraContainers: []
 
     # extraEnvs is used to set environment variables in pump container
     # - name: TYK_PMP_PURGEDELAY
