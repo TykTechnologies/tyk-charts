@@ -33,4 +33,8 @@ spec:
 {{- with .Values.gateway.autoscaling.autoscalingTemplate }}
 {{ toYaml . | indent 4}}
 {{- end}}
+{{- with .Values.gateway.autoscaling.behavior }}
+  behavior:
+{{ toYaml . | indent 4}}
+{{- end}}
 {{- end }}

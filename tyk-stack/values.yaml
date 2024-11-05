@@ -329,6 +329,23 @@ tyk-gateway:
     #        target:
     #          type: AverageValue
     #          averageValue: 10000m
+    #  behavior:
+    #    scaleDown:
+    #      stabilizationWindowSeconds: 300
+    #      policies:
+    #        - type: Percent
+    #          value: 100
+    #          periodSeconds: 15
+    #    scaleUp:
+    #      stabilizationWindowSeconds: 0
+    #      policies:
+    #        - type: Percent
+    #          value: 100
+    #          periodSeconds: 15
+    #        - type: Pods
+    #          value: 4
+    #          periodSeconds: 15
+    #      selectPolicy: Max
 
     # analyticsEnabled property is used to enable/disable analytics.
     # If set to empty or nil, analytics will be enabled/disabled based on `global.components.pump`.
