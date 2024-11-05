@@ -1651,8 +1651,8 @@ tyk-dev-portal:
   # extraContainers is a list of containers to be added to the pod
   # - name: sidecar
   #   image: sidecar:latest
-  extraContainers: [] 
-  
+  extraContainers: []
+
   # extraEnvs is used to set extra environment variables to Tyk Developer Portal pod.
   # - name: PORTAL_REFRESHINTERVAL
   #   value: "10"
