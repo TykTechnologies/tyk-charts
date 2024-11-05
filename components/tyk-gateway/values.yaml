@@ -528,6 +528,13 @@ gateway:
       # all the subsequent work that operation causes
       parentBased: false
 
+  # log is used to configure the log system events
+  log:
+    # level is used to set the log verbosity. It is used to set TYK_GW_LOGLEVEL
+    level: "info"
+    # format is used to set the log format. It is used to set TYK_GW_LOGFORMAT
+    format: "default"
+
   # EnablePathPrefixMatching changes the URL matching from wildcard mode to prefix mode.
   # If prefix matching is enabled, the match will be performed
   # - as a prefix match (/json*).
@@ -545,7 +552,6 @@ gateway:
   # - if enabled, `/app` only responds to `/app`, `/app/` and `/app/*` but not `/apple`
   # Regular expressions and parameterized routes will be left alone regardless of this setting.
   enableStrictRoutes: true
-
 
   # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
   # If a service account is to be used for Tyk Gateway, it should be manually created

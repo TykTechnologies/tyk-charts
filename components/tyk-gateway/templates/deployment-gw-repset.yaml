@@ -130,6 +130,12 @@ spec:
           - name: TYK_GW_HTTPSERVEROPTIONS_ENABLESTRICTROUTES
             value: "{{ .Values.gateway.enableStrictRoutes }}"
 
+          # Log system events configuration
+          - name: TYK_GW_LOGFORMAT
+            value: "{{ .Values.gateway.log.format }}"
+          - name: TYK_GW_LOGLEVEL
+            value: "{{ .Values.gateway.log.level }}"
+
           {{- if .Values.global.redis.sslInsecureSkipVerify }}
           - name: TYK_GW_STORAGE_SSLINSECURESKIPVERIFY
             value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
@@ -360,7 +366,7 @@ spec:
 
           {{- if .Values.gateway.opentelemetry.tls.caFileName }}
           - name: TYK_GW_OPENTELEMETRY_TLS_CAFILE
-            value:  {{ include "otel-CAPath" . | quote }}
+            value:  {{ include "otel-tlsCAPath" . | quote }}
           {{- end }}
 
           - name: TYK_GW_OPENTELEMETRY_TLS_MAXVERSION
