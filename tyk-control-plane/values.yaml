@@ -429,6 +429,33 @@ tyk-gateway:
     #  memory: 128Mi
     resources: {}
 
+    # livenessProbe values for gateway pod. All fields from PodLivenessProbe object can be added here.
+    # If set to empty or nil, the default health check on /health will be performed.
+    # livenessProbe:
+    #   httpGet:
+    #     scheme: HTTP
+    #     path: /hello
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 2
+    #   timeoutSeconds: 3
+    #   failureThreshold: 2
+    #   successThreshold: 2
+    livenessProbe: {}
+
+    # readinessProbe values for gateway pod. All fields from PodReadinessProbe object can be added here.
+    # If set to empty or nil, the default health check on /health will be performed.
+    # readinessProbe:
+    #   httpGet:
+    #     scheme: HTTP
+    #     path: /hello
+    #     port: 8080
+    #  initialDelaySeconds: 1
+    #  periodSeconds: 10
+    #  timeoutSeconds: 3
+    #  failureThreshold: 3
+    readinessProbe: {}
+
     # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
@@ -1637,8 +1664,8 @@ tyk-dev-portal:
   # extraContainers is a list of containers to be added to the pod
   # - name: sidecar
   #   image: sidecar:latest
-  extraContainers: [] 
-  
+  extraContainers: []
+
   # extraEnvs is used to set extra environment variables to Tyk Developer Portal pod.
   # - name: PORTAL_REFRESHINTERVAL
   #   value: "10"
