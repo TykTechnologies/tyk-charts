@@ -567,6 +567,13 @@ tyk-gateway:
     #     readOnly: true
     extraVolumeMounts: []
 
+    # log is used to configure the log system events
+    log:
+      # level is used to set the log verbosity. It is used to set TYK_GW_LOGLEVEL
+      level: "info"
+      # format is used to set the log format. It is used to set TYK_GW_LOGFORMAT
+      format: "default"
+
 tyk-operator:
   nameOverride: ""
   fullnameOverride: ""
