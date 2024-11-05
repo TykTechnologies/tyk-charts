@@ -366,7 +366,7 @@ spec:
 
           {{- if .Values.gateway.opentelemetry.tls.caFileName }}
           - name: TYK_GW_OPENTELEMETRY_TLS_CAFILE
-            value:  {{ include "otel-CAPath" . | quote }}
+            value:  {{ include "otel-tlsCAPath" . | quote }}
           {{- end }}
 
           - name: TYK_GW_OPENTELEMETRY_TLS_MAXVERSION
