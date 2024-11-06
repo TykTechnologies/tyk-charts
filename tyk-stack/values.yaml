@@ -234,6 +234,12 @@ global:
   # It is used to set TYK_DB_OAS_VALIDATE_SCHEMA_DEFAULTS and TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
   oasValidateSchemaDefaults: false
 
+  # streaming configures Tyk Streams
+  streaming:
+    # enabled configures whether Tyk Streams is enabled or not.
+    # It is used to set TYK_GW_STREAMING_ENABLED and TYK_DB_STREAMING_ENABLED.
+    enabled: false
+
 tyk-gateway:
   ## Default values for tyk-gateway chart.
   ## This is a YAML-formatted file.

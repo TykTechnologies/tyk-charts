@@ -129,7 +129,10 @@ spec:
             value: "{{ .Values.gateway.enablePathSuffixMatching }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_ENABLESTRICTROUTES
             value: "{{ .Values.gateway.enableStrictRoutes }}"
-
+          {{- if .Values.global.streaming }}
+          - name: TYK_GW_STREAMING_ENABLED
+            value: {{ .Values.global.streaming.enabled | quote }}
+          {{- end }}
           # Log system events configuration
           - name: TYK_GW_LOGFORMAT
             value: "{{ .Values.gateway.log.format }}"
