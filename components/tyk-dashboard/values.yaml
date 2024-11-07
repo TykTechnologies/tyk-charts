@@ -272,6 +272,25 @@ dashboard:
   # Enable support for users with the same email for multiple organisations
   # It is used to set TYK_DB_ENABLEMULTIORGUSERS
   enableMultiOrgUsers: true
+  # Configuration for Audit logs
+  auditLogs:
+    # Enables audit logging.
+    # It is used to set TYK_DB_AUDIT_ENABLED
+    enabled: true
+    # Allow users to configure how dashboard store the audit logs.
+    # Possible values are db and file.
+    # It is used to set TYK_DB_AUDIT_TYPE
+    type: "file"
+    # Format of audit log file. Possible values are json and text
+    # It is used to set TYK_DB_AUDIT_FORMAT
+    format: "text"
+    # Path to the audit log
+    # It is used to set TYK_DB_AUDIT_PATH
+    path: ""
+    # Enables detailed records in the audit log.
+    # If set to true then audit log records will contain the http-request (without body) and full http-response including the body.
+    # It is used to set TYK_DB_AUDIT_DETAILEDRECORDING
+    enableDetailedRecording: false
 
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
