@@ -17,7 +17,7 @@ spec:
   restartPolicy: Never
   containers:
     - name: health-check-container
-      image: alpine:3.17
+      image: zalbiraw/alpine-curl-jq
       command:
         - /bin/sh
         - -c
