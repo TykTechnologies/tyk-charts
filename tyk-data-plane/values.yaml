@@ -766,3 +766,5 @@ tyk-pump:
     #     mountPath: /etc/ssl/certs/ca-certs.crt
     #     readOnly: true
     extraVolumeMounts: []
+tests:
+  enabled: true

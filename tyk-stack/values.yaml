@@ -1446,3 +1446,5 @@ tyk-dev-portal:
 
   # podLabels specifies labels to be added in Tyk Developer Portal Pod
   podLabels: {}
+tests:
+  enabled: true
