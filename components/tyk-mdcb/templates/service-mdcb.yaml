@@ -19,6 +19,6 @@ spec:
       name: healthport
   selector:
     {{- include "tyk-mdcb.selectorLabels" . | nindent 4 }}
- {{- if eq .Values.mdcb.service.type "LoadBalancer" }}
-    externalTrafficPolicy: {{ .Values.mdcb.service.externalTrafficPolicy }}
- {{- end }}
+{{- if eq .Values.mdcb.service.type "LoadBalancer" }}
+  externalTrafficPolicy: {{ .Values.mdcb.service.externalTrafficPolicy }}
+{{- end }}

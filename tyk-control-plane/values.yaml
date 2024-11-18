@@ -244,6 +244,12 @@ global:
   # It is used to set TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS and TYK_DB_OAS_VALIDATE_SCHEMA_DEFAULTS
   oasValidateSchemaDefaults: false
 
+  # streaming configures Tyk Streams
+  streaming:
+    # enabled configures whether Tyk Streams is enabled or not.
+    # It is used to set TYK_GW_STREAMING_ENABLED and TYK_DB_STREAMING_ENABLED.
+    enabled: false
+
 tyk-gateway:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
   # Default value: tyk-gateway.name
@@ -428,6 +434,33 @@ tyk-gateway:
     #  cpu: 100m
     #  memory: 128Mi
     resources: {}
+
+    # livenessProbe values for gateway pod. All fields from PodLivenessProbe object can be added here.
+    # If set to empty or nil, the default health check on /health will be performed.
+    # livenessProbe:
+    #   httpGet:
+    #     scheme: HTTP
+    #     path: /hello
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 2
+    #   timeoutSeconds: 3
+    #   failureThreshold: 2
+    #   successThreshold: 2
+    livenessProbe: {}
+
+    # readinessProbe values for gateway pod. All fields from PodReadinessProbe object can be added here.
+    # If set to empty or nil, the default health check on /health will be performed.
+    # readinessProbe:
+    #   httpGet:
+    #     scheme: HTTP
+    #     path: /hello
+    #     port: 8080
+    #  initialDelaySeconds: 1
+    #  periodSeconds: 10
+    #  timeoutSeconds: 3
+    #  failureThreshold: 3
+    readinessProbe: {}
 
     # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
     securityContext:
@@ -1637,8 +1670,8 @@ tyk-dev-portal:
   # extraContainers is a list of containers to be added to the pod
   # - name: sidecar
   #   image: sidecar:latest
-  extraContainers: [] 
-  
+  extraContainers: []
+
   # extraEnvs is used to set extra environment variables to Tyk Developer Portal pod.
   # - name: PORTAL_REFRESHINTERVAL
   #   value: "10"
