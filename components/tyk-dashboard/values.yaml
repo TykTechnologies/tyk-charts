@@ -276,7 +276,7 @@ dashboard:
   auditLogs:
     # Enables audit logging.
     # It is used to set TYK_DB_AUDIT_ENABLED
-    enabled: true
+    enabled: false
     # Allow users to configure how dashboard store the audit logs.
     # Possible values are db and file.
     # It is used to set TYK_DB_AUDIT_TYPE
