@@ -39,6 +39,8 @@ global:
     # - APISecret - Sets node_secret and secret in tyk.conf
     useSecretName: ""
 
+  imageRegistry: ""
+
   redis:
     # The addrs value will allow you to set your Redis addresses.
     #
@@ -269,7 +271,7 @@ gateway:
 
   image:
     # image repository for Tyk Gateway
-    repository: docker.tyk.io/tyk-gateway/tyk-gateway
+    repository: tykio/tyk-gateway
 
     # image tag for Tyk Gateway
     tag: v5.3.6

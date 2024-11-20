@@ -1,4 +1,6 @@
 global:
+  imageRegistry: ""
+
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
   storageType: postgres
 

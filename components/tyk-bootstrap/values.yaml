@@ -60,6 +60,8 @@ global:
     useSecretName: ""
     devPortal: tyk-dev-portal-conf
 
+  imageRegistry: ""
+
 bootstrap:
   # Trigger to control if we want to bootstrap the Developer Portal component using tyk-bootstrap
   devPortal: true

@@ -66,6 +66,8 @@ global:
     # - APISecret - Sets node_secret and secret in tyk.conf
     useSecretName: ""
 
+  imageRegistry: ""
+
   redis:
     # The addrs value will allow you to set your Redis addresses.
     #
