@@ -88,7 +88,11 @@ spec:
             mountPath: /mnt/tyk-gateway
       containers:
       - name: gateway-{{ .Chart.Name }}
+        {{- if and (eq .Values.global.imageRegistry "") (eq .Values.gateway.image.repository "tykio/tyk-gateway") }}
+        image: "docker.tyk.io/tyk-gateway/tyk-gateway:{{ .Values.gateway.image.tag }}"
+        {{- else }}
         image: "{{ .Values.global.imageRegistry }}{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
         {{- if .Values.gateway.containerSecurityContext }}
         securityContext:
