@@ -166,7 +166,7 @@ global:
   # streaming configures Tyk Streams
   streaming:
     # enabled configures whether Tyk Streams is enabled or not.
-    # It is used to set TYK_GW_STREAMING_ENABLED. 
+    # It is used to set TYK_GW_STREAMING_ENABLED.
     enabled: true
 
 
