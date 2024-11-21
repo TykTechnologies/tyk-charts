@@ -1072,7 +1072,7 @@ tyk-dashboard:
       # Enables OPA API mode which allows you to manage the OPA policies via the Dashboard API
       # It is used to set TYK_DB_SECURITY_OPENPOLICY_ENABLEAPI
       api: false
-      # If OPA is enabled with its default policies you will need to TYK_DB_SECURITY_ALLOWADMINRESETPASSWORD
+      # If OPA is enabled with its default policies you will need to set TYK_DB_SECURITY_ALLOWADMINRESETPASSWORD
       # to avoid bootstrap job failure because of the OPA policy restrictions.
       # It is used to set TYK_DB_SECURITY_ALLOWADMINRESETPASSWORD
       allowAdminPasswordReset: true
