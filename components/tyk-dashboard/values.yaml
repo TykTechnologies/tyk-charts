@@ -188,7 +188,7 @@ global:
   streaming:
     # enabled configures whether Tyk Streams is enabled or not.
     # It is used to set TYK_DB_STREAMING_ENABLED
-    enabled: false
+    enabled: true
 
 dashboard:
   # This is the URL of your Tyk Gateway node, which is used to set TYK_DB_TYKAPI_HOST.

@@ -238,7 +238,7 @@ global:
   streaming:
     # enabled configures whether Tyk Streams is enabled or not.
     # It is used to set TYK_GW_STREAMING_ENABLED and TYK_DB_STREAMING_ENABLED.
-    enabled: false
+    enabled: true
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
