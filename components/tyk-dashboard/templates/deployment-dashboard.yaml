@@ -222,12 +222,14 @@ spec:
           {{ if (.Values.dashboard.auditLogs).enabled }}
           - name: TYK_DB_AUDIT_ENABLED
             value: "{{ .Values.dashboard.auditLogs.enabled }}"
-          - name: TYK_DB_AUDIT_TYPE
+          - name: TYK_DB_AUDIT_STORETYPE
             value: "{{ .Values.dashboard.auditLogs.type }}"
+            {{ if eq "file" (.Values.dashboard.auditLogs).type  }}
           - name: TYK_DB_AUDIT_FORMAT
             value: "{{ .Values.dashboard.auditLogs.format }}"
           - name: TYK_DB_AUDIT_PATH
             value: "{{ .Values.dashboard.auditLogs.path }}"
+            {{ end }}
           - name: TYK_DB_AUDIT_DETAILEDRECORDING
             value: "{{ .Values.dashboard.auditLogs.enableDetailedRecording }}"
           {{ end }}
