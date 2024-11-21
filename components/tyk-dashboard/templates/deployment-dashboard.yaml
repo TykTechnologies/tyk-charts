@@ -127,6 +127,11 @@ spec:
             value: "{{ .Values.dashboard.enableHashedKeysListing }}"
           - name: "TYK_DB_ENABLEMULTIORGUSERS"
             value: "{{ .Values.dashboard.enableMultiOrgUsers }}"
+          ## DEFAULT TYK CONFIGURATION END
+          {{- if .Values.global.streaming }}
+          - name: TYK_DB_STREAMING_ENABLED
+            value: {{ .Values.global.streaming.enabled | quote }}
+          {{- end }}
           - name: TYK_DB_LISTENPORT
             value: "{{ .Values.dashboard.containerPort }}"
           - name: TYK_DB_OAS_VALIDATE_EXAMPLES

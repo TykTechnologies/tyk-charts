@@ -129,7 +129,10 @@ spec:
             value: "{{ .Values.gateway.enablePathSuffixMatching }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_ENABLESTRICTROUTES
             value: "{{ .Values.gateway.enableStrictRoutes }}"
-
+          {{- if .Values.global.streaming }}
+          - name: TYK_GW_STREAMING_ENABLED
+            value: {{ .Values.global.streaming.enabled | quote }}
+          {{- end }}
           # Log system events configuration
           - name: TYK_GW_LOGFORMAT
             value: "{{ .Values.gateway.log.format }}"
@@ -366,7 +369,7 @@ spec:
 
           {{- if .Values.gateway.opentelemetry.tls.caFileName }}
           - name: TYK_GW_OPENTELEMETRY_TLS_CAFILE
-            value:  {{ include "otel-CAPath" . | quote }}
+            value:  {{ include "otel-tlsCAPath" . | quote }}
           {{- end }}
 
           - name: TYK_GW_OPENTELEMETRY_TLS_MAXVERSION
@@ -427,6 +430,9 @@ spec:
           {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         livenessProbe:
+          {{- if .Values.gateway.livenessProbe }}
+          {{- toYaml .Values.gateway.livenessProbe | nindent 10}}
+          {{- else }}
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.gateway }}S{{ end }}"
             path: /hello
@@ -439,7 +445,11 @@ spec:
           periodSeconds: 2
           timeoutSeconds: 3
           failureThreshold: 2
+          {{- end }}
         readinessProbe:
+          {{- if .Values.gateway.readinessProbe }}
+          {{- toYaml .Values.gateway.readinessProbe | nindent 10}}
+          {{- else }}
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.gateway }}S{{ end }}"
             path: /hello
@@ -452,6 +462,7 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+          {{- end }}
       {{- with .Values.gateway.extraContainers }}
       {{- include "tyk-gateway.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
       {{- end }}
