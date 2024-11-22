@@ -165,6 +165,12 @@ global:
   # Set to true if you are using a hashed configuration installation of Tyk, otherwise set to false.
   hashKeys: true
 
+  # streaming configures Tyk Streams
+  streaming:
+    # enabled configures whether Tyk Streams is enabled or not.
+    # It is used to set TYK_GW_STREAMING_ENABLED.
+    enabled: true
+
 
 tyk-gateway:
   ## Default values for tyk-gateway chart.
