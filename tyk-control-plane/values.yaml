@@ -1095,6 +1095,20 @@ tyk-dashboard:
     # Enable support for users with the same email for multiple organisations
     # It is used to set TYK_DB_ENABLEMULTIORGUSERS
     enableMultiOrgUsers: true
+    opa:
+      # Enables OPA support.
+      # It is used to set TYK_DB_SECURITY_OPENPOLICY_ENABLED
+      enabled: false
+      # Enables OPA debug mode which will allow more detailed logs about the policy execution.
+      # It is used to set TYK_DB_SECURITY_OPENPOLICY_DEBUG
+      debug: false
+      # Enables OPA API mode which allows you to manage the OPA policies via the Dashboard API
+      # It is used to set TYK_DB_SECURITY_OPENPOLICY_ENABLEAPI
+      api: false
+      # If OPA is enabled with its default policies you will need to set TYK_DB_SECURITY_ALLOWADMINRESETPASSWORD
+      # to avoid bootstrap job failure because of the OPA policy restrictions.
+      # It is used to set TYK_DB_SECURITY_ALLOWADMINRESETPASSWORD
+      allowAdminPasswordReset: true
 
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.

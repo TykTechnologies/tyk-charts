@@ -267,6 +267,14 @@ spec:
           - name:  TYK_DB_TIB_ENABLED
             value: {{ .Values.tib.enabled | quote }}
           {{- end }}
+          - name: TYK_DB_SECURITY_OPENPOLICY_ENABLED
+            value: {{ .Values.dashboard.opa.enabled | quote }}
+          - name: TYK_DB_SECURITY_OPENPOLICY_DEBUG
+            value: {{ .Values.dashboard.opa.debug | quote }}
+          - name: TYK_DB_SECURITY_OPENPOLICY_ENABLEAPI
+            value: {{ .Values.dashboard.opa.api | quote }}
+          - name: TYK_DB_SECURITY_ALLOWADMINRESETPASSWORD
+            value: {{ .Values.dashboard.opa.allowAdminPasswordReset | quote }}
 
           {{- if .Values.dashboard.extraEnvs }}
           {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraEnvs "context" $) | nindent 10 }}
