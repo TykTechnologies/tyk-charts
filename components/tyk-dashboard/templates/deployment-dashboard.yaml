@@ -83,7 +83,6 @@ spec:
         {{- toYaml .Values.dashboard.containerSecurityContext | nindent 12 }}
         {{- end }}
         env:
-          ## DEFAULT TYK DASHBOARD CONFIGURATION
           - name: "TYK_DB_ENABLEOWNERSHIP"
             value: "{{ .Values.dashboard.enableOwnership }}"
           - name: "TYK_DB_PAGESIZE"
@@ -225,6 +224,21 @@ spec:
             value: "{{ .Values.dashboard.hostName }}"
           - name: "TYK_DB_ENABLEAGGREGATELOOKUPS"
             value: "{{ .Values.dashboard.enableAggregateLookups }}"
+          {{ if (.Values.dashboard.auditLogs).enabled }}
+          - name: TYK_DB_AUDIT_ENABLED
+            value: "{{ .Values.dashboard.auditLogs.enabled }}"
+          - name: TYK_DB_AUDIT_STORETYPE
+            value: "{{ .Values.dashboard.auditLogs.type }}"
+            {{ if eq "file" (.Values.dashboard.auditLogs).type  }}
+          - name: TYK_DB_AUDIT_FORMAT
+            value: "{{ .Values.dashboard.auditLogs.format }}"
+          - name: TYK_DB_AUDIT_PATH
+            value: "{{ .Values.dashboard.auditLogs.path }}"
+            {{ end }}
+          - name: TYK_DB_AUDIT_DETAILEDRECORDING
+            value: "{{ .Values.dashboard.auditLogs.enableDetailedRecording }}"
+          {{ end }}
+
           {{ if eq "postgres" (include "tyk-dashboard.storageType" .) }}
           - name: TYK_DB_STORAGE_MAIN_TYPE
             value: "postgres"
@@ -267,6 +281,14 @@ spec:
           - name:  TYK_DB_TIB_ENABLED
             value: {{ .Values.tib.enabled | quote }}
           {{- end }}
+          - name: TYK_DB_SECURITY_OPENPOLICY_ENABLED
+            value: {{ .Values.dashboard.opa.enabled | quote }}
+          - name: TYK_DB_SECURITY_OPENPOLICY_DEBUG
+            value: {{ .Values.dashboard.opa.debug | quote }}
+          - name: TYK_DB_SECURITY_OPENPOLICY_ENABLEAPI
+            value: {{ .Values.dashboard.opa.api | quote }}
+          - name: TYK_DB_SECURITY_ALLOWADMINRESETPASSWORD
+            value: {{ .Values.dashboard.opa.allowAdminPasswordReset | quote }}
 
           {{- if .Values.dashboard.extraEnvs }}
           {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraEnvs "context" $) | nindent 10 }}
