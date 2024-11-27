@@ -1,6 +1,3 @@
-global:
-  imageRegistry: ""
-
 replicaCount: 1
 # loads environment variables to the operator.
 envFrom:

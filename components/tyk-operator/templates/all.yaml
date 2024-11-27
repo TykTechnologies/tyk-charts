@@ -468,7 +468,7 @@ spec:
         envFrom:
 {{- toYaml . | nindent 10 }}
 {{- end }}
-        image: {{ .Values.global.imageRegistry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         livenessProbe:
           httpGet:
@@ -510,7 +510,7 @@ spec:
         - --upstream=http://127.0.0.1:{{ .Values.metricsPort }}/
         - --logtostderr=true
         - --v=10
-        image: {{ .Values.global.imageRegistry }}{{ .Values.rbac.image.repository }}:{{ .Values.rbac.image.tag }}
+        image: {{ .Values.rbac.image.repository }}:{{ .Values.rbac.image.tag }}
         imagePullPolicy: {{ .Values.rbac.image.pullPolicy }}
         name: kube-rbac-proxy
         ports:
