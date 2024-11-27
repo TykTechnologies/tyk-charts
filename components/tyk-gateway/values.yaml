@@ -271,7 +271,7 @@ gateway:
 
   image:
     # image repository for Tyk Gateway
-    repository: tykio/tyk-gateway
+    repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
     tag: v5.3.6

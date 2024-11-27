@@ -49,11 +49,7 @@ spec:
       {{- end }}
       containers:
       - name: pump-{{ .Chart.Name }}
-        {{- if and (eq .Values.global.imageRegistry "") (eq .Values.pump.image.repository "tykio/tyk-pump") }}
-        image: "docker.tyk.io/tyk-pump/tyk-pump:{{ .Values.pump.image.tag }}"
-        {{- else }}
         image: "{{ .Values.global.imageRegistry }}{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
-        {{- end }}
         imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
         workingDir: "/opt/tyk-pump"
         ports:
