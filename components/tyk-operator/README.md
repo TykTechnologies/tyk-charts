@@ -5,7 +5,7 @@ Tyk Operator brings Full Lifecycle API Management capabilities to Kubernetes. Co
 ### Usage
 
 ```bash
-helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+helm repo add tyk-charts https://helm.tyk.io/public/helm/charts/
 helm repo update
 ```
 
@@ -25,7 +25,7 @@ If you have a fully functioning & bootstrapped Tyk Installation and cert-manager
 you can install Tyk Operator as follows: 
 
 ```bash
-helm install tyk-operator tyk-helm/tyk-operator
+helm install tyk-operator tyk-charts/tyk-operator
 ```
 
 By default, it will install the latest stable release of Tyk Operator.
