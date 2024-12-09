@@ -1140,7 +1140,7 @@ tyk-dashboard:
       # to avoid bootstrap job failure because of the OPA policy restrictions.
       # It is used to set TYK_DB_SECURITY_ALLOWADMINRESETPASSWORD
       allowAdminPasswordReset: true
-      
+
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
