@@ -338,9 +338,18 @@ spec:
             value: "{{ .Values.gateway.opentelemetry.exporter }}"
           - name: TYK_GW_OPENTELEMETRY_ENDPOINT
             value: "{{ .Values.gateway.opentelemetry.endpoint}}"
+            {{- if and .Values.gateway.opentelemetry.headers .Values.gateway.opentelemetry.headerSecret.name }}
+              {{- fail "You can't use '.Values.gateway.opentelemetry.headers' and '.Values.gateway.opentelemetry.headerSecret' at the same time!" }}
+            {{- end }}
             {{- if .Values.gateway.opentelemetry.headers }}
           - name: TYK_GW_OPENTELEMETRY_HEADERS
             value: "{{ include "otel-headers" . }}"
+            {{- else if and .Values.gateway.opentelemetry.headerSecret.name .Values.gateway.opentelemetry.headerSecret.key }}
+          - name: TYK_GW_OPENTELEMETRY_HEADERS
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.gateway.opentelemetry.headerSecret.name | quote }}
+                key: {{ .Values.gateway.opentelemetry.headerSecret.key | quote }}
             {{- end }}
           - name: TYK_GW_OPENTELEMETRY_CONNECTIONTIMEOUT
             value: "{{ .Values.gateway.opentelemetry.connectionTimeout }}"

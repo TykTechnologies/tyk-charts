@@ -514,6 +514,22 @@ gateway:
     # A map of headers that will be sent with HTTP requests to the collector.
     # It should be set to map of string to string
     headers: {}
+    # A secret that supplies *one* header which is sent with HTTP requests to the collector. Useful for Authorization
+    # headers, which should not be exposed in the Helm values file.
+    # The key of the secret will be used as the header name, and the value will be used as the header value.
+    # Example:
+    #
+    # headerSecret:
+    #   name: otel-auth-secret
+    #   key: Authorization
+    #
+    # This example will be converted to the following header:
+    # Authorization: <value of the secret>
+    #
+    # Note that the headerSecret setting can't be used at the same time as the headers setting.
+    headerSecret:
+      name: otel-auth-secret
+      key: Authorization
     # Timeout for establishing a connection to the collector
     connectionTimeout: 1
     # Name of the resource that will be used to identify the resource.
