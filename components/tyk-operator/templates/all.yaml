@@ -321,6 +321,32 @@ rules:
   - get
   - patch
   - update
+- apiGroups:
+  - tyk.tyk.io
+  resources:
+  - tykstreamsapidefinitions
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - tyk.tyk.io
+  resources:
+  - tykstreamsapidefinitions/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - tyk.tyk.io
+  resources:
+  - tykstreamsapidefinitions/status
+  verbs:
+  - get
+  - patch
+  - update
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -349,6 +375,56 @@ rules:
   - subjectaccessreviews
   verbs:
   - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: tyk-operator
+  name: {{ include "tyk-operator-helm.fullname" . }}-tykstreamsapidefinition-editor-role
+rules:
+- apiGroups:
+  - tyk.tyk.io
+  resources:
+  - tykstreamsapidefinitions
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - tyk.tyk.io
+  resources:
+  - tykstreamsapidefinitions/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: tyk-operator
+  name: {{ include "tyk-operator-helm.fullname" . }}-tykstreamsapidefinition-viewer-role
+rules:
+- apiGroups:
+  - tyk.tyk.io
+  resources:
+  - tykstreamsapidefinitions
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - tyk.tyk.io
+  resources:
+  - tykstreamsapidefinitions/status
+  verbs:
+  - get
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -439,6 +515,10 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+{{- with .Values.annotations }}
+  annotations:
+{{- toYaml . | nindent 4 }}
+{{- end }}
   labels:
     control-plane: tyk-operator-controller-manager
   name: {{ include "tyk-operator-helm.fullname" . }}-controller-manager

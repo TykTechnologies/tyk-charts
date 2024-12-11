@@ -274,7 +274,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.3.6
+    tag: v5.3.8
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent

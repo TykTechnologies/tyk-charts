@@ -256,7 +256,7 @@ tyk-gateway:
       repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.3.6
+      tag: v5.3.8
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -553,7 +553,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v1.0.0"
+    tag: "v1.1.0"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -649,7 +649,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.11.0
+      tag: v1.11.1
 
       # image pull policy
       pullPolicy: IfNotPresent
