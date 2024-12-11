@@ -40,6 +40,8 @@ global:
     # In the context of the tyk-developer-portal only, this just runs the bootstrapping jobs only for the portal
     bootstrap: true
 
+  imageRegistry: ""
+
 # Sensitive configuration of Portal could be set using k8s secret
 # You can set following fields:
 # - DevPortalLicense - Sets LicenseKey for Developer Portal

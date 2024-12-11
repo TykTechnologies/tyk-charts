@@ -66,6 +66,8 @@ global:
     # a custom TLS certificate to avoid overwriting yours
     useDefaultTykCertificate: true
 
+  imageRegistry: ""
+
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
   storageType: postgres
 

@@ -50,6 +50,8 @@ global:
     # - OperatorLicense - Tyk Operator license key
     useSecretName: ""
 
+  imageRegistry: ""
+
   redis:
     # The addrs value will allow you to set your Redis addresses.
     #

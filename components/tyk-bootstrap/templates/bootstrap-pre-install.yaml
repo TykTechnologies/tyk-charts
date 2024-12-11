@@ -32,7 +32,7 @@ spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
       containers:
         - name: bootstrap-tyk-pre-install
-          image: {{ .Values.bootstrap.jobs.preInstall.image.repository }}:{{ .Values.bootstrap.jobs.preInstall.image.tag }}
+          image: {{ .Values.global.imageRegistry }}{{ .Values.bootstrap.jobs.preInstall.image.repository }}:{{ .Values.bootstrap.jobs.preInstall.image.tag }}
           command: ['/app/bin/bootstrap-app-pre-install']
           imagePullPolicy: IfNotPresent
           {{- if .Values.bootstrap.containerSecurityContext }}
