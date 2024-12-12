@@ -1,8 +1,8 @@
-{{- if .Values.pump.service.enabled -}}
+{{- if .Values.pump.service.healthEnabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: pump-svc-{{ include "tyk-pump.fullname" . }}
+  name: pump-svc-health-{{ include "tyk-pump.fullname" . }}
   {{- if .Values.pump.service.annotations }}
   {{ toYaml .Values.pump.service.annotations }}
   {{- end }}
@@ -12,9 +12,9 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  ports:
-    - port: {{ .Values.pump.service.port }}
-      targetPort: {{ .Values.pump.containerPort }}
+  ports:   
+    - port: {{ .Values.pump.service.healthEndpointPort | default 8083 }}
+      targetPort: {{ .Values.pump.service.healthEndpointPort | default 8083 }} 
       protocol: TCP
       name: {{ default "http" .Values.pump.service.portName | quote }}
   type: {{ .Values.pump.service.type }}
