@@ -100,7 +100,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.CHART_ARTIFACT_NAME }}
-          path: "./"
+          path: "${{ matrix.chart }}"
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
