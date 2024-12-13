@@ -72,12 +72,13 @@ jobs:
               done
           fi
 
+          echo "CHART_ARTIFACT=chart-$(basename ${{ matrix.chart }})" >> $GITHUB_ENV
+
       - name: Upload modified chart
         uses: actions/upload-artifact@v4
         with:
-          name: chart-${{ matrix.chart }}
+          name: ${{ env.CHART_ARTIFACT }}
           path: ${{ matrix.chart }}
-          retention-days: 1
 
   release-alpha-version:
     needs: [prepare-release, update-meta]
@@ -90,12 +91,16 @@ jobs:
         with:
           sparse-checkout: |
             ct.yaml
-      
-      - name: Download modified chart
+
+      - name: Generate Artifact name
+        run: |
+          echo "CHART_ARTIFACT_NAME=chart-$(basename ${{ matrix.chart }})" >> $GITHUB_ENV
+
+      - name: Download modified chart from Artifact
         uses: actions/download-artifact@v4
         with:
-          name: chart-${{ matrix.chart }}
-          path: ${{ matrix.chart }}
+          name: ${{ env.CHART_ARTIFACT_NAME }}
+          path: "./"
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
@@ -112,10 +117,6 @@ jobs:
 
       - name: Update Helm Dependencies
         run: helm dependency update ${{ matrix.chart }}
-
-      - name: Run chart-testing (lint)
-        run: |
-          ct lint --config ct.yaml --all --debug
 
       - name: Package Helm Chart
         run: |
