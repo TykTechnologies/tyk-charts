@@ -96,6 +96,12 @@ jobs:
       - name: Package Helm Chart
         run: |
           helm package ${{ matrix.chart }} --version ${{ needs.prepare-release.outputs.version }}
+      
+      - name: Helm Chart package file name
+        id: file-name
+        run: |
+          echo "fileName=$(basename ${{ matrix.chart }})-${{ needs.prepare-release.outputs.version }}.tgz"
+          echo "fileName=$(basename ${{ matrix.chart }})-${{ needs.prepare-release.outputs.version }}.tgz" >> "$GITHUB_OUTPUT"
 
       - name: Push Helm Chart to Cloudsmith
         uses: cloudsmith-io/action@v0.5.2
