@@ -24,109 +24,78 @@ jobs:
         id: find-charts
         run: |
           CHARTS=$(find . -type f -name Chart.yaml -not -path "*/components/tyk-operator/*" -exec dirname {} \; | jq -R . | jq -sc .)
+          # CHARTS="[\"./tyk-control-plane\"]"
           echo "charts=${CHARTS}" >> $GITHUB_OUTPUT
 
-  update-meta:
+      - name: Update Chart.yaml of each chart
+        run: |
+          echo "STARTINGUPDATE2"
+          for chart_dir in $(find . -type f -name Chart.yaml -not -path "*/components/tyk-operator/*" -exec dirname {} \;); do
+              chart_file_path="$chart_dir/Chart.yaml"
+              echo "  --> updating: $chart_dir $chart_file_path"
+              yq eval '
+                .version = "${{ steps.extract-version.outputs.version }}" |
+                .annotations["artifacthub.io/prerelease"] = "true"
+              ' -i $chart_file_path
+
+              echo "  --> cat $chart_dir $chart_file_path"
+              cat $chart_file_path
+
+              if [[ "$chart_dir" != "./components"* ]]; then
+                echo "    --> umbrella chart dependencies update $chart_dir $chart_file_path"
+
+                num_deps=$(yq eval '.dependencies | length' "${chart_file_path}")
+                echo "    --> umbrella chart dependencies count: $num_deps"
+                if [ "${num_deps}" -gt 0 ]; then
+                  charts=${{ steps.find-charts.outputs.charts }}
+                  echo "$charts"
+
+                  for i in $(seq 0 $((num_deps - 1))); do
+                    dep_name=$(yq eval ".dependencies[$i].name" "${chart_file_path}") || continue
+                    echo "    --> umbrella chart dependency check: $dep_name"
+                    if [[ "${dep_name}" =~ "tyk" ]] && [ "${dep_name}" != "tyk-operator" ]; then
+                      echo "    --> update dependency $dep_name version to ${{ steps.extract-version.outputs.version }}"
+                      yq eval ".dependencies[$i].version = \"${{ steps.extract-version.outputs.version }}\"" -i "${chart_file_path}"
+                    fi
+                    echo "    --> umbrella chart dependency file content $chart_file_path:"
+                    cat $chart_file_path
+                  done
+                fi
+              fi
+          done
+          
+      - name: Upload modified charts
+        uses: actions/upload-artifact@v4
+        with:
+          name: charts
+          path: "./**"
+
+  release-alpha-version:
     needs: prepare-release
     runs-on: ubuntu-latest
     strategy:
       matrix:
         chart: ${{ fromJson(needs.prepare-release.outputs.charts) }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install yq
-        run: |
-          wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
-          chmod +x /usr/local/bin/yq
-
-      - name: Update Chart.yaml with alpha annotations and version
-        run: |
-          yq eval '
-            .version = "${{ needs.prepare-release.outputs.version }}" |
-            .annotations["artifacthub.io/prerelease"] = "true"
-          ' -i ${{ matrix.chart }}/Chart.yaml
-
-      - name: Update dependencies version
-        run: |
-          #!/bin/bash
-          set -e
-          set -x
-
-          CHART_PATH="${{ matrix.chart }}/Chart.yaml"
-          if [ ! -f "${CHART_PATH}" ]; then
-              echo "Chart.yaml not found at ${CHART_PATH}"
-              exit 1
-          fi
-
-          OUR_CHARTS=$(echo "${{ needs.prepare-release.outputs.charts }}" | tr -d '[]' | tr ',' '\n' | xargs -n1 basename | tr '\n' ' ')
-          NUM_DEPS=$(yq eval '.dependencies | length' "${CHART_PATH}")
-          if [ "${NUM_DEPS}" -gt 0 ]; then
-              for i in $(seq 0 $((NUM_DEPS - 1))); do
-                  DEP_NAME=$(yq eval ".dependencies[$i].name" "${CHART_PATH}") || continue
-
-                  # Check if this dependency is one of our charts (excluding 'tyk-operator')
-                  if [[ " ${OUR_CHARTS} " =~ " ${DEP_NAME} " ]] && [ "${DEP_NAME}" != "tyk-operator" ]; then
-                      yq eval ".dependencies[$i].version = \"${{ needs.prepare-release.outputs.version }}\"" -i "${CHART_PATH}"
-                  fi
-              done
-          fi
-
-          echo "CHART_ARTIFACT=chart-$(basename ${{ matrix.chart }})" >> $GITHUB_ENV
-
-      - name: Upload modified chart
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.CHART_ARTIFACT }}
-          path: ${{ matrix.chart }}
-
-  release-alpha-version:
-    needs: [prepare-release, update-meta]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        chart: ${{ fromJson(needs.prepare-release.outputs.charts) }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            ct.yaml
-
-      - name: Generate Artifact name
-        run: |
-          echo "CHART_ARTIFACT_NAME=chart-$(basename ${{ matrix.chart }})" >> $GITHUB_ENV
-
-      - name: Download modified chart from Artifact
+      - name: Download modified charts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ env.CHART_ARTIFACT_NAME }}
-          path: "${{ matrix.chart }}"
+          name: charts
+          path: "./"
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
           version: "v3.16.0"
 
-      - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.0.1
-        with:
-          version: v3.3.0
-
-      - name: Add dependencies
-        run: helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-
       - name: Update Helm Dependencies
-        run: helm dependency update ${{ matrix.chart }}
+        run: |
+          helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+          helm dependency update ${{ matrix.chart }}
 
       - name: Package Helm Chart
         run: |
           helm package ${{ matrix.chart }} --version ${{ needs.prepare-release.outputs.version }}
-
-      - name: Helm Chart package file name
-        id: file-name
-        run: |
-          echo "fileName=$(basename ${{ matrix.chart }})-${{ needs.prepare-release.outputs.version }}.tgz"
-          echo "fileName=$(basename ${{ matrix.chart }})-${{ needs.prepare-release.outputs.version }}.tgz" >> "$GITHUB_OUTPUT"
 
       - name: Push Helm Chart to Cloudsmith
         uses: cloudsmith-io/action@v0.5.2
