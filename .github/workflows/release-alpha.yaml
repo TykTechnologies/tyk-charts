@@ -24,7 +24,6 @@ jobs:
         id: find-charts
         run: |
           CHARTS=$(find . -type f -name Chart.yaml -not -path "*/components/tyk-operator/*" -exec dirname {} \; | jq -R . | jq -sc .)
-          # CHARTS="[\"./tyk-control-plane\"]"
           echo "charts=${CHARTS}" >> $GITHUB_OUTPUT
 
       - name: Update Chart.yaml of each chart
@@ -37,9 +36,6 @@ jobs:
                 .version = "${{ steps.extract-version.outputs.version }}" |
                 .annotations["artifacthub.io/prerelease"] = "true"
               ' -i $chart_file_path
-
-              echo "  --> cat $chart_dir $chart_file_path"
-              cat $chart_file_path
 
               if [[ "$chart_dir" != "./components"* ]]; then
                 echo "    --> umbrella chart dependencies update $chart_dir $chart_file_path"
@@ -57,13 +53,14 @@ jobs:
                       echo "    --> update dependency $dep_name version to ${{ steps.extract-version.outputs.version }}"
                       yq eval ".dependencies[$i].version = \"${{ steps.extract-version.outputs.version }}\"" -i "${chart_file_path}"
                     fi
-                    echo "    --> umbrella chart dependency file content $chart_file_path:"
-                    cat $chart_file_path
                   done
                 fi
               fi
+  
+              echo "  --> cat $chart_dir $chart_file_path"
+              cat $chart_file_path
           done
-          
+
       - name: Upload modified charts
         uses: actions/upload-artifact@v4
         with:
@@ -96,7 +93,7 @@ jobs:
       - name: Package Helm Chart
         run: |
           helm package ${{ matrix.chart }} --version ${{ needs.prepare-release.outputs.version }}
-      
+
       - name: Helm Chart package file name
         id: file-name
         run: |
