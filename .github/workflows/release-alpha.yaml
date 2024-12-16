@@ -28,7 +28,6 @@ jobs:
 
       - name: Update Chart.yaml of each chart
         run: |
-          echo "STARTINGUPDATE2"
           for chart_dir in $(find . -type f -name Chart.yaml -not -path "*/components/tyk-operator/*" -exec dirname {} \;); do
               chart_file_path="$chart_dir/Chart.yaml"
               echo "  --> updating: $chart_dir $chart_file_path"
