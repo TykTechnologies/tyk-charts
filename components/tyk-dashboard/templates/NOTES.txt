@@ -3,12 +3,8 @@ Thank you for installing Tyk Dashboard Chart. Your release is named '{{ .Release
 At this point, Tyk Dashboard is fully installed and should be accessible.
 
 NOTE:
-{{- $tykApiPort :=  .Values.global.servicePorts.gateway -}}
-{{- if index .Values.dashboard.tykApiHost }}
-    Tyk Dashboard connects to Tyk Gateway at {{ .Values.dashboard.tykApiHost }} over port {{ $tykApiPort }} for key management functions.
-{{- else }}
-    Tyk Dashboard connects to Tyk Gateway at {{ (include "tyk-dashboard.gw_proto" .) }}://{{ (include "tyk-dashboard.gateway_host" .) }} over port {{ $tykApiPort }} for key management functions.
-{{- end }}
+{{- $tykApiPort := (include "tyk-dashboard.tykApiPort" .) -}}
+    Tyk Dashboard connects to Tyk Gateway at {{ (include "tyk-dashboard.tykApiHost" .) }} over port {{ $tykApiPort }} for key management functions.
     Please double check if Tyk Gateway runs on this address. If not, Tyk Gateway host and Tyk Gateway port can be overridden
         through .dashboard.tykApiHost and .global.servicePorts.gateway fields respectively in values.yaml.
 

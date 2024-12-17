@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Test Dashboard Deployment
+templates: 
+  - charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  - charts/tyk-dashboard/templates/secrets.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+- it: validate TYK_API_PORT and TYK_API_PATH
+  values: 
+  - ../values.yaml
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_TYKAPI_HOST
+        value: http://gateway-svc-tyk-stack-tyk-gateway.test.svc
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_TYKAPI_PORT
+        value: "8080"
+- it: validate TYK_API_PORT and TYK_API_PATH when control port is enabled
+  values: 
+  - ../values.yaml
+  set:
+    tyk-gateway.gateway.control.enabled: true
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_TYKAPI_HOST
+        value: http://gateway-svc-tyk-stack-tyk-gateway.test.svc
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_TYKAPI_PORT
+        value: "8080"
+- it: validate TYK_API_PORT and TYK_API_PATH when tykApiHost and tykApiPort is set
+  values: 
+  - ../values.yaml
+  set:
+    tyk-gateway.gateway.control.enabled: true
+    tyk-dashboard.dashboard.tykApiHost: "something"
+    tyk-dashboard.dashboard.tykApiPort: "1234"
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_TYKAPI_HOST
+        value: something
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_TYKAPI_PORT
+        value: "1234"

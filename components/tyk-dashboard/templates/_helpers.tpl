@@ -168,3 +168,19 @@ mongo
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
 {{- end -}}
+
+{{- define "tyk-dashboard.tykApiPort" -}}
+{{- if .Values.dashboard.tykApiPort -}}
+{{ .Values.dashboard.tykApiPort }}
+{{- else -}}
+{{ .Values.global.servicePorts.gateway  }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-dashboard.tykApiHost" -}}
+{{- if .Values.dashboard.tykApiHost  -}}
+{{ .Values.dashboard.tykApiHost  }}
+{{- else -}}
+{{- include "tyk-dashboard.gw_proto" . }}://{{ include "tyk-dashboard.gateway_host" .}}
+{{- end }}
+{{- end -}}

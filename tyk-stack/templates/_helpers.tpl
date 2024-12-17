@@ -68,7 +68,3 @@ https
 http
 {{- end -}}
 {{- end -}}
-
-{{- define "tyk-stack.gwServicePort" -}}
-{{ .Values.global.servicePorts.gateway }}
-{{- end -}}

@@ -37,7 +37,3 @@ https
 http
 {{- end -}}
 {{- end -}}
-
-{{- define "tyk-control-plane.gwServicePort" -}}
-{{ .Values.global.servicePorts.gateway }}
-{{- end -}}

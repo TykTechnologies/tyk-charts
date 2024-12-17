@@ -142,13 +142,9 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           - name: TYK_DB_TYKAPI_HOST
-            {{- if .Values.dashboard.tykApiHost  }}
-            value: {{ .Values.dashboard.tykApiHost | quote }}
-            {{- else }}
-            value: {{ include "tyk-dashboard.gw_proto" . }}://{{ include "tyk-dashboard.gateway_host" .}}
-            {{- end }}
+            value: {{ include "tyk-dashboard.tykApiHost" . | quote }}
           - name: TYK_DB_TYKAPI_PORT
-            value: "{{ .Values.global.servicePorts.gateway }}"
+            value: {{ include "tyk-dashboard.tykApiPort" . | quote }}
           - name: TYK_DB_TYKAPI_SECRET
             valueFrom:
               secretKeyRef:

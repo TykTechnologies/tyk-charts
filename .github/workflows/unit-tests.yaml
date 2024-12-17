@@ -1,0 +1,25 @@
+name: Unit Tests for Charts
+
+on:
+  pull_request: {}
+  push:
+    branches:
+      - master
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Update dependencies
+        run: helm dependency update tyk-stack
+
+      - name: Set up unit tests
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest.git
+
+      - name: Run unit tests for tyk-stack
+        run: helm unittest ./tyk-stack

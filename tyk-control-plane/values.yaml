@@ -374,6 +374,7 @@ tyk-gateway:
 
     control:
       # If enabled, exposes control port of the gateway
+      # If enabled, ensure tyk-dashboard.dashboard.tykApiPort is set
       enabled: false
 
       # control port of gateway
@@ -1015,6 +1016,9 @@ tyk-dashboard:
     # - If you are using tyk-dashboard chart, you need to set the correct Gateway URL here too.
     # The URL needs to be formatted as: http://gateway_host
     tykApiHost: ""
+    # If you are using control port for gateway, set the value to control port.
+    # It is used to set TYK_DB_TYKAPI_PORT
+    # tykApiPort: 9696
     # enableOwnership specifies if API Ownership for Self-Managed installations is enabled or not.
     # It is used to set TYK_DB_ENABLEOWNERSHIP
     enableOwnership: true
