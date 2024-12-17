@@ -144,19 +144,19 @@ global:
     sslInsecureSkipVerify: true
 
   # Enables validation of examples in the OAS spec. Defaults to false.
-  # It is used to set TYK_GW_OAS_VALIDATE_EXAMPLES and TYK_DB_OAS_VALIDATE_EXAMPLES
+  # It is used to set TYK_GW_OAS_VALIDATE_EXAMPLES
   oasValidateExamples: false
   # Enables validation of schema defaults in the OAS spec. Defaults to false.
-  # It is used to set TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS and TYK_DB_OAS_VALIDATE_SCHEMA_DEFAULTS
+  # It is used to set TYK_GW_OAS_VALIDATE_SCHEMA_DEFAULTS
   oasValidateSchemaDefaults: false
   # hashKeys is used to enable/disable key hashing.
-  # It is used to set TYK_GW_HASHKEYS and TYK_DB_HASHKEYS
+  # It is used to set TYK_GW_HASHKEYS
   hashKeys: true
 
   # streaming configures Tyk Streams
   streaming:
     # enabled configures whether Tyk Streams is enabled or not.
-    # It is used to set TYK_GW_STREAMING_ENABLED and TYK_DB_STREAMING_ENABLED
+    # It is used to set TYK_GW_STREAMING_ENABLED
     enabled: true
 
 gateway:
