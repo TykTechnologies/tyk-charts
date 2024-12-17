@@ -24,7 +24,7 @@ spec:
         - name: TYK_GW_SVC
           value: gateway-svc-{{ include "tyk-stack.fullname" . }}-tyk-gateway
         - name: TYK_GW_LISTENPORT
-          value: {{ include "tyk-stack.gwServicePort" . | quote }}
+          value: {{ .Values.global.servicePorts.gateway }}
         - name: TYK_POD_NAMESPACE
           valueFrom:
             fieldRef:
