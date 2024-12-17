@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up unit tests
-        run: $ helm plugin install https://github.com/helm-unittest/helm-unittest.git
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest.git
 
       - name: Run unit tests for tyk-stack
         run: helm unittest ./tyk-stack
