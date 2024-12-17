@@ -407,6 +407,7 @@ tyk-gateway:
 
     control:
       # If enabled, exposes control port of the gateway
+      # If enabled, ensure tyk-dashboard.dashboard.tykApiPort is set
       enabled: false
 
       # control port of gateway
