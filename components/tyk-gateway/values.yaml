@@ -16,8 +16,6 @@ fullnameOverride: ""
 global:
   servicePorts:
     # The port at which the gateway service can be found
-    # If you are using control port for gateway, set control port here.
-    # It is used to set TYK_DB_TYKAPI_PORT
     gateway: 8080
 
   tls:
