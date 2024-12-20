@@ -248,7 +248,7 @@ global:
   streaming:
     # enabled configures whether Tyk Streams is enabled or not.
     # It is used to set TYK_GW_STREAMING_ENABLED and TYK_DB_STREAMING_ENABLED.
-    enabled: false
+    enabled: true
 
 tyk-gateway:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
@@ -333,7 +333,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.3.6
+      tag: v5.3.8
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -629,7 +629,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v1.0.0"
+    tag: "v1.1.0"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -724,7 +724,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.11.0
+      tag: v1.11.1
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -1095,7 +1095,38 @@ tyk-dashboard:
     # Enable support for users with the same email for multiple organisations
     # It is used to set TYK_DB_ENABLEMULTIORGUSERS
     enableMultiOrgUsers: true
-
+    auditLogs:
+      # Enables audit logging.
+      # It is used to set TYK_DB_AUDIT_ENABLED
+      enabled: false
+      # Allow users to configure how dashboard store the audit logs.
+      # Possible values are db and file.
+      # It is used to set TYK_DB_AUDIT_STORETYPE
+      type: "file"
+      # Format of audit log file. Possible values are json and text
+      # It is used to set TYK_DB_AUDIT_FORMAT
+      format: "text"
+      # Path to the audit log
+      # It is used to set TYK_DB_AUDIT_PATH
+      path: ""
+      # Enables detailed records in the audit log.
+      # If set to true then audit log records will contain the http-request (without body) and full http-response including the body.
+      # It is used to set TYK_DB_AUDIT_DETAILEDRECORDING
+      enableDetailedRecording: false
+    opa:
+      # Enables OPA support.
+      # It is used to set TYK_DB_SECURITY_OPENPOLICY_ENABLED
+      enabled: false
+      # Enables OPA debug mode which will allow more detailed logs about the policy execution.
+      # It is used to set TYK_DB_SECURITY_OPENPOLICY_DEBUG
+      debug: false
+      # Enables OPA API mode which allows you to manage the OPA policies via the Dashboard API
+      # It is used to set TYK_DB_SECURITY_OPENPOLICY_ENABLEAPI
+      api: false
+      # If OPA is enabled with its default policies you will need to set TYK_DB_SECURITY_ALLOWADMINRESETPASSWORD
+      # to avoid bootstrap job failure because of the OPA policy restrictions.
+      # It is used to set TYK_DB_SECURITY_ALLOWADMINRESETPASSWORD
+      allowAdminPasswordReset: true
 
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
@@ -1117,7 +1148,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.3.6
+      tag: v5.3.8
 
       # image pull policy
       pullPolicy: Always
@@ -1364,7 +1395,7 @@ tyk-mdcb:
       # image repository for Tyk MDCB
       repository: tykio/tyk-mdcb-docker
       # image tag for Tyk MDCB
-      tag: v2.7.1
+      tag: v2.7.2
       # image pull policy
       pullPolicy: IfNotPresent
 
@@ -1588,7 +1619,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.10.0
+    tag: v1.12.0
     # image pull policy
     pullPolicy: Always
 

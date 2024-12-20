@@ -161,7 +161,7 @@ global:
   streaming:
     # enabled configures whether Tyk Streams is enabled or not.
     # It is used to set TYK_GW_STREAMING_ENABLED.
-    enabled: false
+    enabled: true
 
 gateway:
   # The hostname to bind the Gateway to.
@@ -272,7 +272,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.3.6
+    tag: v5.3.8
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
