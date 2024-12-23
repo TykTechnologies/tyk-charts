@@ -802,3 +802,51 @@ tyk-pump:
     #     mountPath: /etc/ssl/certs/ca-certs.crt
     #     readOnly: true
     extraVolumeMounts: []
+tests:
+  enabled: true
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+  # securityContext holds pod-level security attributes for Tyk tests pod. All fields from PodSecurityContext object can be added here.
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
+    runAsNonRoot: true
+  # containerSecurityContext holds container-level security attributes for Tyk tests pod. All fields from SecurityContext object can be added here.
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+    privileged: false
+    readOnlyRootFilesystem: true
+    seccompProfile:
+      type: RuntimeDefault
+    capabilities:
+      drop:
+        - ALL
+  # nodeSelector is a selector which must be true for Tyk tests pod to fit on a specific node.
+  nodeSelector: {}
+  # tolerations specifies tolerations to be applied on Tyk tests pods.
+  tolerations: []
+  # affinity specifies affinity and anti-affinity constraints.
+  affinity: {}
+  # podAnnotations specifies annotations to be added in Tyk tests Pod.
+  # It takes key-value pairs.
+  # There are no required annotation field for Tyk tests Pod.
+  #
+  # podAnnotations:
+  #   yourkey: value
+  #   image: yourhub
+  podAnnotations: {}
+  # podLabels specifies labels to be added in Tyk tests Pod
+  podLabels: {}
