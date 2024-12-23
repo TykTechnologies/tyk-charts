@@ -15,16 +15,12 @@ fullnameOverride: ""
 
 global:
   servicePorts:
-    # The port at which the dashboard service can be found at
-    dashboard: 3000
-    # The port at which the gateway service can be found at
+    # The port at which the gateway service can be found
     gateway: 8080
 
   tls:
     # When true, sets the gateway protocol to HTTPS.
     gateway: false
-    # If set to true the Dashboard will use SSL connection.
-    dashboard: false
 
     # When true, it will install the certificate present in the templates folder, set to false when using
     # a custom TLS certificate to avoid overwriting yours
@@ -160,7 +156,7 @@ global:
   # streaming configures Tyk Streams
   streaming:
     # enabled configures whether Tyk Streams is enabled or not.
-    # It is used to set TYK_GW_STREAMING_ENABLED.
+    # It is used to set TYK_GW_STREAMING_ENABLED
     enabled: true
 
 gateway:
