@@ -64,8 +64,8 @@ spec:
         livenessProbe:
           httpGet:
             scheme: "HTTP"
-            path: /{{ .Values.pump.service.healthEndpointName | default "health" }}
-            port: {{ .Values.pump.service.healthEndpointPort | default 8083 }}
+            path: /{{ .Values.pump.healthCheckService.path }}
+            port: {{ .Values.pump.healthCheckService.port }}
         {{- toYaml .Values.pump.livenessProbe | nindent 10 }}
         {{- end }}
 
@@ -73,8 +73,8 @@ spec:
         readinessProbe:
           httpGet:
             scheme: "HTTP"
-            path: /{{ .Values.pump.service.healthEndpointName | default "health" }}
-            port: {{ .Values.pump.service.healthEndpointPort | default 8083 }}
+            path: /{{ .Values.pump.healthCheckService.path }}
+            port: {{ .Values.pump.healthCheckService.port }}
         {{- toYaml .Values.pump.readinessProbe | nindent 10 }}
         {{- end }}        
                
@@ -356,14 +356,12 @@ spec:
             value: "4000"
           - name: TYK_PMP_PURGEDELAY
             value: "2"
-        {{- if .Values.pump.service.healthEnabled }}
+        {{- if .Values.pump.healthCheckService.enabled }}
           - name: TYK_PMP_HEALTHCHECKENDPOINTNAME
-            value: "{{ .Values.pump.service.healthEndpointName }}"
-        {{- end }}
-        {{- if .Values.pump.service.healthEnabled}}
+            value: "{{ .Values.pump.healthCheckService.path }}"
           - name: TYK_PMP_HEALTHCHECKENDPOINTPORT
-            value: "{{ .Values.pump.service.healthEndpointPort }}"
-        {{- end }}                    
+            value: "{{ .Values.pump.healthCheckService.port }}"
+        {{- end }}              
 
         {{- if .Values.pump.extraEnvs }}
         {{- include "tyk-pump.tplvalues.render" ( dict "value" .Values.pump.extraEnvs "context" $ ) | nindent 10 }}

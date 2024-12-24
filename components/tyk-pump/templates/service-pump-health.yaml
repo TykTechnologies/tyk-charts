@@ -1,10 +1,10 @@
-{{- if .Values.pump.service.healthEnabled -}}
+{{- if .Values.pump.healthCheckService.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
   name: pump-svc-health-{{ include "tyk-pump.fullname" . }}
-  {{- if .Values.pump.service.annotations }}
-  {{ toYaml .Values.pump.service.annotations }}
+  {{- if .Values.pump.healthCheckService.annotations }}
+  {{ toYaml .Values.pump.healthCheckService.annotations }}
   {{- end }}
   labels:
     app: pump-svc-{{ include "tyk-pump.fullname" . }}
@@ -13,13 +13,13 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   ports:   
-    - port: {{ .Values.pump.service.healthEndpointPort | default 8083 }}
-      targetPort: {{ .Values.pump.service.healthEndpointPort | default 8083 }} 
+    - port: {{ .Values.pump.healthCheckService.port }}
+      targetPort: {{ .Values.pump.healthCheckService.port }} 
       protocol: TCP
-      name: {{ default "http" .Values.pump.service.portName | quote }}
-  type: {{ .Values.pump.service.type }}
+      name: {{ default "http" .Values.pump.healthCheckService.portName | quote }}
+  type: {{ .Values.pump.healthCheckService.type }}
   {{- if eq .Values.pump.service.type "LoadBalancer" }}
-  externalTrafficPolicy: {{ .Values.pump.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.pump.healthCheckService.externalTrafficPolicy }}
   {{- end }}
   selector:
     app: pump-{{ include "tyk-pump.fullname" . }}
