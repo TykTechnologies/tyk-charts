@@ -737,6 +737,17 @@ tyk-pump:
       # Tyk Pump svc is disabled by default. Set it to true to enable it.
       enabled: false
 
+      # healthEnabled enables health check service
+      healthEnabled: false
+
+      # healthEndpointName sets the health check path.
+      # It defaults to hello if health check is enabled and it is not set.
+      healthEndpointName: ""
+
+      # healthEndpointPort sets the health check port.
+      # It defaults to 8083 if health check is enabled and it is not set.
+      healthEndpointPort:
+
       # type specifies type of the service.
       type: ClusterIP
 
@@ -881,6 +892,20 @@ tyk-pump:
     #     mountPath: /etc/ssl/certs/ca-certs.crt
     #     readOnly: true
     extraVolumeMounts: []
+
+    # livenessProbe:
+    #   initialDelaySeconds: 10
+    #   periodSeconds: 2
+    #   timeoutSeconds: 3
+    #   failureThreshold: 2
+    livenessProbe: {}
+
+    # readinessProbe:
+    #   initialDelaySeconds: 10
+    #   periodSeconds: 10
+    #   timeoutSeconds: 3
+    #   failureThreshold: 3
+    readinessProbe: {}
 
 tyk-bootstrap:
   fullnameOverride: ""

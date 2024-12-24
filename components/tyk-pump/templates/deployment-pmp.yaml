@@ -59,6 +59,25 @@ spec:
         securityContext:
         {{- toYaml .Values.pump.containerSecurityContext | nindent 12 }}
         {{- end }}
+
+        {{- if .Values.pump.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /{{ .Values.pump.service.healthEndpointName | default "health" }}
+            port: {{ .Values.pump.service.healthEndpointPort | default 8083 }}
+        {{- toYaml .Values.pump.livenessProbe | nindent 10 }}
+        {{- end }}
+
+        {{- if .Values.pump.readinessProbe }}
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /{{ .Values.pump.service.healthEndpointName | default "health" }}
+            port: {{ .Values.pump.service.healthEndpointPort | default 8083 }}
+        {{- toYaml .Values.pump.readinessProbe | nindent 10 }}
+        {{- end }}        
+               
         env:
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
@@ -337,6 +356,14 @@ spec:
             value: "4000"
           - name: TYK_PMP_PURGEDELAY
             value: "2"
+        {{- if .Values.pump.service.healthEnabled }}
+          - name: TYK_PMP_HEALTHCHECKENDPOINTNAME
+            value: "{{ .Values.pump.service.healthEndpointName }}"
+        {{- end }}
+        {{- if .Values.pump.service.healthEnabled}}
+          - name: TYK_PMP_HEALTHCHECKENDPOINTPORT
+            value: "{{ .Values.pump.service.healthEndpointPort }}"
+        {{- end }}                    
 
         {{- if .Values.pump.extraEnvs }}
         {{- include "tyk-pump.tplvalues.render" ( dict "value" .Values.pump.extraEnvs "context" $ ) | nindent 10 }}
@@ -373,4 +400,4 @@ spec:
           secret:
             secretName: {{ .secretName }}
         {{- end }}
-        {{- end }}              
+        {{- end }}
