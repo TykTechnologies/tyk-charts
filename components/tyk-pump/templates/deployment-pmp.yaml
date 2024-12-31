@@ -60,23 +60,19 @@ spec:
         {{- toYaml .Values.pump.containerSecurityContext | nindent 12 }}
         {{- end }}
 
-        {{- if .Values.pump.livenessProbe }}
+        {{- if .Values.pump.healthCheckService.enabled }}
         livenessProbe:
           httpGet:
             scheme: "HTTP"
             path: /{{ .Values.pump.healthCheckService.path }}
             port: {{ .Values.pump.healthCheckService.port }}
-        {{- toYaml .Values.pump.livenessProbe | nindent 10 }}
-        {{- end }}
 
-        {{- if .Values.pump.readinessProbe }}
         readinessProbe:
           httpGet:
             scheme: "HTTP"
             path: /{{ .Values.pump.healthCheckService.path }}
             port: {{ .Values.pump.healthCheckService.port }}
-        {{- toYaml .Values.pump.readinessProbe | nindent 10 }}
-        {{- end }}        
+        {{- end }}
                
         env:
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.

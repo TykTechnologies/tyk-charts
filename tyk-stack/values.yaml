@@ -774,7 +774,7 @@ tyk-pump:
 
       # Tyk Pump health service is disabled by default.
       # Set it to true to enable it.
-      enabled: true
+      enabled: false
 
       # path sets the health check path.
       path: "hello"
