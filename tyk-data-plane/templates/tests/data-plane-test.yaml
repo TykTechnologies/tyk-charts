@@ -1,16 +1,23 @@
+{{- if .Values.tests.enabled -}}
 apiVersion: v1
 kind: Pod
 metadata:
   name: "{{ include "tyk-data-plane.fullname" . }}-test-tyk-data-plane"
   labels:
     chart: {{ include "tyk-data-plane.chart" . }}
+{{- if .Values.tests.podLabels }}
+{{- toYaml .Values.tests.podLabels | nindent 4 }}
+{{- end }}
   annotations:
     "helm.sh/hook": test
+{{- if .Values.tests.podAnnotations }}
+{{- toYaml .Values.tests.podAnnotations | nindent 4 }}
+{{- end }}
 spec:
   restartPolicy: Never
   containers:
     - name: health-check-container
-      image: alpine:3.17
+      image: zalbiraw/alpine-curl-jq
       command:
         - /bin/sh
         - -c
@@ -34,8 +41,31 @@ spec:
             secretKeyRef:
               name: secrets-{{ include "tyk-data-plane.fullname" . }}
               key: APISecret
+{{- if .Values.tests.containerSecurityContext }}
+      securityContext:
+{{- toYaml .Values.tests.containerSecurityContext | nindent 8 }}
+{{- end }}
+      resources:
+{{ toYaml .Values.tests.resources | indent 8 }}
+{{- if .Values.tests.securityContext }}
+  securityContext:
+{{- toYaml .Values.tests.securityContext | nindent 4 }}
+{{- end }}
+{{- if .Values.tests.nodeSelector }}
+  nodeSelector:
+{{ toYaml .Values.tests.nodeSelector | indent 4 }}
+{{- end }}
+{{- if .Values.tests.tolerations }}
+  tolerations:
+{{ toYaml .Values.tests.tolerations | indent 4 }}
+{{- end }}
+{{- if .Values.tests.affinity }}
+  affinity:
+{{ toYaml .Values.tests.affinity | indent 4 }}
+{{- end }}
   volumes:
     - name: test-tyk-data-plane
       configMap:
         name: test-tyk-data-plane-map
         defaultMode: 0777
+{{- end }}
