@@ -311,8 +311,9 @@ gateway:
     # annotations for service
     annotations: {}
 
-    # Name for the service Port
-    portName: ""    
+    # The name for the service port
+    # If this is not provided or is empty, it will be set to “http” by default.
+    portName: "http"   
 
   control:
     # If enabled, exposes control port of the gateway

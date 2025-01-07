@@ -405,6 +405,10 @@ tyk-gateway:
       # annotations for service
       annotations: {}
 
+      # The name for the service port
+      # If this is not provided or is empty, it will be set to “http” by default.
+      portName: "http"
+
     control:
       # If enabled, exposes control port of the gateway
       # If enabled, ensure tyk-dashboard.dashboard.tykApiPort is set
@@ -767,6 +771,10 @@ tyk-pump:
 
       # annotations specifies annotations to be added Tyk Pump service.
       annotations: {}
+
+      # The name for the service port
+      # If this is not provided or is empty, it will be set to “http” by default.
+      portName: "http"
 
     # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
     # The default port is 9090.
@@ -1183,6 +1191,9 @@ tyk-dashboard:
       # specify loadBalancerIP if the service type is load balancer
       loadBalancerIP: ""
       annotations: {}
+      # The name for the service port
+      # If this is not provided or is empty, it will be set to “http” by default.
+      portName: "http"
 
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -1376,6 +1387,9 @@ tyk-dev-portal:
     externalTrafficPolicy: Local
     # annotations corresponds to the annotations which will be added into Tyk Dashboard Service.
     annotations: {}
+    # The name for the service port
+    # If this is not provided or is empty, it will be set to “http” by default.
+    portName: "http"
 
   # ingress specifies Ingress rules for Tyk Developer Portal Service.
   # Ingress is disabled by default.

@@ -138,8 +138,9 @@ service:
   # The port at which Tyk Developer Portal service can be found
   port: 3001
 
-  # the name given to this service port
-  portName: ""
+  # The name for the service port
+  # If this is not provided or is empty, it will be set to “http” by default.
+  portName: "http"
 
   # externalTrafficPolicy corresponds to the external traffic policy if the service type is load balancer
   externalTrafficPolicy: Local
