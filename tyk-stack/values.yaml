@@ -538,7 +538,33 @@ tyk-gateway:
       # endpoint defines OpenTelemetry collector endpoint to connect to.
       endpoint: localhost:4317
       # A map of headers that will be sent with HTTP requests to the collector.
-      # It should be set to map of string to string
+      # The headers can be specified in two ways:
+      #
+      # 1. Direct string values:
+      #    headers:
+      #      X-Custom-Header: "my-value"
+      #      Another-Header: "another-value"
+      #
+      #   The headers will be formatted as "Another-Header:another-value,X-Custom-Header:my-value"
+      #
+      # 2. Values from Kubernetes Secrets:
+      #    headers:
+      #      Authorization:
+      #        fromSecret:
+      #          name: "my-secret-name"    # Name of the Kubernetes Secret
+      #          key: "my-secret-key"      # Key in the Secret containing the value
+      #
+      #   The headers will be formatted as "Authorization:<YOURTOKENHERE>"
+      #
+      # 3. You can mix both approaches in the same headers map:
+      #    headers:
+      #      X-Custom-Header: "direct-value"
+      #      Authorization:
+      #        fromSecret:
+      #          name: "auth-secret"
+      #          key: "auth-token"
+      #
+      # The headers will be formatted as "Authorization:<YOURTOKENHERE>,X-Custom-Header:direct-value" in the final output
       headers: {}
       # Timeout for establishing a connection to the collector
       connectionTimeout: 1
