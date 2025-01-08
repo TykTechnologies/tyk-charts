@@ -87,6 +87,8 @@ global:
     # OperatorLicense - Tyk Operator license key
     useSecretName: ""
 
+  imageRegistry: ""
+
   redis:
     # The addrs value will allow you to set your Redis addresses.
     #
@@ -748,7 +750,7 @@ tyk-pump:
 
     image:
       # image repository for Tyk pump
-      repository: docker.tyk.io/tyk-pump/tyk-pump
+      repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
       tag: v1.11.1
