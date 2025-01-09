@@ -66,14 +66,19 @@ spec:
             scheme: "HTTP"
             path: /{{ .Values.pump.healthCheckService.path }}
             port: {{ .Values.pump.healthCheckService.port }}
+        {{- with (default nil .Values.pump.livenessProbe) }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
 
         readinessProbe:
           httpGet:
             scheme: "HTTP"
             path: /{{ .Values.pump.healthCheckService.path }}
             port: {{ .Values.pump.healthCheckService.port }}
+        {{- with (default nil .Values.pump.readinessProbe) }}
+          {{- toYaml . | nindent 10 }}
         {{- end }}
-               
+        {{- end }}
         env:
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
