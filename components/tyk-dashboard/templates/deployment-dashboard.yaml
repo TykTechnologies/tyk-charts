@@ -127,6 +127,10 @@ spec:
             value: "{{ .Values.dashboard.enableHashedKeysListing }}"
           - name: "TYK_DB_ENABLEMULTIORGUSERS"
             value: "{{ .Values.dashboard.enableMultiOrgUsers }}"
+          - name: "TYK_DB_SECURITY_FORBIDADMINVIEWACCESSTOKEN"
+            value: "{{ .Values.dashboard.forbidAdminViewAccessToken }}"
+          - name: "TYK_DB_SECURITY_FORBIDADMINRESETACCESSTOKEN"
+            value: "{{ .Values.dashboard.forbidAdminResetAccessToken }}"                        
           ## DEFAULT TYK CONFIGURATION END
           {{- if .Values.global.streaming }}
           - name: TYK_DB_STREAMING_ENABLED
