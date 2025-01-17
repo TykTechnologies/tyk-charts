@@ -96,12 +96,22 @@ redisPass
 {{- end -}}
 
 {{- define "otel-headers" -}}
-{{ if (.Values.gateway.opentelemetry).headers }}
-        {{- $list := list -}}
-        {{- range $k, $v := .Values.gateway.opentelemetry.headers  -}}
-        {{- $list = append $list (printf "%s:%s" $k $v) -}}
+{{- $headersList := list -}}
+
+{{- range $key, $value := .Values.gateway.opentelemetry.headers -}}
+    {{- if kindIs "string" $value -}}
+        {{- $headersList = append $headersList (printf "%s:%s" $key $value) -}}
+    {{- else if (and (kindIs "map" $value) (hasKey $value "fromSecret")) -}}
+        {{- $secret := lookup "v1" "Secret" $.Release.Namespace $value.fromSecret.name -}}
+        {{- if $secret -}}
+            {{- $secretValue := index $secret.data $value.fromSecret.key | b64dec -}}
+            {{- $headersList = append $headersList (printf "%s:%s" $key $secretValue) -}}
         {{- end -}}
-        {{ join "," $list }}
+    {{- end -}}
+{{- end -}}
+
+{{- if $headersList -}}
+    {{- join "," $headersList -}}
 {{- end -}}
 {{- end -}}
 

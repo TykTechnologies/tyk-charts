@@ -39,7 +39,7 @@ spec:
         - name: mdcb-{{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.mdcb.containerSecurityContext | nindent 12 }}
-          image: "{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
+          image: "{{ .Values.global.imageRegistry }}{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
           imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
           command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_mdcb.conf"]
           ports:
