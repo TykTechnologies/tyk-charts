@@ -348,14 +348,15 @@ spec:
             value: "{{ .Values.global.redis.useSSL }}"
 
           - name: TYK_PMP_OMITCONFIGFILE
-            value: {{ .Values.tyk-pump.pump.omitConfigFile | quote}}
+            value: {{ .Values.pump.omitConfigFile | quote}}
           - name: TYK_PMP_ANALYTICSSTORAGETYPE
             value: "redis"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXIDLE
-            value: {{ .Values.tyk-pump.pump.maxIdleConnections | quote }}
+            value: {{ .Values.pump.maxIdleConnections | quote }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXACTIVE
-            value: {{ .Values.tyk-pump.pump.maxActiveConnections | quote }}
+            value: {{ .Values.pump.maxActiveConnections | quote }}
           - name: TYK_PMP_PURGEDELAY
+<<<<<<< Updated upstream
             value: {{ .Values.tyk-pump.pump.purgeDelay | quote }}
         {{- if .Values.pump.healthCheckService.enabled }}
           - name: TYK_PMP_HEALTHCHECKENDPOINTNAME
@@ -363,6 +364,9 @@ spec:
           - name: TYK_PMP_HEALTHCHECKENDPOINTPORT
             value: "{{ .Values.pump.healthCheckService.port }}"
         {{- end }}              
+=======
+            value: {{ .Values.pump.purgeDelay | quote }}
+>>>>>>> Stashed changes
 
         {{- if .Values.pump.extraEnvs }}
         {{- include "tyk-pump.tplvalues.render" ( dict "value" .Values.pump.extraEnvs "context" $ ) | nindent 10 }}
