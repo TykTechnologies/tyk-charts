@@ -325,18 +325,18 @@ spec:
                name: {{ include "tyk-pump.redis_secret_name" . }}
                key: {{ include "tyk-pump.redis_secret_key" . }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
-            value: "{{ default "false" .Values.global.redis.useSSL }}"
+            value: "{{ .Values.global.redis.useSSL }}"
 
           - name: TYK_PMP_OMITCONFIGFILE
-            value: "true"
+            value: {{ .Values.tyk-pump.pump.omitConfigFile | quote}}
           - name: TYK_PMP_ANALYTICSSTORAGETYPE
             value: "redis"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXIDLE
-            value: "2000"
+            value: {{ .Values.tyk-pump.pump.maxIdleConnections | quote }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXACTIVE
-            value: "4000"
+            value: {{ .Values.tyk-pump.pump.maxActiveConnections | quote }}
           - name: TYK_PMP_PURGEDELAY
-            value: "2"
+            value: {{ .Values.tyk-pump.pump.purgeDelay | quote }}
 
         {{- if .Values.pump.extraEnvs }}
         {{- include "tyk-pump.tplvalues.render" ( dict "value" .Values.pump.extraEnvs "context" $ ) | nindent 10 }}
