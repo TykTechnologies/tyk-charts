@@ -559,6 +559,20 @@ tyk-gateway:
       # format is used to set the log format. It is used to set TYK_GW_LOGFORMAT
       format: "default"
 
+    # allowInsecureConfigs can be set to disable Dashboard message signature verification.
+    # When set to true, public_key_path can be ignored.
+    # It is used to set TYK_GW_ALLOWINSECURECONFIGS
+    allowInsecureConfigs: true
+    # globalSessionLifetime sets session lifetime in seconds.
+    # It is used to set TYK_GW_GLOBALSESSIONLIFETIME
+    globalSessionLifetime: 100
+    # enableCustomDomains allows use of custom domains.
+    # It is used to set TYK_GW_ENABLECUSTOMDOMAINS
+    enableCustomDomains: true
+    # maxIdleConnectionsPerHost represents maximum idle connections, per API, per upstream, between Tyk and Upstream.
+    # It is used to set TYK_GW_MAXIDLECONNSPERHOST
+    maxIdleConnectionsPerHost: 500
+
 tyk-operator:
   nameOverride: ""
   fullnameOverride: ""
