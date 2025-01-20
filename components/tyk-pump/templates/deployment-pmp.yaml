@@ -356,17 +356,13 @@ spec:
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXACTIVE
             value: {{ .Values.pump.maxActiveConnections | quote }}
           - name: TYK_PMP_PURGEDELAY
-<<<<<<< Updated upstream
-            value: {{ .Values.tyk-pump.pump.purgeDelay | quote }}
+            value: {{ .Values.pump.purgeDelay | quote }}
         {{- if .Values.pump.healthCheckService.enabled }}
           - name: TYK_PMP_HEALTHCHECKENDPOINTNAME
             value: "{{ .Values.pump.healthCheckService.path }}"
           - name: TYK_PMP_HEALTHCHECKENDPOINTPORT
             value: "{{ .Values.pump.healthCheckService.port }}"
         {{- end }}              
-=======
-            value: {{ .Values.pump.purgeDelay | quote }}
->>>>>>> Stashed changes
 
         {{- if .Values.pump.extraEnvs }}
         {{- include "tyk-pump.tplvalues.render" ( dict "value" .Values.pump.extraEnvs "context" $ ) | nindent 10 }}
