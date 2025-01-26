@@ -20,8 +20,8 @@ jobs:
       - name: Get Source Branch Name
         id: get_source_branch
         run: |
-          MERGE_COMMIT=$(git --no-pager log -1 --pretty=%H)
-          SOURCE_BRANCH=$(git show -s --pretty=%B $MERGE_COMMIT | grep -oP '(?<=from )\S+' | sed 's/^[^/]*\///')
+          MERGE_COMMIT=$(git --no-pager log -1 --pretty=format:%H)
+          SOURCE_BRANCH=$(git --no-pager show -s --pretty=%B $MERGE_COMMIT | grep -o 'from [^ ]*' | awk '{print $2}' | sed 's/^[^/]*\///')
           echo "SOURCE_BRANCH=${SOURCE_BRANCH}" >> $GITHUB_ENV
 
           if [[ "$SOURCE_BRANCH" == *operator-release* ]]; then
