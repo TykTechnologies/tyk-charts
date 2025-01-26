@@ -20,32 +20,24 @@ jobs:
       - name: Get Source Branch Name
         id: get_source_branch
         run: |
-          MERGE_COMMIT=$(git --no-pager log -1 --pretty=format:%H)
+          MERGE_COMMIT=$(git --no-pager log -1 --merges --pretty=format:%H)
           echo "Merge commit: $MERGE_COMMIT"
 
           COMMIT_MESSAGE=$(git --no-pager show -s --pretty=%B $MERGE_COMMIT)
           echo "Commit message: $COMMIT_MESSAGE"
 
-          SOURCE_BRANCH=$(echo "$COMMIT_MESSAGE" | grep -oE 'from [^ ]+' | awk '{print $2}' | sed 's/^[^/]*\///')
-          echo "Source branch: $SOURCE_BRANCH"
-
-          if [[ -z "$SOURCE_BRANCH" ]]; then
-            echo "Failed to extract source branch. Falling back to alternative method."
-            SOURCE_BRANCH=$(git --no-pager log -1 --pretty=format:%s $MERGE_COMMIT | grep -oE 'from [^ ]+' | awk '{print $2}' | sed 's/^[^/]*\///')
-            echo "Source branch (fallback): $SOURCE_BRANCH"
-          fi
+          SOURCE_BRANCH=$(echo "$COMMIT_MESSAGE" | grep -oE 'Merge branch .* into ' | sed -E 's/Merge branch (.*) into .*/\1/')
 
           if [[ -z "$SOURCE_BRANCH" ]]; then
             echo "Error: Unable to determine source branch."
             exit 1
-          fi
-
-          echo "SOURCE_BRANCH=${SOURCE_BRANCH}" >> $GITHUB_ENV
-
-          if [[ "$SOURCE_BRANCH" == *operator-release* ]]; then
-            echo "Source branch is a release branch, exiting pipeline."
-            exit 0
-          fi         
+          else
+            if [[ "$SOURCE_BRANCH" == *operator-release* ]]; then
+              echo "Source branch is an operator-release branch."
+            fi          
+            echo "Source branch (merging from): $SOURCE_BRANCH"
+            echo "SOURCE_BRANCH=$SOURCE_BRANCH" >> $GITHUB_ENV
+          fi        
 
       - name: Check for Changes in components/tyk-operator/templates/all.yaml
         id: check_changes
