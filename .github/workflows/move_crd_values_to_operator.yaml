@@ -3,7 +3,7 @@ name: Apply Operator Helm Chart Changes To Operator Repo
 on:
   push:
     branches:
-      - master
+      - TT-13866-move-crd-values-to-operator
 
 jobs:
   check-specific-file:
@@ -20,7 +20,7 @@ jobs:
       - name: Get Source Branch Name
         id: get_source_branch
         run: |
-          MERGE_COMMIT=$(git --no-pager log -1 --merges --pretty=%H)
+          MERGE_COMMIT=$(git --no-pager log -1 --pretty=%H)
           SOURCE_BRANCH=$(git show -s --pretty=%B $MERGE_COMMIT | grep -oP '(?<=from )\S+' | sed 's/^[^/]*\///')
           echo "SOURCE_BRANCH=${SOURCE_BRANCH}" >> $GITHUB_ENV
 

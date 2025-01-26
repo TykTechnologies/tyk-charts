@@ -721,3 +721,32 @@ webhooks:
     resources:
     - apidefinitions
   sideEffects: None
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+  labels:
+    app: my-app
+    tier: frontend
+spec:
+  containers:
+    - name: my-container2
+      image: my-image:latest
+      ports:
+        - containerPort: 80
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      volumeMounts:
+        - name: my-volume
+          mountPath: /path/in/container
+  volumes:
+    - name: my-volume
+      hostPath:
+        path: /path/on/host
+  restartPolicy: Always
