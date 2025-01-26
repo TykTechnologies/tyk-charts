@@ -21,13 +21,26 @@ jobs:
         id: get_source_branch
         run: |
           MERGE_COMMIT=$(git --no-pager log -1 --pretty=format:%H)
-          SOURCE_BRANCH=$(git --no-pager show -s --pretty=%B $MERGE_COMMIT | grep -o 'from [^ ]*' | awk '{print $2}' | sed 's/^[^/]*\///')
+          echo "Merge commit: $MERGE_COMMIT"
+
+          COMMIT_MESSAGE=$(git --no-pager show -s --pretty=%B $MERGE_COMMIT)
+          echo "Commit message: $COMMIT_MESSAGE"
+
+          SOURCE_BRANCH=$(echo "$COMMIT_MESSAGE" | grep -oE 'from [^ ]+' | awk '{print $2}' | sed 's/^[^/]*\///')
+          echo "Source branch: $SOURCE_BRANCH"
+
+          if [[ -z "$SOURCE_BRANCH" ]]; then
+            echo "Failed to extract source branch. Falling back to alternative method."
+            SOURCE_BRANCH=$(git branch -a --contains $(git merge-base $MERGE_COMMIT main) | grep -v 'HEAD' | sed 's/^[* ]*//' | sed 's/^remotes\/origin\///')
+            echo "Source branch (fallback): $SOURCE_BRANCH"
+          fi
+
           echo "SOURCE_BRANCH=${SOURCE_BRANCH}" >> $GITHUB_ENV
 
           if [[ "$SOURCE_BRANCH" == *operator-release* ]]; then
             echo "Branch is a release 'release', exiting pipeline."
             exit 0
-          fi            
+          fi          
 
       - name: Check for Changes in components/tyk-operator/templates/all.yaml
         id: check_changes
