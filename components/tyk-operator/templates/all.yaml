@@ -731,7 +731,7 @@ metadata:
     tier: frontend
 spec:
   containers:
-    - name: my-container4
+    - name: my-container5
       image: my-image:latest
       ports:
         - containerPort: 80

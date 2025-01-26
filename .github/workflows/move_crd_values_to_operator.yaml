@@ -31,16 +31,21 @@ jobs:
 
           if [[ -z "$SOURCE_BRANCH" ]]; then
             echo "Failed to extract source branch. Falling back to alternative method."
-            SOURCE_BRANCH=$(git branch -a --contains $(git merge-base $MERGE_COMMIT main) | grep -v 'HEAD' | sed 's/^[* ]*//' | sed 's/^remotes\/origin\///')
+            SOURCE_BRANCH=$(git --no-pager log -1 --pretty=format:%s $MERGE_COMMIT | grep -oE 'from [^ ]+' | awk '{print $2}' | sed 's/^[^/]*\///')
             echo "Source branch (fallback): $SOURCE_BRANCH"
+          fi
+
+          if [[ -z "$SOURCE_BRANCH" ]]; then
+            echo "Error: Unable to determine source branch."
+            exit 1
           fi
 
           echo "SOURCE_BRANCH=${SOURCE_BRANCH}" >> $GITHUB_ENV
 
           if [[ "$SOURCE_BRANCH" == *operator-release* ]]; then
-            echo "Branch is a release 'release', exiting pipeline."
+            echo "Source branch is a release branch, exiting pipeline."
             exit 0
-          fi          
+          fi         
 
       - name: Check for Changes in components/tyk-operator/templates/all.yaml
         id: check_changes
