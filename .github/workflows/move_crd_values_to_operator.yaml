@@ -3,7 +3,7 @@ name: Apply Operator Helm Chart Changes To Operator Repo
 on:
   push:
     branches:
-      - master
+      - TT-13866-move-crd-values-to-operator
 
 jobs:
   check-specific-file:
