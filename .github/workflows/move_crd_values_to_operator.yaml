@@ -1,0 +1,119 @@
+name: Apply Operator Helm Chart Changes To Operator Repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-specific-file:
+    runs-on: ubuntu-latest
+    outputs:
+      CHANGED: ${{ steps.check_changes.outputs.CHANGED }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Source Branch Name
+        id: get_source_branch
+        run: |
+          MERGE_COMMIT=$(git --no-pager log -1 --merges --pretty=format:%H)
+          echo "Merge commit: $MERGE_COMMIT"
+
+          COMMIT_MESSAGE=$(git --no-pager show -s --pretty=%B $MERGE_COMMIT)
+          echo "Commit message: $COMMIT_MESSAGE"
+
+          SOURCE_BRANCH=$(echo "$COMMIT_MESSAGE" | grep -oE 'Merge branch .* into ' | sed -E 's/Merge branch (.*) into .*/\1/')
+
+          if [[ -z "$SOURCE_BRANCH" ]]; then
+            echo "Error: Unable to determine source branch."
+            exit 1
+          else
+            if [[ "$SOURCE_BRANCH" == *operator-release* ]]; then
+              echo "Source branch is an operator-release branch."
+            fi          
+            echo "Source branch (merging from): $SOURCE_BRANCH"
+            echo "SOURCE_BRANCH=$SOURCE_BRANCH" >> $GITHUB_ENV
+          fi        
+
+      - name: Check for Changes in components/tyk-operator/templates/all.yaml
+        id: check_changes
+        run: |
+          echo "Checking for changes between in ${{ env.SOURCE_BRANCH }} branch"
+          git fetch origin ${{ env.SOURCE_BRANCH }}
+          if git --no-pager log -n 1 origin/${{ env.SOURCE_BRANCH }} --name-only --pretty=format: | grep -q "components/tyk-operator/templates/all.yaml"; then
+            echo "CHANGED=true" >> $GITHUB_OUTPUT
+          else
+            echo "CHANGED=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Copy Manifest file into a temporary directory
+        if: ${{ steps.check_changes.outputs.CHANGED == 'true' }}
+        run: |
+          mkdir -p /tmp/helm
+          mkdir -p /tmp/charts
+          cp -r "${GITHUB_WORKSPACE}/components/tyk-operator/templates/all.yaml" /tmp/helm/charts-all.yaml
+          cp -r "${GITHUB_WORKSPACE}/components/tyk-operator/Chart.yaml" /tmp/charts/
+          cp -r "${GITHUB_WORKSPACE}/components/tyk-operator/values.yaml" /tmp/charts/
+
+      - name: Upload Manifest file
+        if: ${{ steps.check_changes.outputs.CHANGED == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: helm
+          path: /tmp/helm
+
+      - name: Upload Manifest file
+        if: ${{ steps.check_changes.outputs.CHANGED == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: charts
+          path: /tmp/charts                  
+  process-changes:
+    needs: check-specific-file
+    runs-on: ubuntu-latest
+    if: ${{ needs.check-specific-file.outputs.CHANGED == 'true' }}
+
+    steps:
+      - name: Checkout other repository
+        uses: actions/checkout@v4
+        with: 
+          repository: TykTechnologies/tyk-operator-internal
+          token: ${{ secrets.PAT }}
+
+      - name: Create and checkout new branch
+        run: |
+          SHORT_UID=$(uuidgen | cut -c1-8)
+          echo "SHORT_UID=$SHORT_UID" >> $GITHUB_ENV
+          git checkout -b file-changed-${{ env.TAG }}-$SHORT_UID
+
+      - name: Download Manifest file directly into the templates directory
+        uses: actions/download-artifact@v4
+        with:
+          name: helm
+          path: /helm/templates/ 
+
+      - name: Download Chart.yaml and Values.yaml files
+        uses: actions/download-artifact@v4
+        with:
+          name: charts
+          path: /helm/ 
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "add new change to file version ${{ env.TAG }}-${{ env.SHORT_UID }}"
+          git push origin file-changed-${{ env.TAG }}-${{ env.SHORT_UID }}
+
+      - name: Create a pull request
+        run: |
+          gh pr create --base main --head file-changed-${{ env.TAG }}-${{ env.SHORT_UID }} \
+            --title "Update Tyk Operator Templates for version file-changed-${{ env.TAG }}-${{ env.SHORT_UID }}" \
+            --body "Changes include Templates updates from Tyk Operator for file-changed-${{ env.TAG }}-${{ env.SHORT_UID }}."
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
