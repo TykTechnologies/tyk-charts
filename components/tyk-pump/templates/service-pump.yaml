@@ -3,10 +3,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: pump-svc-{{ include "tyk-pump.fullname" . }}
-  {{- if .Values.pump.service.annotations }}
+{{- if .Values.pump.service.annotations }}
   annotations:
-  {{ toYaml .Values.pump.service.annotations | nindent 4 }}
-  {{- end }}
+{{ toYaml .Values.pump.service.annotations | nindent 4 }}
+{{- end }}
   labels:
     app: pump-svc-{{ include "tyk-pump.fullname" . }}
     chart: {{ include "tyk-pump.chart" . }}
