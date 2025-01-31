@@ -165,6 +165,15 @@ bootstrap:
     # preDeletePodLabels specifies labels to be added to Tyk Bootstrap pre-delete hook's job pods.
     preDeletePodLabels: {}
 
+  # node labels for bootstrap pods assignment
+  nodeSelector: {}
+
+  # tolerations for bootstrap pods assignment
+  tolerations: {}
+
+  # affinity for bootstrap pods assignment
+  affinity: {}
+
   # containerSecurityContext values for bootstrap containers
   containerSecurityContext:
     runAsNonRoot: true

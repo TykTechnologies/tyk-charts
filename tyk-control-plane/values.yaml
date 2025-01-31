@@ -694,6 +694,11 @@ tyk-operator:
     allowPrivilegeEscalation: false
   resources: {}
   nodeSelector: {}
+  # tolerations for tyk-operator-manager pod assignment
+  tolerations: {}
+
+  # affinity for tyk-operator-manager pod assignment
+  affinity: {}
   hostNetwork: false
 
   # rbac specifies necessary resources for kube-rbac-proxy.
