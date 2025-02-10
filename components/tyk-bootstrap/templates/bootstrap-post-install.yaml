@@ -33,7 +33,7 @@ spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
       containers:
         - name: bootstrap-tyk-post-install
-          image: {{ .Values.bootstrap.jobs.postInstall.image.repository }}:{{ .Values.bootstrap.jobs.postInstall.image.tag }}
+          image: {{ .Values.global.imageRegistry }}{{ .Values.bootstrap.jobs.postInstall.image.repository }}:{{ .Values.bootstrap.jobs.postInstall.image.tag }}
           command: [ '/app/bin/bootstrap-app-post' ]
           imagePullPolicy: IfNotPresent
           {{- if .Values.bootstrap.containerSecurityContext }}

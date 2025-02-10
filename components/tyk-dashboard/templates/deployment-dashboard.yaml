@@ -62,7 +62,7 @@ spec:
       {{- if and $isSemVer (semverCompare "<=5.0.2" .Values.dashboard.image.tag) }}
       initContainers:
         - name: init-analytics-conf
-          image: busybox:1.32
+          image: {{ .Values.global.imageRegistry }}busybox:1.32
           args: ["sh", "-c", 'touch /etc/tyk-dashboard/tyk_analytics.conf && echo "{}" > /etc/tyk-dashboard/tyk_analytics.conf']
           {{- if .Values.dashboard.containerSecurityContext }}
           securityContext:
@@ -75,7 +75,7 @@ spec:
               name: analytics-conf
       {{- end }}
       containers:
-      - image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
+      - image: "{{ .Values.global.imageRegistry }}{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
         imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
         {{- if .Values.dashboard.containerSecurityContext }}
@@ -127,6 +127,10 @@ spec:
             value: "{{ .Values.dashboard.enableHashedKeysListing }}"
           - name: "TYK_DB_ENABLEMULTIORGUSERS"
             value: "{{ .Values.dashboard.enableMultiOrgUsers }}"
+          - name: "TYK_DB_SECURITY_FORBIDADMINVIEWACCESSTOKEN"
+            value: "{{ .Values.dashboard.forbidAdminViewAccessToken }}"
+          - name: "TYK_DB_SECURITY_FORBIDADMINRESETACCESSTOKEN"
+            value: "{{ .Values.dashboard.forbidAdminResetAccessToken }}"                        
           ## DEFAULT TYK CONFIGURATION END
           {{- if .Values.global.streaming }}
           - name: TYK_DB_STREAMING_ENABLED
