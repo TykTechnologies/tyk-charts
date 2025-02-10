@@ -564,6 +564,14 @@ tyk-gateway:
       level: "info"
       # format is used to set the log format. It is used to set TYK_GW_LOGFORMAT
       format: "default"
+    # accessLogs is used to configure access logs settings
+    accessLogs:
+    # enabled turns on/off access logs
+    # It is used to set TYK_GW_ACCESSLOGS_ENABLED environment variable
+    enabled: false
+    # template configures the fields of the access logs. Please refer to documentation to check for valid values.
+    # It is used to set TYK_GW_ACCESSLOGS_TEMPLATE environment variable
+    # template: ["api_key", "remote_addr", "upstream_addr"]
 
 tyk-pump:
   ## Default values for tyk-pump chart.
