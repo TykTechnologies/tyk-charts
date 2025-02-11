@@ -49,7 +49,7 @@ spec:
       {{- end }}
       containers:
       - name: pump-{{ .Chart.Name }}
-        image: "{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
+        image: "{{ .Values.global.imageRegistry }}{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
         imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
         workingDir: "/opt/tyk-pump"
         ports:
@@ -58,6 +58,26 @@ spec:
         {{- if .Values.pump.containerSecurityContext }}
         securityContext:
         {{- toYaml .Values.pump.containerSecurityContext | nindent 12 }}
+        {{- end }}
+
+        {{- if .Values.pump.healthCheckService.enabled }}
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /{{ .Values.pump.healthCheckService.path }}
+            port: {{ .Values.pump.healthCheckService.port }}
+        {{- with (default nil .Values.pump.livenessProbe) }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /{{ .Values.pump.healthCheckService.path }}
+            port: {{ .Values.pump.healthCheckService.port }}
+        {{- with (default nil .Values.pump.readinessProbe) }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- end }}
         env:
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
@@ -337,6 +357,12 @@ spec:
             value: "4000"
           - name: TYK_PMP_PURGEDELAY
             value: "2"
+        {{- if .Values.pump.healthCheckService.enabled }}
+          - name: TYK_PMP_HEALTHCHECKENDPOINTNAME
+            value: "{{ .Values.pump.healthCheckService.path }}"
+          - name: TYK_PMP_HEALTHCHECKENDPOINTPORT
+            value: "{{ .Values.pump.healthCheckService.port }}"
+        {{- end }}              
 
         {{- if .Values.pump.extraEnvs }}
         {{- include "tyk-pump.tplvalues.render" ( dict "value" .Values.pump.extraEnvs "context" $ ) | nindent 10 }}
@@ -373,4 +399,4 @@ spec:
           secret:
             secretName: {{ .secretName }}
         {{- end }}
-        {{- end }}              
+        {{- end }}

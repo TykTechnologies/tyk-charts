@@ -66,6 +66,8 @@ global:
     # - APISecret - Sets node_secret and secret in tyk.conf
     useSecretName: ""
 
+  imageRegistry: ""
+
   redis:
     # The addrs value will allow you to set your Redis addresses.
     #
@@ -499,7 +501,33 @@ tyk-gateway:
       # endpoint defines OpenTelemetry collector endpoint to connect to.
       endpoint: localhost:4317
       # A map of headers that will be sent with HTTP requests to the collector.
-      # It should be set to map of string to string
+      # The headers can be specified in two ways:
+      #
+      # 1. Direct string values:
+      #    headers:
+      #      X-Custom-Header: "my-value"
+      #      Another-Header: "another-value"
+      #
+      #   The headers will be formatted as "Another-Header:another-value,X-Custom-Header:my-value"
+      #
+      # 2. Values from Kubernetes Secrets:
+      #    headers:
+      #      Authorization:
+      #        fromSecret:
+      #          name: "my-secret-name"    # Name of the Kubernetes Secret
+      #          key: "my-secret-key"      # Key in the Secret containing the value
+      #
+      #   The headers will be formatted as "Authorization:<YOURTOKENHERE>"
+      #
+      # 3. You can mix both approaches in the same headers map:
+      #    headers:
+      #      X-Custom-Header: "direct-value"
+      #      Authorization:
+      #        fromSecret:
+      #          name: "auth-secret"
+      #          key: "auth-token"
+      #
+      # The headers will be formatted as "Authorization:<YOURTOKENHERE>,X-Custom-Header:direct-value" in the final output
       headers: {}
       # Timeout for establishing a connection to the collector
       connectionTimeout: 1
@@ -616,7 +644,7 @@ tyk-pump:
 
     image:
       # image repository for Tyk pump
-      repository: docker.tyk.io/tyk-pump/tyk-pump
+      repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
       tag: v1.11.1
@@ -643,6 +671,31 @@ tyk-pump:
 
       # annotations specifies annotations to be added Tyk Pump service.
       annotations: {}
+
+    healthCheckService:
+      # type specifies type of the service.
+      type: ClusterIP
+
+      # Tyk Pump health service is disabled by default.
+      # Set it to true to enable it.
+      enabled: false
+
+      # path sets the health check path.
+      path: "hello"
+
+      # port sets the health check port.
+      # It defaults to 8083 if health check is enabled and it is not set.
+      port: 8083
+
+      # The name for the health check service port
+      portName: ""
+
+      # annotations specifies annotations to be added Tyk Pump service.
+      annotations: {}
+
+      # externalTrafficPolicy denotes if this Service desires to route external traffic to node-local or
+      # cluster-wide endpoints, while using LoadBalancer type of service.
+      externalTrafficPolicy: Local
 
     # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
     # The default port is 9090.
@@ -785,6 +838,21 @@ tyk-pump:
     #     mountPath: /etc/ssl/certs/ca-certs.crt
     #     readOnly: true
     extraVolumeMounts: []
+
+    # livenessProbe:
+    #   initialDelaySeconds: 10
+    #   periodSeconds: 2
+    #   timeoutSeconds: 3
+    #   failureThreshold: 2
+    livenessProbe: {}
+
+    # readinessProbe:
+    #   initialDelaySeconds: 10
+    #   periodSeconds: 10
+    #   timeoutSeconds: 3
+    #   failureThreshold: 3
+    readinessProbe: {}
+
 tests:
   enabled: true
   resources: {}
