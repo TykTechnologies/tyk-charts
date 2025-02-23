@@ -211,10 +211,11 @@ spec:
                 name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
                 key: APISecret
 
-          - name: TYK_GW_POLICIES_ALLOWEXPLICITPOLICYID
-            value: "true"
+         
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.global.tls.gateway }}"
+          - name: TYK_GW_POLICIES_ALLOWEXPLICITPOLICYID
+            value: "true"
           - name: TYK_GW_TEMPLATEPATH
             value: "/opt/tyk-gateway/templates"
           - name: TYK_GW_TYKJSPATH
@@ -229,6 +230,7 @@ spec:
             value: "1000"
           - name: TYK_GW_ENABLENONTRANSACTIONALRATELIMITER
             value: "true"
+
           - name: TYK_GW_POLICIES_POLICYSOURCE
         {{- if .Values.global.remoteControlPlane.enabled }}
             value: "rpc"
@@ -301,26 +303,29 @@ spec:
             value: {{ .Values.global.hashKeys | quote }}
           - name: TYK_GW_HASHKEYFUNCTION
             value: "{{ .Values.gateway.hashKeyFunction }}"
+
           - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEWEBSOCKETS
             value: "true"
           - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
             value: "771"
+
           - name: TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
             value: '{{ .Values.gateway.tls.certificates | toJson }}'
           - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
-            value: {{ default "false" .Values.gateway.tls.insecureSkipVerify | quote }}
+            value: {{ .Values.gateway.tls.insecureSkipVerify | quote }}
           - name: TYK_GW_ALLOWINSECURECONFIGS
-            value: "true"
+            value: {{ .Values.gateway.allowInsecureConfigs | quote }}
           - name: TYK_GW_COPROCESSOPTIONS_ENABLECOPROCESS
             value: "true"
           - name: TYK_GW_GLOBALSESSIONLIFETIME
-            value: "100"
+            value: {{ .Values.gateway.globalSessionLifetime | quote }}
           - name: TYK_GW_MAXIDLECONNSPERHOST
-            value: "500"
+            value: {{ .Values.gateway.maxIdleConnectionsPerHost | quote }}
           - name: TYK_GW_ENABLECUSTOMDOMAINS
-            value: "true"
+            value: {{ .Values.gateway.enableCustomDomains | quote }}
           - name: TYK_GW_PIDFILELOCATION
             value: "/mnt/tyk-gateway/tyk.pid"
+
         {{- if .Values.gateway.sharding.enabled }}
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
             value: "{{ .Values.gateway.sharding.enabled }}"
