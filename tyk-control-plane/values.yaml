@@ -1194,12 +1194,12 @@ tyk-dashboard:
     # It is used to set TYK_DB_ENABLEMULTIORGUSERS
     enableMultiOrgUsers: true
     # This is a security feature that allows you to prevent the admin user from viewing the access token of a user.
-    # The default is false.
+    # The default is true.
     # It is used to set TYK_DB_SECURITY_FORBIDADMINVIEWACCESSTOKEN
-    forbidAdminViewAccessToken: false
+    forbidAdminViewAccessToken: true
     # This is a security feature that allows you to prevent the admin user from resetting the access token of a user.
     # It is used to set TYK_DB_SECURITY_FORBIDADMINRESETACCESSTOKEN
-    forbidAdminResetAccessToken: false
+    forbidAdminResetAccessToken: true
     # Configuration for Audit logs
     auditLogs:
       # Enables audit logging.
