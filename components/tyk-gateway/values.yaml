@@ -589,7 +589,7 @@ gateway:
     enabled: false
     # template configures the fields of the access logs. Please refer to documentation to check for valid values.
     # It is used to set TYK_GW_ACCESSLOGS_TEMPLATE environment variable
-    # template: ["api_key", "remote_addr", "upstream_addr"]
+    # template: "api_key,remote_addr,upstream_addr"
 
   # EnablePathPrefixMatching changes the URL matching from wildcard mode to prefix mode.
   # If prefix matching is enabled, the match will be performed

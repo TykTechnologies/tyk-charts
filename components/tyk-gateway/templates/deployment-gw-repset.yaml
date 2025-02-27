@@ -140,8 +140,10 @@ spec:
             value: "{{ .Values.gateway.log.level }}"
           - name: TYK_GW_ACCESSLOGS_ENABLED
             value: "{{ .Values.gateway.accessLogs.enabled }}"
+            {{- if .Values.gateway.accessLogs.template }}
           - name: TYK_GW_ACCESSLOGS_TEMPLATE
-            value: '{{ toJson .Values.gateway.accessLogs.template }}'
+            value: {{ .Values.gateway.accessLogs.template | quote }}
+            {{- end }}
 
           {{- if .Values.global.redis.sslInsecureSkipVerify }}
           - name: TYK_GW_STORAGE_SSLINSECURESKIPVERIFY
