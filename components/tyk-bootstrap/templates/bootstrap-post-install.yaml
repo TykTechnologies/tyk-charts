@@ -31,6 +31,18 @@ spec:
         {{- end }} 
     spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
+{{- if .Values.bootstrap.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.bootstrap.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.bootstrap.tolerations }}
+      tolerations:
+{{ toYaml .Values.bootstrap.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.bootstrap.affinity }}
+      affinity:
+{{ toYaml .Values.bootstrap.affinity | indent 8 }}
+{{- end }}
       containers:
         - name: bootstrap-tyk-post-install
           image: {{ .Values.global.imageRegistry }}{{ .Values.bootstrap.jobs.postInstall.image.repository }}:{{ .Values.bootstrap.jobs.postInstall.image.tag }}
