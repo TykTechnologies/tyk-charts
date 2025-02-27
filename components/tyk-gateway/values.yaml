@@ -437,6 +437,19 @@ gateway:
   #  failureThreshold: 3
   readinessProbe: {}
 
+  # startupProbe values for gateway pod. All fields from PodStartupProbe object can be added here.
+  # If set to empty or nil, no startupProbe will be configured.
+  # startupProbe:
+  #   httpGet:
+  #     scheme: HTTP
+  #     path: /hello
+  #     port: 8080
+  #   initialDelaySeconds: 1
+  #   periodSeconds: 10
+  #   timeoutSeconds: 3
+  #   failureThreshold: 3
+  startupProbe: {}
+
   # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
   securityContext:
     runAsUser: 1000
@@ -599,7 +612,19 @@ gateway:
   # - if enabled, `/app` only responds to `/app`, `/app/` and `/app/*` but not `/apple`
   # Regular expressions and parameterized routes will be left alone regardless of this setting.
   enableStrictRoutes: true
-
   # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
   # If a service account is to be used for Tyk Gateway, it should be manually created
   serviceAccountName: ""
+  # allowInsecureConfigs can be set to disable Dashboard message signature verification. 
+  # When set to true, public_key_path can be ignored.
+  # It is used to set TYK_GW_ALLOWINSECURECONFIGS
+  allowInsecureConfigs: true
+  # globalSessionLifetime sets session lifetime in seconds.
+  # It is used to set TYK_GW_GLOBALSESSIONLIFETIME
+  globalSessionLifetime: 100
+  # enableCustomDomains allows use of custom domains.
+  # It is used to set TYK_GW_ENABLECUSTOMDOMAINS
+  enableCustomDomains: true
+  # maxIdleConnectionsPerHost represents maximum idle connections, per API, per upstream, between Tyk and Upstream.
+  # It is used to set TYK_GW_MAXIDLECONNSPERHOST
+  maxIdleConnectionsPerHost: 500

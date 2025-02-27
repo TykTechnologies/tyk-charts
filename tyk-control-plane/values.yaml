@@ -465,6 +465,19 @@ tyk-gateway:
     #  failureThreshold: 3
     readinessProbe: {}
 
+    # startupProbe values for gateway pod. All fields from PodStartupProbe object can be added here.
+    # If set to empty or nil, no startupProbe will be configured.
+    # startupProbe:
+    #   httpGet:
+    #     scheme: HTTP
+    #     path: /hello
+    #     port: 8080
+    #   initialDelaySeconds: 1
+    #   periodSeconds: 10
+    #   timeoutSeconds: 3
+    #   failureThreshold: 3
+    startupProbe: {}
+
     # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
     securityContext:
       runAsUser: 1000
@@ -637,6 +650,20 @@ tyk-gateway:
       level: "info"
       # format is used to set the log format. It is used to set TYK_GW_LOGFORMAT
       format: "default"
+
+    # allowInsecureConfigs can be set to disable Dashboard message signature verification.
+    # When set to true, public_key_path can be ignored.
+    # It is used to set TYK_GW_ALLOWINSECURECONFIGS
+    allowInsecureConfigs: true
+    # globalSessionLifetime sets session lifetime in seconds.
+    # It is used to set TYK_GW_GLOBALSESSIONLIFETIME
+    globalSessionLifetime: 100
+    # enableCustomDomains allows use of custom domains.
+    # It is used to set TYK_GW_ENABLECUSTOMDOMAINS
+    enableCustomDomains: true
+    # maxIdleConnectionsPerHost represents maximum idle connections, per API, per upstream, between Tyk and Upstream.
+    # It is used to set TYK_GW_MAXIDLECONNSPERHOST
+    maxIdleConnectionsPerHost: 500
 
 tyk-operator:
   nameOverride: ""
@@ -811,6 +838,19 @@ tyk-pump:
     # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
     # The default port is 9090.
     containerPort: 9090
+    # omitConfigFile defines if tyk-pump should ignore all the values in configuration file.
+    # It is used to set TYK_PMP_OMITCONFIGFILE
+    omitConfigFile: true
+    # purgeDelay configures number of seconds the Pump waits between checking for analytics data and purge it from Redis.
+    # It is used to set TYK_PMP_PURGEDELAY
+    purgeDelay: 2
+    # maxIdleConnections configures maximum number of idle connections in the pool
+    # It is used to set TYK_PMP_ANALYTICSSTORAGECONFIG_MAXIDLE
+    maxIdleConnections: 2000
+    # maxActiveConnections configures Maximum number of connections allocated by the pool at a given time.
+    # When zero, there is no limit on the number of connections in the pool.
+    # It is used to set TYK_PMP_ANALYTICSSTORAGECONFIG_MAXACTIVE
+    maxActiveConnections: 4000
 
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
