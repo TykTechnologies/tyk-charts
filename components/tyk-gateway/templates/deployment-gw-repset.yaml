@@ -468,6 +468,9 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
           {{- end }}
+        {{- if .Values.gateway.startupProbe }}
+        startupProbe: {{- toYaml .Values.gateway.startupProbe | nindent 10}}
+        {{- end }}
       {{- with .Values.gateway.extraContainers }}
       {{- include "tyk-gateway.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
       {{- end }}
