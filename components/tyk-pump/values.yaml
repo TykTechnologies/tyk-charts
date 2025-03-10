@@ -195,7 +195,7 @@ pump:
     repository: docker.tyk.io/tyk-pump/tyk-pump
 
     # tag for Tyk pump
-    tag: v1.11.1
+    tag: v1.13.0
 
     # image pull policy
     pullPolicy: IfNotPresent
