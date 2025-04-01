@@ -1129,6 +1129,20 @@ tyk-bootstrap:
     #     readOnly: true
     extraVolumeMounts: []
 
+    # containerSecurityContext values for bootstrap containers
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      fsGroup: 1000
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+          - ALL
+
 tyk-dashboard:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
   nameOverride: ""
