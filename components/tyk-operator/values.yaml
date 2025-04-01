@@ -1,3 +1,5 @@
+global:
+  imageRegistry: ""
 replicaCount: 1
 # loads environment variables to the operator.
 envFrom:
@@ -10,12 +12,12 @@ envVars:
     value: "8080"
     # The license key can also be added as an environment variable, but it is not recommended.
 # - name: TYK_OPERATOR_LICENSEKEY
-#   value: "{YOUR_LICENSE_KEY}"       
+#   value: "{YOUR_LICENSE_KEY}"
 
 image:
   repository: tykio/tyk-operator
   pullPolicy: IfNotPresent
-  tag: "v1.1.0"
+  tag: "v1.2.0"
 # specify imagePullSecrets for ServiceAccount
 imagePullSecrets: []
 nameOverride: ""
@@ -40,14 +42,18 @@ extraVolumeMounts: []
 healthProbePort: 8081
 # metricsPort identifies the port on which Tyk Operator metrics are served
 metricsPort: 8080
-# webhookPort identifies the port on which webhooks are handled
-webhookPort: 9443
+# secureMetrics configures metrics endpoint. If set to true, endpoint is served securely.
+secureMetrics: true
 annotations: {}
 podAnnotations: {}
 podSecurityContext:
   allowPrivilegeEscalation: false
 resources: {}
 nodeSelector: {}
+# tolerations for manager pod assignment
+tolerations: {}
+# affinity for manager pod assignment
+affinity: {}
 hostNetwork: false
 # rbac specifies necessary resources for kube-rbac-proxy container
 rbac:
@@ -63,3 +69,14 @@ rbac:
 # Tyk Operator publishes a collection of performance metrics for each controller.
 # These metrics can be scraped by Prometheus Operator, by deploying ServiceMonitor resource.
 serviceMonitor: false
+webhooks:
+  enabled: true
+  # identifies the port on which webhooks are handled
+  port: 9443
+  annotations: {}
+  tls:
+    useCertManager: true
+    # The name of the secret which should contain the TLS certificate you want to use with the webhook
+    secretName: webhook-server-cert
+    # certificatesMountPath corresponds to the mount path of the secret.
+    certificatesMountPath: "/tmp/k8s-webhook-server/serving-certs"
