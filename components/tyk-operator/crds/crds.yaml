@@ -1395,7 +1395,7 @@ spec:
                                   threshold_percent:
                                     description: ThresholdPercent is the percentage
                                       of requests that fail before breaker is tripped
-                                    pattern: ^0\\.\\d+|1\\.0$
+                                    pattern: ^"?(0\.\d+|1\.0)"?$
                                     type: string
                                 required:
                                 - method
@@ -4629,6 +4629,60 @@ spec:
                 - enabled
                 - name
                 type: object
+              jwtAuth:
+                description: JwtAuth holds the configuration for the JWT middleware.
+                properties:
+                  defaultPoliciesRef:
+                    description: DefaultPolicies is a list of policies specified using
+                      their name and namespace.
+                    items:
+                      properties:
+                        name:
+                          description: k8s resource name
+                          type: string
+                        namespace:
+                          description: |-
+                            The k8s namespace of the resource being targeted. When omitted this will be
+                            set to the namespace of the object that is being reconciled.
+                          type: string
+                      required:
+                      - name
+                      type: object
+                    type: array
+                  scopes:
+                    description: Scopes holds the scope to policy mappings for a claim
+                      name.
+                    properties:
+                      claimName:
+                        description: ClaimName contains the claim name.
+                        type: string
+                      scopeToPolicyMapping:
+                        description: ScopeToPolicyMapping contains the mappings of
+                          scopes to policy IDs.
+                        items:
+                          properties:
+                            policyRef:
+                              description: PolicyRef contains the referenced policy
+                                based on the name/namespace.
+                              properties:
+                                name:
+                                  description: k8s resource name
+                                  type: string
+                                namespace:
+                                  description: |-
+                                    The k8s namespace of the resource being targeted. When omitted this will be
+                                    set to the namespace of the object that is being reconciled.
+                                  type: string
+                              required:
+                              - name
+                              type: object
+                            scope:
+                              description: Scope contains the scope name.
+                              type: string
+                          type: object
+                        type: array
+                    type: object
+                type: object
               mutualTLS:
                 description: MutualTLS represents the configuration for an Upstream
                   mTLS.
@@ -4687,6 +4741,51 @@ spec:
                     type: object
                 required:
                 - configmapRef
+                type: object
+              upstreamRequestSigning:
+                description: |-
+                  UpstreamRequestSigning configures HMAC-based request signing for upstream requests.
+                  When enabled, it ensures requests are signed before being sent to the upstream service using hmac-sha256 algorithm.
+                properties:
+                  algorithm:
+                    description: |-
+                      Algorithm for request signing.
+                      For Certificate, it can rsa-sha256.
+                      For Secret, it can be any of hmac-sha1, hmac-sha256, hmac-sha384, hmac-sha512.
+                    enum:
+                    - hmac-sha1
+                    - hmac-sha256
+                    - hmac-sha384
+                    - hmac-sha512
+                    - rsa-sha256
+                    type: string
+                  certificateRef:
+                    description: CertificateRef references the secret containing SSL
+                      Certificate.
+                    type: string
+                  keyId:
+                    description: keyid is mandatory if algorithm is hmac type
+                    type: string
+                  secretRef:
+                    description: SecretRef references HMAC secret
+                    properties:
+                      keyName:
+                        description: KeyName is the key of secret in which Tyk OAS
+                          doc is stored
+                        type: string
+                      name:
+                        description: Name is the name of the secret
+                        type: string
+                      namespace:
+                        description: |-
+                          Namespace is the namespace of secret.
+                          If Namespace is not provided, we assume that the secret is in the same
+                          namespace as TykOasApiDefinition resource.
+                        type: string
+                    required:
+                    - keyName
+                    - name
+                    type: object
                 type: object
               versioning:
                 description: Versioning provides versioning information about this
