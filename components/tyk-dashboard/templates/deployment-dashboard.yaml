@@ -103,7 +103,7 @@ spec:
             value: "{{ .Values.dashboard.hostConfig.overrideHostname}}"
           - name: "TYK_DB_HOMEDIR"
             value: "{{ .Values.dashboard.homeDir }}"
-          - name: "TYK_DB_USESHARDEDANALYTICS"
+          - name: "TYK_DB_USESHARDEDANLAYTICS"
             value: "{{ .Values.dashboard.useShardedAnalytics }}"
           - name: "TYK_DB_ENABLEANALYTICSCACHE"
             value: "{{ .Values.dashboard.enableAnalyticsCache }}"
