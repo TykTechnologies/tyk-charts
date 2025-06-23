@@ -206,6 +206,19 @@ spec:
           - name: TYK_DB_REDISUSESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
 
+          {{ if .Values.global.redis.enableSentinel }}
+          - name: TYK_DB_REDISSENTINELPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-dashboard.redis_secret_name" . }}
+                key: {{ include "tyk-dashboard.redis_secret_key" . }}
+          - name: TYK_DB_REDISMASTERNAME
+            value: "{{- .Values.global.redis.masterName -}}"
+         {{ end }}
+
+          - name: TYK_DB_REDISDATABASE
+            value: "{{ default "0" .Values.global.redis.storage.database }}"
+
           {{- if .Values.global.redis.sslInsecureSkipVerify }}
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
             value: "{{ .Values.global.redis.sslInsecureSkipVerify }}"
