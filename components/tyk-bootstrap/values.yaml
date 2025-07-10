@@ -98,7 +98,7 @@ bootstrap:
       #   value: "yourlicense"
       extraEnvs: []
 
-      # Priority class for the pre-install job.
+      # Priority class for the pre-install job. Overrides the default priorityClassName for bootstrap jobs.
       priorityClassName: ""
 
     # postInstall configures post-install Helm hook
@@ -115,7 +115,7 @@ bootstrap:
       #   value: "burak"
       extraEnvs: []
 
-      # Priority class for the post-install job.
+      # Priority class for the post-install job. Overrides the default priorityClassName for bootstrap jobs.
       priorityClassName: ""
 
     # preDelete configures pre-delete Helm hook
@@ -132,7 +132,7 @@ bootstrap:
       #   value: "tyk-operator-conf"
       extraEnvs: []
 
-      # Priority class for the pre-delete job.
+      # Priority class for the pre-delete job. Overrides the default priorityClassName for bootstrap jobs.
       priorityClassName: ""
 
   org:
