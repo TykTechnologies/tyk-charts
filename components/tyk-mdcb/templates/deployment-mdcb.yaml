@@ -252,6 +252,9 @@ spec:
           {{- if .Values.mdcb.extraVolumes }}
           {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraVolumes "context" $) | nindent 8 }}
           {{- end }}
+      {{- if .Values.mdcb.priorityClassName }}
+      priorityClassName: {{ .Values.mdcb.priorityClassName | quote }}
+      {{- end }}
       {{- with .Values.mdcb.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
