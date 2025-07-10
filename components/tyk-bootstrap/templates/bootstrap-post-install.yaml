@@ -31,6 +31,9 @@ spec:
         {{- end }} 
     spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
+{{- if or .Values.bootstrap.jobs.postInstall.priorityClassName .Values.bootstrap.priorityClassName }}
+      priorityClassName: {{ .Values.bootstrap.jobs.postInstall.priorityClassName | default .Values.bootstrap.priorityClassName | quote }}
+{{- end }}
 {{- if .Values.bootstrap.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.bootstrap.nodeSelector | indent 8 }}
@@ -143,4 +146,3 @@ spec:
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}
-      
