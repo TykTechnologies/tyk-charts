@@ -881,11 +881,14 @@ tyk-pump:
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
     #   - "mongo": Enables Mongo, Mongo Aggregate and Mongo Selective Pump
-    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
+    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
     #   - "mongo-selective": Enables ONLY Mongo Selective
-    #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
-    #   - "postgres-aggregate": Enables ONLY SQL Aggregate AND SQL Graph Aggregate
-    #   - "postgres-pump": Enables ONLY SQL Pump AND SQL graph pump
+    #   - "mongo-graphql": Enables ONLY Mongo GraphQL Pump
+    #   - "postgres": Enables SQL Aggregate and SQL Pump 
+    #   - "postgres-aggregate": Enables ONLY SQL Aggregate
+    #   - "postgres-pump": Enables ONLY SQL Pump
+    #   - "postgres-graphql": Enables ONLY SQL Graph pump
+    #   - "postgres-graphql-aggregate": Enables ONLY SQL Graph Aggregate pump
     #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
     #   - "hybrid": Enables Hybrid Pump
     # If you would like to use other backends such as ElasticSearch, please

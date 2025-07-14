@@ -149,9 +149,8 @@ spec:
             value: {{ toYaml .Values.pump.prometheusPump.customMetrics }}
             {{ end }}
           {{ end }}
-
-          {{ if or (has "postgres-pump" .Values.pump.backend) (has "postgres" .Values.pump.backend) }}
           # SQL Pump
+          {{ if or (has "postgres-pump" .Values.pump.backend) (has "postgres" .Values.pump.backend) }}
           - name: TYK_PMP_PUMPS_SQL_TYPE
             value: "sql"
           - name: TYK_PMP_PUMPS_SQL_META_TYPE
@@ -161,8 +160,9 @@ spec:
               secretKeyRef:
                 name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
                 key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
-
+          {{ end }}
           #SQL Graph Pump
+          {{ if has "postgres-graphql" .Values.pump.backend }}
           - name: TYK_PMP_PUMPS_SQLGRAPH_TYPE
             value: "sql-graph"
           - name: TYK_PMP_PUMPS_SQLGRAPH_META_TYPE
@@ -175,8 +175,8 @@ spec:
                 name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
                 key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
           {{ end }}
-          {{ if or (has "postgres" .Values.pump.backend) (has "postgres-aggregate" .Values.pump.backend) }}
           # SQL Aggregate Pump
+          {{ if or (has "postgres" .Values.pump.backend) (has "postgres-aggregate" .Values.pump.backend) }}
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_TYPE
             value: "sql_aggregate"
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_TYPE
@@ -186,9 +186,10 @@ spec:
               secretKeyRef:
                 name: {{ include "tyk-pump.pg_connection_string_secret_name" . }}
                 key: {{ include "tyk-pump.pg_connection_string_secret_key" . }}
-
+          {{ end }}
           # SQL Aggregate Graph Pump
-          - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_TYPE
+          {{ if has "postgres-graphql-aggregate" .Values.pump.backend }}
+          - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_TYPE  
             value: "sql-graph-aggregate"
           - name: TYK_PMP_PUMPS_GRAPHSQLAGGREGATE_META_TYPE
             value: "postgres"
@@ -211,8 +212,9 @@ spec:
                 key: {{ include "tyk-pump.mongo_url_secret_key" . }}
           - name: TYK_PMP_PUMPS_MONGO_META_MONGODRIVERTYPE
             value: "{{ default "mongo-go" .Values.global.mongo.driver}}"
-
+          {{ end }}
           # Mongo Graph Pump
+          {{ if has "mongo-graphql" .Values.pump.backend }}
           - name: TYK_PMP_PUMPS_GRAPHMONGO_TYPE
             value: "mongo-graph"
           - name: TYK_PMP_PUMPS_GRAPHMONGO_META_COLLECTIONNAME
@@ -227,8 +229,8 @@ spec:
           - name: TYK_PMP_PUMPS_GRAPHMONGO_META_MONGODRIVERTYPE
             value: "{{ default "mongo-go" .Values.global.mongo.driver}}"
           {{ end }}
-          {{ if or (has "mongo" .Values.pump.backend) (has "mongo-aggregate" .Values.pump.backend) }}
           # Mongo Aggregate Pump
+          {{ if or (has "mongo" .Values.pump.backend) (has "mongo-aggregate" .Values.pump.backend) }}
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_TYPE
             value: "mongo-pump-aggregate"
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOUSESSL
