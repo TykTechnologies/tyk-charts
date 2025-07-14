@@ -271,7 +271,7 @@ pump:
   #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
   #   - "mongo-selective": Enables ONLY Mongo Selective
   #   - "mongo-graphql": Enables ONLY Mongo GraphQL Pump
-  #   - "postgres": Enables SQL Aggregate and SQL Pump 
+  #   - "postgres": Enables SQL Aggregate and SQL Pump
   #   - "postgres-aggregate": Enables ONLY SQL Aggregate
   #   - "postgres-pump": Enables ONLY SQL Pump
   #   - "postgres-graphql": Enables ONLY SQL Graph pump

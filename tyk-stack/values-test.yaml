@@ -8,7 +8,7 @@ global:
     #
     # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
     # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
-    dashboard: ""
+    dashboard: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGxvd2VkX25vZGVzIjoiYzBlODFmZGQtZmYwNy00OTVkLTc0ZjMtODVjODc5ZGMyZTFjLDY5YTM0NWY4LWEyN2YtNGVjYy00ZjNkLTI0ZjMzZTVjNTFkMSxlYjIxN2U4MC0wN2E4LTQwNDctNzc0OS01MGI2MWU2NDMwZDksNjVhZWM5Y2YtNmVjZS00ODQ5LTc2ZTgtMTRhZDVhYzFiYmNiLDZiNWM1NDUwLWIwMDQtNGFlZS02MjBjLWE4NjJjMzI3OGFlYSxiZmIyYzg0OS03NTM1LTQ2ZGEtNjdkNi04OGNhMTkzNTNkODAsYTkwNTgxMzMtMzYwYS00N2NiLTdlYTYtNTQ1NTBmZjI2YjgyLDE4YTE3MDE4LWFiNjYtNDhjNy01YzI2LTcyY2Y4OWExNTllYyxlZTg3YTliMS04MzFhLTQzZTgtNWMwMi1lY2MzYTBhMDNiYjUsZmQ1ODRkMjUtZmRiNi00M2ExLTY4OGMtODFmYTQ0YWEwZDM4IiwiZXhwIjoxNzU1MTI5NTk5LCJoaWQiOiJsb25nIiwiaWF0IjoxNzUyNTEzODg0LCJsaWNlbnNlX3R5cGUiOiJpbnRlcm5hbCIsIm93bmVyIjoiNjZiNjNiNDZlM2M0ZDUwMDAxNzM5NGIyIiwic2NvcGUiOiJtdWx0aV90ZWFtLHJiYWMsZ3JhcGgsZmVkZXJhdGlvbixzdHJlYW1zLHRyYWNrIiwidiI6IjIifQ.ncFyGXfPncKlT4DoB-uyk8wZ79ShM1b5RXttOLuXpfhGStehEbL2K76eSvtk_EBbl3UUma9y1O4jwkRBXMQMc8GknxoH5lOFpwqSLRBT89eJhmEoFzYJWdqXT6l0QDwaRFyi5svy3ZmuUhDWRufd1aHCSqFmVQI_tsdaCS2_Yhm_yN1qF475DIHO3qayp3-nBQ7ky7Sp3eI7pfWQoPGxgAhtVGSoOANy6C4MtHyDcghKCmdKxwQVY25dj8hyTJBdSQrsSWVaZuazh7xhuepK7F7i_sgEHGMWW1PIr05x5cFzWh5esWKV66JMRoBYTg36r6pxEl4Omst5UlxWlQsKLA"
     # The license key needed by Tyk Operator to work.
     #
     # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
@@ -100,11 +100,11 @@ global:
     # the endpoints of the redis instances or use the cluster configuration endpoint.
     #
     # Default value: redis.{{ .Release.Namespace }}.svc:6379
-    # addrs:
+    addrs:
     #   Example using tyk simple redis chart
     #   - redis.tyk.svc:6379
     #   Example using bitnami/redis
-    #   - tyk-redis-master.tyk.svc:6379
+      - tyk-redis-master.tyk.svc:6379
     #   Example using bitnami/redis with sentinel
     #   - tyk-redis.tyk.svc:26379
     #   Example using bitnami/redis-cluster
@@ -112,7 +112,7 @@ global:
 
     # Redis password
     # If you're using Bitnami Redis chart please input your password in the field below
-    # pass: ""
+    pass: "0zDCoSC6Fq"
 
     # Enables sentinel connection mode for Redis. If enabled, provide both
     # mandatory values for sentinelPass and masterName.
@@ -210,7 +210,7 @@ global:
     # user corresponds to the user of postgres
     user: postgres
     # password corresponds to the password of the given postgres user in selected database
-    password:
+    password: ukb6l5rEDX
     # database corresponds to the database to be used in postgres
     database: tyk_analytics
     # sslmode corresponds to if postgres runs in sslmode (https)
@@ -890,10 +890,14 @@ tyk-pump:
     #   - "postgres-graphql": Enables ONLY SQL Graph pump
     #   - "postgres-graphql-aggregate": Enables ONLY SQL Graph Aggregate pump
     #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
-    #   - "hybrid": Enables Hybrid Pump
     # If you would like to use other backends such as ElasticSearch, please
     # configure the backend via environment variables.
     backend:
+      - "postgres"
+      - "postgres-aggregate"
+      - "postgres-pump"
+      - "postgres-graphql"
+      - "postgres-graphql-aggregate"
       - "prometheus"
       - *globalStorageType
 
@@ -1685,3 +1689,4 @@ tests:
   podAnnotations: {}
   # podLabels specifies labels to be added in Tyk tests Pod
   podLabels: {}
+
