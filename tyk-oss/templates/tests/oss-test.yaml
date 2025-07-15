@@ -53,7 +53,7 @@ spec:
 {{- toYaml .Values.tests.securityContext | nindent 4 }}
 {{- end }}
   {{- if .Values.tests.priorityClassName }}
-  priorityClassName: {{ .Values.tests.priorityClassName }}
+  priorityClassName: {{ .Values.tests.priorityClassName | quote }}
   {{- end }}
 {{- if .Values.tests.nodeSelector }}
   nodeSelector:
