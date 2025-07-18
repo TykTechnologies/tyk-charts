@@ -240,29 +240,41 @@ spec:
           {{ end }}
 
           {{ if eq "postgres" (include "tyk-dashboard.storageType" .) }}
+          {{- if not (has "TYK_DB_STORAGE_MAIN_TYPE" .Values.global.postgres.unsetConnectionEnvVars | default dict) }}
           - name: TYK_DB_STORAGE_MAIN_TYPE
             value: "postgres"
+          {{- end }}
+          {{- if not (has "TYK_DB_STORAGE_MAIN_CONNECTIONSTRING" .Values.global.postgres.unsetConnectionEnvVars | default dict) }}
           - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
                 name: {{ include "tyk-dashboard.pg_connection_string_secret_name" . }}
                 key: {{ include "tyk-dashboard.pg_connection_string_secret_key" . }}
+          {{- end }}
 
+          {{- if not (has "TYK_DB_STORAGE_ANALYTICS_TYPE" .Values.global.postgres.unsetConnectionEnvVars | default dict) }}
           - name: TYK_DB_STORAGE_ANALYTICS_TYPE
             value: "postgres"
+          {{- end }}
+          {{- if not (has "TYK_DB_STORAGE_ANALYTICS_CONNECTIONSTRING" .Values.global.postgres.unsetConnectionEnvVars | default dict) }}
           - name: TYK_DB_STORAGE_ANALYTICS_CONNECTIONSTRING
             valueFrom:
              secretKeyRef:
                 name: {{ include "tyk-dashboard.pg_connection_string_secret_name" . }}
                 key: {{ include "tyk-dashboard.pg_connection_string_secret_key" . }}
+          {{- end }}
 
+          {{- if not (has "TYK_DB_STORAGE_UPTIME_TYPE" .Values.global.postgres.unsetConnectionEnvVars | default dict) }}
           - name: TYK_DB_STORAGE_UPTIME_TYPE
             value: "postgres"
+          {{- end }}
+          {{- if not (has "TYK_DB_STORAGE_UPTIME_CONNECTIONSTRING" .Values.global.postgres.unsetConnectionEnvVars | default dict) }}
           - name: TYK_DB_STORAGE_UPTIME_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
                 name: {{ include "tyk-dashboard.pg_connection_string_secret_name" . }}
                 key: {{ include "tyk-dashboard.pg_connection_string_secret_key" . }}
+          {{- end }}
           {{ else }}
           - name: TYK_DB_STORAGE_MAIN_TYPE
             value: "mongo"
