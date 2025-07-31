@@ -43,6 +43,10 @@ spec:
       affinity:
 {{ toYaml .Values.bootstrap.affinity | indent 8 }}
 {{- end }}
+{{- if .Values.bootstrap.securityContext }}
+      securityContext:
+{{ toYaml .Values.bootstrap.securityContext | indent 8 }}
+{{- end }}
       containers:
         - name: bootstrap-tyk-post-install
           image: {{ .Values.global.imageRegistry }}{{ .Values.bootstrap.jobs.postInstall.image.repository }}:{{ .Values.bootstrap.jobs.postInstall.image.tag }}
