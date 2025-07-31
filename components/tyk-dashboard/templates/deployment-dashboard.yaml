@@ -43,7 +43,10 @@ spec:
     spec:
     {{- if .Values.dashboard.serviceAccountName }}
       serviceAccountName: "{{ .Values.dashboard.serviceAccountName }}"
-    {{- end }}    
+    {{- end }}
+    {{- if .Values.dashboard.priorityClassName }}
+      priorityClassName: {{ .Values.dashboard.priorityClassName | quote }}
+    {{- end }}
 {{- if .Values.dashboard.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.dashboard.nodeSelector | indent 8 }}

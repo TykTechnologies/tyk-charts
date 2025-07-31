@@ -415,6 +415,8 @@ dashboard:
       drop:
         - ALL
 
+  # Priority class assigned to the Tyk Dashboard pod(s).
+  priorityClassName: ""
   # nodeSelector is a selector which must be true for Tyk Dashboard pod to fit on a specific node.
   nodeSelector: {}
   # tolerations specifies tolerations to be applied on Tyk Dashboard pods.
