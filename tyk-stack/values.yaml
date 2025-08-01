@@ -130,6 +130,7 @@ global:
     # passSecret:
     #   name: ""
     #   keyName: ""
+    #   sentinelKeyName: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -364,7 +365,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.3.10
+      tag: v5.8.3
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -1518,7 +1519,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.13.0
+    tag: v1.14.0
     # image pull policy
     pullPolicy: Always
 

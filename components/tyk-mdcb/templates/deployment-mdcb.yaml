@@ -113,6 +113,18 @@ spec:
                   key: securitySecret
             - name: TYK_MDCB_SECURITY_ENABLEHTTPSECUREENDPOINTS
               value: "{{ .Values.mdcb.security.enableHttpSecureEndpoints}}"
+
+            # Redis Sentinel configurations
+            {{- if .Values.global.redis.enableSentinel }}
+            - name: TYK_MDCB_STORAGE_SENTINELPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mdcb.redis_sentinel_secret_name" . }}
+                  key: {{ include "mdcb.redis_sentinel_secret_key" . }}
+            - name: TYK_MDCB_STORAGE_MASTERNAME
+              value: "{{- .Values.global.redis.masterName -}}"
+            {{- end }}
+            
             # Redis TLS configurations
             {{- if .Values.global.redis.useSSL }}
             - name: TYK_MDCB_STORAGE_REDISSSLMAXVERSION

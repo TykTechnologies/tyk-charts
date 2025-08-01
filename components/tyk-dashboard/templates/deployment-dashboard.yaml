@@ -196,6 +196,16 @@ spec:
           {{- end }}
           {{- end }}                                                                                                             
           
+          # Redis configuration
+          {{- if .Values.global.redis.enableSentinel }}
+          - name: TYK_DB_REDISSENTINELPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-dashboard.redis_sentinel_secret_name" . }}
+                key: {{ include "tyk-dashboard.redis_sentinel_secret_key" . }}
+          - name: TYK_DB_REDISMASTERNAME
+            value: "{{ .Values.global.redis.masterName }}"
+          {{- end }}
           - name: TYK_DB_ENABLECLUSTER
             value: "{{ default "false" .Values.global.redis.enableCluster }}"
           - name: TYK_DB_REDISPASSWORD
