@@ -117,6 +117,7 @@ spec:
               value: {{ .Values.bootstrap.dashboard | quote }}
             - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
               value: {{ .Values.bootstrap.operatorSecret }}
+            {{- if .Values.global.components.operator }}
             - name: TYK_K8SBOOTSTRAP_OPERATORLICENSEKEY
               {{ if .Values.global.secrets.useSecretName }}
               valueFrom:
@@ -126,6 +127,7 @@ spec:
               {{ else }}
               value: {{ .Values.global.license.operator | quote }}
               {{ end }}
+            {{- end }}
             - name: TYK_K8SBOOTSTRAP_BOOTSTRAPPORTAL
               value: {{ .Values.bootstrap.portal | quote }}
             {{- if .Values.bootstrap.org.hybrid.enabled }}
