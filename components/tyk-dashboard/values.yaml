@@ -347,7 +347,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.8.3
+    tag: v5.9.1
 
     # image pull policy
     pullPolicy: Always
