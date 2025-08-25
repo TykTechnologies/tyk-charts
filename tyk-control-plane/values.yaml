@@ -1132,11 +1132,16 @@ tyk-bootstrap:
     #     readOnly: true
     extraVolumeMounts: []
 
+    # securityContext values for bootstrap pod. All fields from PodSecurityContext object can be added here.
+    securityContext:
+      runAsUser: 1000
+      fsGroup: 1000
+      runAsNonRoot: true
+
     # containerSecurityContext values for bootstrap containers
     containerSecurityContext:
       runAsNonRoot: true
       runAsUser: 1000
-      fsGroup: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
