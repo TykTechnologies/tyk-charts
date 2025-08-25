@@ -87,6 +87,30 @@ redisPass
 {{- end -}}
 {{- end -}}
 
+{{- define "tyk-dashboard.redis_sentinel_secret_name" -}}
+{{- if and .Values.global.redis.enableSentinel .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.name -}}
+{{ .Values.global.redis.passSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-dashboard.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-dashboard.redis_sentinel_secret_key" -}}
+{{- if and .Values.global.redis.enableSentinel .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.sentinelKeyName -}}
+{{ .Values.global.redis.passSecret.sentinelKeyName }}
+{{- else -}}
+redisSentinelPass
+{{- end -}}
+{{- else -}}
+redisSentinelPass
+{{- end -}}
+{{- end -}}
+
 {{- define "tyk-dashboard.mongo_url" -}}
 {{- if .Values.global.mongo.mongoURL -}}
 {{ .Values.global.mongo.mongoURL }}

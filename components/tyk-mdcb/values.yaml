@@ -69,6 +69,7 @@ global:
     # passSecret:
     #   name: ""
     #   keyName: ""
+    #   sentinelKeyName: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -114,6 +115,10 @@ global:
     # Enables sentinel connection mode for Redis. If enabled, provide both
     # mandatory values for pass and masterName.
     # enableSentinel: false
+
+    # Redis sentinel password, only required while enableSentinel is true.
+    # For bitnami/redis the same password as Redis above
+    # sentinelPass: ""
 
     # Redis sentinel master name, only required while enableSentinel is true.
     # masterName: ""
@@ -256,7 +261,7 @@ mdcb:
     # image repository for Tyk MDCB
     repository: tykio/tyk-mdcb-docker
     # image tag for Tyk MDCB
-    tag: v2.8.0
+    tag: v2.8.2
     # image pull policy
     pullPolicy: IfNotPresent
 

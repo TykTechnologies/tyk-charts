@@ -87,6 +87,30 @@ redisPass
 {{- end -}}
 {{- end -}}
 
+{{- define "tyk-gateway.redis_sentinel_secret_name" -}}
+{{- if and .Values.global.redis.enableSentinel .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.name -}}
+{{ .Values.global.redis.passSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-gateway.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-gateway.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-gateway.redis_sentinel_secret_key" -}}
+{{- if and .Values.global.redis.enableSentinel .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.sentinelKeyName -}}
+{{ .Values.global.redis.passSecret.sentinelKeyName }}
+{{- else -}}
+redisSentinelPass
+{{- end -}}
+{{- else -}}
+redisSentinelPass
+{{- end -}}
+{{- end -}}
+
 {{- define "tyk-gateway.tplvalues.render" -}}
     {{- if typeIs "string" .value }}
         {{- tpl .value .context }}
