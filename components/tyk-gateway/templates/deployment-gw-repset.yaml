@@ -185,8 +185,8 @@ spec:
           - name: TYK_GW_STORAGE_SENTINELPASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ include "tyk-gateway.redis_secret_name" . }}
-                key: {{ include "tyk-gateway.redis_secret_key" . }}
+                name: {{ include "tyk-gateway.redis_sentinel_secret_name" . }}
+                key: {{ include "tyk-gateway.redis_sentinel_secret_key" . }}
           - name: TYK_GW_STORAGE_MASTERNAME
             value: "{{- .Values.global.redis.masterName -}}"
          {{ else if .Values.global.redis.enableCluster }}

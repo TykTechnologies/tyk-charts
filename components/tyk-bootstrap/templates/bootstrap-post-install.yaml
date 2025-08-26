@@ -43,6 +43,10 @@ spec:
       affinity:
 {{ toYaml .Values.bootstrap.affinity | indent 8 }}
 {{- end }}
+{{- if .Values.bootstrap.securityContext }}
+      securityContext:
+{{ toYaml .Values.bootstrap.securityContext | indent 8 }}
+{{- end }}
       containers:
         - name: bootstrap-tyk-post-install
           image: {{ .Values.global.imageRegistry }}{{ .Values.bootstrap.jobs.postInstall.image.repository }}:{{ .Values.bootstrap.jobs.postInstall.image.tag }}
@@ -110,6 +114,7 @@ spec:
               value: {{ .Values.bootstrap.dashboard | quote }}
             - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
               value: {{ .Values.bootstrap.operatorSecret }}
+            {{- if .Values.global.components.operator }}
             - name: TYK_K8SBOOTSTRAP_OPERATORLICENSEKEY
               {{ if .Values.global.secrets.useSecretName }}
               valueFrom:
@@ -119,6 +124,7 @@ spec:
               {{ else }}
               value: {{ .Values.global.license.operator | quote }}
               {{ end }}
+            {{- end }}
             - name: TYK_K8SBOOTSTRAP_BOOTSTRAPPORTAL
               value: {{ .Values.bootstrap.portal | quote }}
             {{- if .Values.bootstrap.org.hybrid.enabled }}
