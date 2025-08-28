@@ -336,7 +336,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.8.3
+      tag: v5.9.1
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -1150,11 +1150,16 @@ tyk-bootstrap:
     #     readOnly: true
     extraVolumeMounts: []
 
+    # securityContext values for bootstrap pod. All fields from PodSecurityContext object can be added here.
+    securityContext:
+      runAsUser: 1000
+      fsGroup: 1000
+      runAsNonRoot: true
+
     # containerSecurityContext values for bootstrap containers
     containerSecurityContext:
       runAsNonRoot: true
       runAsUser: 1000
-      fsGroup: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -1327,7 +1332,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.8.3
+      tag: v5.9.1
 
       # image pull policy
       pullPolicy: Always
@@ -1576,7 +1581,7 @@ tyk-mdcb:
       # image repository for Tyk MDCB
       repository: tykio/tyk-mdcb-docker
       # image tag for Tyk MDCB
-      tag: v2.8.2
+      tag: v2.8.4
       # image pull policy
       pullPolicy: IfNotPresent
 
