@@ -542,6 +542,9 @@ tyk-gateway:
     # affinity for gateway pod assignment
     affinity: {}
 
+    # topology spread constraints for pods
+    topologySpreadConstraints: []
+
     # opentelemetry is used to configure opentelemetry for Tyk Gateway
     opentelemetry:
       # Used to enable/disable opentelemetry
