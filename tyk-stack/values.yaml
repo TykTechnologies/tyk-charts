@@ -176,7 +176,7 @@ global:
     # then this value should be omitted or explicitly set to 0.
     storage:
       database: 0
-    
+
     # Set the number of maximum idle connections in the Redis connection pool.
     maxIdle: 1000
 
