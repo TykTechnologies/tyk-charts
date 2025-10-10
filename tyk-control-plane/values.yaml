@@ -336,7 +336,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway-ee
 
       # image tag for Tyk Gateway
-      tag: v5.8.5
+      tag: v5.8.6
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -1312,7 +1312,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.8.5
+      tag: v5.8.6
 
       # image pull policy
       pullPolicy: Always
@@ -1559,7 +1559,7 @@ tyk-mdcb:
       # image repository for Tyk MDCB
       repository: tykio/tyk-mdcb-docker
       # image tag for Tyk MDCB
-      tag: v2.8.4
+      tag: v2.8.5
       # image pull policy
       pullPolicy: IfNotPresent
 
@@ -1783,7 +1783,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.14.0
+    tag: v1.14.1
     # image pull policy
     pullPolicy: Always
 
