@@ -1,21 +1,21 @@
 dependencies:
 - name: tyk-gateway
   repository: file://../components/tyk-gateway
-  version: 3.0.0
+  version: 4.0.0
 - name: tyk-pump
   repository: file://../components/tyk-pump
-  version: 3.0.0
+  version: 4.0.0
 - name: tyk-dashboard
   repository: file://../components/tyk-dashboard
-  version: 3.0.0
+  version: 4.0.0
 - name: tyk-bootstrap
   repository: file://../components/tyk-bootstrap
-  version: 3.0.0
+  version: 4.0.0
 - name: tyk-dev-portal
   repository: file://../components/tyk-dev-portal
-  version: 3.0.0
+  version: 4.0.0
 - name: tyk-operator
   repository: file://../components/tyk-operator
   version: 1.2.0
-digest: sha256:34e55aa2ca44a7c10fd0912d4621c08072888980864b1a84c9c6e4971192fa2a
-generated: "2025-04-01T18:32:04.192112+05:30"
+digest: sha256:1319bd0de6204310cc02705b5dc6b89b1a328cabfa2abf7a42bf8c1473b2c2d8
+generated: "2025-09-25T21:55:00.846299+02:00"
