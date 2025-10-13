@@ -49,6 +49,8 @@ podAnnotations: {}
 podSecurityContext:
   allowPrivilegeEscalation: false
 resources: {}
+# Priority class assigned to the Tyk Operator pod(s).
+priorityClassName: ""
 nodeSelector: {}
 # tolerations for manager pod assignment
 tolerations: {}
