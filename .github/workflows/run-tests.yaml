@@ -63,7 +63,8 @@ jobs:
           kubectl create namespace ${{ env.TYK_OSS_NS }}
 
           # Do not change the name
-          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
+          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} \
+            --set image.repository=bitnamilegacy/redis
 
           helm dependency update ./tyk-oss
           helm install tyk-oss ./tyk-oss -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} \
@@ -85,7 +86,10 @@ jobs:
           kubectl create namespace ${{ env. TYK_DATAPLANE_NS }}
 
           # Do not change the name
-          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
+          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }} \
+            --set image.repository=bitnamilegacy/redis \
+            --set sentinel.image.repository=bitnamilegacy/redis-sentinel \
+            --set metrics.image.repository=bitnamilegacy/redis-exporter
 
           helm dependency update ./tyk-data-plane
 
@@ -128,7 +132,10 @@ jobs:
           kubectl create namespace ${{ env.TYK_OSS_NS }}
           
           # Do not change the name
-          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
+          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2 \
+            --set image.repository=bitnamilegacy/redis \
+            --set sentinel.image.repository=bitnamilegacy/redis-sentinel \
+            --set metrics.image.repository=bitnamilegacy/redis-exporter
           
           helm dependency update ./tyk-oss
 
@@ -163,7 +170,10 @@ jobs:
 
           # Do not change the name
           # Install redis
-          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
+          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2 \
+            --set image.repository=bitnamilegacy/redis \
+            --set sentinel.image.repository=bitnamilegacy/redis-sentinel \
+            --set metrics.image.repository=bitnamilegacy/redis-exporter
          
           # Install mongo
           helm install mongo oci://registry-1.docker.io/bitnamicharts/mongodb --wait -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 15.1.3
@@ -208,7 +218,10 @@ jobs:
           kubectl create namespace ${{ env. TYK_DATAPLANE_NS }}
           
           # Do not change the name
-          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2
+          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2 \
+            --set image.repository=bitnamilegacy/redis \
+            --set sentinel.image.repository=bitnamilegacy/redis-sentinel \
+            --set metrics.image.repository=bitnamilegacy/redis-exporter
           
           helm dependency update ./tyk-data-plane
           
