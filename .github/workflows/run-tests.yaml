@@ -64,7 +64,12 @@ jobs:
 
           # Do not change the name
           helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} \
-            --set image.repository=bitnamilegacy/redis
+            --set image.repository=bitnamilegacy/redis \
+            --set sentinel.image.repository=bitnamilegacy/redis-sentinel \
+            --set metrics.image.repository=bitnamilegacy/redis-exporter \
+            --set volumePermissions.image.repository=bitnamilegacy/os-shell \
+            --set kubectl.image.repository=bitnamilegacy/kubectl \
+            --set sysctl.image.repository=bitnamilegacy/os-shell
 
           helm dependency update ./tyk-oss
           helm install tyk-oss ./tyk-oss -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} \
@@ -89,7 +94,10 @@ jobs:
           helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }} \
             --set image.repository=bitnamilegacy/redis \
             --set sentinel.image.repository=bitnamilegacy/redis-sentinel \
-            --set metrics.image.repository=bitnamilegacy/redis-exporter
+            --set metrics.image.repository=bitnamilegacy/redis-exporter \
+            --set volumePermissions.image.repository=bitnamilegacy/os-shell \
+            --set kubectl.image.repository=bitnamilegacy/kubectl \
+            --set sysctl.image.repository=bitnamilegacy/os-shell
 
           helm dependency update ./tyk-data-plane
 
@@ -135,7 +143,10 @@ jobs:
           helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2 \
             --set image.repository=bitnamilegacy/redis \
             --set sentinel.image.repository=bitnamilegacy/redis-sentinel \
-            --set metrics.image.repository=bitnamilegacy/redis-exporter
+            --set metrics.image.repository=bitnamilegacy/redis-exporter \
+            --set volumePermissions.image.repository=bitnamilegacy/os-shell \
+            --set kubectl.image.repository=bitnamilegacy/kubectl \
+            --set sysctl.image.repository=bitnamilegacy/os-shell
           
           helm dependency update ./tyk-oss
 
@@ -173,10 +184,17 @@ jobs:
           helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2 \
             --set image.repository=bitnamilegacy/redis \
             --set sentinel.image.repository=bitnamilegacy/redis-sentinel \
-            --set metrics.image.repository=bitnamilegacy/redis-exporter
+            --set metrics.image.repository=bitnamilegacy/redis-exporter \
+            --set volumePermissions.image.repository=bitnamilegacy/os-shell \
+            --set kubectl.image.repository=bitnamilegacy/kubectl \
+            --set sysctl.image.repository=bitnamilegacy/os-shell
          
           # Install mongo
-          helm install mongo oci://registry-1.docker.io/bitnamicharts/mongodb --wait -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 15.1.3
+          helm install mongo oci://registry-1.docker.io/bitnamicharts/mongodb --wait -n ${{ env.TYK_STACK_NS }} --timeout ${{ env.TIMEOUT }} --version 15.1.3 \
+            --set image.repository=bitnamilegacy/mongodb \
+            --set externalAccess.autoDiscovery.image.repository=bitnamilegacy/nginx \
+            --set volumePermissions.image.repository=bitnamilegacy/os-shell \
+            --set kubectl.image.repository=bitnamilegacy/kubectl
 
           MONGODB_ROOT_PASSWORD=$(kubectl get secret -n ${{ env.TYK_STACK_NS }} mongo-mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 -d)
 
@@ -221,7 +239,10 @@ jobs:
           helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2 \
             --set image.repository=bitnamilegacy/redis \
             --set sentinel.image.repository=bitnamilegacy/redis-sentinel \
-            --set metrics.image.repository=bitnamilegacy/redis-exporter
+            --set metrics.image.repository=bitnamilegacy/redis-exporter \
+            --set volumePermissions.image.repository=bitnamilegacy/os-shell \
+            --set kubectl.image.repository=bitnamilegacy/kubectl \
+            --set sysctl.image.repository=bitnamilegacy/os-shell
           
           helm dependency update ./tyk-data-plane
           
