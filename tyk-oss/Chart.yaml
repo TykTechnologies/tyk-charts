@@ -19,7 +19,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 4.0.0
+version: 4.0.1
 home: https://tyk.io/
 sources:
   - https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss
@@ -36,10 +36,10 @@ keywords:
   - tyk open source
 dependencies:
   - name: tyk-gateway
-    version: 4.0.0
+    version: 4.0.1
     repository: file://../components/tyk-gateway
   - name: tyk-pump
-    version: 4.0.0
+    version: 4.0.1
     repository: file://../components/tyk-pump
     condition: global.components.pump
   - name: tyk-operator
