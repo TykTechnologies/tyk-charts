@@ -156,6 +156,9 @@ global:
     storage:
       database: 0
 
+    # Set the number of maximum idle connections in the Redis connection pool.
+    maxIdle: 1000
+
   # Enables validation of examples in the OAS spec. Defaults to false.
   # It is used to set TYK_GW_OAS_VALIDATE_EXAMPLES and TYK_DB_OAS_VALIDATE_EXAMPLES
   oasValidateExamples: false
