@@ -69,6 +69,10 @@ spec:
       affinity:
 {{ toYaml .Values.gateway.affinity | indent 8 }}
 {{- end }}
+{{- if .Values.gateway.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.gateway.topologySpreadConstraints | indent 8 }}
+{{- end }}
       {{- with .Values.gateway.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
