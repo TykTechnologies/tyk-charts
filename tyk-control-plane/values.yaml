@@ -509,6 +509,9 @@ tyk-gateway:
     # affinity for gateway pod assignment
     affinity: {}
 
+    # topology spread constraints for pods
+    topologySpreadConstraints: []
+
     # used to decide whether to send the results back directly to Tyk without a hybrid pump
     # if you want to send analytics to control plane instead of pump, change analyticsConfigType to "rpc"
     # TODO: Consider updating analytics config type to RPC
