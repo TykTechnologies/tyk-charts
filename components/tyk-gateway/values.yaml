@@ -127,6 +127,9 @@ global:
     storage:
       database: 0
 
+    # Set the number of maximum idle connections in the Redis connection pool.
+    maxIdle: 1000
+
   remoteControlPlane:
     # useSecretName can be used if you don't want to store plaintext values for remote control plane configurations in
     # the Helm value file and would rather provide the k8s Secret externally.

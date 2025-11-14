@@ -139,6 +139,9 @@ global:
     storage:
       database: 0
 
+    # Set the number of maximum idle connections in the Redis connection pool.
+    maxIdle: 1000
+
   # hashKeys is used to enable/disable key hashing.
   hashKeys: true
 
