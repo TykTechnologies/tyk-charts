@@ -360,7 +360,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.8.6
+    tag: v5.8.8
 
     # image pull policy
     pullPolicy: Always
