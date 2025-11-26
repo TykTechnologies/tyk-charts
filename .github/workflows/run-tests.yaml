@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  TIMEOUT: 15m
+  TIMEOUT: 30m
   TYK_OSS_NS: tyk-oss
   TYK_DATAPLANE_NS: tyk-dataplane
   TYK_STACK_NS: tyk-stack
@@ -101,7 +101,7 @@ jobs:
 
           helm dependency update ./tyk-data-plane
 
-          helm install --namespace ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait \
+          helm install --namespace ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait --timeout ${{ env.TIMEOUT }} \
             --set global.remoteControlPlane.orgId=${{ secrets.HYBRID_RPC_KEY }} \
             --set global.remoteControlPlane.userApiKey=${{ secrets.HYBRID_API_KEY }} \
             --set global.remoteControlPlane.connectionString=${{ secrets.HYBRID_MDCB_HOST }} \
@@ -246,7 +246,7 @@ jobs:
           
           helm dependency update ./tyk-data-plane
           
-          helm install --namespace ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait \
+          helm install --namespace ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait --timeout ${{ env.TIMEOUT }} \
             --set "global.redis.addrs={redis-master.${{ env. TYK_DATAPLANE_NS }}.svc:6379"} \
             --set "global.redis.passSecret.name=redis" \
             --set "global.redis.passSecret.keyName=redis-password" \
