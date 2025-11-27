@@ -50,6 +50,9 @@ spec:
       securityContext:
 {{ toYaml .Values.bootstrap.securityContext | indent 8 }}
 {{- end }}
+      {{- with .Values.bootstrap.jobs.preDelete.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: bootstrap-tyk-pre-delete
           image: {{ .Values.global.imageRegistry }}{{ .Values.bootstrap.jobs.preDelete.image.repository }}:{{ .Values.bootstrap.jobs.preDelete.image.tag }}

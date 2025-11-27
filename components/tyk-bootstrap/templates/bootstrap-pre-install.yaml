@@ -46,6 +46,9 @@ spec:
       securityContext:
 {{ toYaml .Values.bootstrap.securityContext | indent 8 }}
 {{- end }}
+      {{- with .Values.bootstrap.jobs.preInstall.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: bootstrap-tyk-pre-install
           image: {{ .Values.global.imageRegistry }}{{ .Values.bootstrap.jobs.preInstall.image.repository }}:{{ .Values.bootstrap.jobs.preInstall.image.tag }}
