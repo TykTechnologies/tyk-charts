@@ -629,6 +629,11 @@ gateway:
   # - if enabled, `/app` only responds to `/app`, `/app/` and `/app/*` but not `/apple`
   # Regular expressions and parameterized routes will be left alone regardless of this setting.
   enableStrictRoutes: true
+  # httpsServerOptions.xffDepth is exposed through TYK_GW_HTTPSERVEROPTIONS_XFFDepth.
+  httpsServerOptions:
+    # depth counts how many X-Forwarded-For values the gateway should consider (default 1).
+    # It is used to set TYK_GW_HTTPSERVEROPTIONS_XFFDepth
+    xffDepth: 1
   # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
   # If a service account is to be used for Tyk Gateway, it should be manually created
   serviceAccountName: ""
