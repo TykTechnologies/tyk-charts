@@ -637,10 +637,10 @@ tyk-gateway:
     # - if enabled, `/app` only responds to `/app`, `/app/` and `/app/*` but not `/apple`
     # Regular expressions and parameterized routes will be left alone regardless of this setting.
     enableStrictRoutes: true
-    # httpsServerOptions.xffDepth is exposed through TYK_GW_HTTPSERVEROPTIONS_XFFDepth.
+    # https://tyk.io/docs/tyk-oss-gateway/configuration#http-server-options
     httpsServerOptions:
-      # depth counts how many X-Forwarded-For values the gateway should consider (default 1).
-      # It is used to set TYK_GW_HTTPSERVEROPTIONS_XFFDepth
+      # Used to instruct the gateway which IP to use from the XFF header for determining the client's IP address.
+      # https://tyk.io/docs/tyk-oss-gateway/configuration#http-server-options-xff-depth
       xffDepth: 1
 
     # extraContainers is a list of containers to be added to the pod
