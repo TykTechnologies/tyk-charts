@@ -43,7 +43,7 @@ dependencies:
     repository: file://../components/tyk-pump
     condition: global.components.pump
   - name: tyk-operator
-    version: 1.2.0
+    version: 1.2.1
     repository: file://../components/tyk-operator
     condition: global.components.operator
 annotations:

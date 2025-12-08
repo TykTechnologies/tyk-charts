@@ -42,7 +42,7 @@ dependencies:
     repository: file://../components/tyk-dev-portal
     condition: global.components.devPortal
   - name: tyk-operator
-    version: 1.2.0
+    version: 1.2.1
     repository: file://../components/tyk-operator
     condition: global.components.operator
 annotations:
