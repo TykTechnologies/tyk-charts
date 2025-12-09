@@ -318,7 +318,7 @@ spec:
             value: "true"
           - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
             value: "771"
-          - name: TYK_GW_HTTPSERVEROPTIONS_XFFDepth
+          - name: TYK_GW_HTTPSERVEROPTIONS_XFFDEPTH
             value: {{ default 1 .Values.gateway.httpsServerOptions.xffDepth | quote }}
 
           - name: TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
