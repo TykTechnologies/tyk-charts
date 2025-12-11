@@ -1,6 +1,6 @@
 apiVersion: v2
 name: tyk-dev-portal
-version: 4.1.0
+version: 4.1.1
 description: |
   A Helm chart for deploying Tyk Enterprise Developer Portal on Kubernetes.
   The Tyk Enterprise Developer Portal is the most flexible and straightforward way for API providers
