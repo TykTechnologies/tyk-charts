@@ -54,11 +54,11 @@ global:
     # sslCAFile: "/etc/certs/ca.crt"
 
     # The Volume mount path
-    # Default value: /etc/certs 
-    # certificatesMountPath: "/etc/certs"    
+    # Default value: /etc/certs
+    # certificatesMountPath: "/etc/certs"
 
     # Path to the cert file.
-    # sslCertFile: "/etc/certs/redis.crt"  
+    # sslCertFile: "/etc/certs/redis.crt"
 
     # Path to the key file.
     # sslKeyFile: "/etc/certs/redis.key"
@@ -76,11 +76,11 @@ global:
     # sslInsecureSkipVerify: true
 
     # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
-    # Default value: pmp-tls-secret 
+    # Default value: pmp-tls-secret
     # secretName: "pmp-tls-secret"
 
     # Name of the volume where the secret will be mounted
-    # Default value: pmp-tls-secret-volume 
+    # Default value: pmp-tls-secret-volume
     # volumeName: "pmp-tls-secret-volume"
 
     # If using "Redis Cluster" set enableCluster to true
@@ -133,7 +133,7 @@ global:
   # If postgres pump is in use, please set the connection details of Postgres in the below field.
   postgres:
     # host corresponds to the host name of postgres
-    host: tyk-postgres-postgresql.tyk.svc
+    # host: tyk-postgres-postgresql.tyk.svc
     # port corresponds to the port of postgres
     port: 5432
     # user corresponds to the user of postgres
@@ -232,14 +232,14 @@ pump:
     # type specifies type of the service.
     type: ClusterIP
 
-    # Tyk Pump health service is disabled by default. 
+    # Tyk Pump health service is disabled by default.
     # Set it to true to enable it.
     enabled: false
 
     # path sets the health check path.
     path: "hello"
 
-    # port sets the health check port. 
+    # port sets the health check port.
     # It defaults to 8083 if health check is enabled and it is not set.
     port: 8083
 
@@ -251,7 +251,7 @@ pump:
 
     # externalTrafficPolicy denotes if this Service desires to route external traffic to node-local or
     # cluster-wide endpoints, while using LoadBalancer type of service.
-    externalTrafficPolicy: Local       
+    externalTrafficPolicy: Local
 
   # containerPort represents the port where Tyk Pump serve the metrics, for instance metrics for Prometheus.
   # The default port is 9090.
@@ -265,7 +265,7 @@ pump:
   # maxIdleConnections configures maximum number of idle connections in the pool
   # It is used to set TYK_PMP_ANALYTICSSTORAGECONFIG_MAXIDLE
   maxIdleConnections: 2000
-  # maxActiveConnections configures Maximum number of connections allocated by the pool at a given time. 
+  # maxActiveConnections configures Maximum number of connections allocated by the pool at a given time.
   # When zero, there is no limit on the number of connections in the pool.
   # It is used to set TYK_PMP_ANALYTICSSTORAGECONFIG_MAXACTIVE
   maxActiveConnections: 4000
@@ -361,7 +361,7 @@ pump:
   securityContext:
     runAsUser: 1000
     fsGroup: 2000
-    runAsNonRoot: true   
+    runAsNonRoot: true
 
   # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
   containerSecurityContext:
@@ -422,8 +422,8 @@ pump:
   livenessProbe: {}
 
   # readinessProbe:
-    # initialDelaySeconds: 10
-    # periodSeconds: 10
-    # timeoutSeconds: 3
-    # failureThreshold: 3
+  # initialDelaySeconds: 10
+  # periodSeconds: 10
+  # timeoutSeconds: 3
+  # failureThreshold: 3
   readinessProbe: {}
