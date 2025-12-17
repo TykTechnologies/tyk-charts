@@ -69,6 +69,10 @@ spec:
       affinity:
 {{ toYaml .Values.gateway.affinity | indent 8 }}
 {{- end }}
+{{- if .Values.gateway.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.gateway.topologySpreadConstraints | indent 8 }}
+{{- end }}
       {{- with .Values.gateway.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
@@ -314,6 +318,8 @@ spec:
             value: "true"
           - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
             value: "771"
+          - name: TYK_GW_HTTPSERVEROPTIONS_XFFDEPTH
+            value: {{ default 1 .Values.gateway.httpsServerOptions.xffDepth | quote }}
 
           - name: TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
             value: '{{ .Values.gateway.tls.certificates | toJson }}'

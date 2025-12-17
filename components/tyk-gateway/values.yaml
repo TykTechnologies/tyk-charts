@@ -278,7 +278,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.8.5
+    tag: v5.8.8
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
@@ -488,6 +488,9 @@ gateway:
   # affinity for gateway pod assignment
   affinity: {}
 
+  # topology spread constraints for pods
+  topologySpreadConstraints: []
+
   # extraContainers is a list of containers to be added to the pod
   # - name: sidecar
   #   image: sidecar:latest
@@ -629,6 +632,11 @@ gateway:
   # - if enabled, `/app` only responds to `/app`, `/app/` and `/app/*` but not `/apple`
   # Regular expressions and parameterized routes will be left alone regardless of this setting.
   enableStrictRoutes: true
+  # https://tyk.io/docs/tyk-oss-gateway/configuration#http-server-options
+  httpsServerOptions:
+    # Used to instruct the gateway which IP to use from the XFF header for determining the client's IP address.
+    # https://tyk.io/docs/tyk-oss-gateway/configuration#http-server-options-xff-depth
+    xffDepth: 1
   # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
   # If a service account is to be used for Tyk Gateway, it should be manually created
   serviceAccountName: ""
