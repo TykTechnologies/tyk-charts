@@ -805,7 +805,7 @@ tyk-pump:
       repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
-      tag: v1.13.1
+      tag: v1.13.2
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -1794,7 +1794,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.15.0
+    tag: v1.16.0
     # image pull policy
     pullPolicy: Always
 
