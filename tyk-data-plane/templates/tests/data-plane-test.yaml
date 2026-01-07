@@ -51,6 +51,9 @@ spec:
   securityContext:
 {{- toYaml .Values.tests.securityContext | nindent 4 }}
 {{- end }}
+  {{- if .Values.tests.priorityClassName }}
+  priorityClassName: {{ .Values.tests.priorityClassName | quote }}
+  {{- end }}
 {{- if .Values.tests.nodeSelector }}
   nodeSelector:
 {{ toYaml .Values.tests.nodeSelector | indent 4 }}
