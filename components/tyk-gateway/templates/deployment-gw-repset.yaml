@@ -303,11 +303,9 @@ spec:
           - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
             value: "{{ .Values.global.remoteControlPlane.sslInsecureSkipVerify}}"
         {{- end}}
-          - name: TYK_GW_POLICIES_POLICYRECORDNAME
         {{- if .Values.global.remoteControlPlane.enabled }}
+          - name: TYK_GW_POLICIES_POLICYRECORDNAME
             value: "tyk_policies"
-        {{- else}}
-            value: "/mnt/tyk-gateway/policies/policies.json"
         {{- end}}
           - name: TYK_GW_HASHKEYS
             value: {{ .Values.global.hashKeys | quote }}
