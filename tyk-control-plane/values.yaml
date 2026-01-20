@@ -1037,6 +1037,9 @@ tyk-bootstrap:
     # Trigger to control if we want to create the tyk-operator secret
     operatorSecret: tyk-operator-conf
 
+    # imagePullSecrets specify imagePullSecrets for Bootstrap ServiceAccount
+    imagePullSecrets: []
+
     # jobs field includes configurations for Helm Hooks.
     jobs:
       # preInstall configures pre-install Helm hook
@@ -1047,6 +1050,9 @@ tyk-bootstrap:
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
           tag: v2.2.0
+
+        # image pull secrets to use when pulling images from repository
+        imagePullSecrets: [] 
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -1062,6 +1068,9 @@ tyk-bootstrap:
           # tag specifies image tag of post-install job.
           tag: v2.2.0
 
+        # image pull secrets to use when pulling images from repository
+        imagePullSecrets: [] 
+
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
         #   value: "burak"
@@ -1075,6 +1084,9 @@ tyk-bootstrap:
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
           tag: v2.2.0
+
+        # image pull secrets to use when pulling images from repository
+        imagePullSecrets: [] 
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
