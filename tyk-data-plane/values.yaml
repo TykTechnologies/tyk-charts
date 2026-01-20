@@ -775,7 +775,8 @@ tyk-pump:
     # Please add "hybrid" to .Values.pump.backend in order to enable Hybrid Pump.
     hybridPump:
       # Send aggregated analytics data to Tyk MDCB
-      enableAggregateAnalytics: true
+      # Default "false" sends all logs. Set to True to only send aggregated logs 
+      enableAggregateAnalytics: false
       # Hybrid pump RPC calls timeout in seconds. If not specified, default value will be picked up by Tyk Pump.
       callTimeout: 10
       # Hybrid pump connection pool size. If not specified, default value will be picked up by Tyk Pump.
