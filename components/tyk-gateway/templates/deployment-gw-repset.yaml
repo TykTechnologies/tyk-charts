@@ -458,10 +458,10 @@ spec:
             {{- else }}
             port: {{ .Values.gateway.containerPort }}
             {{- end }}
-          initialDelaySeconds: 5
-          periodSeconds: 2
-          timeoutSeconds: 3
-          failureThreshold: 2
+          initialDelaySeconds: {{ .Values.gateway.livenessProbe.initialDelaySeconds | default 10 }}
+          periodSeconds: {{ .Values.gateway.livenessProbe.periodSeconds | default 2 }}
+          timeoutSeconds: {{ .Values.gateway.livenessProbe.timeoutSeconds | default 3 }}
+          failureThreshold: {{ .Values.gateway.livenessProbe.failureThreshold | default 2 }}
           {{- end }}
         readinessProbe:
           {{- if .Values.gateway.readinessProbe }}
@@ -475,10 +475,10 @@ spec:
             {{- else }}
             port: {{ .Values.gateway.containerPort }}
             {{- end }}
-          initialDelaySeconds: 1
-          periodSeconds: 10
-          timeoutSeconds: 3
-          failureThreshold: 3
+          initialDelaySeconds: {{ .Values.gateway.readinessProbe.initialDelaySeconds | default 10 }}
+          periodSeconds: {{ .Values.gateway.readinessProbe.periodSeconds | default 10 }}
+          timeoutSeconds: {{ .Values.gateway.readinessProbe.timeoutSeconds | default 3 }}
+          failureThreshold: {{ .Values.gateway.readinessProbe.failureThreshold | default 3 }}
           {{- end }}
         {{- if .Values.gateway.startupProbe }}
         startupProbe: {{- toYaml .Values.gateway.startupProbe | nindent 10}}
