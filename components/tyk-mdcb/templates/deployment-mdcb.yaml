@@ -281,5 +281,5 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- if .Values.mdcb.priorityClassName }}
-      priorityClassName: {{ .Values.mdcb.priorityClassName }}
+      priorityClassName: {{ .Values.mdcb.priorityClassName | quote }}
       {{- end }}

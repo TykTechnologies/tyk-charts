@@ -47,7 +47,7 @@ spec:
 {{ toYaml .Values.bootstrap.affinity | indent 8 }}
 {{- end }}
 {{- if .Values.bootstrap.priorityClassName }}
-      priorityClassName: {{ .Values.bootstrap.priorityClassName }}
+      priorityClassName: {{ .Values.bootstrap.priorityClassName | quote }}
 {{- end }}
 {{- if .Values.bootstrap.securityContext }}
       securityContext:

@@ -74,7 +74,7 @@ spec:
 {{ toYaml .Values.gateway.topologySpreadConstraints | indent 8 }}
 {{- end }}
 {{- if .Values.gateway.priorityClassName }}
-      priorityClassName: {{ .Values.gateway.priorityClassName }}
+      priorityClassName: {{ .Values.gateway.priorityClassName | quote }}
 {{- end }}
       {{- with .Values.gateway.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}

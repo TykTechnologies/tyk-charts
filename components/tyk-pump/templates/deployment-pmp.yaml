@@ -45,7 +45,7 @@ spec:
 {{ toYaml .Values.pump.affinity | indent 8 }}
 {{- end }}
 {{- if .Values.pump.priorityClassName }}
-      priorityClassName: {{ .Values.pump.priorityClassName }}
+      priorityClassName: {{ .Values.pump.priorityClassName | quote }}
 {{- end }}
       {{- with .Values.pump.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
