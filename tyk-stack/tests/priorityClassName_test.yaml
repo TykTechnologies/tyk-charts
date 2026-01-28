@@ -1,0 +1,74 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Test priorityClassName for all components
+templates:
+  - charts/tyk-gateway/templates/deployment-gw-repset.yaml
+  - charts/tyk-gateway/templates/secrets.yaml
+  - charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  - charts/tyk-dashboard/templates/secrets.yaml
+  - charts/tyk-pump/templates/deployment-pmp.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+  # Gateway priorityClassName tests
+  - it: should not set gateway priorityClassName when not specified
+    values:
+      - ../values.yaml
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.priorityClassName
+
+  - it: should set gateway priorityClassName when specified
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.priorityClassName: "high-priority"
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: "high-priority"
+
+  # Dashboard priorityClassName tests
+  - it: should not set dashboard priorityClassName when not specified
+    values:
+      - ../values.yaml
+    template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.priorityClassName
+
+  - it: should set dashboard priorityClassName when specified
+    values:
+      - ../values.yaml
+    set:
+      tyk-dashboard.dashboard.priorityClassName: "high-priority"
+    template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: "high-priority"
+
+  # Pump priorityClassName tests
+  - it: should not set pump priorityClassName when not specified
+    values:
+      - ../values.yaml
+    set:
+      global.components.pump: true
+    template: charts/tyk-pump/templates/deployment-pmp.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.priorityClassName
+
+  - it: should set pump priorityClassName when specified
+    values:
+      - ../values.yaml
+    set:
+      global.components.pump: true
+      tyk-pump.pump.priorityClassName: "high-priority"
+    template: charts/tyk-pump/templates/deployment-pmp.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: "high-priority"
