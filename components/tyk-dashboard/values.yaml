@@ -435,6 +435,9 @@ dashboard:
   # affinity specifies affinity and anti-affinity constraints.
   affinity: {}
 
+  # priorityClassName for dashboard pod assignment
+  priorityClassName: ""
+
   # extraContainers is a list of containers to be added to the pod
   # - name: sidecar
   #   image: sidecar:latest
