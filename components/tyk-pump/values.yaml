@@ -385,6 +385,9 @@ pump:
   # affinity for pump pod assignment
   affinity: {}
 
+  # priorityClassName for pump pod assignment
+  priorityClassName: ""
+
   # extraContainers is a list of containers to be added to the pod
   # - name: sidecar
   #   image: sidecar:latest

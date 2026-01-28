@@ -491,6 +491,9 @@ gateway:
   # topology spread constraints for pods
   topologySpreadConstraints: []
 
+  # priorityClassName for gateway pod assignment
+  priorityClassName: ""
+
   # extraContainers is a list of containers to be added to the pod
   # - name: sidecar
   #   image: sidecar:latest
