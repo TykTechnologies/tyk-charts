@@ -208,6 +208,17 @@ gateway:
       cert_file: "/etc/certs/tyk-gateway/tls.crt"
       key_file: "/etc/certs/tyk-gateway/tls.key"
 
+    # useNewDefaultCertificate enables the new default TLS certificate alongside the old one.
+    # When set to true, both the old and new certificates will be loaded by the gateway,
+    # allowing for a zero-downtime certificate rotation. This is useful for users who have
+    # pinned or added the old certificate to their trust stores.
+    # Default: false (only the old certificate is used)
+    useNewDefaultCertificate: false
+    # The name of the secret for the new TLS certificate
+    newSecretName: tyk-new-default-tls-secret
+    # Mount path for the new certificate secret
+    newCertificatesMountPath: "/etc/certs/tyk-gateway-new"
+
   # kind is type of k8s object to be created for gateway.
   kind: Deployment
 

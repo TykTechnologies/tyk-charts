@@ -322,7 +322,11 @@ spec:
             value: {{ default 1 .Values.gateway.httpsServerOptions.xffDepth | quote }}
 
           - name: TYK_GW_HTTPSERVEROPTIONS_CERTIFICATES
+            {{- if .Values.gateway.tls.useNewDefaultCertificate }}
+            value: '[{"domain_name":"*","cert_file":"{{ .Values.gateway.tls.certificatesMountPath }}/tls.crt","key_file":"{{ .Values.gateway.tls.certificatesMountPath }}/tls.key"},{"domain_name":"*","cert_file":"{{ .Values.gateway.tls.newCertificatesMountPath }}/tls.crt","key_file":"{{ .Values.gateway.tls.newCertificatesMountPath }}/tls.key"}]'
+            {{- else }}
             value: '{{ .Values.gateway.tls.certificates | toJson }}'
+            {{- end }}
           - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
             value: {{ .Values.gateway.tls.insecureSkipVerify | quote }}
           - name: TYK_GW_ALLOWINSECURECONFIGS
@@ -427,6 +431,10 @@ spec:
           {{ if .Values.global.tls.gateway }}
           - name: {{ .Values.gateway.tls.secretName }}
             mountPath: {{ .Values.gateway.tls.certificatesMountPath }}
+          {{ if .Values.gateway.tls.useNewDefaultCertificate }}
+          - name: {{ .Values.gateway.tls.newSecretName }}
+            mountPath: {{ .Values.gateway.tls.newCertificatesMountPath }}
+          {{ end }}
           {{ end }}
 
           {{- with .Values.global.redis }}
@@ -497,6 +505,11 @@ spec:
         - name: {{ .Values.gateway.tls.secretName }}
           secret:
             secretName: {{ .Values.gateway.tls.secretName }}
+        {{ if .Values.gateway.tls.useNewDefaultCertificate }}
+        - name: {{ .Values.gateway.tls.newSecretName }}
+          secret:
+            secretName: {{ .Values.gateway.tls.newSecretName }}
+        {{ end }}
         {{ end }}
         {{- if .Values.gateway.extraVolumes }}
         {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumes "context" $) | nindent 8 }}
