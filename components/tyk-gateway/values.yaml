@@ -477,6 +477,9 @@ gateway:
       drop:
         - ALL
 
+  # Priority class assigned to the Tyk Gateway pod(s).
+  priorityClassName: ""
+
   # node labels for gateway pod assignment
   nodeSelector: {}
 

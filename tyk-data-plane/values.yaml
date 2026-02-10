@@ -460,6 +460,9 @@ tyk-gateway:
         drop:
           - ALL
 
+    # Priority class assigned to the Tyk Gateway pod(s).
+    priorityClassName: ""
+
     # node labels for gateway pod assignment
     nodeSelector: {}
 
@@ -855,6 +858,9 @@ tyk-pump:
         drop:
           - ALL
 
+    # Priority class assigned to the Tyk Pump pod(s).
+    priorityClassName: ""
+
     # node labels for pump pod assignment
     nodeSelector: {}
 
@@ -935,6 +941,8 @@ tests:
     capabilities:
       drop:
         - ALL
+  # Priority class assigned to the Tyk tests pod.
+  priorityClassName: ""
   # nodeSelector is a selector which must be true for Tyk tests pod to fit on a specific node.
   nodeSelector: {}
   # tolerations specifies tolerations to be applied on Tyk tests pods.
