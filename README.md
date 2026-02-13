@@ -41,6 +41,30 @@ Tyk Operator's helm chart is managed in [tyk-operator](https://github.com/TykTec
 ## Kubernetes Ingress
 For further detail on how to configure Tyk as an Ingress Gateway, or how to manage APIs in Tyk using the Kubernetes API, please refer to our [Tyk Operator documentation](https://tyk.io/docs/tyk-operator/). The Tyk Operator can be installed along this chart and works with all installation types.
 
-## Claude Code
+## Deploy with Claude Code
 
-This repository includes a [Claude Code](https://claude.ai/claude-code) skill for deploying Tyk to Kubernetes. If you use Claude Code, run `/deploy-tyk` to get an interactive, guided deployment of any Tyk variant.
+This repository includes a Claude Code skill that interactively deploys any Tyk variant to Kubernetes — handling dependencies (Redis, PostgreSQL), license configuration, and health validation automatically.
+
+### Prerequisites
+
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) installed (`npm install -g @anthropic-ai/claude-code`)
+- A Kubernetes cluster with `kubectl` and `helm` configured
+- A Tyk Dashboard license key (for `tyk-stack` or `tyk-control-plane`)
+
+### Quick Start
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/TykTechnologies/tyk-charts.git
+cd tyk-charts
+
+# 2. Launch Claude Code
+claude
+
+# 3. Run the deploy skill
+/deploy-tyk
+```
+
+Claude will ask which variant you want (stack, oss, data-plane, or control-plane), collect any required credentials, install dependencies, deploy the chart, and validate that all components are healthy.
+
+You can also ask Claude directly — for example, "deploy tyk-oss to my cluster" or "set up a tyk-stack with my license key" — and it will trigger the same guided workflow.
