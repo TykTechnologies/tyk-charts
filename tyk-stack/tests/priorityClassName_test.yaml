@@ -6,6 +6,11 @@ templates:
   - charts/tyk-dashboard/templates/deployment-dashboard.yaml
   - charts/tyk-dashboard/templates/secrets.yaml
   - charts/tyk-pump/templates/deployment-pmp.yaml
+  - charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+  - charts/tyk-bootstrap/templates/bootstrap-post-install.yaml
+  - charts/tyk-bootstrap/templates/bootstrap-pre-delete.yaml
+  - charts/tyk-dev-portal/templates/statefulset-enterprise-portal.yaml
+  - charts/tyk-operator/templates/all.yaml
 release:
   name: tyk-stack
   namespace: test
@@ -68,6 +73,118 @@ tests:
       global.components.pump: true
       tyk-pump.pump.priorityClassName: "high-priority"
     template: charts/tyk-pump/templates/deployment-pmp.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: "high-priority"
+
+  # Bootstrap priorityClassName tests (pre-install job)
+  - it: should not set bootstrap pre-install priorityClassName when not specified
+    values:
+      - ../values.yaml
+    template: charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.priorityClassName
+
+  - it: should set bootstrap pre-install priorityClassName when specified
+    values:
+      - ../values.yaml
+    set:
+      tyk-bootstrap.bootstrap.priorityClassName: "high-priority"
+    template: charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: "high-priority"
+
+  # Bootstrap priorityClassName tests (post-install job)
+  - it: should not set bootstrap post-install priorityClassName when not specified
+    values:
+      - ../values.yaml
+    template: charts/tyk-bootstrap/templates/bootstrap-post-install.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.priorityClassName
+
+  - it: should set bootstrap post-install priorityClassName when specified
+    values:
+      - ../values.yaml
+    set:
+      tyk-bootstrap.bootstrap.priorityClassName: "high-priority"
+    template: charts/tyk-bootstrap/templates/bootstrap-post-install.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: "high-priority"
+
+  # Bootstrap priorityClassName tests (pre-delete job)
+  - it: should not set bootstrap pre-delete priorityClassName when not specified
+    values:
+      - ../values.yaml
+    template: charts/tyk-bootstrap/templates/bootstrap-pre-delete.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.priorityClassName
+
+  - it: should set bootstrap pre-delete priorityClassName when specified
+    values:
+      - ../values.yaml
+    set:
+      tyk-bootstrap.bootstrap.priorityClassName: "high-priority"
+    template: charts/tyk-bootstrap/templates/bootstrap-pre-delete.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: "high-priority"
+
+  # Dev Portal priorityClassName tests
+  - it: should not set dev portal priorityClassName when not specified
+    values:
+      - ../values.yaml
+    set:
+      global.components.devPortal: true
+    template: charts/tyk-dev-portal/templates/statefulset-enterprise-portal.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.priorityClassName
+
+  - it: should set dev portal priorityClassName when specified
+    values:
+      - ../values.yaml
+    set:
+      global.components.devPortal: true
+      tyk-dev-portal.priorityClassName: "high-priority"
+    template: charts/tyk-dev-portal/templates/statefulset-enterprise-portal.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: "high-priority"
+
+  # Operator priorityClassName tests
+  - it: should not set operator priorityClassName when not specified
+    values:
+      - ../values.yaml
+    set:
+      global.components.operator: true
+    template: charts/tyk-operator/templates/all.yaml
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - notExists:
+          path: spec.template.spec.priorityClassName
+
+  - it: should set operator priorityClassName when specified
+    values:
+      - ../values.yaml
+    set:
+      global.components.operator: true
+      tyk-operator.priorityClassName: "high-priority"
+    template: charts/tyk-operator/templates/all.yaml
+    documentSelector:
+      path: kind
+      value: Deployment
     asserts:
       - equal:
           path: spec.template.spec.priorityClassName
