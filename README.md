@@ -40,3 +40,7 @@ Tyk Operator's helm chart is managed in [tyk-operator](https://github.com/TykTec
 
 ## Kubernetes Ingress
 For further detail on how to configure Tyk as an Ingress Gateway, or how to manage APIs in Tyk using the Kubernetes API, please refer to our [Tyk Operator documentation](https://tyk.io/docs/tyk-operator/). The Tyk Operator can be installed along this chart and works with all installation types.
+
+## Claude Code
+
+This repository includes a [Claude Code](https://claude.ai/claude-code) skill for deploying Tyk to Kubernetes. If you use Claude Code, run `/deploy-tyk` to get an interactive, guided deployment of any Tyk variant.
