@@ -548,6 +548,9 @@ tyk-gateway:
     # topology spread constraints for pods
     topologySpreadConstraints: []
 
+    # priorityClassName for gateway pod assignment
+    priorityClassName: ""
+
     # opentelemetry is used to configure opentelemetry for Tyk Gateway
     opentelemetry:
       # Used to enable/disable opentelemetry
@@ -761,6 +764,8 @@ tyk-operator:
 
   # affinity for tyk-operator-manager pod assignment
   affinity: {}
+  # priorityClassName for tyk-operator-manager pod assignment
+  priorityClassName: ""
   hostNetwork: false
 
   # rbac specifies necessary resources for kube-rbac-proxy.
@@ -996,6 +1001,9 @@ tyk-pump:
     # affinity for pump pod assignment
     affinity: {}
 
+    # priorityClassName for pump pod assignment
+    priorityClassName: ""
+
     # extraContainers is a list of containers to be added to the pod
     # - name: sidecar
     #   image: sidecar:latest
@@ -1141,6 +1149,9 @@ tyk-bootstrap:
 
     # affinity for bootstrap pods assignment
     affinity: {}
+
+    # priorityClassName for bootstrap pods assignment
+    priorityClassName: ""
 
     # extraVolumes is a list of volumes to be added to the pod
     # extraVolumes:
@@ -1394,6 +1405,9 @@ tyk-dashboard:
     # affinity specifies affinity and anti-affinity constraints.
     affinity: {}
 
+    # priorityClassName for dashboard pod assignment
+    priorityClassName: ""
+
     # extraContainers is a list of containers to be added to the pod
     # - name: sidecar
     #   image: sidecar:latest
@@ -1607,6 +1621,9 @@ tyk-dev-portal:
   tolerations: []
   # affinity specifies affinity and anti-affinity constraints.
   affinity: {}
+
+  # priorityClassName for dev portal pod assignment
+  priorityClassName: ""
 
   # extraContainers is a list of containers to be added to the pod
   # - name: sidecar
