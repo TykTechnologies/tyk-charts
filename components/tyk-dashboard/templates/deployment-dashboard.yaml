@@ -56,6 +56,9 @@ spec:
       affinity:
 {{ toYaml .Values.dashboard.affinity | indent 8 }}
 {{- end }}
+{{- if .Values.dashboard.priorityClassName }}
+      priorityClassName: {{ .Values.dashboard.priorityClassName | quote }}
+{{- end }}
       {{- with .Values.dashboard.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}

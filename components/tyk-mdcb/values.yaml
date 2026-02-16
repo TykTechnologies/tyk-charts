@@ -409,6 +409,9 @@ mdcb:
   # affinity for MDCB pod assignment
   affinity: {}
 
+  # priorityClassName for MDCB pod assignment
+  priorityClassName: ""
+
   tls:
     # enables ssl for mdcb
     useSSL: false
