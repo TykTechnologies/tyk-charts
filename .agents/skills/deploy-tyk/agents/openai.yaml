@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deploy Tyk"
+  short_description: "Deploy Tyk Helm charts to Kubernetes"
+  default_prompt: "Use $deploy-tyk to deploy or uninstall a Tyk Helm chart variant on Kubernetes."
