@@ -98,6 +98,7 @@ global:
     # passSecret:
     #   name: ""
     #   keyName: ""
+    #   sentinelKeyName: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -154,6 +155,9 @@ global:
     # then this value should be omitted or explicitly set to 0.
     storage:
       database: 0
+
+    # Set the number of maximum idle connections in the Redis connection pool.
+    maxIdle: 1000
 
   # Enables validation of examples in the OAS spec. Defaults to false.
   # It is used to set TYK_GW_OAS_VALIDATE_EXAMPLES and TYK_DB_OAS_VALIDATE_EXAMPLES
@@ -268,10 +272,10 @@ tyk-gateway:
 
     image:
       # image repository for Tyk Gateway
-      repository: tykio/tyk-gateway
+      repository: tykio/tyk-gateway-ee
 
       # image tag for Tyk Gateway
-      tag: v5.3.10
+      tag: v5.8.9
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -467,6 +471,12 @@ tyk-gateway:
     # affinity for gateway pod assignment
     affinity: {}
 
+    # topology spread constraints for pods
+    topologySpreadConstraints: []
+
+    # priorityClassName for gateway pod assignment
+    priorityClassName: ""
+
     # extraContainers is a list of containers to be added to the pod
     # - name: sidecar
     #   image: sidecar:latest
@@ -583,6 +593,11 @@ tyk-gateway:
     # - if enabled, `/app` only responds to `/app`, `/app/` and `/app/*` but not `/apple`
     # Regular expressions and parameterized routes will be left alone regardless of this setting.
     enableStrictRoutes: true
+    # https://tyk.io/docs/tyk-oss-gateway/configuration#http-server-options
+    httpsServerOptions:
+      # Used to instruct the gateway which IP to use from the XFF header for determining the client's IP address.
+      # https://tyk.io/docs/tyk-oss-gateway/configuration#http-server-options-xff-depth
+      xffDepth: 1
 
     # extraVolumes is a list of volumes to be added to the pod
     # extraVolumes:
@@ -669,7 +684,7 @@ tyk-pump:
       repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
-      tag: v1.12.0
+      tag: v1.13.2
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -739,11 +754,14 @@ tyk-pump:
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
     #   - "mongo": Enables Mongo, Mongo Aggregate and Mongo Selective Pump
-    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
+    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
     #   - "mongo-selective": Enables ONLY Mongo Selective
-    #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
-    #   - "postgres-aggregate": Enables ONLY SQL Aggregate AND SQL Graph Aggregate
-    #   - "postgres-pump": Enables ONLY SQL Pump AND SQL graph pump
+    #   - "mongo-graphql": Enables ONLY Mongo GraphQL Pump
+    #   - "postgres": Enables SQL Aggregate and SQL Pump
+    #   - "postgres-aggregate": Enables ONLY SQL Aggregate
+    #   - "postgres-pump": Enables ONLY SQL Pump
+    #   - "postgres-graphql": Enables ONLY SQL Graph pump
+    #   - "postgres-graphql-aggregate": Enables ONLY SQL Graph Aggregate pump
     #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
     #   - "hybrid": Enables Hybrid Pump
     # If you would like to use other backends such as ElasticSearch, please
@@ -848,6 +866,9 @@ tyk-pump:
 
     # affinity for pump pod assignment
     affinity: {}
+
+    # priorityClassName for pump pod assignment
+    priorityClassName: ""
 
     # extraContainers is a list of containers to be added to the pod
     # - name: sidecar

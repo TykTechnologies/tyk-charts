@@ -117,7 +117,7 @@ image:
   # image repository for Tyk Developer Portal.
   repository: tykio/portal
   # Developer portal < v1.2 is not supported
-  tag: v1.13.0
+  tag: v1.16.0
   # image pull policy
   pullPolicy: Always
 
@@ -212,6 +212,9 @@ nodeSelector: {}
 tolerations: []
 # affinity specifies affinity and anti-affinity constraints.
 affinity: {}
+
+# priorityClassName for dev portal pod assignment
+priorityClassName: ""
 
 # extraContainers is a list of containers to be added to the pod
 # - name: sidecar

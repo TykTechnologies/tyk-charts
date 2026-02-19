@@ -56,6 +56,9 @@ spec:
       affinity:
 {{ toYaml .Values.dashboard.affinity | indent 8 }}
 {{- end }}
+{{- if .Values.dashboard.priorityClassName }}
+      priorityClassName: {{ .Values.dashboard.priorityClassName | quote }}
+{{- end }}
       {{- with .Values.dashboard.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
@@ -196,6 +199,16 @@ spec:
           {{- end }}
           {{- end }}                                                                                                             
           
+          # Redis configuration
+          {{- if .Values.global.redis.enableSentinel }}
+          - name: TYK_DB_REDISSENTINELPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tyk-dashboard.redis_sentinel_secret_name" . }}
+                key: {{ include "tyk-dashboard.redis_sentinel_secret_key" . }}
+          - name: TYK_DB_REDISMASTERNAME
+            value: "{{ .Values.global.redis.masterName }}"
+          {{- end }}
           - name: TYK_DB_ENABLECLUSTER
             value: "{{ default "false" .Values.global.redis.enableCluster }}"
           - name: TYK_DB_REDISPASSWORD
@@ -205,6 +218,9 @@ spec:
                 key: {{ include "tyk-dashboard.redis_secret_key" . }}
           - name: TYK_DB_REDISUSESSL
             value: "{{ default "false" .Values.global.redis.useSSL }}"
+
+          - name: TYK_DB_REDISDATABASE
+            value: "{{ default "0" .Values.global.redis.storage.database }}"
 
           {{- if .Values.global.redis.sslInsecureSkipVerify }}
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY

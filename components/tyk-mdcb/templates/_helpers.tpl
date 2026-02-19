@@ -83,6 +83,30 @@ redisPass
 {{- end -}}
 {{- end -}}
 
+{{- define "mdcb.redis_sentinel_secret_name" -}}
+{{- if and .Values.global.redis.enableSentinel .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.name -}}
+{{ .Values.global.redis.passSecret.name }}
+{{- else -}}
+secrets-{{ include "tyk-mdcb.fullname" . }}
+{{- end -}}
+{{- else -}}
+secrets-{{ include "tyk-mdcb.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "mdcb.redis_sentinel_secret_key" -}}
+{{- if and .Values.global.redis.enableSentinel .Values.global.redis.passSecret -}}
+{{- if .Values.global.redis.passSecret.sentinelKeyName -}}
+{{ .Values.global.redis.passSecret.sentinelKeyName }}
+{{- else -}}
+redisSentinelPass
+{{- end -}}
+{{- else -}}
+redisSentinelPass
+{{- end -}}
+{{- end -}}
+
 {{- define "mdcb.storageType" -}}
 {{- if .Values.global.storageType -}}
 {{- if eq "postgres" .Values.global.storageType -}}

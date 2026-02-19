@@ -54,6 +54,8 @@ nodeSelector: {}
 tolerations: {}
 # affinity for manager pod assignment
 affinity: {}
+# priorityClassName for manager pod assignment
+priorityClassName: ""
 hostNetwork: false
 # rbac specifies necessary resources for kube-rbac-proxy container
 rbac:

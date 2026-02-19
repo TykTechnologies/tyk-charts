@@ -108,6 +108,7 @@ global:
     # passSecret:
     #   name: ""
     #   keyName: ""
+    #   sentinelKeyName: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -150,6 +151,18 @@ global:
     # running a Redis cluster or not.
     # Default value: false
     # enableCluster: true
+
+    # Enables sentinel connection mode for Redis. If enabled, provide both
+    # mandatory values for sentinelPass and masterName.
+    # enableSentinel: false
+
+    # Redis sentinel password, only required while enableSentinel is true.
+    # For bitnami/redis the same password as Redis above
+    # sentinelPass: ""
+
+    # Redis sentinel master name, only required while enableSentinel is true.
+    # For bitnami/redis typically redis-master
+    # masterName: ""
 
     # By default, the database index is 0. Setting the database index is not
     # supported with redis cluster. As such, if you have enableCluster: true,
@@ -347,7 +360,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.3.10
+    tag: v5.8.9
 
     # image pull policy
     pullPolicy: Always
@@ -421,6 +434,9 @@ dashboard:
   tolerations: []
   # affinity specifies affinity and anti-affinity constraints.
   affinity: {}
+
+  # priorityClassName for dashboard pod assignment
+  priorityClassName: ""
 
   # extraContainers is a list of containers to be added to the pod
   # - name: sidecar

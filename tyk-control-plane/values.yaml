@@ -129,6 +129,7 @@ global:
     # passSecret:
     #   name: ""
     #   keyName: ""
+    #   sentinelKeyName: ""
 
     # Enables SSL for Redis connection. Redis instance will have to support that.
     # Default value: false
@@ -174,6 +175,9 @@ global:
     # then this value should be omitted or explicitly set to 0.
     storage:
       database: 0
+
+    # Set the number of maximum idle connections in the Redis connection pool.
+    maxIdle: 1000
 
   # Please check https://tyk.io/docs/planning-for-production/database-settings/mongodb/#supported-versions
   # for the list of supported MongoDB versions.
@@ -332,10 +336,10 @@ tyk-gateway:
 
     image:
       # image repository for Tyk Gateway
-      repository: tykio/tyk-gateway
+      repository: tykio/tyk-gateway-ee
 
       # image tag for Tyk Gateway
-      tag: v5.3.10
+      tag: v5.8.9
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -508,6 +512,12 @@ tyk-gateway:
     # affinity for gateway pod assignment
     affinity: {}
 
+    # topology spread constraints for pods
+    topologySpreadConstraints: []
+
+    # priorityClassName for gateway pod assignment
+    priorityClassName: ""
+
     # used to decide whether to send the results back directly to Tyk without a hybrid pump
     # if you want to send analytics to control plane instead of pump, change analyticsConfigType to "rpc"
     # TODO: Consider updating analytics config type to RPC
@@ -606,6 +616,11 @@ tyk-gateway:
     # - if enabled, `/app` only responds to `/app`, `/app/` and `/app/*` but not `/apple`
     # Regular expressions and parameterized routes will be left alone regardless of this setting.
     enableStrictRoutes: true
+    # https://tyk.io/docs/tyk-oss-gateway/configuration#http-server-options
+    httpsServerOptions:
+      # Used to instruct the gateway which IP to use from the XFF header for determining the client's IP address.
+      # https://tyk.io/docs/tyk-oss-gateway/configuration#http-server-options-xff-depth
+      xffDepth: 1
 
     # extraContainers is a list of containers to be added to the pod
     # - name: sidecar
@@ -734,6 +749,8 @@ tyk-operator:
 
   # affinity for tyk-operator-manager pod assignment
   affinity: {}
+  # priorityClassName for tyk-operator-manager pod assignment
+  priorityClassName: ""
   hostNetwork: false
 
   # rbac specifies necessary resources for kube-rbac-proxy.
@@ -793,7 +810,7 @@ tyk-pump:
       repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
-      tag: v1.12.0
+      tag: v1.13.2
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -863,11 +880,14 @@ tyk-pump:
     # backend defines the pumps to be created by default, as an array of string.
     # Supported backends are:
     #   - "mongo": Enables Mongo, Mongo Aggregate and Mongo Selective Pump
-    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate AND Mongo Graph Pump
+    #   - "mongo-aggregate": Enables ONLY Mongo Aggregate
     #   - "mongo-selective": Enables ONLY Mongo Selective
-    #   - "postgres": Enables Postgres Aggregate, Postgres Graph Aggregate, SQL Pump and SQL graph pump
-    #   - "postgres-aggregate": Enables ONLY SQL Aggregate AND SQL Graph Aggregate
-    #   - "postgres-pump": Enables ONLY SQL Pump AND SQL graph pump
+    #   - "mongo-graphql": Enables ONLY Mongo GraphQL Pump
+    #   - "postgres": Enables SQL Aggregate and SQL Pump
+    #   - "postgres-aggregate": Enables ONLY SQL Aggregate
+    #   - "postgres-pump": Enables ONLY SQL Pump
+    #   - "postgres-graphql": Enables ONLY SQL Graph pump
+    #   - "postgres-graphql-aggregate": Enables ONLY SQL Graph Aggregate pump
     #   - "prometheus": Enables Prometheus Pump. See pump.prometheusPump for Prometheus Pump configurations.
     #   - "hybrid": Enables Hybrid Pump
     # If you would like to use other backends such as ElasticSearch, please
@@ -962,6 +982,9 @@ tyk-pump:
 
     # affinity for pump pod assignment
     affinity: {}
+
+    # priorityClassName for pump pod assignment
+    priorityClassName: ""
 
     # extraContainers is a list of containers to be added to the pod
     # - name: sidecar
@@ -1114,6 +1137,9 @@ tyk-bootstrap:
     # affinity for bootstrap pods assignment
     affinity: {}
 
+    # priorityClassName for bootstrap pods assignment
+    priorityClassName: ""
+
     # extraVolumes is a list of volumes to be added to the pod
     # extraVolumes:
     #   - name: ca-certs
@@ -1129,11 +1155,16 @@ tyk-bootstrap:
     #     readOnly: true
     extraVolumeMounts: []
 
+    # securityContext values for bootstrap pod. All fields from PodSecurityContext object can be added here.
+    securityContext:
+      runAsUser: 1000
+      fsGroup: 1000
+      runAsNonRoot: true
+
     # containerSecurityContext values for bootstrap containers
     containerSecurityContext:
       runAsNonRoot: true
       runAsUser: 1000
-      fsGroup: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -1303,7 +1334,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.3.10
+      tag: v5.8.9
 
       # image pull policy
       pullPolicy: Always
@@ -1355,6 +1386,9 @@ tyk-dashboard:
     tolerations: []
     # affinity specifies affinity and anti-affinity constraints.
     affinity: {}
+
+    # priorityClassName for dashboard pod assignment
+    priorityClassName: ""
 
     # extraContainers is a list of containers to be added to the pod
     # - name: sidecar
@@ -1550,7 +1584,7 @@ tyk-mdcb:
       # image repository for Tyk MDCB
       repository: tykio/tyk-mdcb-docker
       # image tag for Tyk MDCB
-      tag: v2.8.0
+      tag: v2.8.7
       # image pull policy
       pullPolicy: IfNotPresent
 
@@ -1695,6 +1729,9 @@ tyk-mdcb:
     # affinity for MDCB pod assignment
     affinity: {}
 
+    # priorityClassName for MDCB pod assignment
+    priorityClassName: ""
+
     tls:
       # enables ssl for mdcb
       useSSL: false
@@ -1774,7 +1811,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.13.0
+    tag: v1.16.0
     # image pull policy
     pullPolicy: Always
 
@@ -1852,6 +1889,9 @@ tyk-dev-portal:
   tolerations: []
   # affinity specifies affinity and anti-affinity constraints.
   affinity: {}
+
+  # priorityClassName for dev portal pod assignment
+  priorityClassName: ""
 
   # extraContainers is a list of containers to be added to the pod
   # - name: sidecar
