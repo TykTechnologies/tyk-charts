@@ -708,9 +708,12 @@ tyk-operator:
   fullnameOverride: ""
   # envFrom loads environment variables from the specified resources such as Kubernetes Secret
   # to the Tyk Operator Controller Manager pod.
+  # The secretRef is marked as optional to support atomic Helm installations where
+  # the secret is created by a post-install hook after the operator pod starts.
   envFrom:
     - secretRef:
         name: tyk-operator-conf
+        optional: true
   # envVars adds environment variables to the Tyk Operator Controller Manager pod.
   envVars:
     - name: TYK_HTTPS_INGRESS_PORT
