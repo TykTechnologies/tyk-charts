@@ -51,9 +51,11 @@ podSecurityContext:
 resources: {}
 nodeSelector: {}
 # tolerations for manager pod assignment
-tolerations: {}
+tolerations: []
 # affinity for manager pod assignment
 affinity: {}
+# topologySpreadConstraints for manager pod assignment
+topologySpreadConstraints: []
 # priorityClassName for manager pod assignment
 priorityClassName: ""
 hostNetwork: false
