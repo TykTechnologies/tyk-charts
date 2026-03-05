@@ -517,6 +517,9 @@ spec:
 {{- end }}
       labels:
         control-plane: tyk-operator-controller-manager
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       containers:
       - args:
