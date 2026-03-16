@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -61,14 +61,14 @@ jobs:
 
       - name: Upload Manifest file
         if: ${{ steps.check_changes.outputs.CHANGED == 'true' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: helm
           path: /tmp/helm
 
       - name: Upload Manifest file
         if: ${{ steps.check_changes.outputs.CHANGED == 'true' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: charts
           path: /tmp/charts                  
@@ -79,7 +79,7 @@ jobs:
 
     steps:
       - name: Checkout other repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with: 
           repository: TykTechnologies/tyk-operator-internal
           token: ${{ secrets.PAT }}
@@ -91,13 +91,13 @@ jobs:
           git checkout -b file-changed-${{ env.TAG }}-$SHORT_UID
 
       - name: Download Manifest file directly into the templates directory
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: helm
           path: /helm/templates/ 
 
       - name: Download Chart.yaml and Values.yaml files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: charts
           path: /helm/ 

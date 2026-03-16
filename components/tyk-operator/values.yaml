@@ -17,7 +17,7 @@ envVars:
 image:
   repository: tykio/tyk-operator
   pullPolicy: IfNotPresent
-  tag: "v1.2.0"
+  tag: "v1.3.0"
 # specify imagePullSecrets for ServiceAccount
 imagePullSecrets: []
 nameOverride: ""
@@ -56,8 +56,6 @@ nodeSelector: {}
 tolerations: {}
 # affinity for manager pod assignment
 affinity: {}
-# priorityClassName for manager pod assignment
-priorityClassName: ""
 hostNetwork: false
 # rbac specifies necessary resources for kube-rbac-proxy container
 rbac:
