@@ -661,7 +661,7 @@ metadata:
 {{ if .Values.webhooks.tls.useCertManager }}
     cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "tyk-operator-helm.fullname" . }}-serving-cert
 {{ end }}
-{{- toYaml .webhooks.annotations | nindent 4 }}
+{{- toYaml .Values.webhooks.annotations | nindent 4 }}
   name: {{ include "tyk-operator-helm.fullname" . }}-mutating-webhook-configuration
 webhooks:
 - admissionReviewVersions:
@@ -695,7 +695,7 @@ metadata:
 {{ if .Values.webhooks.tls.useCertManager }}
     cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "tyk-operator-helm.fullname" . }}-serving-cert
 {{ end }}
-{{- toYaml .webhooks.annotations | nindent 4 }}
+{{- toYaml .Values.webhooks.annotations | nindent 4 }}
   name: {{ include "tyk-operator-helm.fullname" . }}-validating-webhook-configuration
 webhooks:
 - admissionReviewVersions:
