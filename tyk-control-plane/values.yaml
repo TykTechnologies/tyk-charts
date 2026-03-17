@@ -4,7 +4,7 @@ global:
     #
     # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
     # that stores the dashboard license. Please see `.global.secrets.useSecretName`.
-    dashboard: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGxvd2VkX25vZGVzIjoiNzYwZmUzZjktMWI3NS00ZmJlLTY5YWEtNmRhNDA4NTRlNzE3LDNkZDU3MjliLThmNDUtNGY2Yy03OTU0LTYxODM4MjcxYjFkMyxlODdlOWY5NC03NTQyLTQxMGQtNDQ1Yi1hZWY1Y2I1ZjAzMWMsZThmZjRjYjQtMGZmNC00NDQ4LTQ3NGUtYjgyMGJkNGE5YzUxLDgyNmMwNTUyLWM0NTYtNDQzYy00NTliLTY4YmFlMzBjNDkzNCwyMDAzMmRmMS1mN2NkLTQ4OTAtN2UzZi0yYWZkZmM0MzRlYzQsM2QzY2QxMmUtMjIyYS00ZWMxLTcwOTQtZWMzNTNlYzM0MjdjLDMzMGE5ZjE4LWI1NGYtNGM4MS00NzAxLTYzZTUzOWQxMmUyNyw4NjBlNjk0MS1hYWVjLTRkYTktNDE5MS0zOGY0YmYyNWFhZmIsOGU1MDQ3MzQtMzNlNS00NWM3LTY2NTgtYzY4ZjIxNzQ4YWIzIiwiZXhwIjoxNzc1MzQ3MTk5LCJoaWQiOiJpbGlqYSIsImlhdCI6MTc3MjcyOTE5MiwibGljZW5zZV90eXBlIjoiaW50ZXJuYWwiLCJvd25lciI6IjY2YjYzYjQ2ZTNjNGQ1MDAwMTczOTRiMiIsInNjb3BlIjoibXVsdGlfdGVhbSxyYmFjLGdyYXBoLGZlZGVyYXRpb24sc3RyZWFtcyx0cmFjayIsInYiOiIyIn0.hJrQNNjAdzTwtiJS3yMaP6csGSkV-ZDVpdjZr7xnaz4pTJ90GfRvsUcGmlbNtT71A5cNmZ11MZc1WfnaZHLlBCq4uax4Gjmv49pvPJXp2KWflKnOCUZtkP5G14sAlDvkJGpEEdS3WKyb5e28sOHcAV3UlBZQ4c8nwcoF28Vm_HKFOP0ziv-wxKA3K0rBzJ5tda9KuSL-JwpTfER5zElFlI_A2vUGAGz8r31JNOxjJjXXTlZrGywrOrYL-90cph1_gXSjAJDUCwdfbm_sbtDXJn8A8sQrwkF0hZltxzdyPZCa5hkZn_zCCZUnh-ZOI5Uz43jeToIhSZZt4pXRltEBCQ"
+    dashboard: ""
     # The license key needed by Tyk Operator to work.
     #
     # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
@@ -225,7 +225,7 @@ global:
     #   keyName: ""
 
   # Choose the storageType for Tyk. [ "mongo", "postgres" ]
-  storageType: &globalStorageType mongo
+  storageType: &globalStorageType postgres
 
   mdcbSynchronizer:
     # Enable the MDCB Synchroniser
