@@ -46,6 +46,8 @@ metricsPort: 8080
 secureMetrics: true
 annotations: {}
 podAnnotations: {}
+# podLabels specifies labels to be added in operator Pod
+podLabels: {}
 podSecurityContext:
   allowPrivilegeEscalation: false
 resources: {}
