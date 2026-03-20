@@ -1520,6 +1520,11 @@ tyk-dev-portal:
       bucket: your-portal-bucket
       acl: private
       presign_urls: true
+      # secretRef allows using a separate secret for S3 credentials with custom key names.
+      secretRef:
+        name: ""
+        accessKeyIdKey: "DevPortalAwsAccessKeyId"
+        secretAccessKeyKey: "DevPortalAwsSecretAccessKey"
     persistence:
       mountExistingPVC: ""
       storageClass: ""

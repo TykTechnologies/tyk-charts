@@ -85,6 +85,17 @@ storage:
     bucket: https://s3.sa-east-1.amazonaws.com
     acl: private
     presign_urls: true
+    # secretRef allows using a separate secret for S3 credentials with custom key names.
+    # When set, this takes precedence over useSecretName for S3 credentials.
+    # This is useful when S3 credentials are managed by external tools (e.g., Crossplane)
+    # that use different key names than the chart defaults.
+    secretRef:
+      # name of the secret containing S3 credentials. If empty, falls back to useSecretName.
+      name: ""
+      # key in the secret containing the AWS access key ID
+      accessKeyIdKey: "DevPortalAwsAccessKeyId"
+      # key in the secret containing the AWS secret access key
+      secretAccessKeyKey: "DevPortalAwsSecretAccessKey"
 
   persistence:
     # User can mount existing PVC to enterprise portal

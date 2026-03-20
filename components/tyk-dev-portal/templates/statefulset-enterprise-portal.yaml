@@ -125,21 +125,29 @@ spec:
           - name: PORTAL_S3_AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
-                {{ if .Values.useSecretName }}
+                {{ if .Values.storage.s3.secretRef.name }}
+                name: {{ .Values.storage.s3.secretRef.name }}
+                key: {{ .Values.storage.s3.secretRef.accessKeyIdKey | default "DevPortalAwsAccessKeyId" | quote }}
+                {{ else if .Values.useSecretName }}
                 name: {{ .Values.useSecretName }}
+                key: "DevPortalAwsAccessKeyId"
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
-                {{ end }}
                 key: "DevPortalAwsAccessKeyId"
+                {{ end }}
           - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                {{ if .Values.useSecretName }}
+                {{ if .Values.storage.s3.secretRef.name }}
+                name: {{ .Values.storage.s3.secretRef.name }}
+                key: {{ .Values.storage.s3.secretRef.secretAccessKeyKey | default "DevPortalAwsSecretAccessKey" | quote }}
+                {{ else if .Values.useSecretName }}
                 name: {{ .Values.useSecretName }}
+                key: "DevPortalAwsSecretAccessKey"
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
-                {{ end }}
                 key: "DevPortalAwsSecretAccessKey"
+                {{ end }}
           - name: PORTAL_S3_REGION
             value: "{{ .Values.storage.s3.region }}"
           - name: PORTAL_S3_ENDPOINT
