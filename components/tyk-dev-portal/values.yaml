@@ -85,6 +85,17 @@ storage:
     bucket: https://s3.sa-east-1.amazonaws.com
     acl: private
     presign_urls: true
+    # secretRef allows using a separate secret for S3 credentials with custom key names.
+    # When set, this takes precedence over useSecretName for S3 credentials.
+    # This is useful when S3 credentials are managed by external tools (e.g., Crossplane)
+    # that use different key names than the chart defaults.
+    secretRef:
+      # name of the secret containing S3 credentials. If empty, falls back to useSecretName.
+      name: ""
+      # key in the secret containing the AWS access key ID
+      accessKeyIdKey: "DevPortalAwsAccessKeyId"
+      # key in the secret containing the AWS secret access key
+      secretAccessKeyKey: "DevPortalAwsSecretAccessKey"
 
   persistence:
     # User can mount existing PVC to enterprise portal
@@ -188,15 +199,15 @@ resources: {}
   #  memory: 128Mi
 
 # securityContext holds pod-level security attributes for Tyk Developer Portal pod. All fields from PodSecurityContext object can be added here.
+# Note: runAsUser and fsGroup are not set by default to allow platforms like OpenShift
+# to assign UIDs automatically via Security Context Constraints (SCC).
 securityContext:
-  runAsUser: 1000
-  fsGroup: 2000
   runAsNonRoot: true
 
 # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod. All fields from SecurityContext object can be added here.
+# Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
 containerSecurityContext:
   runAsNonRoot: true
-  runAsUser: 1000
   allowPrivilegeEscalation: false
   privileged: false
   readOnlyRootFilesystem: true
@@ -222,9 +233,28 @@ priorityClassName: ""
 extraContainers: []
 
 # extraEnvs is used to set extra environment variables to Tyk Developer Portal pod.
+# Supports full Kubernetes env var syntax including valueFrom (secretKeyRef, configMapKeyRef).
 # - name: PORTAL_REFRESHINTERVAL
 #   value: "10"
+# - name: PORTAL_API_SECRET
+#   valueFrom:
+#     secretKeyRef:
+#       name: my-secret
+#       key: apiSecret
 extraEnvs: []
+
+# bootstrapJob configures the Developer Portal bootstrap Job that creates the initial admin user.
+bootstrapJob:
+  # image specifies the image used by the bootstrap job (must have curl and nc available).
+  image:
+    repository: curlimages/curl
+    tag: "8.8.0"
+  # imagePullSecrets specifies image pull secrets for the bootstrap job pod.
+  imagePullSecrets: []
+  # securityContext holds pod-level security attributes for the bootstrap job.
+  securityContext: {}
+  # containerSecurityContext holds container-level security attributes for the bootstrap job.
+  containerSecurityContext: {}
 
 # extraVolumes is a list of volumes to be added to the pod
 # extraVolumes:

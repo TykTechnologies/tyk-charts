@@ -443,14 +443,11 @@ tyk-gateway:
 
     # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -841,14 +838,11 @@ tyk-pump:
 
     # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -926,13 +920,10 @@ tests:
 
   # securityContext holds pod-level security attributes for Tyk tests pod. All fields from PodSecurityContext object can be added here.
   securityContext:
-    runAsUser: 1000
-    fsGroup: 2000
     runAsNonRoot: true
   # containerSecurityContext holds container-level security attributes for Tyk tests pod. All fields from SecurityContext object can be added here.
   containerSecurityContext:
     runAsNonRoot: true
-    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true
