@@ -13,15 +13,16 @@ metadata:
     # app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 
     helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  {{- if not .Values.bootstrap.disableHelmHooks }}
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
     "helm.sh/hook": pre-delete
     "helm.sh/hook-weight": "0"
-
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  {{- end }}
 spec:
-  backoffLimit: 1
+  backoffLimit: {{ .Values.bootstrap.jobs.preDelete.backoffLimit | default 1 }}
   template:
     metadata:
       annotations:
@@ -31,9 +32,12 @@ spec:
       labels:
         {{- with .Values.bootstrap.podLabels.preDeletePodLabels }}
         {{- toYaml . | nindent 8 }}
-        {{- end }}        
+        {{- end }}
     spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
+      {{- with .Values.bootstrap.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
 {{- if .Values.bootstrap.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.bootstrap.nodeSelector | indent 8 }}

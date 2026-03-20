@@ -11,14 +11,16 @@ metadata:
     # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
     # when every app will have its own a chart
     # app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+  {{- if not .Values.bootstrap.disableHelmHooks }}
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
     "helm.sh/hook": post-install
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  {{- end }}
 spec:
-  backoffLimit: 1
+  backoffLimit: {{ .Values.bootstrap.jobs.postInstall.backoffLimit | default 1 }}
   template:
     metadata:
       annotations:
@@ -28,9 +30,12 @@ spec:
       labels:
         {{- with .Values.bootstrap.podLabels.postInstallPodLabels }}
         {{- toYaml . | nindent 8 }}
-        {{- end }} 
+        {{- end }}
     spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
+      {{- with .Values.bootstrap.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
 {{- if .Values.bootstrap.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.bootstrap.nodeSelector | indent 8 }}

@@ -289,6 +289,10 @@ gateway:
       repository: busybox
       tag: 1.32
       resources: {}
+      # securityContext for the init container. If not set, falls back to gateway.containerSecurityContext.
+      # Override this when the init container needs different settings than the main container
+      # (e.g., readOnlyRootFilesystem: true for init but false for gateway on OpenShift).
+      securityContext: {}
       # If you do want to specify resources, uncomment the following
       # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
       # limits:
@@ -459,15 +463,15 @@ gateway:
   startupProbe: {}
 
   # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
+  # Note: runAsUser and fsGroup are not set by default to allow platforms like OpenShift
+  # to assign UIDs automatically via Security Context Constraints (SCC).
   securityContext:
-    runAsUser: 1000
-    fsGroup: 2000
     runAsNonRoot: true
 
   # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
+  # Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
   containerSecurityContext:
     runAsNonRoot: true
-    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true

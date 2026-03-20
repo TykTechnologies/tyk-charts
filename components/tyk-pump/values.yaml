@@ -358,15 +358,15 @@ pump:
   resources: {}
 
   # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
+  # Note: runAsUser and fsGroup are not set by default to allow platforms like OpenShift
+  # to assign UIDs automatically via Security Context Constraints (SCC).
   securityContext:
-    runAsUser: 1000
-    fsGroup: 2000
-    runAsNonRoot: true   
+    runAsNonRoot: true
 
   # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
+  # Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
   containerSecurityContext:
     runAsNonRoot: true
-    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true

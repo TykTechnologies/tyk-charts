@@ -84,10 +84,13 @@ spec:
         image: "{{ .Values.global.imageRegistry }}{{ .Values.gateway.initContainers.setupDirectories.repository }}:{{ .Values.gateway.initContainers.setupDirectories.tag }}"
         command: ['sh','-c','mkdir -p apps middleware policies && touch policies/policies.json']
         workingDir: /mnt/tyk-gateway
-        {{- if .Values.gateway.containerSecurityContext }}
+        {{- if not (empty .Values.gateway.initContainers.setupDirectories.securityContext) }}
+        securityContext:
+        {{- toYaml .Values.gateway.initContainers.setupDirectories.securityContext | nindent 12 }}
+        {{- else if .Values.gateway.containerSecurityContext }}
         securityContext:
         {{- toYaml .Values.gateway.containerSecurityContext | nindent 12 }}
-        {{- end }}      
+        {{- end }}
         resources:
         {{- toYaml .Values.gateway.initContainers.setupDirectories.resources | nindent 12 }}
         volumeMounts:
@@ -300,7 +303,14 @@ spec:
             value: "{{ .Values.global.remoteControlPlane.groupID}}"
             {{ end }}
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
+            {{ if .Values.global.remoteControlPlane.useSecretName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.remoteControlPlane.useSecretName }}
+                key: connectionString
+            {{ else }}
             value: "{{ .Values.global.remoteControlPlane.connectionString }}"
+            {{ end }}
           - name: TYK_GW_SLAVEOPTIONS_USESSL
             value: "{{ .Values.global.remoteControlPlane.useSSL}}"
           - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
