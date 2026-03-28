@@ -34,6 +34,9 @@ spec:
         {{- end }}        
     spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
+{{- if or .Values.bootstrap.jobs.preDelete.priorityClassName .Values.bootstrap.priorityClassName }}
+      priorityClassName: {{ .Values.bootstrap.jobs.preDelete.priorityClassName | default .Values.bootstrap.priorityClassName | quote }}
+{{- end }}
 {{- if .Values.bootstrap.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.bootstrap.nodeSelector | indent 8 }}

@@ -501,6 +501,9 @@ tyk-gateway:
         drop:
           - ALL
 
+    # Priority class assigned to the Tyk Gateway pod(s).
+    priorityClassName: ""
+
     # node labels for gateway pod assignment
     nodeSelector: {}
 
@@ -745,6 +748,8 @@ tyk-operator:
   podSecurityContext:
     allowPrivilegeEscalation: false
   resources: {}
+  # Priority class assigned to the Tyk Operator pod(s).
+  priorityClassName: ""
   nodeSelector: {}
   # tolerations for tyk-operator-manager pod assignment
   tolerations: {}
@@ -976,6 +981,9 @@ tyk-pump:
         drop:
           - ALL
 
+    # Priority class assigned to the Tyk Pump pod(s).
+    priorityClassName: ""
+
     # node labels for pump pod assignment
     nodeSelector: {}
 
@@ -1063,6 +1071,9 @@ tyk-bootstrap:
         #   value: "yourlicense"
         extraEnvs: []
 
+        # Priority class for the pre-install job. Overrides the default priorityClassName for bootstrap jobs.
+        priorityClassName: ""
+
       # postInstall configures post-install Helm hook
       postInstall:
         # image specifies image repository of bootstrap images
@@ -1077,6 +1088,9 @@ tyk-bootstrap:
         #   value: "burak"
         extraEnvs: []
 
+        # Priority class for the post-install job. Overrides the default priorityClassName for bootstrap jobs.
+        priorityClassName: ""
+
       # preDelete configures pre-delete Helm hook
       preDelete:
         # image specifies image repository of bootstrap images
@@ -1090,6 +1104,9 @@ tyk-bootstrap:
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
         #   value: "tyk-operator-conf"
         extraEnvs: []
+
+        # Priority class for the pre-delete job. Overrides the default priorityClassName for bootstrap jobs.
+        priorityClassName: ""
 
     org:
       # The name for your organization inside Tyk
@@ -1175,6 +1192,9 @@ tyk-bootstrap:
       capabilities:
         drop:
           - ALL
+
+    # Default priority class for all bootstrap jobs.
+    priorityClassName: ""
 
 tyk-dashboard:
   # nameOverride overrides the Chart name. It is truncated to 63 characters.
@@ -1382,6 +1402,8 @@ tyk-dashboard:
         drop:
           - ALL
 
+    # Priority class assigned to the Tyk Dashboard pod(s).
+    priorityClassName: ""
     # nodeSelector is a selector which must be true for Tyk Dashboard pod to fit on a specific node.
     nodeSelector: {}
     # tolerations specifies tolerations to be applied on Tyk Dashboard pods.
@@ -1722,6 +1744,9 @@ tyk-mdcb:
     #   mountPath: "/etc/foo"
     #   readOnly: true
 
+    # Priority class assigned to the Tyk MDCB pod(s).
+    priorityClassName: ""
+
     # node labels for MDCB pod assignment
     nodeSelector: {}
 
@@ -1885,6 +1910,9 @@ tyk-dev-portal:
     capabilities:
       drop:
         - ALL
+
+  # Priority class assigned to the Tyk Developer Portal pod(s).
+  priorityClassName: ""
   # nodeSelector is a selector which must be true for Tyk Developer Portal pod to fit on a specific node.
   nodeSelector: {}
   # tolerations specifies tolerations to be applied on Tyk Developer Portal pods.
