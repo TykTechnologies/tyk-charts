@@ -738,6 +738,18 @@ tyk-operator:
   # webhookPort identifies the port on which webhooks are handled
   webhookPort: 9443
 
+  webhooks:
+    enabled: true
+    # identifies the port on which webhooks are handled
+    port: 9443
+    annotations: {}
+    tls:
+      useCertManager: true
+      # The name of the secret which should contain the TLS certificate you want to use with the webhook
+      secretName: webhook-server-cert
+      # certificatesMountPath corresponds to the mount path of the secret.
+      certificatesMountPath: "/tmp/k8s-webhook-server/serving-certs"
+
   annotations: {}
   podAnnotations: {}
   # podLabels specifies labels to be added in operator Pod
