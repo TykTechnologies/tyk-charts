@@ -5,15 +5,19 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
   check-specific-file:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       CHANGED: ${{ steps.check_changes.outputs.CHANGED }}
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5
         with:
           fetch-depth: 0
 
@@ -34,10 +38,10 @@ jobs:
           else
             if [[ "$SOURCE_BRANCH" == *operator-release* ]]; then
               echo "Source branch is an operator-release branch."
-            fi          
+            fi
             echo "Source branch (merging from): $SOURCE_BRANCH"
             echo "SOURCE_BRANCH=$SOURCE_BRANCH" >> $GITHUB_ENV
-          fi        
+          fi
 
       - name: Check for Changes in components/tyk-operator/templates/all.yaml
         id: check_changes
@@ -61,26 +65,28 @@ jobs:
 
       - name: Upload Manifest file
         if: ${{ steps.check_changes.outputs.CHANGED == 'true' }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
         with:
           name: helm
           path: /tmp/helm
 
       - name: Upload Manifest file
         if: ${{ steps.check_changes.outputs.CHANGED == 'true' }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6
         with:
           name: charts
-          path: /tmp/charts                  
+          path: /tmp/charts
   process-changes:
     needs: check-specific-file
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     if: ${{ needs.check-specific-file.outputs.CHANGED == 'true' }}
 
     steps:
       - name: Checkout other repository
-        uses: actions/checkout@v5
-        with: 
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5
+        with:
           repository: TykTechnologies/tyk-operator-internal
           token: ${{ secrets.PAT }}
 
@@ -91,16 +97,16 @@ jobs:
           git checkout -b file-changed-${{ env.TAG }}-$SHORT_UID
 
       - name: Download Manifest file directly into the templates directory
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7
         with:
           name: helm
-          path: /helm/templates/ 
+          path: /helm/templates/
 
       - name: Download Chart.yaml and Values.yaml files
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7
         with:
           name: charts
-          path: /helm/ 
+          path: /helm/
 
       - name: Commit and push changes
         run: |
