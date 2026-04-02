@@ -32,6 +32,9 @@ spec:
     {{- if .Values.pump.serviceAccountName }}
       serviceAccountName: "{{ .Values.pump.serviceAccountName }}"
     {{- end }}
+      {{- if .Values.pump.priorityClassName }}
+      priorityClassName: {{ .Values.pump.priorityClassName | quote }}
+      {{- end }}
 {{- if .Values.pump.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.pump.nodeSelector | indent 8 }}

@@ -206,6 +206,8 @@ containerSecurityContext:
     drop:
       - ALL
 
+# Priority class assigned to the Tyk Developer Portal pod(s).
+priorityClassName: ""
 # nodeSelector is a selector which must be true for Tyk Developer Portal pod to fit on a specific node.
 nodeSelector: {}
 # tolerations specifies tolerations to be applied on Tyk Developer Portal pods.
