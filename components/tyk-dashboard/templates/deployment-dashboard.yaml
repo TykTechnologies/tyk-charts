@@ -240,6 +240,11 @@ spec:
             value: "{{ .Values.dashboard.hostName }}"
           - name: "TYK_DB_ENABLEAGGREGATELOOKUPS"
             value: "{{ .Values.dashboard.enableAggregateLookups }}"
+          # Log system events configuration
+          - name: TYK_DB_LOGFORMAT
+            value: "{{ .Values.dashboard.log.format }}"
+          - name: TYK_DB_LOGLEVEL
+            value: "{{ .Values.dashboard.log.level }}"
           {{ if (.Values.dashboard.auditLogs).enabled }}
           - name: TYK_DB_AUDIT_ENABLED
             value: "{{ .Values.dashboard.auditLogs.enabled }}"
