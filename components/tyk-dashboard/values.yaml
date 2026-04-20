@@ -90,6 +90,16 @@ global:
     #   name: ""
     #   keyName: ""
 
+    # If needed you can unset some of the postgres connection related environment variables by providing them here.
+    # Beware that this may break database connectivity.
+    # unsetConnectionEnvVars:
+    #   - TYK_DB_STORAGE_MAIN_TYPE
+    #   - TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
+    #   - TYK_DB_STORAGE_ANALYTICS_TYPE
+    #   - TYK_DB_STORAGE_ANALYTICS_CONNECTIONSTRING
+    #   - TYK_DB_STORAGE_UPTIME_TYPE
+    #   - TYK_DB_STORAGE_UPTIME_CONNECTIONSTRING
+
   redis:
     # The addrs value will allow you to set your Redis addresses. If you are
     # using a redis cluster, you can list the endpoints of the redis instances
