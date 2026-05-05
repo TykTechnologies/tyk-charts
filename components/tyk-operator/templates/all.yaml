@@ -675,7 +675,9 @@ webhooks:
       namespace: {{ .Release.Namespace }}
       path: /mutate-tyk-tyk-io-v1alpha1-apidefinition
   failurePolicy: Fail
-  name: mapidefinition.kb.io
+  name: {{ include "tyk-operator-helm.fullname" . }}-mapidefinition.kb.io
+  namespaceSelector:
+{{ toYaml .Values.webhooks.namespaceSelector | indent 4 }}
   rules:
   - apiGroups:
     - tyk.tyk.io
@@ -711,7 +713,9 @@ webhooks:
       namespace: {{ .Release.Namespace }}
       path: /validate-tyk-tyk-io-v1alpha1-apidefinition
   failurePolicy: Fail
-  name: vapidefinition.kb.io
+  name: {{ include "tyk-operator-helm.fullname" . }}-vapidefinition.kb.io
+  namespaceSelector:
+{{ toYaml .Values.webhooks.namespaceSelector | indent 4 }}
   rules:
   - apiGroups:
     - tyk.tyk.io

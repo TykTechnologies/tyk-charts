@@ -76,6 +76,7 @@ webhooks:
   # identifies the port on which webhooks are handled
   port: 9443
   annotations: {}
+  namespaceSelector: {}
   tls:
     useCertManager: true
     # The name of the secret which should contain the TLS certificate you want to use with the webhook
