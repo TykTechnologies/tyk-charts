@@ -100,6 +100,8 @@ bootstrap:
 
     # postInstall configures post-install Helm hook
     postInstall:
+      # backoffLimit specifies the number of retries before considering a Job as failed
+      backoffLimit: 10
       # image specifies image repository of bootstrap images
       image:
         # repository specifies image repository of post-install job.
