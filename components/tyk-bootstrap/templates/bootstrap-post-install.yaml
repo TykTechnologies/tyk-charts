@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: bootstrap-post-install-{{ include "tyk-bootstrap.fullname" . }}
+  name: bootstrap-post-install-{{ include "tyk-bootstrap.fullname" . }}-{{ .Release.Revision }}
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
@@ -11,14 +11,8 @@ metadata:
     # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
     # when every app will have its own a chart
     # app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-  annotations:
-    # This is what defines this resource as a hook. Without this line, the
-    # job is considered part of the release.
-    "helm.sh/hook": post-install
-    "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
-  backoffLimit: 1
+  backoffLimit: {{ .Values.bootstrap.jobs.postInstall.backoffLimit | default 10 }}
   template:
     metadata:
       annotations:
@@ -148,4 +142,3 @@ spec:
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}
-      
