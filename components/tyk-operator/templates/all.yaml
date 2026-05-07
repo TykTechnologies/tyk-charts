@@ -297,6 +297,32 @@ rules:
 - apiGroups:
   - tyk.tyk.io
   resources:
+  - tykmcpproxydefinitions
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - tyk.tyk.io
+  resources:
+  - tykmcpproxydefinitions/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - tyk.tyk.io
+  resources:
+  - tykmcpproxydefinitions/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - tyk.tyk.io
+  resources:
   - tykoasapidefinitions
   verbs:
   - create
@@ -481,7 +507,6 @@ spec:
   selector:
     control-plane: tyk-operator-controller-manager
 ---
-{{ if .Values.webhooks.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -493,7 +518,6 @@ spec:
     targetPort: {{ .Values.webhooks.port | default .Values.webhookPort }}
   selector:
     control-plane: tyk-operator-controller-manager
-{{ end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -519,9 +543,6 @@ spec:
 {{- end }}
       labels:
         control-plane: tyk-operator-controller-manager
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
     spec:
       containers:
       - args:
@@ -532,15 +553,15 @@ spec:
         - --metrics-secure={{ .Values.secureMetrics }}
         command:
         - /manager
+{{- with .Values.envVars }}
         env:
-          - name: ENABLE_WEBHOOKS
-            value: {{ .Values.webhooks.enabled | quote }}
-{{- toYaml .Values.envVars | nindent 10 }}
+{{- toYaml . | nindent 10 }}
+{{- end }}
 {{- with .Values.envFrom }}
         envFrom:
 {{- toYaml . | nindent 10 }}
 {{- end }}
-        image: {{ .Values.global.imageRegistry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         livenessProbe:
           httpGet:
@@ -549,12 +570,10 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
         name: manager
-{{ if .Values.webhooks.enabled }}
         ports:
         - containerPort: {{ .Values.webhooks.port | default .Values.webhookPort }}
           name: webhook-server
           protocol: TCP
-{{ end }}
         readinessProbe:
           httpGet:
             path: /readyz
@@ -570,11 +589,9 @@ spec:
 {{- toYaml . | nindent 10 }}
 {{- end }}
         volumeMounts:
-{{ if .Values.webhooks.enabled }}
-        - mountPath: {{ .Values.webhooks.tls.certificatesMountPath }}
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
           name: cert
           readOnly: true
-{{ end }}
         {{ if .Values.extraVolumeMounts }}
             {{ toYaml .Values.extraVolumeMounts | nindent 8}}
           {{ end }}
@@ -583,30 +600,19 @@ spec:
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
 {{- end }}
-{{- if .Values.tolerations }}
-      tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
-{{- end }}
-{{- if .Values.affinity }}
-      affinity:
-{{ toYaml .Values.affinity | indent 8 }}
-{{- end }}
       securityContext:
         runAsNonRoot: true
       serviceAccountName: {{ include "tyk-operator-helm.fullname" . }}-controller-manager
       terminationGracePeriodSeconds: 10
       volumes:
-{{ if .Values.webhooks.enabled }}
       - name: cert
         secret:
           defaultMode: 420
-          secretName: {{ .Values.webhooks.tls.secretName }}
-{{ end }}
+          secretName: webhook-server-cert
       {{ if .Values.extraVolumes }}
        {{ toYaml .Values.extraVolumes | nindent 6 }}
         {{ end }}
 ---
-{{ if and .Values.webhooks.enabled .Values.webhooks.tls.useCertManager }}
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -619,10 +625,8 @@ spec:
   issuerRef:
     kind: Issuer
     name: {{ include "tyk-operator-helm.fullname" . }}-selfsigned-issuer
-  secretName: {{ .Values.webhooks.tls.secretName }}
-{{ end }}
+  secretName: webhook-server-cert
 ---
-{{ if and .Values.webhooks.enabled .Values.webhooks.tls.useCertManager }}
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
@@ -630,7 +634,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   selfSigned: {}
-{{ end }}
 ---
 {{ if .Values.serviceMonitor }}
 apiVersion: monitoring.coreos.com/v1
@@ -653,17 +656,11 @@ spec:
       control-plane: tyk-operator-controller-manager
 {{ end }} 
 ---
-{{ if .Values.webhooks.enabled }}
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   annotations:
-{{ if .Values.webhooks.tls.useCertManager }}
     cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "tyk-operator-helm.fullname" . }}-serving-cert
-{{ end }}
-{{- with .Values.webhooks.annotations }}
-{{- toYaml . | nindent 4 }}
-{{- end }}
   name: {{ include "tyk-operator-helm.fullname" . }}-mutating-webhook-configuration
 webhooks:
 - admissionReviewVersions:
@@ -687,19 +684,12 @@ webhooks:
     resources:
     - apidefinitions
   sideEffects: None
-{{ end }}
 ---
-{{ if .Values.webhooks.enabled }}
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
   annotations:
-{{ if .Values.webhooks.tls.useCertManager }}
     cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "tyk-operator-helm.fullname" . }}-serving-cert
-{{ end }}
-{{- with .Values.webhooks.annotations }}
-{{- toYaml . | nindent 4 }}
-{{- end }}
   name: {{ include "tyk-operator-helm.fullname" . }}-validating-webhook-configuration
 webhooks:
 - admissionReviewVersions:
@@ -723,4 +713,3 @@ webhooks:
     resources:
     - apidefinitions
   sideEffects: None
-{{ end }}
