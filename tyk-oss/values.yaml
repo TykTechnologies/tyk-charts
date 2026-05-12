@@ -25,7 +25,9 @@ global:
     # The license key needed by Tyk Operator to work.
     #
     # NOTE: If you do not want to store license as a plain text in the file, you can use a Kubernetes secret
-    # that stores the operator license. Please see `.global.secrets.useSecretName`.
+    # that stores the operator license. Please see `.global.secrets.useSecretName`. If you are using 
+    # `.global.secrets.useSecretName`, you must configure the operator license in the referenced Kubernetes 
+    # secret. `.global.license.operator` will not be used in this case.
     operator: ""
 
   servicePorts:
