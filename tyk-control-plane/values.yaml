@@ -1825,7 +1825,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.17.1
+    tag: v1.17.2
     # image pull policy
     pullPolicy: Always
 
