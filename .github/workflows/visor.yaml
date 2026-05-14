@@ -15,12 +15,27 @@ permissions:
   checks: write
 
 jobs:
+  dep-guard:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - name: Check for dependency changes
+        id: check
+        run: echo "skip=false" >> "$GITHUB_OUTPUT"
+
   visor:
+    needs: [dep-guard]
+    if: always() && (needs.dep-guard.result == 'success' || needs.dep-guard.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-      - uses: probelabs/visor@main
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+      - uses: probelabs/visor@02e893ad11b66319b0fca1a43622038171c1a159  # main
         with:
           app-id: ${{ secrets.PROBE_APP_ID }}
           private-key: ${{ secrets.PROBE_APP_PRIVATE_KEY }}
