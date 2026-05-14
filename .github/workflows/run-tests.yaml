@@ -106,7 +106,7 @@ jobs:
       - name: Upgrade Tyk OSS
         id: smoke-upgrade-oss
         run: |
-          helm upgrade -n ${{ env.TYK_OSS_NS }} tyk-oss ./tyk-oss --wait --timeout ${{ env.TIMEOUT }} --set tyk-gateway.gateway.kind=DaemonSet
+          helm upgrade -n ${{ env.TYK_OSS_NS }} tyk-oss ./tyk-oss --wait --timeout ${{ env.TIMEOUT }} --reuse-values --set tyk-gateway.gateway.kind=DaemonSet
 
       - name: Uninstall Tyk OSS
         run: |
@@ -141,7 +141,7 @@ jobs:
       - name: Upgrade Tyk Data Plane
         id: smoke-upgrade-data-plane
         run: |
-          helm upgrade -n ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait --timeout ${{ env.TIMEOUT }} --set tyk-gateway.gateway.kind=DaemonSet
+          helm upgrade -n ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait --timeout ${{ env.TIMEOUT }} --reuse-values --set tyk-gateway.gateway.kind=DaemonSet
 
       # Always-on diagnostics when any step in this smoke-tests job has failed.
       # Replaces the prior failure handler which referenced step IDs that didn't exist,
@@ -158,11 +158,12 @@ jobs:
               kubectl get pods -n "$NS" -o wide || true
               echo "--- events (last 50) ---"
               kubectl get events -n "$NS" --sort-by='.lastTimestamp' | tail -50 || true
-              echo "--- describe non-Running pods ---"
-              kubectl get pods -n "$NS" -o jsonpath='{range .items[?(@.status.phase!="Running")]}{.metadata.name}{"\n"}{end}' \
-                | while read p; do [ -n "$p" ] && kubectl describe pod -n "$NS" "$p" || true; done
-              echo "--- tyk-gateway logs (if any) ---"
-              kubectl logs -n "$NS" -l app.kubernetes.io/name=tyk-gateway --all-containers --tail=200 --prefix 2>/dev/null || true
+              echo "--- describe all pods ---"
+              kubectl get pods -n "$NS" -o name | while read p; do kubectl describe -n "$NS" "$p" || true; done
+              echo "--- tyk-gateway logs (current) ---"
+              kubectl logs -n "$NS" -l app.kubernetes.io/name=tyk-gateway --all-containers --tail=200 --prefix || true
+              echo "--- tyk-gateway logs (previous, if any container crashed) ---"
+              kubectl logs -n "$NS" -l app.kubernetes.io/name=tyk-gateway --all-containers --tail=200 --prefix --previous || true
             fi
           done
 
