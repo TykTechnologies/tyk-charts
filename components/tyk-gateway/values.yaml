@@ -289,10 +289,23 @@ gateway:
       repository: busybox
       tag: 1.32
       resources: {}
-      # securityContext for the init container. If not set, falls back to gateway.containerSecurityContext.
-      # Override this when the init container needs different settings than the main container
-      # (e.g., readOnlyRootFilesystem: true for init but false for gateway on OpenShift).
-      securityContext: {}
+      # securityContext for the init container. Default sets runAsUser: 1000 explicitly
+      # because busybox has no USER directive: with the main container's `runAsNonRoot: true`
+      # inherited, kubelet would otherwise reject the init container at admission with
+      # "container has runAsNonRoot and image will run as root".
+      # On OpenShift, override with `securityContext: {}` (or to your SCC-allowed UID) so the
+      # SCC's runAsUser strategy can inject a namespace-allocated UID instead.
+      securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        privileged: false
+        readOnlyRootFilesystem: true
+        seccompProfile:
+          type: RuntimeDefault
+        capabilities:
+          drop:
+            - ALL
       # If you do want to specify resources, uncomment the following
       # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
       # limits:
