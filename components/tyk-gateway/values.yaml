@@ -289,14 +289,19 @@ gateway:
       repository: busybox
       tag: 1.32
       resources: {}
-      # securityContext for the init container. Default sets runAsUser: 1000 explicitly
-      # because busybox has no USER directive: with the main container's `runAsNonRoot: true`
-      # inherited, kubelet would otherwise reject the init container at admission with
-      # "container has runAsNonRoot and image will run as root".
+      # securityContext for the init container. Default sets runAsUser: 65532 explicitly
+      # for two reasons:
+      #   1. busybox has no USER directive, so with the main container's `runAsNonRoot: true`
+      #      inherited kubelet would reject the init container at admission with
+      #      "container has runAsNonRoot and image will run as root".
+      #   2. 65532 matches the Tyk gateway image's distroless USER, so directories created by
+      #      the init container in /mnt/tyk-gateway are owned by the same UID that the main
+      #      gateway container runs as — letting the gateway write API definitions, plugin
+      #      bundles, etc. without UID/GID mismatches.
       # On OpenShift, override with `securityContext: {}` (or to your SCC-allowed UID) so the
       # SCC's runAsUser strategy can inject a namespace-allocated UID instead.
       securityContext:
-        runAsUser: 1000
+        runAsUser: 65532
         runAsNonRoot: true
         allowPrivilegeEscalation: false
         privileged: false
