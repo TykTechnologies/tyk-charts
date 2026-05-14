@@ -1,4 +1,4 @@
-{{- if .Values.global.components.bootstrap -}}
+{{- if and .Values.global.components.bootstrap (not .Values.bootstrap.disableHelmHooks) -}}
 apiVersion: batch/v1
 kind: Job
 metadata:

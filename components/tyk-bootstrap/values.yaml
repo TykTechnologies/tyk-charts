@@ -205,6 +205,12 @@ bootstrap:
   # Set to true to omit helm.sh/hook annotations from bootstrap jobs.
   # This is useful when deploying via ArgoCD or Flux, where job ordering is managed
   # by sync waves or depends-on annotations instead of Helm hooks.
+  # Note: when this is true, the pre-delete Job is suppressed entirely (would otherwise be
+  # rendered as a normal install-time Job and erroneously run its cleanup at install/sync time,
+  # bricking the install by deleting the operator secret before the operator can use it).
+  # GitOps users who need a deletion-time hook can re-enable it by leaving disableHelmHooks=false
+  # for the pre-delete Job specifically, or by managing pre-delete via their GitOps tool's own
+  # deletion hooks (e.g., argocd.argoproj.io/hook: PreDelete via bootstrap.jobs.preDelete.annotations).
   disableHelmHooks: false
 
   # securityContext values for bootstrap pods. All fields from PodSecurityContext object can be added here.
