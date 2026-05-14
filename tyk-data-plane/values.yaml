@@ -930,9 +930,14 @@ tests:
 
   # securityContext holds pod-level security attributes for Tyk tests pod. All fields from PodSecurityContext object can be added here.
   securityContext:
+    runAsUser: 1000
     runAsNonRoot: true
   # containerSecurityContext holds container-level security attributes for Tyk tests pod. All fields from SecurityContext object can be added here.
+  # runAsUser is set explicitly because the test image (default: zalbiraw/alpine-curl-jq) has no
+  # USER directive — kubelet would otherwise reject the pod with "container has runAsNonRoot and
+  # image will run as root" → CreateContainerConfigError.
   containerSecurityContext:
+    runAsUser: 1000
     runAsNonRoot: true
     allowPrivilegeEscalation: false
     privileged: false
