@@ -83,6 +83,7 @@ jobs:
         uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4  # v4
 
       - name: Deploy Tyk OSS and Dependencies
+        id: smoke-deploy-oss
         run: |
           kubectl create namespace ${{ env.TYK_OSS_NS }}
 
@@ -97,14 +98,15 @@ jobs:
             --set sysctl.image.repository=bitnamilegacy/os-shell
 
           helm dependency update ./tyk-oss
-          helm install tyk-oss ./tyk-oss -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} \
+          helm install tyk-oss ./tyk-oss -n ${{ env.TYK_OSS_NS }} --wait --timeout ${{ env.TIMEOUT }} \
             --set global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379} \
             --set global.redis.passSecret.name=redis \
             --set global.redis.passSecret.keyName=redis-password
 
       - name: Upgrade Tyk OSS
+        id: smoke-upgrade-oss
         run: |
-          helm upgrade -n ${{ env.TYK_OSS_NS }} tyk-oss ./tyk-oss --set tyk-gateway.gateway.kind=DaemonSet
+          helm upgrade -n ${{ env.TYK_OSS_NS }} tyk-oss ./tyk-oss --wait --timeout ${{ env.TIMEOUT }} --set tyk-gateway.gateway.kind=DaemonSet
 
       - name: Uninstall Tyk OSS
         run: |
@@ -112,6 +114,7 @@ jobs:
           kubectl delete namespace ${{ env.TYK_OSS_NS }}
 
       - name: Deploy Tyk Data Plane
+        id: smoke-deploy-data-plane
         run: |
           kubectl create namespace ${{ env. TYK_DATAPLANE_NS }}
 
@@ -136,8 +139,32 @@ jobs:
             --set global.redis.passSecret.keyName=redis-password
 
       - name: Upgrade Tyk Data Plane
+        id: smoke-upgrade-data-plane
         run: |
-          helm upgrade -n ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --set tyk-gateway.gateway.kind=DaemonSet
+          helm upgrade -n ${{ env. TYK_DATAPLANE_NS }} tyk-data-plane ./tyk-data-plane --wait --timeout ${{ env.TIMEOUT }} --set tyk-gateway.gateway.kind=DaemonSet
+
+      # Always-on diagnostics when any step in this smoke-tests job has failed.
+      # Replaces the prior failure handler which referenced step IDs that didn't exist,
+      # so it produced no output when --wait timed out.
+      - if: failure()
+        name: Diagnostics on failure
+        run: |
+          for NS in ${{ env.TYK_OSS_NS }} ${{ env. TYK_DATAPLANE_NS }}; do
+            if kubectl get namespace "$NS" >/dev/null 2>&1; then
+              echo "=================================================================="
+              echo "NAMESPACE: $NS"
+              echo "=================================================================="
+              echo "--- pods ---"
+              kubectl get pods -n "$NS" -o wide || true
+              echo "--- events (last 50) ---"
+              kubectl get events -n "$NS" --sort-by='.lastTimestamp' | tail -50 || true
+              echo "--- describe non-Running pods ---"
+              kubectl get pods -n "$NS" -o jsonpath='{range .items[?(@.status.phase!="Running")]}{.metadata.name}{"\n"}{end}' \
+                | while read p; do [ -n "$p" ] && kubectl describe pod -n "$NS" "$p" || true; done
+              echo "--- tyk-gateway logs (if any) ---"
+              kubectl logs -n "$NS" -l app.kubernetes.io/name=tyk-gateway --all-containers --tail=200 --prefix 2>/dev/null || true
+            fi
+          done
 
       - name: Uninstall Tyk Data Plane
         run: |
@@ -182,7 +209,7 @@ jobs:
 
           helm dependency update ./tyk-oss
 
-          helm install --namespace ${{ env.TYK_OSS_NS }} tyk-oss ./tyk-oss \
+          helm install --namespace ${{ env.TYK_OSS_NS }} tyk-oss ./tyk-oss --wait \
           --set "global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379}" \
           --set "global.redis.passSecret.name=redis" \
           --set "global.redis.passSecret.keyName=redis-password" \
@@ -234,7 +261,7 @@ jobs:
 
           helm dependency update ./tyk-stack
 
-          helm install --namespace ${{ env.TYK_STACK_NS }} tyk-stack ./tyk-stack \
+          helm install --namespace ${{ env.TYK_STACK_NS }} tyk-stack ./tyk-stack --wait \
             --set "global.mongo.mongoURL=mongodb://root:$MONGODB_ROOT_PASSWORD@mongo-mongodb.${{ env.TYK_STACK_NS }}.svc:27017/tyk_analytics?authSource=admin" \
             --set "global.redis.addrs={redis-master.${{ env.TYK_STACK_NS }}.svc:6379"} \
             --set "global.redis.passSecret.name=redis" \
