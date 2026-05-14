@@ -28,7 +28,17 @@ global:
 
     enabled: true
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+    # Set this as a literal value, OR (alternatively) load it from a k8s secret by setting connectionStringSecretName below.
     connectionString: ""
+    # connectionStringSecretName — when set, the gateway reads the MDCB connection string from this k8s
+    # Secret instead of the literal connectionString above. Independent of useSecretName (which only
+    # covers orgId/userApiKey/groupID). The secret may be the same one referenced by useSecretName, or
+    # a separate secret. Default key looked up in the secret is "connectionString" (override via
+    # connectionStringSecretKey).
+    connectionStringSecretName: ""
+    # connectionStringSecretKey — key name inside connectionStringSecretName to read. Defaults to
+    # "connectionString" when unset.
+    connectionStringSecretKey: ""
     # orgID of your dashboard user
     orgId: ""
     # API key of your dashboard user
