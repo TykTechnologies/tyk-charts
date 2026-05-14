@@ -208,8 +208,11 @@ bootstrap:
   disableHelmHooks: false
 
   # securityContext values for bootstrap pods. All fields from PodSecurityContext object can be added here.
-  # Note: runAsUser and fsGroup are not set by default for OpenShift compatibility (SCC assigns UIDs).
+  # Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
+  # fsGroup is retained so that mounted ServiceAccount tokens and any added volumes are writable by
+  # the non-root user. On OpenShift the SCC's fsGroup strategy overrides this default.
   securityContext:
+    fsGroup: 1000
     runAsNonRoot: true
 
   # containerSecurityContext values for bootstrap containers

@@ -199,9 +199,12 @@ resources: {}
   #  memory: 128Mi
 
 # securityContext holds pod-level security attributes for Tyk Developer Portal pod. All fields from PodSecurityContext object can be added here.
-# Note: runAsUser and fsGroup are not set by default to allow platforms like OpenShift
-# to assign UIDs automatically via Security Context Constraints (SCC).
+# Note: runAsUser is not set by default to allow platforms like OpenShift to assign UIDs automatically
+# via Security Context Constraints (SCC). fsGroup is retained so that mounted volumes (including the
+# storage PVC and any S3-credential mount) are writable by the non-root user. On OpenShift the SCC's
+# fsGroup strategy overrides this default.
 securityContext:
+  fsGroup: 2000
   runAsNonRoot: true
 
 # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod. All fields from SecurityContext object can be added here.
