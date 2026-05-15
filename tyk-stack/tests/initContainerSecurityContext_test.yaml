@@ -58,3 +58,45 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].securityContext.runAsUser
           value: 1000
+
+  # enabled=false escape hatches let clusters (OpenShift SCC, kyverno, etc.) inject
+  # their own UIDs/GIDs. Setting securityContext: {} cannot work because Helm
+  # deep-merges defaults back in; each block needs its own scoped disable flag.
+  - it: init securityContext.enabled=false omits the init-specific block (falls through to containerSecurityContext)
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.initContainers.setupDirectories.securityContext.enabled: false
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      # init container falls through to containerSecurityContext, which has no runAsUser
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+
+  - it: setting enabled=false on all three blocks strips every gateway securityContext
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.securityContext.enabled: false
+      tyk-gateway.gateway.containerSecurityContext.enabled: false
+      tyk-gateway.gateway.initContainers.setupDirectories.securityContext.enabled: false
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext
+
+  - it: enabled key is stripped from rendered manifest (not a valid k8s field)
+    values:
+      - ../values.yaml
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.enabled
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext.enabled

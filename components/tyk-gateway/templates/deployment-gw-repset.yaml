@@ -84,12 +84,16 @@ spec:
         image: "{{ .Values.global.imageRegistry }}{{ .Values.gateway.initContainers.setupDirectories.repository }}:{{ .Values.gateway.initContainers.setupDirectories.tag }}"
         command: ['sh','-c','mkdir -p apps middleware policies && touch policies/policies.json']
         workingDir: /mnt/tyk-gateway
-        {{- if not (empty .Values.gateway.initContainers.setupDirectories.securityContext) }}
+        {{- $initSc := .Values.gateway.initContainers.setupDirectories.securityContext }}
+        {{- $mainSc := .Values.gateway.containerSecurityContext }}
+        {{- $initOn := and $initSc (or (not (hasKey ($initSc | default dict) "enabled")) $initSc.enabled) }}
+        {{- $mainOn := and $mainSc (or (not (hasKey ($mainSc | default dict) "enabled")) $mainSc.enabled) }}
+        {{- if and $initOn (gt (len (omit $initSc "enabled")) 0) }}
         securityContext:
-        {{- toYaml .Values.gateway.initContainers.setupDirectories.securityContext | nindent 12 }}
-        {{- else if .Values.gateway.containerSecurityContext }}
+        {{- toYaml (omit $initSc "enabled") | nindent 12 }}
+        {{- else if $mainOn }}
         securityContext:
-        {{- toYaml .Values.gateway.containerSecurityContext | nindent 12 }}
+        {{- toYaml (omit $mainSc "enabled") | nindent 12 }}
         {{- end }}
         resources:
         {{- toYaml .Values.gateway.initContainers.setupDirectories.resources | nindent 12 }}
@@ -100,9 +104,10 @@ spec:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.global.imageRegistry }}{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
-        {{- if .Values.gateway.containerSecurityContext }}
+        {{- $csc := .Values.gateway.containerSecurityContext }}
+        {{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) }}
         securityContext:
-        {{- toYaml .Values.gateway.containerSecurityContext | nindent 12 }}
+        {{- toYaml (omit $csc "enabled") | nindent 12 }}
         {{- end }}
         env:
           - name: TYK_GW_LISTENPORT
@@ -499,9 +504,10 @@ spec:
       {{- with .Values.gateway.extraContainers }}
       {{- include "tyk-gateway.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
       {{- end }}
-      {{- if .Values.gateway.securityContext }}
+      {{- $podSc := .Values.gateway.securityContext }}
+      {{- if and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) }}
       securityContext:
-      {{- toYaml .Values.gateway.securityContext | nindent 10 }}
+      {{- toYaml (omit $podSc "enabled") | nindent 10 }}
       {{- end }}
       volumes:
         - name: tyk-scratch

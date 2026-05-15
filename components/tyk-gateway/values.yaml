@@ -298,9 +298,12 @@ gateway:
       #      the init container in /mnt/tyk-gateway are owned by the same UID that the main
       #      gateway container runs as — letting the gateway write API definitions, plugin
       #      bundles, etc. without UID/GID mismatches.
-      # On OpenShift, override with `securityContext: {}` (or to your SCC-allowed UID) so the
-      # SCC's runAsUser strategy can inject a namespace-allocated UID instead.
+      # To let the cluster (e.g. OpenShift SCC) inject UID/GID instead of pinning them,
+      # set `enabled: false` here — the entire init container `securityContext` block is
+      # then omitted from the rendered manifest. Setting `securityContext: {}` is NOT
+      # sufficient because Helm deep-merges these defaults back in.
       securityContext:
+        enabled: true
         runAsUser: 65532
         runAsNonRoot: true
         allowPrivilegeEscalation: false
@@ -483,16 +486,22 @@ gateway:
   # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
   # Note: runAsUser is not set by default to allow platforms like OpenShift to assign UIDs automatically
   # via Security Context Constraints (SCC). fsGroup is retained so that emptyDir volumes mounted at
-  # /mnt/tyk-gateway are writable by the non-root user (kubelet chgrp's the volume to fsGroup). On
-  # OpenShift the SCC's fsGroup strategy will override this default; on vanilla Kubernetes it is
-  # required for the setupDirectories init container to mkdir into the volume.
+  # /mnt/tyk-gateway are writable by the non-root user (kubelet chgrp's the volume to fsGroup); on
+  # vanilla Kubernetes it is required for the setupDirectories init container to mkdir into the volume.
+  # To let the cluster inject defaults (e.g. OpenShift SCC), set `enabled: false` — the entire
+  # pod-level `securityContext` block is then omitted from the rendered manifest. Setting
+  # `securityContext: {}` is NOT sufficient because Helm deep-merges these defaults back in.
   securityContext:
+    enabled: true
     fsGroup: 2000
     runAsNonRoot: true
 
   # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
   # Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
+  # To let the cluster inject defaults, set `enabled: false` — the entire main-container
+  # `securityContext` block is then omitted from the rendered manifest.
   containerSecurityContext:
+    enabled: true
     runAsNonRoot: true
     allowPrivilegeEscalation: false
     privileged: false
