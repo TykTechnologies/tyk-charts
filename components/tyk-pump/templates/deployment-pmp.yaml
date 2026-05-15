@@ -91,7 +91,14 @@ spec:
           - name: TYK_PMP_PUMPS_HYBRID_TYPE
             value: hybrid
           - name: TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING
+          {{- if .Values.global.remoteControlPlane.connectionStringSecretName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.remoteControlPlane.connectionStringSecretName }}
+                key: {{ .Values.global.remoteControlPlane.connectionStringSecretKey | default "connectionString" }}
+          {{- else }}
             value: "{{ .Values.global.remoteControlPlane.connectionString }}"
+          {{- end }}
           
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCKEY
           {{- if .Values.global.remoteControlPlane.useSecretName }}
