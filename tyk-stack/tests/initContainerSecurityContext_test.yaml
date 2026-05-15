@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Locks the init-container securityContext precedence introduced in TT-17018:
+#   - if gateway.initContainers.setupDirectories.securityContext is non-empty
+#     it wins over gateway.containerSecurityContext
+#   - if it is empty/unset, the main containerSecurityContext is used as fallback
+#
+# Required so init-container UID stays aligned with the gateway image's USER
+# (currently 65532). A regression here re-introduces the "file object creation
+# failed, write error" we saw on PR #485.
+suite: Gateway setup-directories init container securityContext precedence
+templates:
+  - charts/tyk-gateway/templates/deployment-gw-repset.yaml
+  - charts/tyk-gateway/templates/secrets.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+  - it: applies the init-container-specific securityContext when set
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.initContainers.setupDirectories.securityContext:
+        runAsUser: 65532
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 65532
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.readOnlyRootFilesystem
+          value: true
+
+  - it: init-specific securityContext wins over containerSecurityContext when both are set
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.initContainers.setupDirectories.securityContext:
+        runAsUser: 65532
+      tyk-gateway.gateway.containerSecurityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 65532
+      # main containerSecurityContext still applies to the gateway container
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 1000
