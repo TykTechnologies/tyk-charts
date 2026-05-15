@@ -25,7 +25,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  backoffLimit: {{ .Values.bootstrap.jobs.preDelete.backoffLimit | default 1 }}
+  backoffLimit: {{ if hasKey .Values.bootstrap.jobs.preDelete "backoffLimit" }}{{ .Values.bootstrap.jobs.preDelete.backoffLimit }}{{ else }}1{{ end }}
   template:
     metadata:
       annotations:

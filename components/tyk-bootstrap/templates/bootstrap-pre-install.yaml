@@ -22,7 +22,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  backoffLimit: {{ .Values.bootstrap.jobs.preInstall.backoffLimit | default 1 }}
+  backoffLimit: {{ if hasKey .Values.bootstrap.jobs.preInstall "backoffLimit" }}{{ .Values.bootstrap.jobs.preInstall.backoffLimit }}{{ else }}1{{ end }}
   template:
     metadata:
       annotations:
