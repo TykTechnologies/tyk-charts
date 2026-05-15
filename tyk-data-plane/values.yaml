@@ -28,7 +28,17 @@ global:
 
     enabled: true
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+    # Set this as a literal value, OR (alternatively) load it from a k8s secret by setting connectionStringSecretName below.
     connectionString: ""
+    # connectionStringSecretName — when set, the gateway reads the MDCB connection string from this k8s
+    # Secret instead of the literal connectionString above. Independent of useSecretName (which only
+    # covers orgId/userApiKey/groupID). The secret may be the same one referenced by useSecretName, or
+    # a separate secret. Default key looked up in the secret is "connectionString" (override via
+    # connectionStringSecretKey).
+    connectionStringSecretName: ""
+    # connectionStringSecretKey — key name inside connectionStringSecretName to read. Defaults to
+    # "connectionString" when unset.
+    connectionStringSecretKey: ""
     # orgID of your dashboard user
     orgId: ""
     # API key of your dashboard user
@@ -272,10 +282,10 @@ tyk-gateway:
 
     image:
       # image repository for Tyk Gateway
-      repository: tykio/tyk-gateway-ee
+      repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.8.12
+      tag: v5.13.0-rc1
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -443,14 +453,11 @@ tyk-gateway:
 
     # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -684,7 +691,7 @@ tyk-pump:
       repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
-      tag: v1.14.0
+      tag: v1.15.0-rc1
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -841,14 +848,11 @@ tyk-pump:
 
     # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -927,12 +931,14 @@ tests:
   # securityContext holds pod-level security attributes for Tyk tests pod. All fields from PodSecurityContext object can be added here.
   securityContext:
     runAsUser: 1000
-    fsGroup: 2000
     runAsNonRoot: true
   # containerSecurityContext holds container-level security attributes for Tyk tests pod. All fields from SecurityContext object can be added here.
+  # runAsUser is set explicitly because the test image (default: zalbiraw/alpine-curl-jq) has no
+  # USER directive — kubelet would otherwise reject the pod with "container has runAsNonRoot and
+  # image will run as root" → CreateContainerConfigError.
   containerSecurityContext:
-    runAsNonRoot: true
     runAsUser: 1000
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true

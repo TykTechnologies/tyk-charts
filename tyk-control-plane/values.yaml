@@ -336,10 +336,10 @@ tyk-gateway:
 
     image:
       # image repository for Tyk Gateway
-      repository: tykio/tyk-gateway-ee
+      repository: tykio/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.8.12
+      tag: v5.13.0-rc1
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -484,14 +484,11 @@ tyk-gateway:
 
     # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -824,7 +821,7 @@ tyk-pump:
       repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
-      tag: v1.14.0
+      tag: v1.15.0-rc1
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -971,14 +968,11 @@ tyk-pump:
 
     # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -1059,6 +1053,12 @@ tyk-bootstrap:
     # Trigger to control if we want to create the tyk-operator secret
     operatorSecret: tyk-operator-conf
 
+    # image pull secrets for bootstrap job pods
+    imagePullSecrets: []
+
+    # disableHelmHooks disables Helm hooks for bootstrap jobs
+    disableHelmHooks: false
+
     # jobs field includes configurations for Helm Hooks.
     jobs:
       # preInstall configures pre-install Helm hook
@@ -1069,6 +1069,9 @@ tyk-bootstrap:
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
           tag: v2.2.0
+
+        # backoffLimit specifies the number of retries before considering the job as failed.
+        backoffLimit: 1
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -1084,6 +1087,9 @@ tyk-bootstrap:
           # tag specifies image tag of post-install job.
           tag: v2.2.0
 
+        # backoffLimit specifies the number of retries before considering the job as failed.
+        backoffLimit: 1
+
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
         #   value: "burak"
@@ -1097,6 +1103,9 @@ tyk-bootstrap:
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
           tag: v2.2.0
+
+        # backoffLimit specifies the number of retries before considering the job as failed.
+        backoffLimit: 1
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
@@ -1171,14 +1180,11 @@ tyk-bootstrap:
 
     # securityContext values for bootstrap pod. All fields from PodSecurityContext object can be added here.
     securityContext:
-      runAsUser: 1000
-      fsGroup: 1000
       runAsNonRoot: true
 
     # containerSecurityContext values for bootstrap containers
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -1348,7 +1354,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.8.12
+      tag: v5.13.0-rc1
 
       # image pull policy
       pullPolicy: Always
@@ -1377,14 +1383,11 @@ tyk-dashboard:
 
     # securityContext holds pod-level security attributes for Tyk Dashboard pod. All fields from PodSecurityContext object can be added here.
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext holds container-level security attributes for Tyk Dashboard container. All fields from SecurityContext object can be added here.
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -1796,6 +1799,11 @@ tyk-dev-portal:
       bucket: your-portal-bucket
       acl: private
       presign_urls: true
+      # secretRef allows using a separate secret for S3 credentials with custom key names.
+      secretRef:
+        name: ""
+        accessKeyIdKey: "DevPortalAwsAccessKeyId"
+        secretAccessKeyKey: "DevPortalAwsSecretAccessKey"
     persistence:
       mountExistingPVC: ""
       storageClass: ""
@@ -1881,14 +1889,11 @@ tyk-dev-portal:
 
   # securityContext holds pod-level security attributes for Tyk Developer Portal pod. All fields from PodSecurityContext object can be added here.
   securityContext:
-    runAsUser: 1000
-    fsGroup: 2000
     runAsNonRoot: true
 
   # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod. All fields from SecurityContext object can be added here.
   containerSecurityContext:
     runAsNonRoot: true
-    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true
@@ -1929,6 +1934,15 @@ tyk-dev-portal:
   #     mountPath: /etc/ssl/certs/ca-certs.crt
   #     readOnly: true
   extraVolumeMounts: []
+
+  # bootstrapJob configures the Developer Portal bootstrap job
+  bootstrapJob:
+    image:
+      repository: curlimages/curl
+      tag: "8.8.0"
+    imagePullSecrets: []
+    securityContext: {}
+    containerSecurityContext: {}
 
   # livenessProve includes details about liveness probe used in Tyk Developer Portal
   livenessProbe:

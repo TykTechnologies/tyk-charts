@@ -7,13 +7,24 @@ metadata:
     app: {{ include "tyk-dev-portal.fullname" . }}
     chart: {{ include "tyk-dev-portal.chart" . }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}  
+    heritage: {{ .Release.Service }}
 spec:
   template:
     spec:
+      {{- with .Values.bootstrapJob.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.bootstrapJob.securityContext }}
+      securityContext:
+      {{- toYaml .Values.bootstrapJob.securityContext | nindent 8 }}
+      {{- end }}
       containers:
       - name: bootstrap-portal
-        image: curlimages/curl:8.8.0
+        image: "{{ .Values.global.imageRegistry }}{{ .Values.bootstrapJob.image.repository }}:{{ .Values.bootstrapJob.image.tag }}"
+        {{- if .Values.bootstrapJob.containerSecurityContext }}
+        securityContext:
+        {{- toYaml .Values.bootstrapJob.containerSecurityContext | nindent 10 }}
+        {{- end }}
         env:
         - name: ADMIN_EMAIL
           {{ if .Values.global.adminUser.useSecretName }}
@@ -36,12 +47,12 @@ spec:
         - name: FIRSTNAME
           value: "{{ .Values.global.adminUser.firstName }}"
         - name: LASTNAME
-          value: "{{ .Values.global.adminUser.lastName }}"                    
+          value: "{{ .Values.global.adminUser.lastName }}"
         - name: SERVICE_NAME
           value: "dev-portal-svc-{{ include "tyk-dev-portal.fullname" . }}.{{ .Release.Namespace }}.svc"
         - name: PORT
           value: "{{ .Values.containerPort }}"
-        command: 
+        command:
           - sh
           - -c
           - |

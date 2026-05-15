@@ -125,21 +125,29 @@ spec:
           - name: PORTAL_S3_AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
-                {{ if .Values.useSecretName }}
+                {{ if .Values.storage.s3.secretRef.name }}
+                name: {{ .Values.storage.s3.secretRef.name }}
+                key: {{ .Values.storage.s3.secretRef.accessKeyIdKey | default "DevPortalAwsAccessKeyId" | quote }}
+                {{ else if .Values.useSecretName }}
                 name: {{ .Values.useSecretName }}
+                key: "DevPortalAwsAccessKeyId"
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
-                {{ end }}
                 key: "DevPortalAwsAccessKeyId"
+                {{ end }}
           - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                {{ if .Values.useSecretName }}
+                {{ if .Values.storage.s3.secretRef.name }}
+                name: {{ .Values.storage.s3.secretRef.name }}
+                key: {{ .Values.storage.s3.secretRef.secretAccessKeyKey | default "DevPortalAwsSecretAccessKey" | quote }}
+                {{ else if .Values.useSecretName }}
                 name: {{ .Values.useSecretName }}
+                key: "DevPortalAwsSecretAccessKey"
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
-                {{ end }}
                 key: "DevPortalAwsSecretAccessKey"
+                {{ end }}
           - name: PORTAL_S3_REGION
             value: "{{ .Values.storage.s3.region }}"
           - name: PORTAL_S3_ENDPOINT
@@ -163,10 +171,7 @@ spec:
           - name: TYK_URL
             value: {{ include "tyk-dev-portal.dashboardUrl" . | quote }}
         {{- if .Values.extraEnvs }}
-        {{- range $env := .Values.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
+        {{- include "tyk-dev-portal.tplvalues.render" ( dict "value" .Values.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}

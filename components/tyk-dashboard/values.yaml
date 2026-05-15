@@ -410,15 +410,17 @@ dashboard:
   resources: {}
 
   # securityContext holds pod-level security attributes for Tyk Dashboard pod. All fields from PodSecurityContext object can be added here.
+  # Note: runAsUser is not set by default to allow platforms like OpenShift to assign UIDs automatically
+  # via Security Context Constraints (SCC). fsGroup is retained so that mounted volumes are writable by
+  # the non-root user. On OpenShift the SCC's fsGroup strategy overrides this default.
   securityContext:
-    runAsUser: 1000
     fsGroup: 2000
     runAsNonRoot: true
 
   # containerSecurityContext holds container-level security attributes for Tyk Dashboard container. All fields from SecurityContext object can be added here.
+  # Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
   containerSecurityContext:
     runAsNonRoot: true
-    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true
