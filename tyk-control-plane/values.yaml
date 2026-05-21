@@ -708,7 +708,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v1.4.0"
+    tag: "v1.4.1"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -1217,7 +1217,7 @@ tyk-dashboard:
     # It is used to set TYK_DB_NOTIFYONCHANGE
     notifyOnChange: true
     # Deprecated:
-    #   This field is deprecated in from v1.4.0, please set `global.hashKeys` for configuring hash keys feature
+    #   This field is deprecated in from v1.4.1, please set `global.hashKeys` for configuring hash keys feature
     #     of Tyk Dashboard.
     hashKeys: true
     # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
