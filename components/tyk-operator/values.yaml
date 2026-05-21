@@ -17,7 +17,7 @@ envVars:
 image:
   repository: tykio/tyk-operator
   pullPolicy: IfNotPresent
-  tag: "v1.3.0"
+  tag: "v1.4.1"
 # specify imagePullSecrets for ServiceAccount
 imagePullSecrets: []
 nameOverride: ""
@@ -46,8 +46,6 @@ metricsPort: 8080
 secureMetrics: true
 annotations: {}
 podAnnotations: {}
-# podLabels specifies labels to be added in operator Pod
-podLabels: {}
 podSecurityContext:
   allowPrivilegeEscalation: false
 resources: {}
