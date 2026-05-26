@@ -344,6 +344,15 @@ pump:
     # collectionName is the name of the collection that will be created and used by the mongo graph pump
     collectionName: "tyk_graph_analytics"
 
+  # mongoAggregatePump configures values to be used to configure tyk mongo aggregate pump.
+  mongoAggregatePump:
+    # collectionName is the name of the collection used by the mongo aggregate pump.
+    # When empty, defaults to "tyk_analytics_pump" (preserved for backward
+    # compatibility — set this to "tyk_analytics_aggregates" to write rollups
+    # to a dedicated aggregate collection instead of mixing them with the raw
+    # analytics collection).
+    collectionName: ""
+
   # We usually recommend not to specify default resources and to leave this
   # as a conscious choice for the user. This also increases chances charts
   # run on environments with little resources, such as Minikube. If you do
