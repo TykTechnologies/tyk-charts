@@ -124,6 +124,14 @@ image:
 # image pull secrets to use when pulling images from repository
 imagePullSecrets: []
 
+# bootstrapJob configures the Helm hook job that bootstraps the Developer Portal.
+bootstrapJob:
+  image:
+    # repository for the bootstrap job's curl image.
+    repository: curlimages/curl
+    # tag for the bootstrap job's curl image.
+    tag: "8.8.0"
+
 # annotations be added to the Deployment / Statefulset of Tyk Developer Portal
 annotations: {}
 

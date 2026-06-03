@@ -11,9 +11,12 @@ metadata:
 spec:
   template:
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: bootstrap-portal
-        image: curlimages/curl:8.8.0
+        image: {{ .Values.global.imageRegistry }}{{ .Values.bootstrapJob.image.repository }}:{{ .Values.bootstrapJob.image.tag }}
         env:
         - name: ADMIN_EMAIL
           {{ if .Values.global.adminUser.useSecretName }}
