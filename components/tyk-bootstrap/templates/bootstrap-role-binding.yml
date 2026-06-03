@@ -1,4 +1,4 @@
-{{- if .Values.bootstrap -}}
+{{- if .Values.global.components.bootstrap -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -13,6 +13,6 @@ subjects:
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
-  name: k8s-bootstrap-role
+  name: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
