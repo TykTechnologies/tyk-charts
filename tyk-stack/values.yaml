@@ -1,6 +1,7 @@
 # Default values for tyk-stack.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+# CI test - this is a dummy change to verify CI pipeline
 
 global:
   license:
