@@ -18,7 +18,7 @@ metadata:
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
-  backoffLimit: 1
+  backoffLimit: {{ .Values.bootstrap.jobs.postInstall.backoffLimit }}
   template:
     metadata:
       annotations:
@@ -148,4 +148,3 @@ spec:
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
 {{- end }}
-      
