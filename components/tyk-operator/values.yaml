@@ -2,9 +2,13 @@ global:
   imageRegistry: ""
 replicaCount: 1
 # loads environment variables to the operator.
+# The secretRef is marked as optional to support atomic Helm installations where
+# the tyk-operator-conf secret is created by a post-install hook after the
+# operator pod starts. The operator will wait for the configuration to be available.
 envFrom:
   - secretRef:
       name: tyk-operator-conf
+      optional: true
 envVars:
   - name: TYK_HTTPS_INGRESS_PORT
     value: "8443"
