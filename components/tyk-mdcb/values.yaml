@@ -400,6 +400,9 @@ mdcb:
   #   mountPath: "/etc/foo"
   #   readOnly: true
 
+  # Priority class assigned to the Tyk MDCB pod(s).
+  priorityClassName: ""
+
   # node labels for MDCB pod assignment
   nodeSelector: {}
 
