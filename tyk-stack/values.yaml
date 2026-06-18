@@ -208,7 +208,7 @@ global:
   # Postgres connection string parameters.
   postgres:
     # host corresponds to the host name of postgres
-    host: tyk-postgres-postgresql.tyk.svc
+    # host: tyk-postgres-postgresql.tyk.svc
     # port corresponds to the port of postgres
     port: 5432
     # user corresponds to the user of postgres
@@ -288,7 +288,6 @@ tyk-gateway:
       # The URL needs to be formatted as: http://dashboard_host:port.
       # It is used to set TYK_GW_POLICIES_POLICYCONNECTIONSTRING
       policyConnectionString: ""
-
 
     # annotations be added to the Deployment of Tyk Gateway
     annotations: {}
