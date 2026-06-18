@@ -1,10 +1,27 @@
 global:
   imageRegistry: ""
 replicaCount: 1
-# loads environment variables to the operator.
-envFrom:
-  - secretRef:
-      name: tyk-operator-conf
+
+# configSecretWatcher enables dynamic configuration loading from a secret.
+# When enabled, the operator will start and become Ready immediately, then
+# watch for the config secret to be created (e.g., by a post-install hook).
+# This allows `helm install --atomic` to succeed even when the secret is
+# created after the operator deployment.
+configSecretWatcher:
+  enabled: true
+  # secretName is the name of the secret to watch for configuration
+  secretName: "tyk-operator-conf"
+  # secretNamespace is the namespace of the config secret (defaults to release namespace)
+  secretNamespace: ""
+
+# envFrom loads environment variables from secrets/configmaps at pod startup.
+# NOTE: When configSecretWatcher.enabled is true, this should NOT include the
+# tyk-operator-conf secret as it will be loaded dynamically instead.
+envFrom: []
+  # Legacy behavior (not recommended with --atomic):
+  # - secretRef:
+  #     name: tyk-operator-conf
+
 envVars:
   - name: TYK_HTTPS_INGRESS_PORT
     value: "8443"
