@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write
     steps:
       - name: Validate Jira ticket
         uses: TykTechnologies/github-actions/jira-linter@production
