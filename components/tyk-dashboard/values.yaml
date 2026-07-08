@@ -228,7 +228,7 @@ dashboard:
   # It is used to set TYK_DB_NOTIFYONCHANGE
   notifyOnChange: true
   # Deprecated:
-  #   This field is deprecated in from v1.4.0, please set `global.hashKeys` for configuring hash keys feature
+  #   This field is deprecated in from v1.4.1, please set `global.hashKeys` for configuring hash keys feature
   hashKeys: true
   # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
   # Setting this option to true will cause the dashboard to NOT validate against other listen paths.
@@ -360,7 +360,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.8.12
+    tag: v5.8.14
 
     # image pull policy
     pullPolicy: Always
