@@ -1154,6 +1154,9 @@ tyk-bootstrap:
     # priorityClassName for bootstrap pods assignment
     priorityClassName: ""
 
+    # imagePullSecrets specifies image pull secrets to be added to bootstrap job pods.
+    imagePullSecrets: []
+
     # extraVolumes is a list of volumes to be added to the pod
     # extraVolumes:
     #   - name: ca-certs
