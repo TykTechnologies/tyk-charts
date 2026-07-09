@@ -99,230 +99,8 @@ rules:
   - tyk.tyk.io
   resources:
   - apidefinitions
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - apidefinitions/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - apidescriptions
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - apidescriptions/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - apidescriptions/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - operatorcontexts
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - operatorcontexts/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - operatorcontexts/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - portalapicatalogues
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - portalapicatalogues/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - portalapicatalogues/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - portalconfigs
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - portalconfigs/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - portalconfigs/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - securitypolicies
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - securitypolicies/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
   - subgraphs
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - subgraphs/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - subgraphs/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
   - supergraphs
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - supergraphs/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - supergraphs/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - tykmcpproxydefinitions
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - tykmcpproxydefinitions/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - tykmcpproxydefinitions/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
   - tykoasapidefinitions
   verbs:
   - create
@@ -336,13 +114,17 @@ rules:
 - apiGroups:
   - tyk.tyk.io
   resources:
-  - tykoasapidefinitions/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
+  - apidefinitions/status
+  - apidescriptions/status
+  - operatorcontexts/status
+  - portalapicatalogues/status
+  - portalconfigs/status
+  - securitypolicies/status
+  - subgraphs/status
+  - supergraphs/status
+  - tykmcpproxydefinitions/status
   - tykoasapidefinitions/status
+  - tykstreamsapidefinitions/status
   verbs:
   - get
   - patch
@@ -350,6 +132,12 @@ rules:
 - apiGroups:
   - tyk.tyk.io
   resources:
+  - apidescriptions
+  - operatorcontexts
+  - portalapicatalogues
+  - portalconfigs
+  - securitypolicies
+  - tykmcpproxydefinitions
   - tykstreamsapidefinitions
   verbs:
   - create
@@ -362,16 +150,16 @@ rules:
 - apiGroups:
   - tyk.tyk.io
   resources:
+  - apidescriptions/finalizers
+  - operatorcontexts/finalizers
+  - portalapicatalogues/finalizers
+  - portalconfigs/finalizers
+  - subgraphs/finalizers
+  - supergraphs/finalizers
+  - tykmcpproxydefinitions/finalizers
+  - tykoasapidefinitions/finalizers
   - tykstreamsapidefinitions/finalizers
   verbs:
-  - update
-- apiGroups:
-  - tyk.tyk.io
-  resources:
-  - tykstreamsapidefinitions/status
-  verbs:
-  - get
-  - patch
   - update
 ---
 apiVersion: rbac.authorization.k8s.io/v1
