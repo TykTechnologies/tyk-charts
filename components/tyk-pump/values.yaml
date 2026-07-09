@@ -200,7 +200,7 @@ pump:
     repository: docker.tyk.io/tyk-pump/tyk-pump
 
     # tag for Tyk pump
-    tag: v1.13.0
+    tag: v1.15.0
 
     # image pull policy
     pullPolicy: IfNotPresent
@@ -384,6 +384,9 @@ pump:
 
   # affinity for pump pod assignment
   affinity: {}
+
+  # priorityClassName for pump pod assignment
+  priorityClassName: ""
 
   # extraContainers is a list of containers to be added to the pod
   # - name: sidecar

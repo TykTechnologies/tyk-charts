@@ -297,6 +297,32 @@ rules:
 - apiGroups:
   - tyk.tyk.io
   resources:
+  - tykmcpproxydefinitions
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - tyk.tyk.io
+  resources:
+  - tykmcpproxydefinitions/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - tyk.tyk.io
+  resources:
+  - tykmcpproxydefinitions/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - tyk.tyk.io
+  resources:
   - tykoasapidefinitions
   verbs:
   - create
@@ -573,10 +599,6 @@ spec:
 {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
-{{- end }}
-{{- if .Values.tolerations }}
-      tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
 {{- end }}
       securityContext:
         runAsNonRoot: true

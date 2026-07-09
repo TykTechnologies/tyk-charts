@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Test priorityClassName for MDCB
+templates:
+  - charts/tyk-mdcb/templates/deployment-mdcb.yaml
+  - charts/tyk-mdcb/templates/secret-mdcb.yaml
+release:
+  name: tyk-control-plane
+  namespace: test
+tests:
+  # MDCB priorityClassName tests
+  - it: should not set mdcb priorityClassName when not specified
+    values:
+      - ../values.yaml
+    template: charts/tyk-mdcb/templates/deployment-mdcb.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.priorityClassName
+
+  - it: should set mdcb priorityClassName when specified
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.priorityClassName: "high-priority"
+    template: charts/tyk-mdcb/templates/deployment-mdcb.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: "high-priority"

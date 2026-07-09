@@ -7,14 +7,18 @@ on:
     paths:
       - '**/Chart.yaml'
 
+permissions: {}
+
 jobs:
  get-list-of-charts:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     name: 'Get list of charts to be released'
     outputs:
       charts: ${{ steps.get-charts.outputs.charts }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
         with:
           fetch-depth: 0
       - id: get-charts
@@ -43,19 +47,21 @@ jobs:
 
  release-charts:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: get-list-of-charts
     if: needs.get-list-of-charts.outputs.charts != 'none'
-    
+
     strategy:
       matrix:
         chart: ${{ fromJson(needs.get-list-of-charts.outputs.charts) }}
 
     steps:
       - name: Git Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
 
       - name: Setup Helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78  # v3
         with:
           version: v3.5.3
 
@@ -76,7 +82,7 @@ jobs:
         run: helm package ${{ matrix.chart }} --version ${{ steps.chart-version.outputs.version }}
 
       - name: Push Helm Chart
-        uses: cloudsmith-io/action@v0.5.2
+        uses: cloudsmith-io/action@526e9692233cfd6338040bd6b85d1c76d4cff896  # v0.5.2
         with:
          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
          command: "push"

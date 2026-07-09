@@ -16,12 +16,19 @@ spec:
         image: curlimages/curl:8.8.0
         env:
         - name: ADMIN_EMAIL
-          value: "{{ .Values.global.adminUser.email  }}"
+          {{ if .Values.global.adminUser.useSecretName }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.global.adminUser.useSecretName }}
+              key: adminUserEmail
+          {{ else }}
+          value: {{ .Values.global.adminUser.email | quote }}
+          {{ end }}
         - name: ADMIN_PASSWORD
           {{ if .Values.global.adminUser.useSecretName }}
           valueFrom:
             secretKeyRef:
-              name: secrets-{{ include "tyk-dev-portal.fullname" . }}
+              name: {{ .Values.global.adminUser.useSecretName }}
               key: adminUserPassword
           {{ else }}
           value: {{ .Values.global.adminUser.password | quote }}

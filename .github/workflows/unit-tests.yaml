@@ -6,12 +6,31 @@ on:
     branches:
       - master
 
+permissions: {}
+
 jobs:
-  unit-test:
+  dep-guard:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - name: Check for dependency changes
+        id: check
+        run: echo "skip=false" >> "$GITHUB_OUTPUT"
+
+  unit-test:
+    needs: [dep-guard]
+    if: always() && (needs.dep-guard.result == 'success' || needs.dep-guard.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Git Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
         with:
           fetch-depth: 0
 
@@ -19,7 +38,8 @@ jobs:
         run: helm dependency update tyk-stack
 
       - name: Set up unit tests
-        run: helm plugin install https://github.com/helm-unittest/helm-unittest.git
+        # TODO: Pin helm plugin to a release tag instead of default branch
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest.git --version v0.7.2
 
       - name: Run unit tests for tyk-stack
         run: helm unittest ./tyk-stack

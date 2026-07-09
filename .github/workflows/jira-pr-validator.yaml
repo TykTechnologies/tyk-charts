@@ -8,14 +8,32 @@ concurrency:
   group: jira-validator-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
-  validate:
+  dep-guard:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - name: Check for dependency changes
+        id: check
+        run: echo "skip=false" >> "$GITHUB_OUTPUT"
+
+  validate:
+    needs: [dep-guard]
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Validate Jira ticket
-        uses: TykTechnologies/jira-linter@main
+        uses: TykTechnologies/github-actions/jira-linter@production
         with:
-          jira-base-url: 'https://tyktech.atlassian.net'
-          jira-api-token: ${{ secrets.JIRA_TOKEN }}
-
+          jira-base-url: ${{ secrets.JIRA_BASE_URL }}
+          jira-read-auth: ${{ secrets.JIRA_READ_AUTH }}

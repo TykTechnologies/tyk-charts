@@ -139,6 +139,9 @@ global:
     storage:
       database: 0
 
+    # Set the number of maximum idle connections in the Redis connection pool.
+    maxIdle: 1000
+
   # hashKeys is used to enable/disable key hashing.
   hashKeys: true
 
@@ -447,6 +450,9 @@ tyk-gateway:
     # topology spread constraints for pods
     topologySpreadConstraints: []
 
+    # priorityClassName for gateway pod assignment
+    priorityClassName: ""
+
     # analyticsEnabled property is used to enable/disable analytics.
     # If set to empty or nil, analytics will be enabled/disabled based on `global.components.pump`.
     analyticsEnabled: ""
@@ -543,6 +549,11 @@ tyk-gateway:
     # - if enabled, `/app` only responds to `/app`, `/app/` and `/app/*` but not `/apple`
     # Regular expressions and parameterized routes will be left alone regardless of this setting.
     enableStrictRoutes: true
+    # https://tyk.io/docs/tyk-oss-gateway/configuration#http-server-options
+    httpsServerOptions:
+      # Used to instruct the gateway which IP to use from the XFF header for determining the client's IP address.
+      # https://tyk.io/docs/tyk-oss-gateway/configuration#http-server-options-xff-depth
+      xffDepth: 1
 
     # extraContainers is a list of containers to be added to the pod
     # - name: sidecar
@@ -618,7 +629,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v1.2.0"
+    tag: "v1.4.1"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -648,8 +659,22 @@ tyk-operator:
   # webhookPort identifies the port on which webhooks are handled
   webhookPort: 9443
 
+  webhooks:
+    enabled: true
+    # identifies the port on which webhooks are handled
+    port: 9443
+    annotations: {}
+    tls:
+      useCertManager: true
+      # The name of the secret which should contain the TLS certificate you want to use with the webhook
+      secretName: webhook-server-cert
+      # certificatesMountPath corresponds to the mount path of the secret.
+      certificatesMountPath: "/tmp/k8s-webhook-server/serving-certs"
+
   annotations: {}
   podAnnotations: {}
+  # podLabels specifies labels to be added in operator Pod
+  podLabels: {}
   podSecurityContext:
     allowPrivilegeEscalation: false
   resources: {}
@@ -659,6 +684,8 @@ tyk-operator:
 
   # affinity for tyk-operator-manager pod assignment
   affinity: {}
+  # priorityClassName for tyk-operator-manager pod assignment
+  priorityClassName: ""
   hostNetwork: false
 
   # rbac specifies necessary resources for kube-rbac-proxy.
@@ -719,7 +746,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.12.0
+      tag: v1.15.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -877,6 +904,9 @@ tyk-pump:
 
     # affinity for pump pod assignment
     affinity: {}
+
+    # priorityClassName for pump pod assignment
+    priorityClassName: ""
 
     # extraContainers is a list of containers to be added to the pod
     # - name: sidecar
