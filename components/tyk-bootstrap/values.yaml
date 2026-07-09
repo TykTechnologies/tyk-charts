@@ -82,6 +82,9 @@ bootstrap:
   # serviceAccountName field configures the name of the ServiceAccount that is going to be created for bootstrapping Jobs
   serviceAccountName: "k8s-bootstrap-role"
 
+  # imagePullSecrets specify imagePullSecrets for ServiceAccount
+  imagePullSecrets: []
+
   # jobs field includes configurations for Helm Hooks.
   jobs:
     # preInstall configures pre-install Helm hook
@@ -92,6 +95,9 @@ bootstrap:
         repository: tykio/tyk-k8s-bootstrap-pre-install
         # tag specifies image tag of pre-install job.
         tag: v2.2.0
+
+      # image pull secrets to use when pulling images from repository
+      imagePullSecrets: []
 
       # extraEnvs is used to set extra environment variables to pre-install job.
       # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -107,6 +113,9 @@ bootstrap:
         # tag specifies image tag of post-install job.
         tag: v2.2.0
 
+      # image pull secrets to use when pulling images from repository
+      imagePullSecrets: []
+
       # extraEnvs is used to set extra environment variables to post-install job.
       # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
       #   value: "burak"
@@ -120,6 +129,9 @@ bootstrap:
         repository: tykio/tyk-k8s-bootstrap-pre-delete
         # tag specifies image tag of pre-delete job.
         tag: v2.2.0
+
+      # image pull secrets to use when pulling images from repository
+      imagePullSecrets: []
 
       # extraEnvs is used to set extra environment variables to pre-delete job.
       # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
