@@ -119,7 +119,7 @@ bootstrap:
         # repository specifies image repository of pre-delete job.
         repository: tykio/tyk-k8s-bootstrap-pre-delete
         # tag specifies image tag of pre-delete job.
-        tag: v2.2.0
+        tag: v1.16.0
 
       # extraEnvs is used to set extra environment variables to pre-delete job.
       # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
