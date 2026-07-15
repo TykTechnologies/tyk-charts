@@ -161,3 +161,35 @@ follow these steps to enable TLS:
 Starting from Tyk v3.0 TIB has been added as a built-in feature of the Tyk Dashboard. You no longer have to setup a separated instance of the service to make it work with the Dashboard.
 
 User can enable in-built TIB simply by setting `tib.enabled` to true.
+
+#### Enable autoscaling
+
+This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling
+it's enough to add `--set dashboard.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with
+default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances).
+To customize those values you can add `--set dashboard.autoscaling.averageCpuUtilization=75` or use `values.yaml` file:
+
+```yaml
+dashboard:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 30
+```
+
+Built-in rules include `dashboard.autoscaling.averageCpuUtilization` for CPU utilization (set by default at 60%) and
+`dashboard.autoscaling.averageMemoryUtilization` for memory (disabled by default).
+In addition to that you can define rules for custom metrics using `dashboard.autoscaling.autoscalingTemplate` list:
+
+```yaml
+dashboard:
+  autoscaling:
+    autoscalingTemplate:
+      - type: Pods
+        pods:
+          metric:
+            name: nginx_ingress_controller_nginx_process_requests_total
+          target:
+            type: AverageValue
+            averageValue: 10000m
+```
