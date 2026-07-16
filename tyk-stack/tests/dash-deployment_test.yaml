@@ -58,3 +58,36 @@ tests:
       content:
         name: TYK_DB_TYKAPI_PORT
         value: "1234"
+- it: validate default log level and format env vars
+  values:
+  - ../values.yaml
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_LOGLEVEL
+        value: "info"
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_LOGFORMAT
+        value: "default"
+- it: validate custom log level and format env vars
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.log.level: "debug"
+    tyk-dashboard.dashboard.log.format: "json"
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_LOGLEVEL
+        value: "debug"
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_LOGFORMAT
+        value: "json"
