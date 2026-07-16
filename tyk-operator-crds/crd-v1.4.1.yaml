@@ -3,7 +3,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE)/$(CERTIFICATE_NAME)
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: apidefinitions.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -1092,6 +1092,8 @@ spec:
                       inbound hostname of the proxy.
                     type: boolean
                   service_discovery:
+                    description: 'TODO: Untested. Is there a use-case for SD inside
+                      a K8s environment?'
                     properties:
                       cache_timeout:
                         format: int64
@@ -1219,7 +1221,7 @@ spec:
                 type: array
               session_lifetime:
                 description: "SessionLifetime this is duration in seconds before the
-                  session key expires\nin redis.\n\nExample:\nIf you want the session
+                  session key expires\nin redis.\n\n\nExample:\nIf you want the session
                   keys to be alive only 24 hours you can set this\nvalue to 86400
                   that we can break down to\n\t60 * 60 * 24 = Total seconds in a day"
                 format: int64
@@ -2374,7 +2376,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: apidescriptions.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -2422,8 +2424,9 @@ spec:
                 - authToken
                 type: string
               config:
-                description: Config allows you to optionally override various fields
-                  in the PortalConfig.
+                description: |-
+                  Config allows you to optionally override various fields in the PortalConfig.
+                  TODO: This is an advanced capability which has not been fully tested with Tyk Operator as yet.
                 properties:
                   catalogue_login_only:
                     description: CatalogueLoginOnly limits access to catalogues for
@@ -2719,6 +2722,8 @@ spec:
                 - name
                 type: object
               short_description:
+                description: 'TODO: I don''t think this is exposed to the default
+                  portal templates.'
                 type: string
               show:
                 description: Show toggles visibility of the API in the portal catalogue
@@ -2743,7 +2748,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: operatorcontexts.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -2968,7 +2973,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: portalapicatalogues.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -3041,8 +3046,9 @@ spec:
                       - authToken
                       type: string
                     config:
-                      description: Config allows you to optionally override various
-                        fields in the PortalConfig.
+                      description: |-
+                        Config allows you to optionally override various fields in the PortalConfig.
+                        TODO: This is an advanced capability which has not been fully tested with Tyk Operator as yet.
                       properties:
                         catalogue_login_only:
                           description: CatalogueLoginOnly limits access to catalogues
@@ -3330,6 +3336,8 @@ spec:
                       - name
                       type: object
                     short_description:
+                      description: 'TODO: I don''t think this is exposed to the default
+                        portal templates.'
                       type: string
                     show:
                       description: Show toggles visibility of the API in the portal
@@ -3387,7 +3395,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: portalconfigs.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -3679,7 +3687,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE)/$(CERTIFICATE_NAME)
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: securitypolicies.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -3766,8 +3774,12 @@ spec:
                         type: object
                       type: array
                     api_id:
+                      description: 'TODO: APIID should not really be needed, as is
+                        auto-set from the APIDefinition Resource'
                       type: string
                     api_name:
+                      description: 'TODO: APIName should not really be needed, as
+                        is auto-set from the APIDefinition Resource'
                       type: string
                     disable_introspection:
                       description: DisableIntrospection disables GraphQL introspection
@@ -4206,8 +4218,12 @@ spec:
                         type: object
                       type: array
                     api_id:
+                      description: 'TODO: APIID should not really be needed, as is
+                        auto-set from the APIDefinition Resource'
                       type: string
                     api_name:
+                      description: 'TODO: APIName should not really be needed, as
+                        is auto-set from the APIDefinition Resource'
                       type: string
                     disable_introspection:
                       description: DisableIntrospection disables GraphQL introspection
@@ -4769,7 +4785,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: subgraphs.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -4835,7 +4851,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: supergraphs.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -4908,7 +4924,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: tykmcpproxydefinitions.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -5083,7 +5099,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: tykoasapidefinitions.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -5158,11 +5174,13 @@ spec:
                   CertificatePinning contains the configuration related to certificate pinning.
                   It is possible to set Kubernetes secrets containing certificates.
 
+
                   It is used to set `upstream.certificatePinning` in Tyk OAS API Definition.
                 properties:
                   domainToPublicKeysMapping:
                     description: |-
                       DomainToPublicKeysMapping maintains the mapping of domain to pinned public keys.
+
 
                       Tyk classic API definition: `pinned_public_keys`
                     items:
@@ -5179,6 +5197,7 @@ spec:
                             where the pinned public key is stored in `tls.crt` field.
                             Each secret must contain a public key associated with the specified domain name.
 
+
                             **NOTE**
                             If you want to continue using secrets that are already created on Tyk Dashboard,
                             specify their IDs in `publicKeys` field of TykOasApiDefinition CR. And then,
@@ -5191,6 +5210,7 @@ spec:
                         publicKeys:
                           description: |-
                             PublicKeys contains a list of the public keys IDs pinned to the domain name.
+
 
                             It only accepts Tyk IDs of the public keys. If you have Kubernetes secrets
                             containing public keys of the domain, please use `publicKeysRefs` field
@@ -5206,6 +5226,7 @@ spec:
                   enabled:
                     description: |-
                       Enabled is a boolean flag, if set to `true`, it enables certificate pinning for the API.
+
 
                       Tyk classic API definition: `certificate_pinning_disabled`
                     type: boolean
@@ -5248,12 +5269,14 @@ spec:
                 description: |-
                   CustomDomain is the domain to bind this API to. This enforces domain matching for client requests.
 
+
                   Tyk classic API definition: `domain`
                 properties:
                   certificates:
                     description: |-
                       Certificates defines a field for specifying certificate IDs
                       that the Tyk can utilise to dynamically load certificates for your custom domain.
+
 
                       Tyk classic API definition: `certificates`
                     items:
@@ -5663,7 +5686,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: tykstreamsapidefinitions.tyk.tyk.io
 spec:
   group: tyk.tyk.io

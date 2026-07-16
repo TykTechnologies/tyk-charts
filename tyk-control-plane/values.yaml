@@ -339,7 +339,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway-ee
 
       # image tag for Tyk Gateway
-      tag: v5.8.12
+      tag: v5.13.1
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -708,7 +708,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v1.3.0"
+    tag: "v1.4.2"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -824,7 +824,7 @@ tyk-pump:
       repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
-      tag: v1.14.0
+      tag: v1.16.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -1154,6 +1154,9 @@ tyk-bootstrap:
     # priorityClassName for bootstrap pods assignment
     priorityClassName: ""
 
+    # imagePullSecrets specifies image pull secrets to be added to bootstrap job pods.
+    imagePullSecrets: []
+
     # extraVolumes is a list of volumes to be added to the pod
     # extraVolumes:
     #   - name: ca-certs
@@ -1217,7 +1220,7 @@ tyk-dashboard:
     # It is used to set TYK_DB_NOTIFYONCHANGE
     notifyOnChange: true
     # Deprecated:
-    #   This field is deprecated in from v1.4.0, please set `global.hashKeys` for configuring hash keys feature
+    #   This field is deprecated in from v1.4.1, please set `global.hashKeys` for configuring hash keys feature
     #     of Tyk Dashboard.
     hashKeys: true
     # enableDuplicateSlugs configures the dashboard whether validate against other listen paths.
@@ -1354,7 +1357,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.8.12
+      tag: v5.13.1
 
       # image pull policy
       pullPolicy: Always
@@ -1604,7 +1607,7 @@ tyk-mdcb:
       # image repository for Tyk MDCB
       repository: tykio/tyk-mdcb-docker
       # image tag for Tyk MDCB
-      tag: v2.9.0
+      tag: v2.12.0
       # image pull policy
       pullPolicy: IfNotPresent
 
@@ -1831,7 +1834,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.17.0
+    tag: v1.18.0
     # image pull policy
     pullPolicy: Always
 
