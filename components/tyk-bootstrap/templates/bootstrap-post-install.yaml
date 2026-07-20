@@ -11,6 +11,7 @@ metadata:
     # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
     # when every app will have its own a chart
     # app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+  {{- if or (not .Values.bootstrap.disableHelmHooks) .Values.bootstrap.jobs.postInstall.annotations }}
   annotations:
     {{- if not .Values.bootstrap.disableHelmHooks }}
     # This is what defines this resource as a hook. Without this line, the
@@ -22,15 +23,19 @@ metadata:
     {{- with .Values.bootstrap.jobs.postInstall.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+  {{- end }}
 spec:
   backoffLimit: {{ if hasKey .Values.bootstrap.jobs.postInstall "backoffLimit" }}{{ .Values.bootstrap.jobs.postInstall.backoffLimit }}{{ else }}1{{ end }}
   template:
     metadata:
+      {{- with .Values.bootstrap.podAnnotations.postInstallPodAnnotations }}
       annotations:
-        {{- if .Values.bootstrap.podAnnotations.postInstallPodAnnotations}}
-        {{ toYaml .Values.bootstrap.podAnnotations.postInstallPodAnnotations | nindent 8 }}
-        {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        tyk.tyk.io/k8s-bootstrap: tyk-k8s-bootstrap-post-install
         {{- with .Values.bootstrap.podLabels.postInstallPodLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

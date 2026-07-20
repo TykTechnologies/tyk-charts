@@ -1,0 +1,83 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Umbrella-level lock for the TT-17018 fix (see
+# components/tyk-bootstrap/tests/bootstrapPodTemplateMetadata_test.yaml for the
+# authoritative component-level suite). Verifies the fix survives subchart value
+# plumbing: bootstrap pre/post-install Job metadata must never render null keys.
+suite: Bootstrap pre/post-install Job metadata renders no null keys
+templates:
+  - charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+  - charts/tyk-bootstrap/templates/bootstrap-post-install.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+  - it: pre-install, disableHelmHooks=true -> no null job/pod metadata keys, real pod labels
+    template: charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+      tyk-bootstrap.bootstrap.disableHelmHooks: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - notExists:
+          path: metadata.annotations
+      - notExists:
+          path: spec.template.metadata.annotations
+      - exists:
+          path: spec.template.metadata.labels
+      - equal:
+          path: spec.template.metadata.labels["tyk.tyk.io/k8s-bootstrap"]
+          value: tyk-k8s-bootstrap-pre-install
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+
+  - it: pre-install, default (hooks enabled) -> hook annotations intact, no pod-template nulls
+    template: charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-install
+      - equal:
+          path: spec.template.metadata.labels["tyk.tyk.io/k8s-bootstrap"]
+          value: tyk-k8s-bootstrap-pre-install
+      - notExists:
+          path: spec.template.metadata.annotations
+
+  - it: post-install, disableHelmHooks=true -> no null job/pod metadata keys, real pod labels
+    template: charts/tyk-bootstrap/templates/bootstrap-post-install.yaml
+    set:
+      global.components.bootstrap: true
+      tyk-bootstrap.bootstrap.disableHelmHooks: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - notExists:
+          path: metadata.annotations
+      - notExists:
+          path: spec.template.metadata.annotations
+      - exists:
+          path: spec.template.metadata.labels
+      - equal:
+          path: spec.template.metadata.labels["tyk.tyk.io/k8s-bootstrap"]
+          value: tyk-k8s-bootstrap-post-install
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+
+  - it: post-install, default (hooks enabled) -> hook annotations intact, no pod-template nulls
+    template: charts/tyk-bootstrap/templates/bootstrap-post-install.yaml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: post-install
+      - equal:
+          path: spec.template.metadata.labels["tyk.tyk.io/k8s-bootstrap"]
+          value: tyk-k8s-bootstrap-post-install
+      - notExists:
+          path: spec.template.metadata.annotations
