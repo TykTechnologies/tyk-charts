@@ -260,7 +260,10 @@ tyk-gateway:
       repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.9.1
+      # Must be a non-root image (numeric USER) while securityContext defaults set
+      # runAsNonRoot without runAsUser: v5.9.1 runs as root (User 0) and fails kubelet
+      # admission with CreateContainerConfigError. v5.13.1 runs as User 65532.
+      tag: v5.13.1
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
