@@ -38,9 +38,6 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
-      {{- with .Values.bootstrap.imagePullSecrets }}
-      imagePullSecrets: {{ toYaml . | nindent 8 }}
-      {{- end }}
 {{- if .Values.bootstrap.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.bootstrap.nodeSelector | indent 8 }}

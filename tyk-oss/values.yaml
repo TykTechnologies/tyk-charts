@@ -257,14 +257,10 @@ tyk-gateway:
 
     image:
       # image repository for Tyk Gateway
-      # Temporary bump to v5.13.0-rc1 distroless to make CI pass; the previous
-      # default (docker.tyk.io/tyk-gateway/tyk-gateway:v5.9.1) was a root image
-      # which contradicts the chart's runAsNonRoot:true default and made every
-      # smoke-test fail at admission. Revisit once a stable v5.13.0 ships.
-      repository: tykio/tyk-gateway
+      repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.13.0-rc1
+      tag: v5.9.1
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -630,7 +626,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v1.3.0"
+    tag: "v1.4.2"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -744,10 +740,10 @@ tyk-pump:
 
     image:
       # image repository for Tyk pump
-      repository: tykio/tyk-pump-docker-pub
+      repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.15.0-rc1
+      tag: v1.16.0
 
       # image pull policy
       pullPolicy: IfNotPresent

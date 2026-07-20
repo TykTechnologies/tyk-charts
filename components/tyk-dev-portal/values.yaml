@@ -128,12 +128,24 @@ image:
   # image repository for Tyk Developer Portal.
   repository: tykio/portal
   # Developer portal < v1.2 is not supported
-  tag: v1.17.0
+  tag: v1.18.0
   # image pull policy
   pullPolicy: Always
 
 # image pull secrets to use when pulling images from repository
 imagePullSecrets: []
+
+# bootstrapJob configures the Helm hook job that bootstraps the Developer Portal.
+bootstrapJob:
+  image:
+    # repository for the bootstrap job's curl image.
+    repository: curlimages/curl
+    # tag for the bootstrap job's curl image.
+    tag: "8.8.0"
+  # securityContext holds pod-level security attributes for the bootstrap job.
+  securityContext: {}
+  # containerSecurityContext holds container-level security attributes for the bootstrap job.
+  containerSecurityContext: {}
 
 # annotations be added to the Deployment / Statefulset of Tyk Developer Portal
 annotations: {}
@@ -245,19 +257,6 @@ extraContainers: []
 #       name: my-secret
 #       key: apiSecret
 extraEnvs: []
-
-# bootstrapJob configures the Developer Portal bootstrap Job that creates the initial admin user.
-bootstrapJob:
-  # image specifies the image used by the bootstrap job (must have curl and nc available).
-  image:
-    repository: curlimages/curl
-    tag: "8.8.0"
-  # imagePullSecrets specifies image pull secrets for the bootstrap job pod.
-  imagePullSecrets: []
-  # securityContext holds pod-level security attributes for the bootstrap job.
-  securityContext: {}
-  # containerSecurityContext holds container-level security attributes for the bootstrap job.
-  containerSecurityContext: {}
 
 # extraVolumes is a list of volumes to be added to the pod
 # extraVolumes:
