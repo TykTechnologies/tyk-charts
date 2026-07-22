@@ -52,6 +52,31 @@ This removes all the Kubernetes components associated with the chart and deletes
 helm upgrade tyk-dashboard tyk-helm/tyk-dashboard -n tyk
 ```
 
+*Note: pinned image tags and `runAsUser`*
+
+The `runAsUser: 1000` defaults have been removed from `dashboard.securityContext` (pod level) and
+`dashboard.containerSecurityContext` (container level) so that platforms such as OpenShift can assign a UID via
+a Security Context Constraint. `runAsNonRoot: true` and `fsGroup` are retained, so kubelet now relies on the
+image's `USER` directive.
+
+The `init-analytics-conf` init container is the exception: it pins
+`dashboard.initContainers.initAnalyticsConf.securityContext.runAsUser: 1000`, because `busybox` has no `USER`
+directive of its own and `runAsNonRoot: true` without a `runAsUser` fails admission with
+`CreateContainerConfigError: container has runAsNonRoot and image will run as root`. That container only renders
+for `dashboard.image.tag` values `<= 5.0.2`. Set
+`dashboard.initContainers.initAnalyticsConf.securityContext.enabled: false` to omit the block entirely on
+OpenShift; `securityContext: {}` will not work, because Helm deep-merges the chart defaults back in.
+
+If you pin `dashboard.image.tag` to a version whose image has no numeric `USER`, the *main* dashboard container
+will also fail admission for the same reason. The dashboard image gained a numeric `USER` (65532) in **v5.5.0**;
+every tag up to and including `v5.4.0` has no `USER` directive and runs as root. Note that this threshold is
+unrelated to the `<= 5.0.2` condition above, which only controls whether the init container renders — tags
+between `v5.0.3` and `v5.4.0` render no init container yet still fail on the main container. Check yours with
+`crane config <image> | jq -r '.config.User'` before upgrading. Either move to a tag with a numeric `USER` (the
+chart default is `tykio/tyk-dashboard:v5.13.1`, `USER 65532`), set an explicit
+`dashboard.containerSecurityContext.runAsUser`, or set `dashboard.containerSecurityContext.enabled: false` to
+omit the block entirely and let the cluster decide.
+
 ## Configuration
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). 
 To get all configurable options with detailed comments:
