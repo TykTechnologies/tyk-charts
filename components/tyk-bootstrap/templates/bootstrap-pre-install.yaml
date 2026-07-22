@@ -19,8 +19,8 @@ metadata:
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     {{- end }}
-    {{- with .Values.bootstrap.jobs.preInstall.annotations }}
-    {{- toYaml . | nindent 4 }}
+    {{- range $key, $value := .Values.bootstrap.jobs.preInstall.annotations }}
+    {{ $key }}: {{ $value | quote }}
     {{- end }}
   {{- end }}
 spec:
@@ -29,14 +29,16 @@ spec:
     metadata:
       {{- with .Values.bootstrap.podAnnotations.preInstallPodAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
+        {{- range $key, $value := . }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
       {{- end }}
       labels:
         app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
         app.kubernetes.io/instance: {{ .Release.Name | quote }}
         tyk.tyk.io/k8s-bootstrap: tyk-k8s-bootstrap-pre-install
-        {{- with .Values.bootstrap.podLabels.preInstallPodLabels }}
-        {{- toYaml . | nindent 8 }}
+        {{- range $key, $value := .Values.bootstrap.podLabels.preInstallPodLabels }}
+        {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
@@ -55,18 +57,20 @@ spec:
 {{- if .Values.bootstrap.priorityClassName }}
       priorityClassName: {{ .Values.bootstrap.priorityClassName | quote }}
 {{- end }}
-{{- if .Values.bootstrap.securityContext }}
+{{- $sc := .Values.bootstrap.securityContext }}
+{{- if and $sc (or (not (hasKey ($sc | default dict) "enabled")) $sc.enabled) (gt (len (omit ($sc | default dict) "enabled")) 0) }}
       securityContext:
-{{ toYaml .Values.bootstrap.securityContext | indent 8 }}
+{{- toYaml (omit $sc "enabled") | nindent 8 }}
 {{- end }}
       containers:
         - name: bootstrap-tyk-pre-install
           image: {{ .Values.global.imageRegistry }}{{ .Values.bootstrap.jobs.preInstall.image.repository }}:{{ .Values.bootstrap.jobs.preInstall.image.tag }}
           command: ['/app/bin/bootstrap-app-pre-install']
           imagePullPolicy: IfNotPresent
-          {{- if .Values.bootstrap.containerSecurityContext }}
+          {{- $csc := .Values.bootstrap.containerSecurityContext }}
+          {{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) (gt (len (omit ($csc | default dict) "enabled")) 0) }}
           securityContext:
-          {{- toYaml .Values.bootstrap.containerSecurityContext | nindent 12 }}
+          {{- toYaml (omit $csc "enabled") | nindent 12 }}
           {{- end }}
           env:
             - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE

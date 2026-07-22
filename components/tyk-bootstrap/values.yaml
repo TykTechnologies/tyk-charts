@@ -205,25 +205,33 @@ bootstrap:
   # Set to true to omit helm.sh/hook annotations from bootstrap jobs.
   # This is useful when deploying via ArgoCD or Flux, where job ordering is managed
   # by sync waves or depends-on annotations instead of Helm hooks.
-  # Note: when this is true, the pre-delete Job is suppressed entirely (would otherwise be
+  # Note: when this is true, the pre-delete Job is not rendered at all (would otherwise be
   # rendered as a normal install-time Job and erroneously run its cleanup at install/sync time,
   # bricking the install by deleting the operator secret before the operator can use it).
-  # GitOps users who need a deletion-time hook can re-enable it by leaving disableHelmHooks=false
-  # for the pre-delete Job specifically, or by managing pre-delete via their GitOps tool's own
-  # deletion hooks (e.g., argocd.argoproj.io/hook: PreDelete via bootstrap.jobs.preDelete.annotations).
+  # This is unconditional: bootstrap.jobs.preDelete.annotations cannot bring the Job back, because
+  # the whole template is skipped before any annotation is evaluated. GitOps users who need
+  # deletion-time cleanup must run it outside this chart (e.g., a separately managed Job).
   disableHelmHooks: false
 
   # securityContext values for bootstrap pods. All fields from PodSecurityContext object can be added here.
   # Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
   # fsGroup is retained so that mounted ServiceAccount tokens and any added volumes are writable by
-  # the non-root user. On OpenShift the SCC's fsGroup strategy overrides this default.
+  # the non-root user; on vanilla Kubernetes it is required for those volumes to be writable at all.
+  # On OpenShift the SCC only defaults an *unset* fsGroup from the namespace range — an explicitly
+  # set out-of-range value is validated and rejected, so set `enabled: false` here to omit the
+  # entire pod-level `securityContext` block and let the SCC assign. Setting `securityContext: {}`
+  # is NOT sufficient because Helm deep-merges these defaults back in.
   securityContext:
+    enabled: true
     fsGroup: 1000
     runAsNonRoot: true
 
   # containerSecurityContext values for bootstrap containers
   # Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
+  # To let the cluster inject defaults, set `enabled: false` — the entire container-level
+  # `securityContext` block is then omitted from the rendered manifest.
   containerSecurityContext:
+    enabled: true
     runAsNonRoot: true
     allowPrivilegeEscalation: false
     privileged: false
