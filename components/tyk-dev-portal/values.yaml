@@ -143,9 +143,15 @@ bootstrapJob:
     # tag for the bootstrap job's curl image.
     tag: "8.8.0"
   # securityContext holds pod-level security attributes for the bootstrap job.
-  securityContext: {}
+  # Empty by default, so no pod-level `securityContext` block is rendered. Set `enabled: false`
+  # to keep the block omitted even after adding fields (e.g. when the cluster injects them).
+  securityContext:
+    enabled: true
   # containerSecurityContext holds container-level security attributes for the bootstrap job.
-  containerSecurityContext: {}
+  # Empty by default, so no container-level `securityContext` block is rendered. Set
+  # `enabled: false` to keep the block omitted even after adding fields.
+  containerSecurityContext:
+    enabled: true
 
 # annotations be added to the Deployment / Statefulset of Tyk Developer Portal
 annotations: {}
@@ -212,16 +218,25 @@ resources: {}
 
 # securityContext holds pod-level security attributes for Tyk Developer Portal pod. All fields from PodSecurityContext object can be added here.
 # Note: runAsUser is not set by default to allow platforms like OpenShift to assign UIDs automatically
-# via Security Context Constraints (SCC). fsGroup is retained so that mounted volumes (including the
-# storage PVC and any S3-credential mount) are writable by the non-root user. On OpenShift the SCC's
-# fsGroup strategy overrides this default.
+# via Security Context Constraints (SCC). fsGroup is retained because on vanilla Kubernetes it is
+# required for mounted volumes (the storage PVC and any S3-credential mount) to be writable by the
+# non-root user — the kubelet chgrp's those volumes to fsGroup.
+# On OpenShift an explicit fsGroup is NOT overridden by the SCC: the MustRunAs strategy only defaults
+# an unset fsGroup, and validates an explicitly-set one against the namespace's allocated range —
+# an out-of-range value is rejected. Set `enabled: false` there so the entire pod-level
+# `securityContext` block is omitted from the rendered manifest and the SCC can allocate the GID.
+# Setting `securityContext: {}` is NOT sufficient because Helm deep-merges these defaults back in.
 securityContext:
+  enabled: true
   fsGroup: 2000
   runAsNonRoot: true
 
 # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod. All fields from SecurityContext object can be added here.
 # Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
+# To let the cluster inject defaults, set `enabled: false` — the entire container-level
+# `securityContext` block is then omitted from the rendered manifest.
 containerSecurityContext:
+  enabled: true
   runAsNonRoot: true
   allowPrivilegeEscalation: false
   privileged: false

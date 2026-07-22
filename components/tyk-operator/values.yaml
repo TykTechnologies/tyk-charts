@@ -48,6 +48,22 @@ annotations: {}
 podAnnotations: {}
 podSecurityContext:
   allowPrivilegeEscalation: false
+# managerPodSecurityContext holds pod-level security attributes for the controller-manager pod.
+# All fields from PodSecurityContext object can be added here. The default reproduces what the
+# chart previously hardcoded, so rendered output is unchanged.
+# To let the cluster inject defaults (e.g. OpenShift SCC), set `enabled: false` — the entire
+# pod-level `securityContext` block is then omitted from the rendered manifest. Setting
+# `managerPodSecurityContext: {}` is NOT sufficient because Helm deep-merges defaults back in.
+# NOTE: `podSecurityContext` above is a pre-existing key that no template reads, and it carries
+# `allowPrivilegeEscalation`, which is a container-level field not valid on PodSecurityContext.
+# It is left untouched rather than reused so that wiring it up cannot emit an invalid field.
+managerPodSecurityContext:
+  enabled: true
+  runAsNonRoot: true
+# securityContext holds container-level security attributes for the controller-manager container.
+# All fields from SecurityContext object can be added here. Unset by default, so no container
+# `securityContext` block is rendered. Set `enabled: false` to keep it omitted after adding fields.
+securityContext: {}
 resources: {}
 nodeSelector: {}
 # tolerations for manager pod assignment

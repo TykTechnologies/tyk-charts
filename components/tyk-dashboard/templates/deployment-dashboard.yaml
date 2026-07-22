@@ -67,10 +67,11 @@ spec:
         - name: init-analytics-conf
           image: {{ .Values.global.imageRegistry }}busybox:1.32
           args: ["sh", "-c", 'touch /etc/tyk-dashboard/tyk_analytics.conf && echo "{}" > /etc/tyk-dashboard/tyk_analytics.conf']
-          {{- if .Values.dashboard.containerSecurityContext }}
+          {{- $initCsc := .Values.dashboard.initContainers.initAnalyticsConf.securityContext }}
+          {{- if and $initCsc (or (not (hasKey ($initCsc | default dict) "enabled")) $initCsc.enabled) (gt (len (omit $initCsc "enabled")) 0) }}
           securityContext:
-          {{- toYaml .Values.dashboard.containerSecurityContext | nindent 12 }}
-          {{- end }}          
+          {{- toYaml (omit $initCsc "enabled") | nindent 12 }}
+          {{- end }}
           resources:
           {{- toYaml .Values.dashboard.initContainers.initAnalyticsConf.resources | nindent 12 }}
           volumeMounts:
@@ -81,9 +82,10 @@ spec:
       - image: "{{ .Values.global.imageRegistry }}{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
         imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
-        {{- if .Values.dashboard.containerSecurityContext }}
+        {{- $csc := .Values.dashboard.containerSecurityContext }}
+        {{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) (gt (len (omit $csc "enabled")) 0) }}
         securityContext:
-        {{- toYaml .Values.dashboard.containerSecurityContext | nindent 12 }}
+        {{- toYaml (omit $csc "enabled") | nindent 12 }}
         {{- end }}
         env:
           - name: "TYK_DB_ENABLEOWNERSHIP"
@@ -318,25 +320,28 @@ spec:
         {{- end }}
         ports:
         - containerPort: {{ .Values.dashboard.containerPort }}
+        {{- $redisCertsVol := and .Values.global.redis.useSSL .Values.global.redis.volumeName .Values.global.redis.certificatesMountPath }}
+        {{- $analyticsConfVol := and $isSemVer (semverCompare "<=5.0.2" .Values.dashboard.image.tag) }}
+        {{- if or $redisCertsVol $analyticsConfVol .Values.global.tls.dashboard .Values.dashboard.extraVolumeMounts }}
         volumeMounts:
+          {{- if $redisCertsVol }}
           {{- with .Values.global.redis }}
-          {{- if and .useSSL .volumeName .certificatesMountPath }}
           - name: {{ .volumeName }}
             mountPath: {{ .certificatesMountPath }}
           {{- end }}
           {{- end }}
-
-          {{- if and $isSemVer (semverCompare "<=5.0.2" .Values.dashboard.image.tag) }}
+          {{- if $analyticsConfVol }}
           - name: analytics-conf
             mountPath: /etc/tyk-dashboard
           {{- end }}
-          {{ if .Values.global.tls.dashboard }}
+          {{- if .Values.global.tls.dashboard }}
           - name: {{ .Values.dashboard.tls.secretName }}
             mountPath: {{ .Values.dashboard.tls.certificatesMountPath }}
-          {{ end }}
+          {{- end }}
           {{- if .Values.dashboard.extraVolumeMounts }}
           {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
+        {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.global.tls.dashboard }}S{{ end }}"
@@ -358,28 +363,31 @@ spec:
       {{- with .Values.dashboard.extraContainers }}
       {{- include "tyk-dashboard.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
       {{- end }}
-      {{- if .Values.dashboard.securityContext }}
+      {{- $podSc := .Values.dashboard.securityContext }}
+      {{- if and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) (gt (len (omit $podSc "enabled")) 0) }}
       securityContext:
-      {{- toYaml .Values.dashboard.securityContext | nindent 10 }}
+      {{- toYaml (omit $podSc "enabled") | nindent 10 }}
       {{- end }}
+      {{- $redisCertsSecretVol := and .Values.global.redis.useSSL .Values.global.redis.secretName .Values.global.redis.volumeName }}
+      {{- if or $redisCertsSecretVol $analyticsConfVol .Values.global.tls.dashboard .Values.dashboard.extraVolumes }}
       volumes:
+        {{- if $redisCertsSecretVol }}
         {{- with .Values.global.redis }}
-        {{- if and .useSSL .secretName .volumeName }}
         - name: {{ .volumeName }}
           secret:
             secretName: {{ .secretName }}
         {{- end }}
         {{- end }}
-
-        {{- if and $isSemVer (semverCompare "<=5.0.2" .Values.dashboard.image.tag) }}
+        {{- if $analyticsConfVol }}
         - name: analytics-conf
           emptyDir: {}
         {{- end }}
-        {{ if .Values.global.tls.dashboard }}
+        {{- if .Values.global.tls.dashboard }}
         - name: {{ .Values.dashboard.tls.secretName }}
           secret:
             secretName: {{ .Values.dashboard.tls.secretName }}
-        {{ end }}
+        {{- end }}
         {{- if .Values.dashboard.extraVolumes }}
         {{- include "tyk-dashboard.tplvalues.render" (dict "value" .Values.dashboard.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
+      {{- end }}

@@ -1,0 +1,117 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Regression guard for the init-analytics-conf init container (TT-17018).
+#
+# That container only renders for dashboard image tags <= 5.0.2 and runs busybox, which
+# has no USER directive. It used to reuse dashboard.containerSecurityContext; once that
+# block dropped its `runAsUser: 1000` for OpenShift compatibility the init container
+# rendered `runAsNonRoot: true` with no runAsUser and kubelet rejected the pod:
+#   CreateContainerConfigError: container has runAsNonRoot and image will run as root
+#
+# The fix mirrors the gateway's setupDirectories init container: a dedicated,
+# independently-configurable securityContext with an explicit runAsUser, plus the same
+# scoped `enabled` flag so OpenShift users can omit the block entirely.
+#
+# NOTE: the chart's semver regex rejects a leading `v`, so the legacy path is exercised
+# with `5.0.1`, not `v5.0.1`.
+suite: Dashboard init-analytics-conf securityContext
+templates:
+  - templates/deployment-dashboard.yaml
+  - templates/secrets.yaml
+release:
+  name: tyk-dashboard
+  namespace: test
+tests:
+  - it: legacy image tag renders the init container with an explicit runAsUser at defaults
+    template: templates/deployment-dashboard.yaml
+    set:
+      dashboard.image.tag: 5.0.1
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: init-analytics-conf
+      # The whole point: runAsNonRoot without runAsUser is an admission failure on busybox.
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 1000
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.readOnlyRootFilesystem
+          value: true
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.allowPrivilegeEscalation
+          value: false
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.seccompProfile.type
+          value: RuntimeDefault
+      - contains:
+          path: spec.template.spec.initContainers[0].securityContext.capabilities.drop
+          content: ALL
+      # `enabled` is a chart-only flag, never a valid k8s field
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext.enabled
+
+  - it: init securityContext is independent of dashboard.containerSecurityContext
+    template: templates/deployment-dashboard.yaml
+    set:
+      dashboard.image.tag: 5.0.1
+      dashboard.containerSecurityContext.runAsUser: 4242
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 4242
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 1000
+
+  - it: init securityContext override is honoured
+    template: templates/deployment-dashboard.yaml
+    set:
+      dashboard.image.tag: 5.0.1
+      dashboard.initContainers.initAnalyticsConf.securityContext:
+        runAsUser: 65532
+        runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 65532
+
+  # enabled=false is the OpenShift escape hatch: SCCs allocate a namespace UID, so the
+  # chart must emit no securityContext at all. `securityContext: {}` cannot work because
+  # Helm deep-merges the defaults back in.
+  - it: init securityContext.enabled=false omits the block entirely
+    template: templates/deployment-dashboard.yaml
+    set:
+      dashboard.image.tag: 5.0.1
+      dashboard.initContainers.initAnalyticsConf.securityContext.enabled: false
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: init-analytics-conf
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext
+
+  - it: enabled=true with every field nulled never renders a bare empty securityContext
+    template: templates/deployment-dashboard.yaml
+    set:
+      dashboard.image.tag: 5.0.1
+      dashboard.initContainers.initAnalyticsConf.securityContext:
+        enabled: true
+        runAsUser: null
+        runAsNonRoot: null
+        allowPrivilegeEscalation: null
+        privileged: null
+        readOnlyRootFilesystem: null
+        seccompProfile: null
+        capabilities: null
+    asserts:
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext
+
+  - it: modern image tags render no init container at all
+    template: templates/deployment-dashboard.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.initContainers

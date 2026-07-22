@@ -91,7 +91,7 @@ spec:
         {{- if and $initOn (gt (len (omit $initSc "enabled")) 0) }}
         securityContext:
         {{- toYaml (omit $initSc "enabled") | nindent 12 }}
-        {{- else if $mainOn }}
+        {{- else if and $mainOn (gt (len (omit $mainSc "enabled")) 0) }}
         securityContext:
         {{- toYaml (omit $mainSc "enabled") | nindent 12 }}
         {{- end }}
@@ -105,7 +105,7 @@ spec:
         image: "{{ .Values.global.imageRegistry }}{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
         {{- $csc := .Values.gateway.containerSecurityContext }}
-        {{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) }}
+        {{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) (gt (len (omit $csc "enabled")) 0) }}
         securityContext:
         {{- toYaml (omit $csc "enabled") | nindent 12 }}
         {{- end }}
@@ -505,7 +505,7 @@ spec:
       {{- include "tyk-gateway.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
       {{- end }}
       {{- $podSc := .Values.gateway.securityContext }}
-      {{- if and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) }}
+      {{- if and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) (gt (len (omit $podSc "enabled")) 0) }}
       securityContext:
       {{- toYaml (omit $podSc "enabled") | nindent 10 }}
       {{- end }}

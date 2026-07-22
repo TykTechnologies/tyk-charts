@@ -368,6 +368,41 @@ dashboard:
   initContainers:
     initAnalyticsConf:
       resources: {}
+      # securityContext for the init-analytics-conf init container. This container only renders
+      # for dashboard image tags <= 5.0.2, which need the config file to exist up front.
+      # It has its own block rather than reusing dashboard.containerSecurityContext because the
+      # init image (busybox) has no USER directive: inheriting `runAsNonRoot: true` without a
+      # runAsUser makes kubelet reject the pod at admission with
+      # "container has runAsNonRoot and image will run as root".
+      # runAsUser is 1000 — the UID this container ran as before dashboard.containerSecurityContext
+      # dropped its runAsUser for OpenShift compatibility. It is deliberately NOT aligned to the
+      # dashboard image's USER (as the gateway's init container is), because on the only tags that
+      # render this container (<= 5.0.2) the dashboard image has no USER directive at all.
+      #
+      # NOTE: there are two SEPARATE and unrelated version thresholds here — do not conflate them:
+      #   * `<= 5.0.2`  governs whether this init container renders at all.
+      #   * `<  v5.5.0` governs whether the MAIN dashboard image has a numeric USER.
+      #                 v5.0.2, v5.1.0, v5.3.0 and v5.4.0 all report USER='' (root);
+      #                 v5.5.0 onwards report USER='65532'.
+      # So tags v5.0.3-v5.4.0 render NO init container and are still affected by the main
+      # container's missing runAsUser. Fixing this init container does not make those tags —
+      # or even <= 5.0.2 — deployable on its own; see dashboard.containerSecurityContext.
+      # To let the cluster (e.g. OpenShift SCC) inject UID/GID instead of pinning them,
+      # set `enabled: false` here — the entire init container `securityContext` block is then
+      # omitted from the rendered manifest. Setting `securityContext: {}` is NOT sufficient
+      # because Helm deep-merges these defaults back in.
+      securityContext:
+        enabled: true
+        runAsUser: 1000
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        privileged: false
+        readOnlyRootFilesystem: true
+        seccompProfile:
+          type: RuntimeDefault
+        capabilities:
+          drop:
+            - ALL
       # If you do want to specify resources, uncomment the following
       # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
       # limits:
@@ -411,15 +446,24 @@ dashboard:
 
   # securityContext holds pod-level security attributes for Tyk Dashboard pod. All fields from PodSecurityContext object can be added here.
   # Note: runAsUser is not set by default to allow platforms like OpenShift to assign UIDs automatically
-  # via Security Context Constraints (SCC). fsGroup is retained so that mounted volumes are writable by
-  # the non-root user. On OpenShift the SCC's fsGroup strategy overrides this default.
+  # via Security Context Constraints (SCC). fsGroup is retained because on vanilla Kubernetes it is
+  # required for mounted volumes to be writable by the non-root user (kubelet chgrp's the volume to
+  # fsGroup).
+  # To let the cluster inject defaults (e.g. OpenShift SCC), set `enabled: false` — the entire
+  # pod-level `securityContext` block is then omitted from the rendered manifest, so the SCC can
+  # assign an fsGroup from the namespace's allocated range. Setting `securityContext: {}` is NOT
+  # sufficient because Helm deep-merges these defaults back in.
   securityContext:
+    enabled: true
     fsGroup: 2000
     runAsNonRoot: true
 
   # containerSecurityContext holds container-level security attributes for Tyk Dashboard container. All fields from SecurityContext object can be added here.
   # Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
+  # To let the cluster inject defaults, set `enabled: false` — the entire container-level
+  # `securityContext` block is then omitted from the rendered manifest.
   containerSecurityContext:
+    enabled: true
     runAsNonRoot: true
     allowPrivilegeEscalation: false
     privileged: false
