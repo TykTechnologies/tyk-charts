@@ -273,13 +273,27 @@ jobs:
       # silently retire the OpenShift path while leaving this job green. Hence an explicit check
       # for the two fields OpenShift actually rejects (runAsUser and fsGroup must come from the
       # namespace's allocated range).
+      # The selector matters. Tyk pods carry `release: <release>` and `app: <component>-<fullname>`;
+      # they do NOT carry app.kubernetes.io/* labels, so selecting on those matches nothing here and
+      # the assertion would pass vacuously. It would also sweep in the Bitnami Redis pods, which set
+      # fsGroup: 1001 legitimately and are not what this job is asserting about.
       - name: Assert no securityContext was rendered
         run: |
           set -euo pipefail
           found=$(kubectl get pods -n ${{ env.TYK_OSS_NS }} \
-            -l app.kubernetes.io/managed-by=Helm \
+            -l release=tyk-oss \
             -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.securityContext}{"\n"}{end}')
           echo "$found"
+
+          # Anti-vacuity: an empty selection must fail loudly rather than pass silently. If the
+          # chart's labels ever change, this job has to go red instead of quietly asserting nothing.
+          count=$(kubectl get pods -n ${{ env.TYK_OSS_NS }} -l release=tyk-oss -o name | wc -l)
+          if [ "$count" -eq 0 ]; then
+            echo "::error::selector matched no Tyk pods - the assertion below would be vacuous"
+            exit 1
+          fi
+          echo "checked $count Tyk pod(s)"
+
           if echo "$found" | grep -qE '(runAsUser|fsGroup)'; then
             echo "::error::securityContext was rendered despite enabled: false"
             exit 1
@@ -292,7 +306,8 @@ jobs:
           kubectl get pods -n "$NS" -o wide || true
           kubectl get events -n "$NS" --sort-by='.lastTimestamp' | tail -50 || true
           kubectl get pods -n "$NS" -o name | while read p; do kubectl describe -n "$NS" "$p" || true; done
-          kubectl logs -n "$NS" -l app.kubernetes.io/name=tyk-gateway --all-containers --tail=200 --prefix || true
+          # Same label caveat as the assertion above: `release` is the selector that matches Tyk pods.
+          kubectl logs -n "$NS" -l release=tyk-oss --all-containers --tail=200 --prefix || true
 
       - name: Uninstall Tyk OSS
         run: |
