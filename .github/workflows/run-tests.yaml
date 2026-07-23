@@ -277,12 +277,21 @@ jobs:
       # they do NOT carry app.kubernetes.io/* labels, so selecting on those matches nothing here and
       # the assertion would pass vacuously. It would also sweep in the Bitnami Redis pods, which set
       # fsGroup: 1001 legitimately and are not what this job is asserting about.
+      #
+      # Read the WHOLE pod spec, not just `.spec.securityContext`. The two fields OpenShift rejects
+      # live at different levels: fsGroup is pod-level, but runAsUser 65532 is on the
+      # setupDirectories INIT CONTAINER. A pod-level-only check misses the init container entirely,
+      # so dropping the init container's opt-out would leave this job green while breaking
+      # OpenShift — verified by removing that one opt-out and watching the check still pass.
+      # Container-level blocks are covered by the same widening.
+      # runAsUser/fsGroup appear nowhere in a pod spec except securityContext blocks, so matching
+      # against the full spec does not introduce false positives.
       - name: Assert no securityContext was rendered
         run: |
           set -euo pipefail
           found=$(kubectl get pods -n ${{ env.TYK_OSS_NS }} \
             -l release=tyk-oss \
-            -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.securityContext}{"\n"}{end}')
+            -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec}{"\n"}{end}')
           echo "$found"
 
           # Anti-vacuity: an empty selection must fail loudly rather than pass silently. If the
