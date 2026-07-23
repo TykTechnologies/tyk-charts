@@ -172,6 +172,133 @@ jobs:
           helm uninstall tyk-data-plane -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
           kubectl delete namespace ${{ env. TYK_DATAPLANE_NS }}
 
+  # ---------------------------------------------------------------------------------------------
+  # This job exists to get as close to OpenShift as we can on a kind cluster. It does not get
+  # close. Read this before assuming OpenShift is covered by CI — it is not.
+  #
+  # WHAT WE ARE TRYING TO APPROXIMATE
+  #   On OpenShift, the SCC admission controller *mutates* an incoming pod: if the spec omits
+  #   runAsUser/fsGroup, the SCC fills them in from the namespace's allocated UID range. That is
+  #   why TT-17018 added `enabled: false` to every securityContext block — a chart that pins a UID
+  #   is rejected outright, so the user needs a way to omit the block entirely and let the cluster
+  #   complete it. This job installs with exactly that configuration.
+  #
+  # WHAT THIS ACTUALLY PROVES (the half we can test)
+  #   kind has no SCC admission controller. Nothing here injects a UID. So all this demonstrates
+  #   is: the charts render with the blocks omitted, and every pod still reaches Ready without a
+  #   securityContext. That is the "we correctly leave the hole" half of the contract.
+  #
+  #   Worth having on its own: the setupDirectories init container falls back to
+  #   gateway.containerSecurityContext when its own block is disabled, and a bad fallback
+  #   (runAsNonRoot with no runAsUser, against a root image like busybox) fails kubelet admission
+  #   with CreateContainerConfigError. This job goes red on that.
+  #
+  # WHAT THIS DOES NOT PROVE (the half we cannot test here)
+  #   That the cluster then *fills* the hole correctly — UID from the namespace range, fsGroup
+  #   assigned, pods actually admitted under the SCC. Nothing in this job exercises that, because
+  #   no such controller exists on kind. Until we have real SCC coverage, that half is validated
+  #   only by hand (this PR was checked against a local CRC OpenShift cluster).
+  #
+  # WHY NOT JUST ENFORCE POD SECURITY ADMISSION INSTEAD
+  #   Labelling the namespace pod-security.kubernetes.io/enforce=restricted looks like the obvious
+  #   upgrade and is a trap. PSA only *validates*; it never mutates. Handed a pod with no
+  #   securityContext it rejects it rather than completing it — the opposite of what SCC does. It
+  #   would fail this job for the wrong reason and prove nothing about OpenShift.
+  #
+  #   Closing the gap for real needs a cluster that ships an SCC. MicroShift is the realistic
+  #   candidate (lightweight enough for a GitHub runner, unlike CRC). Tracked separately.
+  #
+  # NAMING
+  #   Deliberately not called an "openshift" test. If someone six months from now greps for
+  #   OpenShift coverage, they should not find this job and conclude SCC is handled.
+  # ---------------------------------------------------------------------------------------------
+  smoke-tests-no-securitycontext:
+    needs: [dep-guard]
+    if: always() && (needs.dep-guard.result == 'success' || needs.dep-guard.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+
+      # Plain kind — this is the ceiling on how OpenShift-like this job can be. A vanilla k8s
+      # cluster has no SecurityContextConstraints controller, so the UID/GID injection that
+      # OpenShift performs simply does not happen here. Swapping this for MicroShift is the one
+      # change that would turn this into a genuine OpenShift test.
+      #
+      # Pinned to a single k8s version rather than the 5-way matrix the sibling smoke-tests job
+      # uses: this exercises a values path, not a version-compatibility surface.
+      - name: Create Kind Cluster
+        uses: helm/kind-action@99576bfa6ddf9a8e612d83b513da5a75875caced  # v1.9.0
+        with:
+          # TODO: Pin kindest/node image to digest
+          node_image: "kindest/node:v1.30.0"
+
+      - name: Install helm
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4  # v4
+
+      # The OpenShift-shaped install: every securityContext block omitted, cluster left to fill in
+      # the blanks. On OpenShift the SCC would; on kind nothing does, and the pods run with
+      # whatever UID their images declare. --wait is what makes this meaningful — every pod has to
+      # reach Ready, so a broken init-container fallback surfaces as a red job rather than a
+      # rendered-but-unschedulable manifest.
+      - name: Deploy Tyk OSS without securityContext
+        run: |
+          kubectl create namespace ${{ env.TYK_OSS_NS }}
+
+          # Do not change the name
+          # TODO: Pin OCI helm chart to digest
+          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} \
+            --set image.repository=bitnamilegacy/redis \
+            --set sentinel.image.repository=bitnamilegacy/redis-sentinel \
+            --set metrics.image.repository=bitnamilegacy/redis-exporter \
+            --set volumePermissions.image.repository=bitnamilegacy/os-shell \
+            --set kubectl.image.repository=bitnamilegacy/kubectl \
+            --set sysctl.image.repository=bitnamilegacy/os-shell
+
+          helm dependency update ./tyk-oss
+          # The values file sets `enabled: false` on every securityContext block. Note it has to be
+          # `enabled: false` and not `{}` — Helm deep-merges the component chart defaults back in,
+          # so an empty map still renders a pinned runAsUser/fsGroup and OpenShift would reject it.
+          helm install tyk-oss ./tyk-oss -n ${{ env.TYK_OSS_NS }} --wait --timeout ${{ env.TIMEOUT }} \
+            -f ./tyk-oss/ci/no-securitycontext-values.yaml \
+            --set global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379} \
+            --set global.redis.passSecret.name=redis \
+            --set global.redis.passSecret.keyName=redis-password
+
+      # --wait passing only tells us the pods came up; on kind they would come up whether or not
+      # the blocks were omitted, because nothing here rejects a pinned UID. So the install alone
+      # cannot detect the values file drifting back to rendering a securityContext — which would
+      # silently retire the OpenShift path while leaving this job green. Hence an explicit check
+      # for the two fields OpenShift actually rejects (runAsUser and fsGroup must come from the
+      # namespace's allocated range).
+      - name: Assert no securityContext was rendered
+        run: |
+          set -euo pipefail
+          found=$(kubectl get pods -n ${{ env.TYK_OSS_NS }} \
+            -l app.kubernetes.io/managed-by=Helm \
+            -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.securityContext}{"\n"}{end}')
+          echo "$found"
+          if echo "$found" | grep -qE '(runAsUser|fsGroup)'; then
+            echo "::error::securityContext was rendered despite enabled: false"
+            exit 1
+          fi
+
+      - if: failure()
+        name: Diagnostics on failure
+        run: |
+          NS=${{ env.TYK_OSS_NS }}
+          kubectl get pods -n "$NS" -o wide || true
+          kubectl get events -n "$NS" --sort-by='.lastTimestamp' | tail -50 || true
+          kubectl get pods -n "$NS" -o name | while read p; do kubectl describe -n "$NS" "$p" || true; done
+          kubectl logs -n "$NS" -l app.kubernetes.io/name=tyk-gateway --all-containers --tail=200 --prefix || true
+
+      - name: Uninstall Tyk OSS
+        run: |
+          helm uninstall tyk-oss -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace ${{ env.TYK_OSS_NS }}
+
   integration-tests:
     needs: [dep-guard]
     if: always() && (needs.dep-guard.result == 'success' || needs.dep-guard.result == 'skipped')
