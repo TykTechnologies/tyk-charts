@@ -175,3 +175,21 @@ tests:
       - equal:
           path: metadata.name
           value: mdcb-tyk-control-plane-tyk-mdcb
+
+  # minReplicas/maxReplicas fall back to sane defaults if explicitly nulled, rather than
+  # rendering an empty (invalid) value. Consistent with the Pump/Dashboard charts.
+  - it: minReplicas/maxReplicas fall back to defaults when explicitly nulled
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.autoscaling.enabled: true
+      tyk-mdcb.mdcb.autoscaling.minReplicas: null
+      tyk-mdcb.mdcb.autoscaling.maxReplicas: null
+    template: charts/tyk-mdcb/templates/hpa.yaml
+    asserts:
+      - equal:
+          path: spec.minReplicas
+          value: 1
+      - equal:
+          path: spec.maxReplicas
+          value: 100
