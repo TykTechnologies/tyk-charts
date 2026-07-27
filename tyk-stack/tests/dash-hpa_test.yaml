@@ -180,3 +180,24 @@ tests:
         type: Percent
         value: 100
         periodSeconds: 15
+
+# Deployment must NOT hardcode replicas when autoscaling is enabled, otherwise every
+# helm upgrade / GitOps reconcile fights the HPA. Matches the Gateway/MDCB pattern.
+- it: Deployment sets replicas when autoscaling is disabled (default)
+  values:
+  - ../values.yaml
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - equal:
+      path: spec.replicas
+      value: 1
+
+- it: Deployment omits replicas when autoscaling is enabled (HPA owns replica count)
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.autoscaling.enabled: true
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - notExists:
+      path: spec.replicas
