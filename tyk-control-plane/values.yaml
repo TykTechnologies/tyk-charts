@@ -1716,6 +1716,30 @@ tyk-mdcb:
       maxReplicas: 100
       targetCPUUtilizationPercentage: 80
       # targetMemoryUtilizationPercentage: 80
+      # autoscalingTemplate lets you define custom or additional autoscaling metrics.
+      # ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-custom-metrics
+      # autoscalingTemplate:
+      #   - type: Pods
+      #     pods:
+      #       metric:
+      #         name: nginx_ingress_controller_nginx_process_requests_total
+      #       target:
+      #         type: AverageValue
+      #         averageValue: 10000m
+      # behavior configures the scaling behavior of the target in both Up and Down directions.
+      # ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#configurable-scaling-behavior
+      # behavior:
+      #   scaleDown:
+      #     stabilizationWindowSeconds: 300
+      #     policies:
+      #       - type: Percent
+      #         value: 100
+      #         periodSeconds: 15
+      #   scaleUp:
+      #     stabilizationWindowSeconds: 0
+      #     policies:
+      #       - type: Percent
+      #         value: 100
 
     # extraContainers is a list of containers to be added to the pod
     # - name: sidecar

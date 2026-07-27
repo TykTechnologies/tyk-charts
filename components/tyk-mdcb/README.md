@@ -125,3 +125,51 @@ The health check port for Tyk MDCB can be configurable via `.Values.mdcb.probes.
 
 It also defines the path for liveness and readiness probes.
 It is used to set TYK_MDCB_HEALTHCHECKPORT
+
+#### Enable autoscaling
+
+MDCB can be scaled automatically with a `HorizontalPodAutoscaler`. It is disabled by default;
+enable it with `--set mdcb.autoscaling.enabled=true`, which scales on average CPU utilization
+(`targetCPUUtilizationPercentage`, default 80%) between `minReplicas` and `maxReplicas`. You can
+also scale on memory via `targetMemoryUtilizationPercentage`. For example, in `values.yaml`:
+
+```yaml
+mdcb:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+```
+
+For custom or additional metrics beyond CPU/memory, use `mdcb.autoscaling.autoscalingTemplate`
+(a list of extra HPA metric entries):
+
+```yaml
+mdcb:
+  autoscaling:
+    autoscalingTemplate:
+      - type: Pods
+        pods:
+          metric:
+            name: nginx_ingress_controller_nginx_process_requests_total
+          target:
+            type: AverageValue
+            averageValue: 10000m
+```
+
+To control the scale-up/down policy, use `mdcb.autoscaling.behavior`, which maps directly to the
+HPA [`behavior`](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#configurable-scaling-behavior)
+field:
+
+```yaml
+mdcb:
+  autoscaling:
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 15
+```

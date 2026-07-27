@@ -1,0 +1,177 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Test MDCB HPA
+templates:
+  - charts/tyk-mdcb/templates/hpa.yaml
+  - charts/tyk-mdcb/templates/deployment-mdcb.yaml
+  - charts/tyk-mdcb/templates/secret-mdcb.yaml
+release:
+  name: tyk-control-plane
+  namespace: test
+tests:
+  - it: renders no HPA when autoscaling is unset (default values)
+    values:
+      - ../values.yaml
+    template: charts/tyk-mdcb/templates/hpa.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders no HPA when autoscaling is explicitly disabled
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.autoscaling.enabled: false
+    template: charts/tyk-mdcb/templates/hpa.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  # Backwards-compatibility regression: with only the pre-existing fields, the rendered HPA must
+  # match exactly what MDCB produced before autoscalingTemplate/behavior were added.
+  - it: renders the existing HPA unchanged when only pre-existing fields are set
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.autoscaling.enabled: true
+    template: charts/tyk-mdcb/templates/hpa.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.minReplicas
+          value: 1
+      - equal:
+          path: spec.maxReplicas
+          value: 100
+      - equal:
+          path: spec.scaleTargetRef
+          value:
+            apiVersion: apps/v1
+            kind: Deployment
+            name: mdcb-tyk-control-plane-tyk-mdcb
+      - lengthEqual:
+          path: spec.metrics
+          count: 1
+      - equal:
+          path: spec.metrics[0]
+          value:
+            type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 80
+      - notExists:
+          path: spec.behavior
+
+  - it: still renders the existing memory metric when set
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.autoscaling.enabled: true
+      tyk-mdcb.mdcb.autoscaling.targetMemoryUtilizationPercentage: 70
+    template: charts/tyk-mdcb/templates/hpa.yaml
+    asserts:
+      - lengthEqual:
+          path: spec.metrics
+          count: 2
+      - equal:
+          path: spec.metrics[1].resource.name
+          value: memory
+      - equal:
+          path: spec.metrics[1].resource.target.averageUtilization
+          value: 70
+
+  - it: appends a custom metric from autoscalingTemplate
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.autoscaling.enabled: true
+      tyk-mdcb.mdcb.autoscaling.autoscalingTemplate:
+        - type: Pods
+          pods:
+            metric:
+              name: nginx_ingress_controller_nginx_process_requests_total
+            target:
+              type: AverageValue
+              averageValue: 10000m
+    template: charts/tyk-mdcb/templates/hpa.yaml
+    asserts:
+      - lengthEqual:
+          path: spec.metrics
+          count: 2
+      - equal:
+          path: spec.metrics[1]
+          value:
+            type: Pods
+            pods:
+              metric:
+                name: nginx_ingress_controller_nginx_process_requests_total
+              target:
+                type: AverageValue
+                averageValue: 10000m
+
+  - it: sets a custom scaleDown/scaleUp behavior block
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.autoscaling.enabled: true
+      tyk-mdcb.mdcb.autoscaling.behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 300
+          policies:
+            - type: Percent
+              value: 100
+              periodSeconds: 15
+        scaleUp:
+          stabilizationWindowSeconds: 0
+    template: charts/tyk-mdcb/templates/hpa.yaml
+    asserts:
+      - equal:
+          path: spec.behavior.scaleDown.stabilizationWindowSeconds
+          value: 300
+      - equal:
+          path: spec.behavior.scaleUp.stabilizationWindowSeconds
+          value: 0
+      - equal:
+          path: spec.behavior.scaleDown.policies[0]
+          value:
+            type: Percent
+            value: 100
+            periodSeconds: 15
+
+  # Old + new together: existing CPU metric unchanged AND new behavior present.
+  - it: keeps the existing CPU metric while adding a behavior block
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.autoscaling.enabled: true
+      tyk-mdcb.mdcb.autoscaling.targetCPUUtilizationPercentage: 80
+      tyk-mdcb.mdcb.autoscaling.behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 300
+    template: charts/tyk-mdcb/templates/hpa.yaml
+    asserts:
+      - equal:
+          path: spec.metrics[0]
+          value:
+            type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 80
+      - equal:
+          path: spec.behavior.scaleDown.stabilizationWindowSeconds
+          value: 300
+
+  - it: HPA scaleTargetRef name matches the rendered MDCB Deployment name
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.autoscaling.enabled: true
+    template: charts/tyk-mdcb/templates/deployment-mdcb.yaml
+    asserts:
+      - equal:
+          path: metadata.name
+          value: mdcb-tyk-control-plane-tyk-mdcb

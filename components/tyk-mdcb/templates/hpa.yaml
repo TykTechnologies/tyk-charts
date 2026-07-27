@@ -31,4 +31,11 @@ spec:
           averageUtilization: {{ .Values.mdcb.autoscaling.targetMemoryUtilizationPercentage }}
           {{ end }}
     {{- end }}
+{{- with .Values.mdcb.autoscaling.autoscalingTemplate }}
+{{ toYaml . | indent 4}}
+{{- end}}
+{{- with .Values.mdcb.autoscaling.behavior }}
+  behavior:
+{{ toYaml . | indent 4}}
+{{- end}}
 {{- end }}
