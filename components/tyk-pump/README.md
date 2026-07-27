@@ -223,3 +223,35 @@ Uptime Pump can be configured by setting `pump.uptimePumpBackend` in values.yaml
 #### Other Pumps
 To set up other backends for pump, refer to this [document](https://github.com/TykTechnologies/tyk-pump/blob/master/README.md#pumps--back-ends-supported)
 and add the required environment variables in `pump.extraEnvs`
+
+### Enable autoscaling
+
+This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling
+it's enough to add `--set pump.autoscaling.enabled=true`. That will enable a `Horizontal Pod Autoscaler`
+resource with default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances).
+To customize those values you can add `--set pump.autoscaling.averageCpuUtilization=75` or use `values.yaml`:
+
+```yaml
+pump:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 30
+```
+
+Built-in rules include `pump.autoscaling.averageCpuUtilization` for CPU utilization (set by default at 60%)
+and `pump.autoscaling.averageMemoryUtilization` for memory (disabled by default). In addition to that you
+can define rules for custom metrics using `pump.autoscaling.autoscalingTemplate` list:
+
+```yaml
+pump:
+  autoscaling:
+    autoscalingTemplate:
+      - type: Pods
+        pods:
+          metric:
+            name: nginx_ingress_controller_nginx_process_requests_total
+          target:
+            type: AverageValue
+            averageValue: 10000m
+```

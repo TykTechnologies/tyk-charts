@@ -1,0 +1,40 @@
+{{- if .Values.pump.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pump-{{ include "tyk-pump.fullname" . }}
+  labels:
+    app: pump-{{ include "tyk-pump.fullname" . }}
+    chart: {{ include "tyk-pump.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pump-{{ include "tyk-pump.fullname" . }}
+  minReplicas: {{ default 1 .Values.pump.autoscaling.minReplicas }}
+  maxReplicas: {{ default 3 .Values.pump.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ default 60 .Values.pump.autoscaling.averageCpuUtilization }}
+{{- if .Values.pump.autoscaling.averageMemoryUtilization }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.pump.autoscaling.averageMemoryUtilization }}
+{{- end }}
+{{- with .Values.pump.autoscaling.autoscalingTemplate }}
+{{ toYaml . | indent 4}}
+{{- end}}
+{{- with .Values.pump.autoscaling.behavior }}
+  behavior:
+{{ toYaml . | indent 4}}
+{{- end}}
+{{- end }}
