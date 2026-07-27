@@ -114,6 +114,40 @@ gateway:
             averageValue: 10000m
 ```
 
+### Graceful shutdown and rolling updates
+
+For zero-downtime rollouts and scale-downs (for example when running behind an AWS ALB/NLB with
+`target-type: ip` and pod readiness gates), you can tune how the Gateway pods terminate and how the
+workload is updated:
+
+- `gateway.terminationGracePeriodSeconds` — how long (in seconds) Kubernetes waits for a pod to shut
+  down gracefully before sending `SIGKILL`. Unset by default, so the Kubernetes default of `30s`
+  applies. When you configure graceful shutdown, set this greater than the sum of the Gateway's
+  `graceful_shutdown_delay_seconds` and `graceful_shutdown_timeout_duration`.
+- `gateway.lifecycle` — container lifecycle hooks (`preStop` / `postStart`). A `preStop` sleep keeps a
+  terminating pod alive while the load balancer deregisters the target and drains in-flight connections.
+- `gateway.strategy` — the update strategy. `type` defaults to `RollingUpdate`; you can override
+  `rollingUpdate.maxSurge` and `rollingUpdate.maxUnavailable` (setting `maxUnavailable: 0` is useful for
+  zero-downtime deployments with readiness gates). For `kind: StatefulSet`, `maxSurge` is not applicable
+  and is omitted.
+
+```yaml
+gateway:
+  terminationGracePeriodSeconds: 60
+  lifecycle:
+    preStop:
+      sleep:
+        seconds: 40    # sleep action requires Kubernetes >= 1.29 (GA in 1.30)
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+```
+
+The Gateway's own shutdown timings (`graceful_shutdown_delay_seconds`,
+`graceful_shutdown_timeout_duration`) can be set via `gateway.extraEnvs`.
+
 #### Enabling TLS
 We have provided an easy way of enabling TLS via the `global.tls.gateway` flag. Setting this value to true will
 automatically enable TLS using the certificate provided under tyk-gateway/certs/cert.pem.

@@ -21,16 +21,26 @@ spec:
 {{- else }}
   updateStrategy:
 {{- end }}
-{{- if ((.Values.gateway.strategy).type) }}
+{{- $ru := (.Values.gateway.strategy).rollingUpdate | default dict }}
+{{- if (.Values.gateway.strategy).type }}
     type: {{ .Values.gateway.strategy.type }}
+{{- if (.Values.gateway.strategy).rollingUpdate }}
+    rollingUpdate:
+{{- if and (eq .Values.gateway.kind "Deployment") (hasKey $ru "maxSurge") }}
+      maxSurge: {{ $ru.maxSurge }}
+{{- end }}
+{{- if hasKey $ru "maxUnavailable" }}
+      maxUnavailable: {{ $ru.maxUnavailable }}
+{{- end }}
+{{- end }}
 {{- else }}
     # indicate which strategy we want for rolling update
     type: RollingUpdate
     rollingUpdate:
 {{- if eq .Values.gateway.kind "Deployment" }}
-      maxSurge: 2
+      maxSurge: {{ if hasKey $ru "maxSurge" }}{{ $ru.maxSurge }}{{ else }}2{{ end }}
 {{- end }}
-      maxUnavailable: 1
+      maxUnavailable: {{ if hasKey $ru "maxUnavailable" }}{{ $ru.maxUnavailable }}{{ else }}1{{ end }}
 {{- end }}
   selector:
     matchLabels:
@@ -54,9 +64,12 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}        
     spec:
+    {{- if not (kindIs "invalid" .Values.gateway.terminationGracePeriodSeconds) }}
+      terminationGracePeriodSeconds: {{ .Values.gateway.terminationGracePeriodSeconds }}
+    {{- end }}
     {{- if .Values.gateway.serviceAccountName }}
       serviceAccountName: "{{ .Values.gateway.serviceAccountName }}"
-    {{- end }}    
+    {{- end }}
 {{- if .Values.gateway.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.gateway.nodeSelector | indent 8 }}
@@ -449,6 +462,10 @@ spec:
           {{- if .Values.gateway.extraVolumeMounts }}
           {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
+        {{- if .Values.gateway.lifecycle }}
+        lifecycle:
+        {{- toYaml .Values.gateway.lifecycle | nindent 10 }}
+        {{- end }}
         livenessProbe:
           {{- if .Values.gateway.livenessProbe }}
           {{- toYaml .Values.gateway.livenessProbe | nindent 10}}

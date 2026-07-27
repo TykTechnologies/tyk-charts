@@ -211,6 +211,35 @@ tyk-gateway:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
+    # terminationGracePeriodSeconds is the duration in seconds the pod is given to
+    # terminate gracefully before it is forcibly killed (SIGKILL).
+    # Unset by default, in which case the Kubernetes default of 30s applies.
+    # When configuring graceful shutdown, set this greater than the sum of the gateway's
+    # graceful_shutdown_delay_seconds + graceful_shutdown_timeout_duration.
+    # A value of 0 means the pod is killed immediately with no graceful shutdown
+    # period (and preStop hooks will not run) — not recommended for the Gateway.
+    # terminationGracePeriodSeconds: 30
+    terminationGracePeriodSeconds:
+
+    # lifecycle defines container lifecycle hooks (preStop / postStart) for the gateway
+    # container. Empty by default (not rendered). Example preStop drain hook:
+    # lifecycle:
+    #   preStop:
+    #     sleep:
+    #       seconds: 40    # sleep action requires Kubernetes >= 1.29 (GA in 1.30)
+    lifecycle: {}
+
+    # strategy configures the update strategy for the gateway workload.
+    # When unset, the chart's historical defaults apply: type RollingUpdate with
+    # maxSurge: 2 and maxUnavailable: 1 (maxSurge is omitted for kind: StatefulSet).
+    # Override rollingUpdate.maxSurge / rollingUpdate.maxUnavailable as needed
+    # (e.g. maxUnavailable: 0 for zero-downtime rollouts), or set type: Recreate.
+    strategy: {}
+    #   type: RollingUpdate
+    #   rollingUpdate:
+    #     maxSurge: 2
+    #     maxUnavailable: 0
+
     # PodDisruptionBudget configuration
     pdb:
       enabled: false
