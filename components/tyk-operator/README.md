@@ -41,4 +41,26 @@ kubectl apply -f https://raw.githubusercontent.com/TykTechnologies/tyk-charts/re
 Replace $TYK_OPERATOR_VERSION with the image tag corresponding to the Tyk Operator version to which the Custom Resource Definitions (CRDs) belong.
 For example, to install CRDs compatible with Tyk Operator v1.0.0, set $TYK_OPERATOR_VERSION to v1.0.0.
 
+### Security contexts
+
+The controller-manager pod's `securityContext` comes from `.Values.managerPodSecurityContext`, which defaults to
+`runAsNonRoot: true` — the value the chart previously hardcoded, so rendered output is unchanged. The container-level
+block comes from `.Values.securityContext` and is unset by default.
+
+To let the cluster allocate UID/GID instead — for example on OpenShift, where the SCC assigns them — set
+`enabled: false` on the block you want omitted. Setting the block to `{}` does not work, because Helm deep-merges the
+chart defaults back in.
+
+```yaml
+managerPodSecurityContext:
+  enabled: false            # omits the pod-level block
+securityContext:
+  enabled: false            # omits the container-level block
+```
+
+Each block is scoped independently, and the `enabled` key itself is never rendered into the manifest.
+
+Note: the pre-existing `podSecurityContext` value is not read by any template. It is left in place for compatibility;
+use `managerPodSecurityContext` for pod-level settings.
+
 For detailed documentation, please refer to the official Tyk documentation https://tyk.io/docs/tyk-operator/.

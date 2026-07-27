@@ -160,7 +160,17 @@ global:
     useSecretName: ""
 
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+    # Set this as a literal value, OR (alternatively) load it from a k8s secret by setting connectionStringSecretName below.
     connectionString: ""
+    # connectionStringSecretName — when set, the pump reads the MDCB connection string from this k8s
+    # Secret instead of the literal connectionString above. Independent of useSecretName (which only
+    # covers orgId/userApiKey/groupID). The secret may be the same one referenced by useSecretName, or
+    # a separate secret. Default key looked up in the secret is "connectionString" (override via
+    # connectionStringSecretKey).
+    connectionStringSecretName: ""
+    # connectionStringSecretKey — key name inside connectionStringSecretName to read. Defaults to
+    # "connectionString" when unset.
+    connectionStringSecretKey: ""
     # orgID of your dashboard user
     orgId: ""
     # API key of your dashboard user
@@ -358,15 +368,26 @@ pump:
   resources: {}
 
   # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
+  # Note: runAsUser is not set by default to allow platforms like OpenShift to assign UIDs automatically
+  # via Security Context Constraints (SCC). fsGroup is retained because on vanilla Kubernetes it is
+  # required for mounted volumes to be writable by the non-root user (kubelet chgrp's the volume to
+  # fsGroup).
+  # To let the cluster inject defaults (e.g. OpenShift SCC), set `enabled: false` — the entire
+  # pod-level `securityContext` block is then omitted from the rendered manifest, so the SCC can
+  # assign an fsGroup from the namespace's allocated range. Setting `securityContext: {}` is NOT
+  # sufficient because Helm deep-merges these defaults back in.
   securityContext:
-    runAsUser: 1000
+    enabled: true
     fsGroup: 2000
-    runAsNonRoot: true   
+    runAsNonRoot: true
 
   # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
+  # Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
+  # To let the cluster inject defaults, set `enabled: false` — the entire container-level
+  # `securityContext` block is then omitted from the rendered manifest.
   containerSecurityContext:
+    enabled: true
     runAsNonRoot: true
-    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true

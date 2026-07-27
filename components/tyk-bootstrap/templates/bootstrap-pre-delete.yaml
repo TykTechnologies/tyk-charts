@@ -1,4 +1,4 @@
-{{- if .Values.global.components.bootstrap -}}
+{{- if and .Values.global.components.bootstrap (not .Values.bootstrap.disableHelmHooks) -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -14,24 +14,33 @@ metadata:
 
     helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
   annotations:
+    {{- if not .Values.bootstrap.disableHelmHooks }}
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
     "helm.sh/hook": pre-delete
     "helm.sh/hook-weight": "0"
-
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    {{- end }}
+    {{- range $key, $value := .Values.bootstrap.jobs.preDelete.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
 spec:
-  backoffLimit: 1
+  backoffLimit: {{ if hasKey .Values.bootstrap.jobs.preDelete "backoffLimit" }}{{ .Values.bootstrap.jobs.preDelete.backoffLimit }}{{ else }}1{{ end }}
   template:
     metadata:
+      {{- with .Values.bootstrap.podAnnotations.preDeletePodAnnotations }}
       annotations:
-        {{- if .Values.bootstrap.podAnnotations.preDeletePodAnnotations}}
-        {{ toYaml .Values.bootstrap.podAnnotations.preDeletePodAnnotations | nindent 8 }}
+        {{- range $key, $value := . }}
+        {{ $key }}: {{ $value | quote }}
         {{- end }}
+      {{- end }}
       labels:
-        {{- with .Values.bootstrap.podLabels.preDeletePodLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}        
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        tyk.tyk.io/k8s-bootstrap: tyk-k8s-bootstrap-pre-delete
+        {{- range $key, $value := .Values.bootstrap.podLabels.preDeletePodLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
     spec:
       serviceAccountName: {{ default "k8s-bootstrap-role" .Values.bootstrap.serviceAccountName | quote }}
 {{- if .Values.bootstrap.nodeSelector }}
@@ -49,18 +58,24 @@ spec:
 {{- if .Values.bootstrap.priorityClassName }}
       priorityClassName: {{ .Values.bootstrap.priorityClassName | quote }}
 {{- end }}
-{{- if .Values.bootstrap.securityContext }}
+{{- $sc := .Values.bootstrap.securityContext }}
+{{- if and $sc (or (not (hasKey ($sc | default dict) "enabled")) $sc.enabled) (gt (len (omit ($sc | default dict) "enabled")) 0) }}
       securityContext:
-{{ toYaml .Values.bootstrap.securityContext | indent 8 }}
+{{- toYaml (omit $sc "enabled") | nindent 8 }}
 {{- end }}
       containers:
         - name: bootstrap-tyk-pre-delete
           image: {{ .Values.global.imageRegistry }}{{ .Values.bootstrap.jobs.preDelete.image.repository }}:{{ .Values.bootstrap.jobs.preDelete.image.tag }}
+          {{- if .Values.bootstrap.jobs.preDelete.command }}
+          command: {{ toYaml .Values.bootstrap.jobs.preDelete.command | nindent 12 }}
+          {{- else }}
           command: [ '/app/bin/bootstrap-app-pre-delete' ]
+          {{- end }}
           imagePullPolicy: IfNotPresent
-          {{- if .Values.bootstrap.containerSecurityContext }}
+          {{- $csc := .Values.bootstrap.containerSecurityContext }}
+          {{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) (gt (len (omit ($csc | default dict) "enabled")) 0) }}
           securityContext:
-          {{- toYaml .Values.bootstrap.containerSecurityContext | nindent 12 }}
+          {{- toYaml (omit $csc "enabled") | nindent 12 }}
           {{- end }}
           env:
             - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME

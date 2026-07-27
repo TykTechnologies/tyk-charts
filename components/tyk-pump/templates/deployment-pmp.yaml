@@ -58,9 +58,10 @@ spec:
         ports:
           - name: tyk-pump-port
             containerPort: {{ .Values.pump.containerPort }}
-        {{- if .Values.pump.containerSecurityContext }}
+        {{- $csc := .Values.pump.containerSecurityContext }}
+        {{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) (gt (len (omit $csc "enabled")) 0) }}
         securityContext:
-        {{- toYaml .Values.pump.containerSecurityContext | nindent 12 }}
+        {{- toYaml (omit $csc "enabled") | nindent 12 }}
         {{- end }}
 
         {{- if .Values.pump.healthCheckService.enabled }}
@@ -91,7 +92,14 @@ spec:
           - name: TYK_PMP_PUMPS_HYBRID_TYPE
             value: hybrid
           - name: TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING
+          {{- if .Values.global.remoteControlPlane.connectionStringSecretName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.remoteControlPlane.connectionStringSecretName }}
+                key: {{ .Values.global.remoteControlPlane.connectionStringSecretKey | default "connectionString" }}
+          {{- else }}
             value: "{{ .Values.global.remoteControlPlane.connectionString }}"
+          {{- end }}
           
           - name: TYK_PMP_PUMPS_HYBRID_META_RPCKEY
           {{- if .Values.global.remoteControlPlane.useSecretName }}
@@ -373,35 +381,40 @@ spec:
         {{- include "tyk-pump.tplvalues.render" ( dict "value" .Values.pump.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
 
+        {{- $redisCertsVolMount := and .Values.global.redis.useSSL .Values.global.redis.volumeName .Values.global.redis.certificatesMountPath }}
+        {{- if or .Values.pump.extraVolumeMounts $redisCertsVolMount }}
         volumeMounts:
           {{- if .Values.pump.extraVolumeMounts }}
           {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
-
+          {{- if $redisCertsVolMount }}
           {{- with .Values.global.redis }}
-          {{- if and .useSSL .volumeName .certificatesMountPath }}
           - name: {{ .volumeName }}
             mountPath: {{ .certificatesMountPath }}
           {{- end }}
           {{- end }}
-
+        {{- end }}
         resources:
 {{ toYaml .Values.pump.resources | indent 12 }}
-      {{- if .Values.pump.securityContext }}
       {{- with .Values.pump.extraContainers }}
       {{- include "tyk-pump.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
       {{- end }}
+      {{- $podSc := .Values.pump.securityContext }}
+      {{- if and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) (gt (len (omit $podSc "enabled")) 0) }}
       securityContext:
-      {{- toYaml .Values.pump.securityContext | nindent 10 }}
+      {{- toYaml (omit $podSc "enabled") | nindent 10 }}
       {{- end }}
+      {{- $redisCertsVol := and .Values.global.redis.useSSL .Values.global.redis.secretName .Values.global.redis.volumeName }}
+      {{- if or .Values.pump.extraVolumes $redisCertsVol }}
       volumes:
         {{- if .Values.pump.extraVolumes }}
         {{- include "tyk-pump.tplvalues.render" (dict "value" .Values.pump.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
+        {{- if $redisCertsVol }}
         {{- with .Values.global.redis }}
-        {{- if and .useSSL .secretName .volumeName }}
         - name: {{ .volumeName }}
           secret:
             secretName: {{ .secretName }}
         {{- end }}
         {{- end }}
+      {{- end }}

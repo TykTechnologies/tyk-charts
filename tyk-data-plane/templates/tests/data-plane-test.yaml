@@ -41,15 +41,17 @@ spec:
             secretKeyRef:
               name: secrets-{{ include "tyk-data-plane.fullname" . }}
               key: APISecret
-{{- if .Values.tests.containerSecurityContext }}
+{{- $csc := .Values.tests.containerSecurityContext }}
+{{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) (gt (len (omit ($csc | default dict) "enabled")) 0) }}
       securityContext:
-{{- toYaml .Values.tests.containerSecurityContext | nindent 8 }}
+{{- toYaml (omit $csc "enabled") | nindent 8 }}
 {{- end }}
       resources:
 {{ toYaml .Values.tests.resources | indent 8 }}
-{{- if .Values.tests.securityContext }}
+{{- $psc := .Values.tests.securityContext }}
+{{- if and $psc (or (not (hasKey ($psc | default dict) "enabled")) $psc.enabled) (gt (len (omit ($psc | default dict) "enabled")) 0) }}
   securityContext:
-{{- toYaml .Values.tests.securityContext | nindent 4 }}
+{{- toYaml (omit $psc "enabled") | nindent 4 }}
 {{- end }}
 {{- if .Values.tests.nodeSelector }}
   nodeSelector:

@@ -35,11 +35,39 @@ jobs:
           fetch-depth: 0
 
       - name: Update dependencies
-        run: helm dependency update tyk-stack
+        # The umbrella charts pull the component charts in over file:// dependencies. Their suites
+        # cannot render until those are vendored into charts/, so update every chart that declares
+        # dependencies rather than tyk-stack alone.
+        run: |
+          set -euo pipefail
+          for chart in $(find . -name Chart.yaml -not -path '*/charts/*' -exec dirname {} \; | sort -u); do
+            if grep -q '^dependencies:' "$chart/Chart.yaml"; then
+              echo "==> helm dependency update $chart"
+              helm dependency update "$chart"
+            fi
+          done
 
       - name: Set up unit tests
         # TODO: Pin helm plugin to a release tag instead of default branch
         run: helm plugin install https://github.com/helm-unittest/helm-unittest.git --version v0.7.2
 
-      - name: Run unit tests for tyk-stack
-        run: helm unittest ./tyk-stack
+      - name: Run unit tests
+        # Discovered rather than hardcoded so newly added suites are picked up without editing this
+        # workflow. A chart qualifies only if it has root-level tests/*_test.yaml specs; charts whose
+        # only tests/ directory sits under templates/ (those hold `helm test` hook pods, e.g.
+        # tyk-data-plane and tyk-oss) are skipped, since helm unittest reports "0 passed, 0 total"
+        # for them and that is not a meaningful result.
+        run: |
+          set -euo pipefail
+          charts=()
+          for chart in $(find . -name Chart.yaml -not -path '*/charts/*' -exec dirname {} \; | sort -u); do
+            if ls "$chart"/tests/*_test.yaml > /dev/null 2>&1; then
+              charts+=("$chart")
+            fi
+          done
+          if [ ${#charts[@]} -eq 0 ]; then
+            echo "No chart contains tests/*_test.yaml suites" >&2
+            exit 1
+          fi
+          echo "==> helm unittest ${charts[*]}"
+          helm unittest "${charts[@]}"

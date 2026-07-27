@@ -1,0 +1,46 @@
+# Exercises the "let the cluster assign UIDs/GIDs" path added by TT-17018.
+#
+# Every securityContext block is turned off with `enabled: false`, so the rendered
+# manifests carry no pod-level or container-level securityContext at all and the
+# cluster is free to inject its own. This is the configuration an OpenShift user
+# is expected to run, where the SCC supplies the UID/GID from the namespace's
+# allocated range.
+#
+# NOTE: running this on kind does NOT validate OpenShift compatibility. kind has
+# no SCC admission controller, so nothing injects anything — what this proves is
+# only that the charts render and every pod still reaches Ready when the
+# securityContext blocks are omitted. That is worth proving on its own: the init
+# container falls back to gateway.containerSecurityContext when its own block is
+# disabled, and getting that fallback wrong yields CreateContainerConfigError.
+# Real SCC coverage needs a cluster that has one (e.g. MicroShift).
+#
+# Setting these to `{}` instead of `enabled: false` would not work — Helm
+# deep-merges the component chart defaults back in.
+
+tyk-gateway:
+  gateway:
+    securityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
+    initContainers:
+      setupDirectories:
+        securityContext:
+          enabled: false
+
+tyk-pump:
+  pump:
+    securityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
+
+# The helm-test pod image (zalbiraw/alpine-curl-jq) has no USER directive, so it
+# runs as root once the blocks are omitted. Fine on kind; on OpenShift the SCC
+# assigns the UID instead. Only relevant if `helm test` is run against this
+# values file — the smoke-tests job does not.
+tests:
+  securityContext:
+    enabled: false
+  containerSecurityContext:
+    enabled: false

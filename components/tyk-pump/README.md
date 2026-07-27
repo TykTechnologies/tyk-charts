@@ -176,7 +176,8 @@ Add following under the `global` section in `values.yaml`:
 Hybrid Pump can be configured by setting `pump.backend` to `hybrid`. 
 Set the connection details of your control plane in `global.remoteControlPlane` field of values file. 
 Connection details can be stored either directly in the values file or you can store it in k8s secret and provide reference
-to it in the `global.remoteControlPlane.useSecretName` field.
+to it in the `global.remoteControlPlane.useSecretName` field. The MDCB connection string has its own, independent secret
+reference: `global.remoteControlPlane.connectionStringSecretName`.
 
 ```yaml
   # Set remoteControlPlane connection details if you want to configure hybrid pump.
@@ -189,7 +190,17 @@ to it in the `global.remoteControlPlane.useSecretName` field.
       # - groupID - Sets slave_options.group_id of Tyk Gateway
       useSecretName: ""
       # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+      # Set this as a literal value, OR (alternatively) load it from a k8s secret by setting connectionStringSecretName below.
       connectionString: ""
+      # connectionStringSecretName — when set, the pump reads the MDCB connection string from this k8s
+      # Secret instead of the literal connectionString above. Independent of useSecretName (which only
+      # covers orgId/userApiKey/groupID). The secret may be the same one referenced by useSecretName, or
+      # a separate secret. Default key looked up in the secret is "connectionString" (override via
+      # connectionStringSecretKey).
+      connectionStringSecretName: ""
+      # connectionStringSecretKey — key name inside connectionStringSecretName to read. Defaults to
+      # "connectionString" when unset.
+      connectionStringSecretKey: ""
       # orgID of your dashboard user
       orgId: ""
       # API key of your dashboard user
