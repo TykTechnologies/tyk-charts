@@ -236,8 +236,21 @@ pump:
   autoscaling:
     enabled: true
     minReplicas: 3
-    maxReplicas: 30
+    maxReplicas: 5
 ```
+
+> **Prerequisite — resource requests are required for CPU/memory autoscaling.** The Horizontal
+> Pod Autoscaler scales on utilization measured as a *percentage of the Pod's resource requests*,
+> so you must set `pump.resources.requests` for each resource you autoscale on
+> (`pump.resources.requests.cpu` for CPU, `pump.resources.requests.memory` for memory). Without a
+> request set, the HPA cannot compute utilization and will not scale the deployment. Custom
+> metrics configured via `pump.autoscaling.autoscalingTemplate` are not subject to this
+> requirement.
+
+> **Note on `maxReplicas`.** Size `minReplicas`/`maxReplicas` to your cluster's capacity and
+> expected load — the values above are only an example. A high ceiling can drive significant
+> resource consumption and cost under load; consider bounding total usage with a Kubernetes
+> [`ResourceQuota`](https://kubernetes.io/docs/concepts/policy/resource-quotas/).
 
 Built-in rules include `pump.autoscaling.averageCpuUtilization` for CPU utilization (set by default at 60%)
 and `pump.autoscaling.averageMemoryUtilization` for memory (disabled by default). In addition to that you
