@@ -173,3 +173,18 @@ mdcb:
             value: 100
             periodSeconds: 15
 ```
+
+> **Prerequisite — resource requests are required for CPU/memory autoscaling.** The Horizontal
+> Pod Autoscaler scales on utilization measured as a *percentage of the Pod's resource requests*,
+> so you must set `mdcb.resources.requests` for each resource you autoscale on
+> (`mdcb.resources.requests.cpu` for CPU, `mdcb.resources.requests.memory` for memory). Without a
+> request set, the HPA cannot compute utilization and will not scale the deployment. Custom
+> metrics configured via `mdcb.autoscaling.autoscalingTemplate` are not subject to this
+> requirement.
+
+> **Caution — custom metrics and scaling policies are powerful knobs.** `autoscalingTemplate` and
+> `behavior` are passed straight through to the HPA resource. An aggressive scale-up policy
+> combined with a volatile metric can cause rapid, uncontrolled scaling and resource exhaustion.
+> Size `maxReplicas` to your cluster's capacity, test any custom configuration before production,
+> and consider bounding total usage with a Kubernetes
+> [`ResourceQuota`](https://kubernetes.io/docs/concepts/policy/resource-quotas/).
