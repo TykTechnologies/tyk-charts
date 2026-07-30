@@ -1,0 +1,99 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Locks the scoped `enabled` flag on the MDCB securityContext blocks (TT-17018,
+# propagating the gateway pattern from c99bc03).
+#
+# MDCB previously used an unconditional `toYaml` on both blocks, so at defaults
+# (both values `{}`) it rendered a bare `securityContext: {}` on the pod and the
+# container. The guard removes those and adds the opt-out; `enabled` must never
+# reach the manifest because kubectl's strict fieldValidation rejects it.
+#
+# NOTE: MDCB uses `podSecurityContext` where every other chart uses
+# `securityContext`. The name is kept as-is — renaming is a breaking value change.
+#
+# NOTE: CI only runs `helm unittest ./tyk-stack`
+# (.github/workflows/unit-tests.yaml), so this suite does not run in CI today.
+# Run it locally with `helm unittest ./tyk-control-plane`.
+suite: MDCB securityContext enabled flag
+templates:
+  - charts/tyk-mdcb/templates/deployment-mdcb.yaml
+  # deployment-mdcb.yaml checksum-annotates the secret, so it must be in scope
+  - charts/tyk-mdcb/templates/secret-mdcb.yaml
+release:
+  name: tyk-control-plane
+  namespace: test
+tests:
+  - it: renders no securityContext at all at defaults (no empty {} blocks)
+    template: charts/tyk-mdcb/templates/deployment-mdcb.yaml
+    values:
+      - ../values.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  - it: renders real fields without leaking the enabled key
+    template: charts/tyk-mdcb/templates/deployment-mdcb.yaml
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.podSecurityContext.fsGroup: 2000
+      tyk-mdcb.mdcb.containerSecurityContext.runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 2000
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.enabled
+
+  - it: podSecurityContext.enabled=false omits the pod block despite set fields
+    template: charts/tyk-mdcb/templates/deployment-mdcb.yaml
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.podSecurityContext.fsGroup: 2000
+      tyk-mdcb.mdcb.podSecurityContext.enabled: false
+      tyk-mdcb.mdcb.containerSecurityContext.runAsNonRoot: true
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      # container block is independently scoped and must survive
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+
+  - it: containerSecurityContext.enabled=false omits the container block despite set fields
+    template: charts/tyk-mdcb/templates/deployment-mdcb.yaml
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.podSecurityContext.fsGroup: 2000
+      tyk-mdcb.mdcb.containerSecurityContext.runAsNonRoot: true
+      tyk-mdcb.mdcb.containerSecurityContext.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 2000
+
+  - it: enabled=false on both blocks strips every MDCB securityContext
+    template: charts/tyk-mdcb/templates/deployment-mdcb.yaml
+    values:
+      - ../values.yaml
+    set:
+      tyk-mdcb.mdcb.podSecurityContext.fsGroup: 2000
+      tyk-mdcb.mdcb.podSecurityContext.enabled: false
+      tyk-mdcb.mdcb.containerSecurityContext.runAsNonRoot: true
+      tyk-mdcb.mdcb.containerSecurityContext.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext

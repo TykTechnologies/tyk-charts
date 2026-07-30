@@ -358,6 +358,16 @@ tyk-gateway:
         # requests:
         #   cpu: 100m
         #   memory: 128Mi
+        # securityContext for the setup-directories init container. Nothing is set here, so the
+        # effective default comes from the tyk-gateway component chart: `runAsUser: 65532`, plus
+        # runAsNonRoot / readOnlyRootFilesystem / dropped capabilities. A pinned runAsUser is one of
+        # the two things OpenShift rejects — the UID must come from the namespace's allocated range.
+        # Setting `enabled: false` here drops the init container's own block and falls back to
+        # gateway.containerSecurityContext (which pins no UID); set `enabled: false` there too and the
+        # init container gets no securityContext at all. `securityContext: {}` is NOT sufficient in
+        # either case, because Helm deep-merges the component chart defaults back in.
+        # securityContext:
+        #   enabled: false
 
     # image pull secrets to use when pulling images from repository
     imagePullSecrets: []
@@ -483,15 +493,16 @@ tyk-gateway:
     startupProbe: {}
 
     # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
+    # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block
+    # is then omitted from the manifest. `securityContext: {}` is NOT sufficient (Helm deep-merges defaults).
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
+    # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block is
+    # then omitted from the manifest. `containerSecurityContext: {}` is NOT sufficient (Helm deep-merges defaults).
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -754,6 +765,7 @@ tyk-operator:
   podAnnotations: {}
   # podLabels specifies labels to be added in operator Pod
   podLabels: {}
+  # NOTE: unused/dead key — no template reads it.
   podSecurityContext:
     allowPrivilegeEscalation: false
   resources: {}
@@ -970,15 +982,16 @@ tyk-pump:
     resources: {}
 
     # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
+    # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block
+    # is then omitted from the manifest. `securityContext: {}` is NOT sufficient (Helm deep-merges defaults).
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
+    # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block is
+    # then omitted from the manifest. `containerSecurityContext: {}` is NOT sufficient (Helm deep-merges defaults).
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -1059,16 +1072,36 @@ tyk-bootstrap:
     # Trigger to control if we want to create the tyk-operator secret
     operatorSecret: tyk-operator-conf
 
+    # image pull secrets for bootstrap job pods
+    imagePullSecrets: []
+
+    # disableHelmHooks disables Helm hooks for bootstrap jobs
+    disableHelmHooks: false
+
+    # rbacAnnotations adds annotations to the bootstrap Role, RoleBinding and ServiceAccount.
+    # Defaults to {} in the tyk-bootstrap component chart. The RBAC objects must exist before the
+    # bootstrap Jobs run, so under ArgoCD give them an earlier sync-wave than the jobs below.
+    # rbacAnnotations:
+    #   argocd.argoproj.io/sync-wave: "-2"
+
     # jobs field includes configurations for Helm Hooks.
     jobs:
       # preInstall configures pre-install Helm hook
       preInstall:
+        # annotations adds annotations to the pre-install Job metadata (e.g. ArgoCD sync waves).
+        # Defaults to {} in the tyk-bootstrap component chart.
+        # annotations:
+        #   argocd.argoproj.io/sync-wave: "-1"
+
         # image specifies image repository of bootstrap images
         image:
           # repository specifies image repository of pre-install job.
           repository: tykio/tyk-k8s-bootstrap-pre-install
           # tag specifies image tag of pre-install job.
           tag: v2.2.0
+
+        # backoffLimit specifies the number of retries before considering the job as failed.
+        backoffLimit: 1
 
         # extraEnvs is used to set extra environment variables to pre-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
@@ -1077,12 +1110,20 @@ tyk-bootstrap:
 
       # postInstall configures post-install Helm hook
       postInstall:
+        # annotations adds annotations to the post-install Job metadata (e.g. ArgoCD sync waves).
+        # Defaults to {} in the tyk-bootstrap component chart.
+        # annotations:
+        #   argocd.argoproj.io/sync-wave: "1"
+
         # image specifies image repository of bootstrap images
         image:
           # repository specifies image repository of post-install job.
           repository: tykio/tyk-k8s-bootstrap-post
           # tag specifies image tag of post-install job.
           tag: v2.2.0
+
+        # backoffLimit specifies the number of retries before considering the job as failed.
+        backoffLimit: 1
 
         # extraEnvs is used to set extra environment variables to post-install job.
         # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
@@ -1091,12 +1132,25 @@ tyk-bootstrap:
 
       # preDelete configures pre-delete Helm hook
       preDelete:
+        # annotations adds annotations to the pre-delete Job metadata (e.g. ArgoCD sync waves).
+        # Defaults to {} in the tyk-bootstrap component chart.
+        # annotations:
+        #   argocd.argoproj.io/sync-wave: "2"
+
+        # command overrides the pre-delete container's default command. Defaults to [] (use the
+        # image's own command). Set it to a no-op to stop the pre-delete job deleting Tyk resources
+        # on uninstall. See the tyk-bootstrap component chart values for the current guidance.
+        # command: ["/bin/sh", "-c", "echo 'Pre-delete disabled. No-op.'"]
+
         # image specifies image repository of bootstrap images
         image:
           # repository specifies image repository of pre-delete job.
           repository: tykio/tyk-k8s-bootstrap-pre-delete
           # tag specifies image tag of pre-delete job.
           tag: v2.2.0
+
+        # backoffLimit specifies the number of retries before considering the job as failed.
+        backoffLimit: 1
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
         # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
@@ -1154,9 +1208,6 @@ tyk-bootstrap:
     # priorityClassName for bootstrap pods assignment
     priorityClassName: ""
 
-    # imagePullSecrets specifies image pull secrets to be added to bootstrap job pods.
-    imagePullSecrets: []
-
     # extraVolumes is a list of volumes to be added to the pod
     # extraVolumes:
     #   - name: ca-certs
@@ -1173,15 +1224,16 @@ tyk-bootstrap:
     extraVolumeMounts: []
 
     # securityContext values for bootstrap pod. All fields from PodSecurityContext object can be added here.
+    # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block
+    # is then omitted from the manifest. `securityContext: {}` is NOT sufficient (Helm deep-merges defaults).
     securityContext:
-      runAsUser: 1000
-      fsGroup: 1000
       runAsNonRoot: true
 
     # containerSecurityContext values for bootstrap containers
+    # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block is
+    # then omitted from the manifest. `containerSecurityContext: {}` is NOT sufficient (Helm deep-merges defaults).
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -1379,15 +1431,16 @@ tyk-dashboard:
     resources: {}
 
     # securityContext holds pod-level security attributes for Tyk Dashboard pod. All fields from PodSecurityContext object can be added here.
+    # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block
+    # is then omitted from the manifest. `securityContext: {}` is NOT sufficient (Helm deep-merges defaults).
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext holds container-level security attributes for Tyk Dashboard container. All fields from SecurityContext object can be added here.
+    # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block is
+    # then omitted from the manifest. `containerSecurityContext: {}` is NOT sufficient (Helm deep-merges defaults).
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -1396,6 +1449,21 @@ tyk-dashboard:
       capabilities:
         drop:
           - ALL
+
+    # initContainers:
+    #   initAnalyticsConf:
+    #     # securityContext for the init-analytics-conf init container, which only renders for
+    #     # dashboard image tags <= 5.0.2. Nothing is set here, so the effective default comes from
+    #     # the tyk-dashboard component chart: `runAsUser: 1000`, plus runAsNonRoot /
+    #     # readOnlyRootFilesystem / dropped capabilities. It is a separate block from
+    #     # dashboard.containerSecurityContext because the init image (busybox) has no USER
+    #     # directive, so it needs its own runAsUser or kubelet rejects the pod at admission.
+    #     # A pinned runAsUser is one of the two things OpenShift rejects — the UID must come from
+    #     # the namespace's allocated range. Setting `enabled: false` here omits the init
+    #     # container's securityContext block entirely. `securityContext: {}` is NOT sufficient,
+    #     # because Helm deep-merges the component chart defaults back in.
+    #     securityContext:
+    #       enabled: false
 
     # nodeSelector is a selector which must be true for Tyk Dashboard pod to fit on a specific node.
     nodeSelector: {}
@@ -1626,10 +1694,14 @@ tyk-mdcb:
 
 
     # securityContext holds pod-level security attributes for Tyk MDCB pod. All fields from PodSecurityContext object can be added here.
+    # Empty here, but the component chart defaults `enabled: true`. Set `enabled: false` to keep the block
+    # omitted from the manifest even after adding fields (e.g. so an OpenShift SCC can assign UIDs/GIDs).
     podSecurityContext: {}
     # fsGroup: 2000
 
     # containerSecurityContext holds container-level security attributes for Tyk MDCB container. All fields from SecurityContext object can be added here.
+    # Empty here, but the component chart defaults `enabled: true`. Set `enabled: false` to keep the block
+    # omitted from the manifest even after adding fields (e.g. so an OpenShift SCC can assign UIDs/GIDs).
     containerSecurityContext: {}
       # runAsNonRoot: true
       # runAsUser: 1000
@@ -1823,6 +1895,11 @@ tyk-dev-portal:
       bucket: your-portal-bucket
       acl: private
       presign_urls: true
+      # secretRef allows using a separate secret for S3 credentials with custom key names.
+      secretRef:
+        name: ""
+        accessKeyIdKey: "DevPortalAwsAccessKeyId"
+        secretAccessKeyKey: "DevPortalAwsSecretAccessKey"
     persistence:
       mountExistingPVC: ""
       storageClass: ""
@@ -1907,15 +1984,16 @@ tyk-dev-portal:
   #  memory: 128Mi
 
   # securityContext holds pod-level security attributes for Tyk Developer Portal pod. All fields from PodSecurityContext object can be added here.
+  # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block
+  # is then omitted from the manifest. `securityContext: {}` is NOT sufficient (Helm deep-merges defaults).
   securityContext:
-    runAsUser: 1000
-    fsGroup: 2000
     runAsNonRoot: true
 
   # containerSecurityContext holds container-level security attributes for Tyk Developer Portal pod. All fields from SecurityContext object can be added here.
+  # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block is
+  # then omitted from the manifest. `containerSecurityContext: {}` is NOT sufficient (Helm deep-merges defaults).
   containerSecurityContext:
     runAsNonRoot: true
-    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true
@@ -1956,6 +2034,16 @@ tyk-dev-portal:
   #     mountPath: /etc/ssl/certs/ca-certs.crt
   #     readOnly: true
   extraVolumeMounts: []
+
+  # bootstrapJob configures the Developer Portal bootstrap job
+  bootstrapJob:
+    image:
+      repository: curlimages/curl
+      tag: "8.8.0"
+    # Empty here, but the component chart defaults `enabled: true` in both blocks below. Set `enabled: false`
+    # to keep them omitted from the manifest even after adding fields (e.g. so an OpenShift SCC can assign).
+    securityContext: {}
+    containerSecurityContext: {}
 
   # livenessProve includes details about liveness probe used in Tyk Developer Portal
   livenessProbe:

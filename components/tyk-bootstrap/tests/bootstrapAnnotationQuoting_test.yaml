@@ -1,0 +1,315 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Locks two related TT-17018 fixes on the bootstrap Jobs:
+#
+# 1. User-supplied annotations were emitted with a bare `toYaml`, so a numeric
+#    value (the common ArgoCD case, `argocd.argoproj.io/sync-wave: -1`) rendered
+#    as a YAML integer. metadata.annotations is map[string]string, so the API
+#    server rejects the object. All user annotation maps now go through the
+#    repo's house pattern: `range` + `| quote`.
+#
+# 2. The pre-delete Job emitted `annotations:` and `labels:` unconditionally with
+#    the guard nested inside, so a DEFAULT render (hooks on, no overrides) put
+#    literal nulls on the pod template. Same defect commit 4fae56e fixed on the
+#    pre/post-install Jobs; the pre-delete Job was missed.
+#
+# 3. podLabels were left on a bare `toYaml` after the annotation maps were converted,
+#    so an integer label value rendered as a YAML integer. metadata.labels is
+#    map[string]string under the identical API constraint, so the API server rejects
+#    it exactly as it rejected the integer annotation. The label cases below use an
+#    INTEGER value deliberately: the pre-existing coverage only used string values
+#    (`team: payments`), which is why the gap survived the annotation fix.
+suite: Bootstrap Job annotations and pod labels are quoted and pod metadata is never null
+templates:
+  - templates/bootstrap-pre-install.yaml
+  - templates/bootstrap-post-install.yaml
+  - templates/bootstrap-pre-delete.yaml
+release:
+  name: tyk-bootstrap
+  namespace: test
+tests:
+  # ---------- integer annotation values must render as strings ----------
+  - it: pre-install, integer job annotation -> quoted as a string
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+      bootstrap.jobs.preInstall.annotations:
+        argocd.argoproj.io/sync-wave: -1
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"
+
+  - it: pre-install, integer pod annotation -> quoted as a string
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.podAnnotations.preInstallPodAnnotations:
+        argocd.argoproj.io/sync-wave: -1
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"
+
+  - it: post-install, integer job annotation -> quoted as a string
+    template: templates/bootstrap-post-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+      bootstrap.jobs.postInstall.annotations:
+        argocd.argoproj.io/sync-wave: -1
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"
+
+  - it: post-install, integer pod annotation -> quoted as a string
+    template: templates/bootstrap-post-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.podAnnotations.postInstallPodAnnotations:
+        argocd.argoproj.io/sync-wave: -1
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"
+
+  - it: pre-delete, integer job annotation -> quoted as a string
+    template: templates/bootstrap-pre-delete.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.jobs.preDelete.annotations:
+        argocd.argoproj.io/sync-wave: -1
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"
+
+  - it: pre-delete, integer pod annotation -> quoted as a string
+    template: templates/bootstrap-pre-delete.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.podAnnotations.preDeletePodAnnotations:
+        argocd.argoproj.io/sync-wave: -1
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"
+
+  # ---------- boolean-looking and string values survive quoting ----------
+  - it: pre-install, string annotation value passes through unchanged
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.jobs.preInstall.annotations:
+        sampleAnnotation: enabled
+        argocd.argoproj.io/hook: PreSync
+    asserts:
+      - equal:
+          path: metadata.annotations.sampleAnnotation
+          value: enabled
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/hook"]
+          value: PreSync
+      # hardcoded hook annotations must be untouched
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-install
+
+  # ---------- pre-delete pod template must not render null keys ----------
+  - it: pre-delete, defaults -> no null pod annotations, real pod labels
+    template: templates/bootstrap-pre-delete.yaml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      # annotations key omitted entirely when preDeletePodAnnotations is empty
+      - notExists:
+          path: spec.template.metadata.annotations
+      # labels must be a real map, not null
+      - exists:
+          path: spec.template.metadata.labels
+      - equal:
+          path: spec.template.metadata.labels["tyk.tyk.io/k8s-bootstrap"]
+          value: tyk-k8s-bootstrap-pre-delete
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/instance"]
+          value: tyk-bootstrap
+      # job-level hook annotations intact
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-delete
+
+  - it: pre-delete, populated pod meta -> user values merged with standard labels
+    template: templates/bootstrap-pre-delete.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.podLabels.preDeletePodLabels.team: payments
+      bootstrap.podAnnotations.preDeletePodAnnotations.sampleAnnotation: enabled
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels.team
+          value: payments
+      - equal:
+          path: spec.template.metadata.labels["tyk.tyk.io/k8s-bootstrap"]
+          value: tyk-k8s-bootstrap-pre-delete
+      - equal:
+          path: spec.template.metadata.annotations.sampleAnnotation
+          value: enabled
+
+  # ---------- integer POD LABEL values must render as strings ----------
+  # metadata.labels is map[string]string just like metadata.annotations, so an
+  # unquoted integer is rejected by the API server the same way.
+  - it: pre-install, integer pod label -> quoted as a string
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.podLabels.preInstallPodLabels:
+        revision: 12345
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels.revision
+          value: "12345"
+      # the three hardcoded labels must be untouched by the quoting loop
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/instance"]
+          value: tyk-bootstrap
+      - equal:
+          path: spec.template.metadata.labels["tyk.tyk.io/k8s-bootstrap"]
+          value: tyk-k8s-bootstrap-pre-install
+
+  - it: post-install, integer pod label -> quoted as a string
+    template: templates/bootstrap-post-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.podLabels.postInstallPodLabels:
+        revision: 12345
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels.revision
+          value: "12345"
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/instance"]
+          value: tyk-bootstrap
+      - equal:
+          path: spec.template.metadata.labels["tyk.tyk.io/k8s-bootstrap"]
+          value: tyk-k8s-bootstrap-post-install
+
+  - it: pre-delete, integer pod label -> quoted as a string
+    template: templates/bootstrap-pre-delete.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.podLabels.preDeletePodLabels:
+        revision: 12345
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels.revision
+          value: "12345"
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/instance"]
+          value: tyk-bootstrap
+      - equal:
+          path: spec.template.metadata.labels["tyk.tyk.io/k8s-bootstrap"]
+          value: tyk-k8s-bootstrap-pre-delete
+
+  # a boolean-looking label value is the other half of the same trap
+  - it: pre-install, boolean-looking pod label -> quoted as a string
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.podLabels.preInstallPodLabels:
+        canary: true
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels.canary
+          value: "true"
+
+  # ---------- pod labels are never null when the user map is empty ----------
+  # The three hardcoded labels keep the `labels:` key non-empty, so an empty user
+  # map must leave a real 3-entry map, never `labels: null` and never a null entry.
+  - it: pre-install, empty pod label map -> labels is a real map, hooks enabled
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - exists:
+          path: spec.template.metadata.labels
+      - isNotNullOrEmpty:
+          path: spec.template.metadata.labels
+      - notExists:
+          path: spec.template.metadata.annotations
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/instance: tyk-bootstrap
+            tyk.tyk.io/k8s-bootstrap: tyk-k8s-bootstrap-pre-install
+
+  - it: pre-install, empty pod label map -> labels is a real map, hooks disabled
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+    asserts:
+      - isNotNullOrEmpty:
+          path: spec.template.metadata.labels
+      - notExists:
+          path: spec.template.metadata.annotations
+      # with hooks off and no user annotations the job-level key goes too
+      - notExists:
+          path: metadata.annotations
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/instance: tyk-bootstrap
+            tyk.tyk.io/k8s-bootstrap: tyk-k8s-bootstrap-pre-install
+
+  - it: post-install, empty pod label map -> labels is a real map, hooks disabled
+    template: templates/bootstrap-post-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+    asserts:
+      - isNotNullOrEmpty:
+          path: spec.template.metadata.labels
+      - notExists:
+          path: spec.template.metadata.annotations
+      - notExists:
+          path: metadata.annotations
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/instance: tyk-bootstrap
+            tyk.tyk.io/k8s-bootstrap: tyk-k8s-bootstrap-post-install
+
+  # ---------- disableHelmHooks suppresses the pre-delete Job outright ----------
+  # Locks the behaviour documented on bootstrap.disableHelmHooks in values.yaml:
+  # the template is gated in full, so preDelete annotations cannot bring it back.
+  - it: pre-delete, disableHelmHooks -> Job not rendered even with annotations set
+    template: templates/bootstrap-pre-delete.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+      bootstrap.jobs.preDelete.annotations:
+        argocd.argoproj.io/hook: PreDelete
+      bootstrap.podLabels.preDeletePodLabels:
+        revision: 12345
+    asserts:
+      - hasDocuments:
+          count: 0

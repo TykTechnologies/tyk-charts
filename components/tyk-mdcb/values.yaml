@@ -289,11 +289,19 @@ mdcb:
 
 
   # securityContext holds pod-level security attributes for Tyk MDCB pod. All fields from PodSecurityContext object can be added here.
-  podSecurityContext: {}
-  # fsGroup: 2000
+  # Empty by default, so no pod-level `securityContext` block is rendered at all. Set
+  # `enabled: false` to keep the block omitted even after adding fields — e.g. so the cluster
+  # (OpenShift SCC, kyverno, etc.) can inject UID/GID instead. Setting `podSecurityContext: {}`
+  # is NOT sufficient because Helm deep-merges these defaults back in.
+  podSecurityContext:
+    enabled: true
+    # fsGroup: 2000
 
   # containerSecurityContext holds container-level security attributes for Tyk MDCB container. All fields from SecurityContext object can be added here.
-  containerSecurityContext: {}
+  # Empty by default, so no container-level `securityContext` block is rendered at all. Set
+  # `enabled: false` to keep the block omitted even after adding fields.
+  containerSecurityContext:
+    enabled: true
     # runAsNonRoot: true
     # runAsUser: 1000
     # allowPrivilegeEscalation: false

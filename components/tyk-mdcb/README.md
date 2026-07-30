@@ -188,3 +188,21 @@ mdcb:
 > Size `maxReplicas` to your cluster's capacity, test any custom configuration before production,
 > and consider bounding total usage with a Kubernetes
 > [`ResourceQuota`](https://kubernetes.io/docs/concepts/policy/resource-quotas/).
+
+#### Security contexts
+
+Both `.Values.mdcb.podSecurityContext` and `.Values.mdcb.containerSecurityContext` are empty by default, and no
+`securityContext` block is rendered at all. Add fields to either to have them applied.
+
+To keep a block omitted after adding fields — for example so that OpenShift's SCC can allocate UID/GID — set
+`enabled: false` on it. Setting the block to `{}` does not work, because Helm deep-merges the chart defaults back in.
+
+```yaml
+mdcb:
+  podSecurityContext:
+    enabled: false
+  containerSecurityContext:
+    enabled: false
+```
+
+Each block is scoped independently, and the `enabled` key itself is never rendered into the manifest.

@@ -1,0 +1,157 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Propagates the scoped `enabled` escape hatch from commit c99bc03 (gateway) to the
+# bootstrap Jobs. `securityContext: {}` cannot disable the block because Helm
+# deep-merges the chart defaults back in, and the bare `{{- if .Values... }}` guard
+# meant setting `enabled: false` leaked a literal `enabled` field into the pod spec —
+# kubectl apply / ArgoCD reject that with:
+#   strict decoding error: unknown field "spec.template.spec.securityContext.enabled"
+#
+# Guarded:
+#   * enabled=false omits the whole block on both pod and container level
+#   * the `enabled` sentinel never appears in a rendered manifest
+#   * an `enabled: true` with no other fields never emits a bare `securityContext: {}`
+suite: Bootstrap securityContext enabled flag
+templates:
+  - templates/bootstrap-pre-install.yaml
+  - templates/bootstrap-post-install.yaml
+  - templates/bootstrap-pre-delete.yaml
+release:
+  name: tyk-bootstrap
+  namespace: test
+tests:
+  # ---------- defaults are unchanged and leak no sentinel ----------
+  - it: pre-install, defaults -> securityContext present, no enabled key
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 1000
+      - equal:
+          path: spec.template.spec.securityContext.runAsNonRoot
+          value: true
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.enabled
+
+  - it: post-install, defaults -> securityContext present, no enabled key
+    template: templates/bootstrap-post-install.yaml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 1000
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.enabled
+
+  - it: pre-delete, defaults -> securityContext present, no enabled key
+    template: templates/bootstrap-pre-delete.yaml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 1000
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.enabled
+
+  # ---------- enabled=false strips the block entirely ----------
+  - it: pre-install, enabled=false on both blocks -> no securityContext at all
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.securityContext.enabled: false
+      bootstrap.containerSecurityContext.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  - it: post-install, enabled=false on both blocks -> no securityContext at all
+    template: templates/bootstrap-post-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.securityContext.enabled: false
+      bootstrap.containerSecurityContext.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  - it: pre-delete, enabled=false on both blocks -> no securityContext at all
+    template: templates/bootstrap-pre-delete.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.securityContext.enabled: false
+      bootstrap.containerSecurityContext.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  # ---------- the blocks are independently scoped ----------
+  - it: pre-install, pod-level enabled=false leaves the container block intact
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.securityContext.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+
+  # ---------- enabled: true alone never emits a bare securityContext: {} ----------
+  - it: pre-install, enabled=true with every other field nulled -> block omitted
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.securityContext:
+        enabled: true
+        fsGroup: null
+        runAsNonRoot: null
+      bootstrap.containerSecurityContext:
+        enabled: true
+        runAsNonRoot: null
+        allowPrivilegeEscalation: null
+        privileged: null
+        readOnlyRootFilesystem: null
+        seccompProfile: null
+        capabilities: null
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  # ---------- user-supplied fields still flow through ----------
+  - it: pre-install, custom fsGroup and runAsUser flow through without the sentinel
+    template: templates/bootstrap-pre-install.yaml
+    set:
+      global.components.bootstrap: true
+      bootstrap.securityContext.fsGroup: 2500
+      bootstrap.securityContext.runAsUser: 1001
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 2500
+      - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 1001
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
