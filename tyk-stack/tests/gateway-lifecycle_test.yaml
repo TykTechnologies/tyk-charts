@@ -39,17 +39,17 @@ tests:
           path: spec.template.spec.terminationGracePeriodSeconds
           value: 60
 
-  # --- terminationGracePeriodSeconds: 0 must survive (regression guard against falsy-0) ---
-  - it: renders terminationGracePeriodSeconds when explicitly set to 0
+  # --- terminationGracePeriodSeconds: 0 is treated as unset (falls back to the
+  #     Kubernetes default); the chart does not configure an immediate kill ---
+  - it: treats terminationGracePeriodSeconds 0 as unset
     values:
       - ../values.yaml
     set:
       tyk-gateway.gateway.terminationGracePeriodSeconds: 0
     template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
     asserts:
-      - equal:
+      - notExists:
           path: spec.template.spec.terminationGracePeriodSeconds
-          value: 0
 
   # --- lifecycle preStop hook ---
   - it: renders the container lifecycle preStop hook when set

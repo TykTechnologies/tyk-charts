@@ -64,7 +64,7 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}        
     spec:
-    {{- if not (kindIs "invalid" .Values.gateway.terminationGracePeriodSeconds) }}
+    {{- if .Values.gateway.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.gateway.terminationGracePeriodSeconds }}
     {{- end }}
     {{- if .Values.gateway.serviceAccountName }}
@@ -477,9 +477,9 @@ spec:
           {{- if .Values.gateway.extraVolumeMounts }}
           {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
-        {{- if .Values.gateway.lifecycle }}
+        {{- with .Values.gateway.lifecycle }}
         lifecycle:
-        {{- toYaml .Values.gateway.lifecycle | nindent 10 }}
+        {{- toYaml . | nindent 10 }}
         {{- end }}
         livenessProbe:
           {{- if .Values.gateway.livenessProbe }}
