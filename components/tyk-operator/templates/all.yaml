@@ -372,9 +372,10 @@ spec:
         resources:
 {{- toYaml . | nindent 10 }}
 {{- end }}
-{{- with .Values.securityContext }}
+{{- $csc := .Values.securityContext }}
+{{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) (gt (len (omit $csc "enabled")) 0) }}
         securityContext:
-{{- toYaml . | nindent 10 }}
+{{- toYaml (omit $csc "enabled") | nindent 10 }}
 {{- end }}
         volumeMounts:
         - mountPath: /tmp/k8s-webhook-server/serving-certs
@@ -388,8 +389,14 @@ spec:
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
 {{- end }}
+{{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+{{- end }}
+{{- $podSc := .Values.managerPodSecurityContext }}
+{{- if and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) (gt (len (omit $podSc "enabled")) 0) }}
       securityContext:
-        runAsNonRoot: true
+{{- toYaml (omit $podSc "enabled") | nindent 8 }}
+{{- end }}
       serviceAccountName: {{ include "tyk-operator-helm.fullname" . }}-controller-manager
       terminationGracePeriodSeconds: 10
       volumes:

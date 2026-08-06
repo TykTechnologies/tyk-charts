@@ -143,6 +143,33 @@ extraEnvs:
     value: debug
 ```
 
+### Security contexts on OpenShift
+
+The portal pins `securityContext.fsGroup: 2000` so that the storage PVC and any S3-credential mount are writable by
+the non-root portal user on vanilla Kubernetes. On OpenShift the SCC does *not* override an explicitly-set `fsGroup`:
+the `MustRunAs` strategy only defaults an unset one and validates an explicit one against the namespace's allocated
+range, rejecting anything outside it.
+
+To let the cluster allocate UID/GID instead, set `enabled: false` on the block you want omitted. Setting the block to
+`{}` does not work, because Helm deep-merges the chart defaults back in.
+
+```yaml
+securityContext:
+  enabled: false            # omits the pod-level block
+containerSecurityContext:
+  enabled: false            # omits the container-level block
+bootstrapJob:
+  securityContext:
+    enabled: false
+  containerSecurityContext:
+    enabled: false
+```
+
+Each block is scoped independently, and the `enabled` key itself is never rendered into the manifest.
+
+The two `bootstrapJob` blocks ship empty (only `enabled: true`), so the bootstrap Job renders no `securityContext`
+by default — you only need to disable them if you have added fields of your own.
+
 
 ## Protect Confidential Fields with Kubernetes Secrets
 In the `values.yaml` file, some fields are considered confidential, such as Developer Portal license, connection strings, etc.

@@ -141,7 +141,17 @@ global:
 
     enabled: false
     # connection string used to connect to an MDCB deployment. For Tyk Cloud users, you can get it from Tyk Cloud Console and retrieve the MDCB connection string.
+    # Set this as a literal value, OR (alternatively) load it from a k8s secret by setting connectionStringSecretName below.
     connectionString: ""
+    # connectionStringSecretName — when set, the gateway reads the MDCB connection string from this k8s
+    # Secret instead of the literal connectionString above. Independent of useSecretName (which only
+    # covers orgId/userApiKey/groupID). The secret may be the same one referenced by useSecretName, or
+    # a separate secret. Default key looked up in the secret is "connectionString" (override via
+    # connectionStringSecretKey).
+    connectionStringSecretName: ""
+    # connectionStringSecretKey — key name inside connectionStringSecretName to read. Defaults to
+    # "connectionString" when unset.
+    connectionStringSecretKey: ""
     # orgID of your dashboard user
     orgId: ""
     # API key of your dashboard user
@@ -318,6 +328,34 @@ gateway:
       repository: busybox
       tag: 1.32
       resources: {}
+      # securityContext for the init container. Default sets runAsUser: 65532 explicitly
+      # for two reasons:
+      #   1. busybox has no USER directive, so with the main container's `runAsNonRoot: true`
+      #      inherited kubelet would reject the init container at admission with
+      #      "container has runAsNonRoot and image will run as root".
+      #   2. 65532 matches the Tyk gateway image's distroless USER, so directories created by
+      #      the init container in /mnt/tyk-gateway are owned by the same UID that the main
+      #      gateway container runs as — letting the gateway write API definitions, plugin
+      #      bundles, etc. without UID/GID mismatches.
+      # To let the cluster (e.g. OpenShift SCC) inject UID/GID instead of pinning them,
+      # set `enabled: false` here. Note this does NOT omit the block outright: the template
+      # falls back to `gateway.containerSecurityContext` (which pins no UID), which is what
+      # lets the SCC assign one. To omit the init container `securityContext` entirely, set
+      # `enabled: false` on BOTH this block and `gateway.containerSecurityContext`.
+      # Setting `securityContext: {}` is NOT sufficient because Helm deep-merges these
+      # defaults back in.
+      securityContext:
+        enabled: true
+        runAsUser: 65532
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        privileged: false
+        readOnlyRootFilesystem: true
+        seccompProfile:
+          type: RuntimeDefault
+        capabilities:
+          drop:
+            - ALL
       # If you do want to specify resources, uncomment the following
       # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
       # limits:
@@ -488,15 +526,25 @@ gateway:
   startupProbe: {}
 
   # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
+  # Note: runAsUser is not set by default to allow platforms like OpenShift to assign UIDs automatically
+  # via Security Context Constraints (SCC). fsGroup is retained so that emptyDir volumes mounted at
+  # /mnt/tyk-gateway are writable by the non-root user (kubelet chgrp's the volume to fsGroup); on
+  # vanilla Kubernetes it is required for the setupDirectories init container to mkdir into the volume.
+  # To let the cluster inject defaults (e.g. OpenShift SCC), set `enabled: false` — the entire
+  # pod-level `securityContext` block is then omitted from the rendered manifest. Setting
+  # `securityContext: {}` is NOT sufficient because Helm deep-merges these defaults back in.
   securityContext:
-    runAsUser: 1000
+    enabled: true
     fsGroup: 2000
     runAsNonRoot: true
 
   # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
+  # Note: runAsUser is not set by default for OpenShift compatibility (SCC assigns UIDs).
+  # To let the cluster inject defaults, set `enabled: false` — the entire main-container
+  # `securityContext` block is then omitted from the rendered manifest.
   containerSecurityContext:
+    enabled: true
     runAsNonRoot: true
-    runAsUser: 1000
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true

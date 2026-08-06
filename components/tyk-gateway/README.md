@@ -52,6 +52,27 @@ This removes all the Kubernetes components associated with the chart and deletes
 helm upgrade tyk-gateway tyk-helm/tyk-gateway -n tyk
 ```
 
+*Note: pinned image tags and `runAsUser`*
+
+The `runAsUser: 1000` defaults have been removed from `gateway.securityContext` (pod level) and
+`gateway.containerSecurityContext` (container level) so that platforms such as OpenShift can assign a UID via a
+Security Context Constraint. `runAsNonRoot: true` and `fsGroup` are retained, so kubelet now relies on the
+image's `USER` directive.
+
+The `setupDirectories` init container is the exception: it still pins
+`gateway.initContainers.setupDirectories.securityContext.runAsUser: 65532`, because `busybox` has no `USER`
+directive of its own and 65532 matches the gateway image's UID, so the directories it creates under
+`/mnt/tyk-gateway` stay writable by the gateway. Override or disable that block separately on OpenShift.
+
+If you pin `gateway.image.tag` to a version whose image has no numeric `USER` — for example `v5.9.1`, which runs
+as `USER 0` — pods will fail admission on upgrade with `CreateContainerConfigError: container has runAsNonRoot
+and image will run as root`. Images with a *symbolic* user (such as the distroless `nonroot` user) fail the same
+way, because kubelet cannot verify a non-numeric user. Check yours with
+`crane config <image> | jq -r '.config.User'` before upgrading. Either move to a tag with a numeric `USER` (the
+chart default is `docker.tyk.io/tyk-gateway/tyk-gateway:v5.13.1`, `USER 65532`), set an explicit
+`gateway.containerSecurityContext.runAsUser`, or set `gateway.containerSecurityContext.enabled: false` to omit
+the block entirely and let the cluster decide.
+
 ### Upgrading from tyk-headless chart
 Please see Migration notes in [tyk-oss](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss) chart
 
@@ -81,6 +102,21 @@ Follow the notes from the installation output to get connection details and pass
 by Bitnami is `tyk-redis-master.tyk.svc:6379` (Tyk needs the name including the port).
 You can update them in your local values.yaml file under `global.redis.addrs` and `global.redis.pass`. 
 Alternatively, you can use `--set` flag to set it in Tyk installation. For example `--set global.redis.pass=$REDIS_PASSWORD`
+
+### Remote control plane credentials (hybrid / MDCB gateways)
+When `global.remoteControlPlane.enabled` is true, the gateway's credentials can be supplied from externally managed
+k8s Secrets rather than plaintext values. There are two independent settings:
+
+* `global.remoteControlPlane.useSecretName` — reads `orgId`, `userApiKey` and `groupID` from the named Secret, using
+  those exact key names.
+* `global.remoteControlPlane.connectionStringSecretName` — reads the MDCB connection string from the named Secret into
+  `TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING`. The key defaults to `connectionString` and can be overridden with
+  `global.remoteControlPlane.connectionStringSecretKey`.
+
+`connectionStringSecretName` is independent of `useSecretName`: setting `useSecretName` does not make the chart look up
+the connection string in a secret, so an install that keeps a literal `global.remoteControlPlane.connectionString` in
+`values.yaml` alongside a credentials secret continues to work unchanged. The two may point at the same Secret or at
+different ones.
 
 ### Enable autoscaling
 

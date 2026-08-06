@@ -1,0 +1,126 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Locks the scoped `enabled` flag on the umbrella helm-test Pod (TT-17018).
+#
+# This template was the one place the `enabled` conversion never reached: it
+# gated on a bare `{{- if .Values.tests.securityContext }}` + bare toYaml, so
+#   1. `enabled` leaked into the rendered Pod. It is not a k8s field, so
+#      kubectl apply (strict fieldValidation since 1.25) and ArgoCD reject it
+#      with `unknown field "spec.securityContext.enabled"`.
+#   2. runAsUser 1000 was unremovable. That UID is outside an OpenShift
+#      namespace's allocated range, so `helm test` could not pass there at all.
+#
+# Defaults must stay unchanged: runAsUser 1000 is deliberate, because the test
+# image (zalbiraw/alpine-curl-jq) has no USER directive and kubelet would
+# otherwise reject the pod under runAsNonRoot with CreateContainerConfigError.
+suite: helm-test Pod securityContext enabled flag
+templates:
+  - templates/tests/stack-test.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+  - it: defaults are unchanged and the enabled key never reaches the Pod
+    values:
+      - ../values.yaml
+    asserts:
+      - equal:
+          path: spec.securityContext.runAsUser
+          value: 1000
+      - equal:
+          path: spec.securityContext.runAsNonRoot
+          value: true
+      - equal:
+          path: spec.containers[0].securityContext.runAsUser
+          value: 1000
+      - equal:
+          path: spec.containers[0].securityContext.readOnlyRootFilesystem
+          value: true
+      - notExists:
+          path: spec.securityContext.enabled
+      - notExists:
+          path: spec.containers[0].securityContext.enabled
+
+  - it: pod securityContext.enabled=false omits the whole pod-level block
+    values:
+      - ../values.yaml
+    set:
+      tests.securityContext.enabled: false
+    asserts:
+      - notExists:
+          path: spec.securityContext
+      # container block is independently scoped and must survive
+      - equal:
+          path: spec.containers[0].securityContext.runAsUser
+          value: 1000
+      - notExists:
+          path: spec.containers[0].securityContext.enabled
+
+  - it: containerSecurityContext.enabled=false omits the whole container block
+    values:
+      - ../values.yaml
+    set:
+      tests.containerSecurityContext.enabled: false
+    asserts:
+      - notExists:
+          path: spec.containers[0].securityContext
+      # pod block is independently scoped and must survive
+      - equal:
+          path: spec.securityContext.runAsUser
+          value: 1000
+      - notExists:
+          path: spec.securityContext.enabled
+
+  - it: enabled=false on both blocks strips every securityContext from the Pod
+    values:
+      - ../values.yaml
+    set:
+      tests.securityContext.enabled: false
+      tests.containerSecurityContext.enabled: false
+    asserts:
+      - notExists:
+          path: spec.securityContext
+      - notExists:
+          path: spec.containers[0].securityContext
+
+  - it: a block holding only enabled=true renders no bare securityContext {}
+    # The length guard: with every real field nulled out, `enabled` is the only
+    # key left. Emitting the block anyway would render `securityContext: {}`,
+    # which is a needless diff and, once `enabled` leaks, an invalid field.
+    values:
+      - ../values.yaml
+    set:
+      tests.securityContext.enabled: true
+      tests.securityContext.runAsUser: null
+      tests.securityContext.runAsNonRoot: null
+      tests.containerSecurityContext.enabled: true
+      tests.containerSecurityContext.runAsUser: null
+      tests.containerSecurityContext.runAsNonRoot: null
+      tests.containerSecurityContext.allowPrivilegeEscalation: null
+      tests.containerSecurityContext.privileged: null
+      tests.containerSecurityContext.readOnlyRootFilesystem: null
+      tests.containerSecurityContext.seccompProfile: null
+      tests.containerSecurityContext.capabilities: null
+    asserts:
+      - notExists:
+          path: spec.securityContext
+      - notExists:
+          path: spec.containers[0].securityContext
+
+  - it: real fields still render, without the enabled key, when overridden
+    values:
+      - ../values.yaml
+    set:
+      tests.securityContext.fsGroup: 2000
+      tests.containerSecurityContext.runAsUser: 1234
+    asserts:
+      - equal:
+          path: spec.securityContext.fsGroup
+          value: 2000
+      - notExists:
+          path: spec.securityContext.enabled
+      - equal:
+          path: spec.containers[0].securityContext.runAsUser
+          value: 1234
+      - notExists:
+          path: spec.containers[0].securityContext.enabled

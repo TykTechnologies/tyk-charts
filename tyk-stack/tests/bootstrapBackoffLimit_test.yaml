@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Locks the bootstrap job backoffLimit contract:
+#   - unset           -> default 1
+#   - explicit int N  -> N (including 0, which means "fail-fast / no retries")
+#
+# Guards against the | default 1 regression where Helm/Go-template treats 0 as
+# falsy and silently substitutes the default, making fail-fast unconfigurable.
+# Tracks all three job templates (preInstall, postInstall, preDelete).
+suite: Bootstrap job backoffLimit contract
+templates:
+  - charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+  - charts/tyk-bootstrap/templates/bootstrap-post-install.yaml
+  - charts/tyk-bootstrap/templates/bootstrap-pre-delete.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+  - it: defaults backoffLimit to 1 when unset
+    values:
+      - ../values.yaml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - equal:
+          path: spec.backoffLimit
+          value: 1
+          template: charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+      - equal:
+          path: spec.backoffLimit
+          value: 1
+          template: charts/tyk-bootstrap/templates/bootstrap-post-install.yaml
+      - equal:
+          path: spec.backoffLimit
+          value: 1
+          template: charts/tyk-bootstrap/templates/bootstrap-pre-delete.yaml
+
+  - it: honours explicit backoffLimit=0 (fail-fast) on every job
+    values:
+      - ../values.yaml
+    set:
+      global.components.bootstrap: true
+      tyk-bootstrap.bootstrap.jobs.preInstall.backoffLimit: 0
+      tyk-bootstrap.bootstrap.jobs.postInstall.backoffLimit: 0
+      tyk-bootstrap.bootstrap.jobs.preDelete.backoffLimit: 0
+    asserts:
+      - equal:
+          path: spec.backoffLimit
+          value: 0
+          template: charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+      - equal:
+          path: spec.backoffLimit
+          value: 0
+          template: charts/tyk-bootstrap/templates/bootstrap-post-install.yaml
+      - equal:
+          path: spec.backoffLimit
+          value: 0
+          template: charts/tyk-bootstrap/templates/bootstrap-pre-delete.yaml
+

@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Guards the empty-block case of the scoped `enabled` escape hatch (TT-17018) on the
+# pump, plus the extraContainers regression it exposes:
+#
+#   * an `enabled: true` with every other field nulled out must not emit a bare
+#     `securityContext: {}` — that is the (gt (len (omit ... "enabled")) 0) clause.
+#   * pump.extraContainers used to be nested inside the pod securityContext
+#     conditional in deployment-pmp.yaml, so sidecars silently vanished whenever
+#     securityContext was falsy. Emptying the block must not drop the sidecar.
+#
+# Lives here rather than in tyk-stack/tests/securityContextEnabledDashPump_test.yaml
+# because nulling a value only takes effect at chart level under the helm-unittest
+# version CI pins. See the note in that suite for the full explanation.
+suite: Pump securityContext empty-block guard
+templates:
+  - templates/deployment-pmp.yaml
+  - templates/secrets.yaml
+release:
+  name: tyk-pump
+  namespace: test
+tests:
+  - it: enabled=true alone never renders a bare empty securityContext
+    set:
+      pump.securityContext:
+        enabled: true
+        fsGroup: null
+        runAsNonRoot: null
+    template: templates/deployment-pmp.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+
+  - it: extraContainers still renders when securityContext is emptied out
+    set:
+      pump.securityContext:
+        enabled: null
+        fsGroup: null
+        runAsNonRoot: null
+      pump.extraContainers:
+        - name: sidecar
+          image: busybox:1.36
+    template: templates/deployment-pmp.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[1].name
+          value: sidecar
+      - equal:
+          path: spec.template.spec.containers[1].image
+          value: busybox:1.36
+      - notExists:
+          path: spec.template.spec.securityContext
