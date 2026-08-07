@@ -239,6 +239,30 @@ gateway:
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
 
+  # terminationGracePeriodSeconds sets how long (in seconds) the pod may take to
+  # shut down gracefully before being forcibly killed (SIGKILL). When unset,
+  # Kubernetes applies its default of 30s.
+  # terminationGracePeriodSeconds: 30
+
+  # lifecycle defines container lifecycle hooks (preStop / postStart) for the gateway
+  # container. Empty by default (not rendered). Example preStop drain hook:
+  # lifecycle:
+  #   preStop:
+  #     sleep:
+  #       seconds: 40    # sleep action requires Kubernetes >= 1.29 (GA in 1.30)
+  lifecycle: {}
+
+  # strategy configures the update strategy for the gateway workload.
+  # When unset, the chart's historical defaults apply: type RollingUpdate with
+  # maxSurge: 2 and maxUnavailable: 1 (maxSurge is omitted for kind: StatefulSet).
+  # Override rollingUpdate.maxSurge / rollingUpdate.maxUnavailable as needed
+  # (e.g. maxUnavailable: 0 for zero-downtime rollouts), or set type: Recreate.
+  strategy: {}
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     maxSurge: 2
+  #     maxUnavailable: 0
+
   # PodDisruptionBudget configuration
   pdb:
     enabled: false

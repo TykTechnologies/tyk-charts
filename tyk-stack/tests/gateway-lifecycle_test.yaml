@@ -1,0 +1,166 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Test Gateway terminationGracePeriodSeconds, lifecycle and strategy
+templates:
+  - charts/tyk-gateway/templates/deployment-gw-repset.yaml
+  - charts/tyk-gateway/templates/secrets.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+  # --- Defaults: additive fields absent, strategy unchanged ---
+  - it: does not render terminationGracePeriodSeconds or lifecycle by default, keeps default strategy
+    values:
+      - ../values.yaml
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.terminationGracePeriodSeconds
+      - notExists:
+          path: spec.template.spec.containers[0].lifecycle
+      - equal:
+          path: spec.strategy.type
+          value: RollingUpdate
+      - equal:
+          path: spec.strategy.rollingUpdate.maxSurge
+          value: 2
+      - equal:
+          path: spec.strategy.rollingUpdate.maxUnavailable
+          value: 1
+
+  # --- terminationGracePeriodSeconds ---
+  - it: renders terminationGracePeriodSeconds when set
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.terminationGracePeriodSeconds: 60
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.terminationGracePeriodSeconds
+          value: 60
+
+  # --- terminationGracePeriodSeconds: 0 is treated as unset (falls back to the
+  #     Kubernetes default); the chart does not configure an immediate kill ---
+  - it: treats terminationGracePeriodSeconds 0 as unset
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.terminationGracePeriodSeconds: 0
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.terminationGracePeriodSeconds
+
+  # --- lifecycle preStop hook ---
+  - it: renders the container lifecycle preStop hook when set
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.lifecycle.preStop.sleep.seconds: 40
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].lifecycle.preStop.sleep.seconds
+          value: 40
+
+  # --- maxUnavailable: 0 must survive (regression guard against `default`) ---
+  - it: preserves maxUnavailable 0
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.strategy.rollingUpdate.maxUnavailable: 0
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.strategy.rollingUpdate.maxUnavailable
+          value: 0
+
+  # --- type: Recreate must not emit a rollingUpdate block ---
+  - it: omits rollingUpdate when type is Recreate
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.strategy.type: Recreate
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+      - notExists:
+          path: spec.strategy.rollingUpdate
+
+  # --- StatefulSet: updateStrategy with maxUnavailable, no maxSurge ---
+  - it: uses updateStrategy and omits maxSurge for StatefulSet
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.kind: StatefulSet
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.updateStrategy.type
+          value: RollingUpdate
+      - equal:
+          path: spec.updateStrategy.rollingUpdate.maxUnavailable
+          value: 1
+      - notExists:
+          path: spec.updateStrategy.rollingUpdate.maxSurge
+
+  # --- StatefulSet: maxSurge must be omitted even when the user sets it ---
+  - it: omits maxSurge for StatefulSet even when explicitly set by the user
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.kind: StatefulSet
+      tyk-gateway.gateway.strategy.rollingUpdate.maxSurge: 5
+      tyk-gateway.gateway.strategy.rollingUpdate.maxUnavailable: 0
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - notExists:
+          path: spec.updateStrategy.rollingUpdate.maxSurge
+      - equal:
+          path: spec.updateStrategy.rollingUpdate.maxUnavailable
+          value: 0
+
+  # --- Deployment: maxSurge override renders ---
+  - it: renders an overridden maxSurge on a Deployment
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.strategy.rollingUpdate.maxSurge: 4
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.strategy.rollingUpdate.maxSurge
+          value: 4
+      - equal:
+          path: spec.strategy.rollingUpdate.maxUnavailable
+          value: 1
+
+  # --- Backwards compatibility: setting only strategy.type behaves like the
+  #     released chart (type only, no rollingUpdate block injected) ---
+  - it: does not inject a rollingUpdate block when only strategy.type is set to RollingUpdate
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.strategy.type: RollingUpdate
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.strategy.type
+          value: RollingUpdate
+      - notExists:
+          path: spec.strategy.rollingUpdate
+
+  # --- New capability: type together with an explicit rollingUpdate override ---
+  - it: renders rollingUpdate when the user explicitly provides it alongside type
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.strategy.type: RollingUpdate
+      tyk-gateway.gateway.strategy.rollingUpdate.maxUnavailable: 0
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.strategy.rollingUpdate.maxUnavailable
+          value: 0
