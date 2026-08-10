@@ -438,9 +438,9 @@ tyk-gateway:
 
     # lifecycle defines container lifecycle hooks (preStop / postStart) for the gateway
     # container. Empty by default (not rendered). Example preStop drain hook:
-    # WARNING: an 'exec' hook runs arbitrary commands inside the container with the
-    # same permissions as the gateway process. Vet any commands carefully; prefer
-    # 'sleep' or 'httpGet' over 'exec' where possible.
+    # NOTE: Gateway images do not include a shell, so 'exec' handlers such as
+    # ["/bin/sh","-c","sleep 40"] will fail. Use the native 'sleep' handler below or
+    # 'httpGet'. An 'exec' handler also runs commands with the gateway's permissions.
     # lifecycle:
     #   preStop:
     #     sleep:

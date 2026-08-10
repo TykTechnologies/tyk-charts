@@ -21,19 +21,27 @@ spec:
 {{- else }}
   updateStrategy:
 {{- end }}
+{{- /*
+  Update strategy. The effective type is the user's value or RollingUpdate when unset;
+  it is rendered once, so the same defaults apply whether or not type was set explicitly.
+  For a RollingUpdate the chart defaults (maxSurge 2 / maxUnavailable 1) are applied
+  independently per field, so overriding one keeps the chart default for the other.
+  hasKey is used rather than default so that an explicit 0 is preserved.
+*/ -}}
 {{- $strategy := .Values.gateway.strategy | default dict }}
 {{- $ru := $strategy.rollingUpdate | default dict }}
 {{- $type := $strategy.type | default "RollingUpdate" }}
-{{- if eq $type "RollingUpdate" }}
+{{- $isRollingUpdate := eq $type "RollingUpdate" }}
+{{- if $isRollingUpdate }}
     # indicate which strategy we want for rolling update
-    type: RollingUpdate
+{{- end }}
+    type: {{ $type }}
+{{- if $isRollingUpdate }}
     rollingUpdate:
 {{- if eq .Values.gateway.kind "Deployment" }}
       maxSurge: {{ if hasKey $ru "maxSurge" }}{{ $ru.maxSurge }}{{ else }}2{{ end }}
 {{- end }}
       maxUnavailable: {{ if hasKey $ru "maxUnavailable" }}{{ $ru.maxUnavailable }}{{ else }}1{{ end }}
-{{- else }}
-    type: {{ $type }}
 {{- end }}
   selector:
     matchLabels:
