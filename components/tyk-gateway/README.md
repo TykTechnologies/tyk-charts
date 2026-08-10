@@ -184,12 +184,19 @@ gateway:
 The Gateway's own shutdown timings (`graceful_shutdown_delay_seconds`,
 `graceful_shutdown_timeout_duration`) can be set via `gateway.extraEnvs`.
 
-> **Note on `exec` lifecycle hooks:** recent Tyk Gateway images are minimal and do not ship a shell or
+> **Note on lifecycle hook handlers:** recent Tyk Gateway images are minimal and do not ship a shell or
 > coreutils, so `exec` handlers such as `["/bin/sh", "-c", "sleep 40"]` or `["/bin/sleep", "40"]` will
 > fail with an executable-not-found error. Use the native `sleep` handler shown above (Kubernetes 1.29+,
-> GA in 1.30) or `httpGet` instead. Beyond not working on these images, an `exec` handler also runs
-> commands inside the container with the same permissions as the Gateway process, so any command should
-> be carefully reviewed before rollout.
+> GA in 1.30) instead — for connection draining it needs no shell and no network access.
+>
+> Two security points to keep in mind if you deviate from that:
+>
+> - An `exec` handler runs commands inside the container with the same permissions as the Gateway
+>   process, so any command should be carefully reviewed before rollout.
+> - An `httpGet` handler issues a request from inside the pod's network namespace, so it can reach
+>   in-cluster services and cloud metadata endpoints that are not exposed externally. If you use one,
+>   point it at a trusted endpoint on the Gateway itself, and make sure the URL neither returns
+>   sensitive data nor triggers a side effect.
 
 #### Enabling TLS
 We have provided an easy way of enabling TLS via the `global.tls.gateway` flag. Setting this value to true will
