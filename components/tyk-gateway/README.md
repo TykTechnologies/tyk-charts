@@ -184,6 +184,12 @@ gateway:
 The Gateway's own shutdown timings (`graceful_shutdown_delay_seconds`,
 `graceful_shutdown_timeout_duration`) can be set via `gateway.extraEnvs`.
 
+> **Security note on lifecycle hooks:** an `exec` handler runs arbitrary commands inside the Gateway
+> container with the same permissions as the Gateway process, so a misconfigured or untrusted command
+> could expose secrets or disrupt the service. Prefer the `sleep` or `httpGet` handlers, which cover
+> the connection-draining use case above without executing commands, and carefully review any `exec`
+> command before rolling it out.
+
 #### Enabling TLS
 We have provided an easy way of enabling TLS via the `global.tls.gateway` flag. Setting this value to true will
 automatically enable TLS using the certificate provided under tyk-gateway/certs/cert.pem.
