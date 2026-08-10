@@ -137,10 +137,9 @@ tests:
           path: spec.strategy.rollingUpdate.maxUnavailable
           value: 1
 
-  # --- Consistency: explicitly setting type: RollingUpdate behaves identically to
-  #     leaving it unset — the chart defaults (maxSurge 2 / maxUnavailable 1) always
-  #     apply for a RollingUpdate strategy, regardless of whether type was typed out ---
-  - it: applies the chart rollingUpdate defaults when strategy.type is explicitly RollingUpdate
+  # --- Backwards compatibility: setting only strategy.type renders the type on its
+  #     own, with no rollingUpdate block, matching earlier chart versions ---
+  - it: renders type on its own when only strategy.type is set
     values:
       - ../values.yaml
     set:
@@ -150,12 +149,8 @@ tests:
       - equal:
           path: spec.strategy.type
           value: RollingUpdate
-      - equal:
-          path: spec.strategy.rollingUpdate.maxSurge
-          value: 2
-      - equal:
-          path: spec.strategy.rollingUpdate.maxUnavailable
-          value: 1
+      - notExists:
+          path: spec.strategy.rollingUpdate
 
   # --- Consistency: overriding only one rollingUpdate key keeps the chart default
   #     for the other, whether or not type is set (no dual-mode astonishment) ---
