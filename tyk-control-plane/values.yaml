@@ -432,11 +432,15 @@ tyk-gateway:
 
     # terminationGracePeriodSeconds sets how long (in seconds) the pod may take to
     # shut down gracefully before being forcibly killed (SIGKILL). When unset,
-    # Kubernetes applies its default of 30s.
+    # Kubernetes applies its default of 30s. A value of 0 is treated as unset (the
+    # chart does not configure immediate termination); use a positive value.
     # terminationGracePeriodSeconds: 30
 
     # lifecycle defines container lifecycle hooks (preStop / postStart) for the gateway
     # container. Empty by default (not rendered). Example preStop drain hook:
+    # WARNING: an 'exec' hook runs arbitrary commands inside the container with the
+    # same permissions as the gateway process. Vet any commands carefully; prefer
+    # 'sleep' or 'httpGet' over 'exec' where possible.
     # lifecycle:
     #   preStop:
     #     sleep:
