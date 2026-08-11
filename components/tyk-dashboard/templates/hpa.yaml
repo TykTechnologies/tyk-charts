@@ -1,4 +1,5 @@
-{{- if .Values.dashboard.autoscaling.enabled }}
+{{- /* `default dict` guards a bare `autoscaling:` key, which Helm merges as nil. Reads below run only when enabled is truthy, so the map exists by then. */ -}}
+{{- if (default dict .Values.dashboard.autoscaling).enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

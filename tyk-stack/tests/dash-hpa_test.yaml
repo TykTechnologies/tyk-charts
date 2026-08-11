@@ -201,3 +201,13 @@ tests:
   asserts:
    - notExists:
       path: spec.replicas
+
+# NOT COVERED HERE: a bare `autoscaling:` key (no body) in a user values file. Helm deletes a key
+# whose value is an explicit null during the merge, leaving .Values.dashboard.autoscaling nil
+# rather than the empty map defaulted in values.yaml. Both hpa.yaml and deployment-dashboard.yaml
+# dereference that key, so an unguarded read takes out the core Deployment, not just the optional
+# HPA — hence the `default dict` guards in both. helm-unittest cannot express the case: both its
+# `set:` and its values-file merge drop the null and keep the default table ("cannot overwrite
+# table with non table"), so such a test would pass with or without the guards. Verify by hand:
+#   printf 'dashboard:\n  autoscaling:\n' > /tmp/null.yaml
+#   helm template t components/tyk-dashboard -f /tmp/null.yaml
