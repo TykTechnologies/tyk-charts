@@ -305,11 +305,19 @@ dashboard:
   forbidAdminResetAccessToken: true
   # log is used to configure the log system events
   log:
-    # level is used to set the log verbosity. It is used to set TYK_DB_LOGLEVEL
+    # level sets the log verbosity. Valid values are error, warn, info and debug.
+    # It is used to set TYK_DB_LOGLEVEL, which requires Tyk Dashboard v5.14.0 or later.
+    # On earlier versions TYK_DB_LOGLEVEL is ignored; set the system-wide TYK_LOGLEVEL
+    # via dashboard.extraEnvs instead, for example:
+    #   extraEnvs:
+    #     - name: TYK_LOGLEVEL
+    #       value: "debug"
+    # Note that TYK_LOGLEVEL takes precedence over TYK_DB_LOGLEVEL when both are set.
     level: "info"
-    # format is used to set the log format. It is used to set TYK_DB_LOGFORMAT
+    # format sets the log format. Valid values are default and json.
+    # It is used to set TYK_DB_LOGFORMAT, which requires Tyk Dashboard v5.12.0 or later.
+    # Earlier versions accept the variable but continue to emit logfmt output.
     format: "default"
-
   # Configuration for Audit logs
   auditLogs:
     # Enables audit logging.
