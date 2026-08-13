@@ -15,7 +15,9 @@ metadata:
     heritage: {{ .Release.Service }}
     tyk.tyk.io/k8s-bootstrap: tyk-dashboard
 spec:
+  {{- if not (default dict .Values.dashboard.autoscaling).enabled }}
   replicas: {{ .Values.dashboard.replicaCount }}
+  {{- end }}
   minReadySeconds: 5
   strategy:
     # indicate which strategy we want for rolling update
