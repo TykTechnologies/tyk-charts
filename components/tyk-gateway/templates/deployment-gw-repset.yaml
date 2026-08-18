@@ -21,16 +21,35 @@ spec:
 {{- else }}
   updateStrategy:
 {{- end }}
-{{- if ((.Values.gateway.strategy).type) }}
-    type: {{ .Values.gateway.strategy.type }}
-{{- else }}
+{{- /*
+  Update strategy.
+
+  The rollingUpdate block is rendered when the effective type is RollingUpdate and
+  either the type was left unset (the chart's own default) or the user supplied a
+  rollingUpdate configuration. Setting only strategy.type therefore renders the type
+  on its own, matching the behaviour of earlier chart versions.
+
+  Whenever the block is rendered, the chart defaults (maxSurge 2 / maxUnavailable 1)
+  are applied per field, so overriding one field keeps the chart default for the other.
+  hasKey is used rather than default so that an explicit 0 is preserved.
+  maxSurge is only valid for a Deployment; a StatefulSet updateStrategy omits it.
+*/ -}}
+{{- $strategy := .Values.gateway.strategy | default dict }}
+{{- $ru := $strategy.rollingUpdate | default dict }}
+{{- $typeExplicit := $strategy.type }}
+{{- $type := $typeExplicit | default "RollingUpdate" }}
+{{- $isRollingUpdate := eq $type "RollingUpdate" }}
+{{- $renderRollingUpdate := and $isRollingUpdate (or (not $typeExplicit) $strategy.rollingUpdate) }}
+{{- if not $typeExplicit }}
     # indicate which strategy we want for rolling update
-    type: RollingUpdate
+{{- end }}
+    type: {{ $type }}
+{{- if $renderRollingUpdate }}
     rollingUpdate:
 {{- if eq .Values.gateway.kind "Deployment" }}
-      maxSurge: 2
+      maxSurge: {{ if hasKey $ru "maxSurge" }}{{ $ru.maxSurge }}{{ else }}2{{ end }}
 {{- end }}
-      maxUnavailable: 1
+      maxUnavailable: {{ if hasKey $ru "maxUnavailable" }}{{ $ru.maxUnavailable }}{{ else }}1{{ end }}
 {{- end }}
   selector:
     matchLabels:
@@ -54,9 +73,12 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}        
     spec:
+    {{- if .Values.gateway.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.gateway.terminationGracePeriodSeconds }}
+    {{- end }}
     {{- if .Values.gateway.serviceAccountName }}
       serviceAccountName: "{{ .Values.gateway.serviceAccountName }}"
-    {{- end }}    
+    {{- end }}
 {{- if .Values.gateway.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.gateway.nodeSelector | indent 8 }}
@@ -464,6 +486,10 @@ spec:
           {{- if .Values.gateway.extraVolumeMounts }}
           {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
+        {{- with .Values.gateway.lifecycle }}
+        lifecycle:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         livenessProbe:
           {{- if .Values.gateway.livenessProbe }}
           {{- toYaml .Values.gateway.livenessProbe | nindent 10}}

@@ -463,6 +463,38 @@ tyk-gateway:
       #      - chart-example.local
       tls: []
 
+    # terminationGracePeriodSeconds sets how long (in seconds) the pod may take to
+    # shut down gracefully before being forcibly killed (SIGKILL). When unset,
+    # Kubernetes applies its default of 30s. A value of 0 is treated as unset (the
+    # chart does not configure immediate termination); use a positive value.
+    # terminationGracePeriodSeconds: 30
+
+    # lifecycle defines container lifecycle hooks (preStop / postStart) for the gateway
+    # container. Empty by default (not rendered). Example preStop drain hook:
+    # NOTE: Gateway images do not include a shell, so 'exec' handlers such as
+    # ["/bin/sh","-c","sleep 40"] will fail. Prefer the native 'sleep' handler below,
+    # which needs no shell and no network access.
+    # Security: an 'exec' handler runs commands with the gateway's permissions, and an
+    # 'httpGet' handler sends a request from inside the pod network, so it can reach
+    # in-cluster services and cloud metadata endpoints. If you use one, target a trusted
+    # endpoint that returns no sensitive data and has no side effects.
+    # lifecycle:
+    #   preStop:
+    #     sleep:
+    #       seconds: 40    # sleep action requires Kubernetes >= 1.29 (GA in 1.30)
+    lifecycle: {}
+
+    # strategy configures the update strategy for the gateway workload.
+    # When unset, the chart's historical defaults apply: type RollingUpdate with
+    # maxSurge: 2 and maxUnavailable: 1 (maxSurge is omitted for kind: StatefulSet).
+    # Override rollingUpdate.maxSurge / rollingUpdate.maxUnavailable as needed
+    # (e.g. maxUnavailable: 0 for zero-downtime rollouts), or set type: Recreate.
+    strategy: {}
+    #   type: RollingUpdate
+    #   rollingUpdate:
+    #     maxSurge: 2
+    #     maxUnavailable: 0
+
     # PodDisruptionBudget configuration
     pdb:
       enabled: false
