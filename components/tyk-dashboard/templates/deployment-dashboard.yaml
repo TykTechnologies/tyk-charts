@@ -244,6 +244,17 @@ spec:
             value: "{{ .Values.dashboard.hostName }}"
           - name: "TYK_DB_ENABLEAGGREGATELOOKUPS"
             value: "{{ .Values.dashboard.enableAggregateLookups }}"
+          # Log system events configuration.
+          # TYK_DB_LOGFORMAT requires Tyk Dashboard v5.12.0 or later, TYK_DB_LOGLEVEL v5.14.0 or later.
+          # On older Dashboards set the system-wide TYK_LOGLEVEL via dashboard.extraEnvs instead.
+          {{- if (.Values.dashboard.log).format }}
+          - name: TYK_DB_LOGFORMAT
+            value: "{{ .Values.dashboard.log.format }}"
+          {{- end }}
+          {{- if (.Values.dashboard.log).level }}
+          - name: TYK_DB_LOGLEVEL
+            value: "{{ .Values.dashboard.log.level }}"
+          {{- end }}
           {{ if (.Values.dashboard.auditLogs).enabled }}
           - name: TYK_DB_AUDIT_ENABLED
             value: "{{ .Values.dashboard.auditLogs.enabled }}"
