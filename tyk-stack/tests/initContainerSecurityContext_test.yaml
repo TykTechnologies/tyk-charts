@@ -1,9 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
 #
-# Locks the init-container securityContext precedence introduced in TT-17018:
-#   - if gateway.initContainers.setupDirectories.securityContext is non-empty
-#     it wins over gateway.containerSecurityContext
-#   - if it is empty/unset, the main containerSecurityContext is used as fallback
+# Locks the setup-directories runAsUser precedence fixed in TT-18257:
+#   init-specific UID -> main-container UID -> pod UID -> 65532.
+# The whole-block enabled=false fallback introduced in TT-17018 remains intact.
 #
 # Required so init-container UID stays aligned with the gateway image's USER
 # (currently 65532). A regression here re-introduces the "file object creation
@@ -16,6 +15,47 @@ release:
   name: tyk-stack
   namespace: test
 tests:
+  - it: defaults the init container UID to the gateway image UID
+    values:
+      - ../values.yaml
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 65532
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+
+  - it: reuses a retained main-container UID for the init container on upgrade
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.containerSecurityContext.runAsUser: 1000
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 1000
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 1000
+
+  - it: uses the pod UID when the main container inherits it
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.securityContext.runAsUser: 4242
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 4242
+      - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 4242
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+
   - it: applies the init-container-specific securityContext when set
     values:
       - ../values.yaml
@@ -45,19 +85,23 @@ tests:
       - ../values.yaml
     set:
       tyk-gateway.gateway.initContainers.setupDirectories.securityContext:
-        runAsUser: 65532
+        runAsUser: 2000
       tyk-gateway.gateway.containerSecurityContext:
         runAsUser: 1000
         runAsNonRoot: true
+      tyk-gateway.gateway.securityContext.runAsUser: 4242
     template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
     asserts:
       - equal:
           path: spec.template.spec.initContainers[0].securityContext.runAsUser
-          value: 65532
+          value: 2000
       # main containerSecurityContext still applies to the gateway container
       - equal:
           path: spec.template.spec.containers[0].securityContext.runAsUser
           value: 1000
+      - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 4242
 
   # enabled=false escape hatches let clusters (OpenShift SCC, kyverno, etc.) inject
   # their own UIDs/GIDs. Setting securityContext: {} cannot work because Helm
@@ -72,6 +116,38 @@ tests:
       # init container falls through to containerSecurityContext, which has no runAsUser
       - notExists:
           path: spec.template.spec.initContainers[0].securityContext.runAsUser
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+
+  - it: disabled main-container securityContext cannot contribute its UID
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.containerSecurityContext.enabled: false
+      tyk-gateway.gateway.containerSecurityContext.runAsUser: 1000
+      tyk-gateway.gateway.securityContext.runAsUser: 4242
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 4242
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  - it: disabled pod securityContext cannot contribute its UID
+    values:
+      - ../values.yaml
+    set:
+      tyk-gateway.gateway.securityContext.enabled: false
+      tyk-gateway.gateway.securityContext.runAsUser: 4242
+    template: charts/tyk-gateway/templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 65532
+      - notExists:
+          path: spec.template.spec.securityContext
 
   - it: setting enabled=false on all three blocks strips every gateway securityContext
     values:

@@ -172,6 +172,93 @@ jobs:
           helm uninstall tyk-data-plane -n ${{ env. TYK_DATAPLANE_NS }} --timeout ${{ env.TIMEOUT }}
           kubectl delete namespace ${{ env. TYK_DATAPLANE_NS }}
 
+  # Reproduces TT-18257 with the actual released values. The regular smoke job installs the
+  # branch chart before upgrading it, so every newly-added value already exists and that path
+  # cannot catch upgrade regressions caused by a missing key in the previous release.
+  upgrade-from-5-3-0:
+    needs: [dep-guard]
+    if: always() && (needs.dep-guard.result == 'success' || needs.dep-guard.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+
+      - name: Create Kind Cluster
+        uses: helm/kind-action@99576bfa6ddf9a8e612d83b513da5a75875caced  # v1.9.0
+        with:
+          # TODO: Pin kindest/node image to digest
+          node_image: "kindest/node:v1.30.0"
+
+      - name: Install helm
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4  # v4
+
+      - name: Install Tyk OSS 5.3.0 and dependencies
+        run: |
+          kubectl create namespace ${{ env.TYK_OSS_NS }}
+          helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+
+          # Do not change the name
+          # TODO: Pin OCI helm chart to digest
+          helm install redis oci://registry-1.docker.io/bitnamicharts/redis --wait -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} --version 19.0.2 \
+            --set image.repository=bitnamilegacy/redis \
+            --set sentinel.image.repository=bitnamilegacy/redis-sentinel \
+            --set metrics.image.repository=bitnamilegacy/redis-exporter \
+            --set volumePermissions.image.repository=bitnamilegacy/os-shell \
+            --set kubectl.image.repository=bitnamilegacy/kubectl \
+            --set sysctl.image.repository=bitnamilegacy/os-shell
+
+          helm install tyk-oss tyk-helm/tyk-oss --version 5.3.0 \
+            -n ${{ env.TYK_OSS_NS }} --wait --timeout ${{ env.TIMEOUT }} \
+            --set global.redis.addrs={redis-master.${{ env.TYK_OSS_NS }}.svc:6379} \
+            --set global.redis.passSecret.name=redis \
+            --set global.redis.passSecret.keyName=redis-password
+
+      - name: Upgrade to branch chart with reused values
+        run: |
+          helm dependency update ./tyk-oss
+          helm upgrade tyk-oss ./tyk-oss -n ${{ env.TYK_OSS_NS }} \
+            --reuse-values --wait --timeout ${{ env.TIMEOUT }}
+
+      - name: Assert init and gateway UIDs remain aligned
+        run: |
+          deployment=gateway-tyk-oss-tyk-gateway
+          init_uid=$(kubectl get deployment "$deployment" -n ${{ env.TYK_OSS_NS }} \
+            -o jsonpath='{.spec.template.spec.initContainers[0].securityContext.runAsUser}')
+          gateway_uid=$(kubectl get deployment "$deployment" -n ${{ env.TYK_OSS_NS }} \
+            -o jsonpath='{.spec.template.spec.containers[0].securityContext.runAsUser}')
+
+          echo "setup-directories UID: $init_uid"
+          echo "gateway UID: $gateway_uid"
+          if [ "$init_uid" != "1000" ] || [ "$gateway_uid" != "1000" ]; then
+            echo "::error::expected the released UID 1000 to be retained by both containers"
+            exit 1
+          fi
+
+      # The OSS Helm test creates an API via POST /tyk/apis. That write is the operation which
+      # returned HTTP 500 when setup-directories created the gateway directories under UID 65532
+      # but the upgraded gateway retained UID 1000.
+      - name: Verify gateway can create an API
+        run: helm test -n ${{ env.TYK_OSS_NS }} tyk-oss
+
+      - if: failure()
+        name: Diagnostics on failure
+        run: |
+          NS=${{ env.TYK_OSS_NS }}
+          kubectl get pods -n "$NS" -o wide || true
+          kubectl get events -n "$NS" --sort-by='.lastTimestamp' | tail -50 || true
+          kubectl get pods -n "$NS" -o name | while read p; do kubectl describe -n "$NS" "$p" || true; done
+          kubectl logs -n "$NS" -l release=tyk-oss --all-containers --tail=200 --prefix || true
+
+      - if: always()
+        name: Clean up Tyk OSS
+        run: |
+          helm uninstall tyk-oss -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} || true
+          helm uninstall redis -n ${{ env.TYK_OSS_NS }} --timeout ${{ env.TIMEOUT }} || true
+          kubectl delete namespace ${{ env.TYK_OSS_NS }} --ignore-not-found
+
   # ---------------------------------------------------------------------------------------------
   # This job exists to get as close to OpenShift as we can on a kind cluster. It does not get
   # close. Read this before assuming OpenShift is covered by CI — it is not.

@@ -331,8 +331,11 @@ gateway:
       repository: busybox
       tag: 1.32
       resources: {}
-      # securityContext for the init container. Default sets runAsUser: 65532 explicitly
-      # for two reasons:
+      # securityContext for the init container. The template resolves runAsUser from the
+      # first configured value in this order: this block, gateway.containerSecurityContext,
+      # gateway.securityContext, then 65532. This keeps upgrades from older chart versions
+      # aligned with a retained gateway UID while preserving 65532 as the fresh-install default.
+      # A concrete UID is required for two reasons:
       #   1. busybox has no USER directive, so with the main container's `runAsNonRoot: true`
       #      inherited kubelet would reject the init container at admission with
       #      "container has runAsNonRoot and image will run as root".
@@ -340,16 +343,15 @@ gateway:
       #      the init container in /mnt/tyk-gateway are owned by the same UID that the main
       #      gateway container runs as — letting the gateway write API definitions, plugin
       #      bundles, etc. without UID/GID mismatches.
-      # To let the cluster (e.g. OpenShift SCC) inject UID/GID instead of pinning them,
-      # set `enabled: false` here. Note this does NOT omit the block outright: the template
-      # falls back to `gateway.containerSecurityContext` (which pins no UID), which is what
-      # lets the SCC assign one. To omit the init container `securityContext` entirely, set
-      # `enabled: false` on BOTH this block and `gateway.containerSecurityContext`.
+      # Set runAsUser here to override the inherited/default UID. To let the cluster (e.g.
+      # OpenShift SCC) inject UID/GID instead, set `enabled: false` here. Note this does NOT
+      # omit the block outright: the template falls back to `gateway.containerSecurityContext`,
+      # which is what lets the SCC assign one. To omit the init container `securityContext`
+      # entirely, set `enabled: false` on BOTH this block and `gateway.containerSecurityContext`.
       # Setting `securityContext: {}` is NOT sufficient because Helm deep-merges these
       # defaults back in.
       securityContext:
         enabled: true
-        runAsUser: 65532
         runAsNonRoot: true
         allowPrivilegeEscalation: false
         privileged: false

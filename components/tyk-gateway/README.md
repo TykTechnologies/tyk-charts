@@ -59,10 +59,12 @@ The `runAsUser: 1000` defaults have been removed from `gateway.securityContext` 
 Security Context Constraint. `runAsNonRoot: true` and `fsGroup` are retained, so kubelet now relies on the
 image's `USER` directive.
 
-The `setupDirectories` init container is the exception: it still pins
-`gateway.initContainers.setupDirectories.securityContext.runAsUser: 65532`, because `busybox` has no `USER`
-directive of its own and 65532 matches the gateway image's UID, so the directories it creates under
-`/mnt/tyk-gateway` stay writable by the gateway. Override or disable that block separately on OpenShift.
+The `setupDirectories` init container is the exception: because `busybox` has no `USER` directive of its own,
+the chart gives it a concrete UID. The UID is resolved from
+`gateway.initContainers.setupDirectories.securityContext.runAsUser`, then
+`gateway.containerSecurityContext.runAsUser`, then `gateway.securityContext.runAsUser`, and finally defaults to
+`65532` to match the gateway image. This keeps directories under `/mnt/tyk-gateway` writable after upgrades that
+retain an older gateway UID with `--reuse-values`. Override or disable the init block separately on OpenShift.
 
 If you pin `gateway.image.tag` to a version whose image has no numeric `USER` — for example `v5.9.1`, which runs
 as `USER 0` — pods will fail admission on upgrade with `CreateContainerConfigError: container has runAsNonRoot

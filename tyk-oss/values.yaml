@@ -315,9 +315,9 @@ tyk-gateway:
         #   cpu: 100m
         #   memory: 128Mi
         # securityContext for the setup-directories init container. Nothing is set here, so the
-        # effective default comes from the tyk-gateway component chart: `runAsUser: 65532`, plus
-        # runAsNonRoot / readOnlyRootFilesystem / dropped capabilities. A pinned runAsUser is one of
-        # the two things OpenShift rejects — the UID must come from the namespace's allocated range.
+        # component chart supplies the hardening fields and resolves runAsUser from the init block,
+        # gateway.containerSecurityContext, gateway.securityContext, then 65532. A pinned runAsUser
+        # is one of the two things OpenShift rejects — the UID must come from the namespace's range.
         # Setting `enabled: false` here drops the init container's own block and falls back to
         # gateway.containerSecurityContext (which pins no UID); set `enabled: false` there too and the
         # init container gets no securityContext at all. `securityContext: {}` is NOT sufficient in
