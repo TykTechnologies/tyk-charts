@@ -27,10 +27,16 @@ jobs:
           MERGE_COMMIT=$(git --no-pager log -1 --merges --pretty=format:%H)
           echo "Merge commit: $MERGE_COMMIT"
 
-          COMMIT_MESSAGE=$(git --no-pager show -s --pretty=%B $MERGE_COMMIT)
-          echo "Commit message: $COMMIT_MESSAGE"
+          COMMIT_TITLE=$(git --no-pager show -s --pretty=%s "$MERGE_COMMIT")
+          echo "Commit title: $COMMIT_TITLE"
 
-          SOURCE_BRANCH=$(echo "$COMMIT_MESSAGE" | grep -oE 'Merge branch .* into ' | sed -E 's/Merge branch (.*) into .*/\1/')
+          if [[ "$COMMIT_TITLE" =~ ^Merge[[:space:]]branch[[:space:]](.+)[[:space:]]into[[:space:]].+$ ]]; then
+            SOURCE_BRANCH="${BASH_REMATCH[1]}"
+          elif [[ "$COMMIT_TITLE" =~ ^Merge[[:space:]]pull[[:space:]]request[[:space:]]#[0-9]+[[:space:]]from[[:space:]][^/]+/(.+)$ ]]; then
+            SOURCE_BRANCH="${BASH_REMATCH[1]}"
+          else
+            SOURCE_BRANCH=""
+          fi
 
           if [[ -z "$SOURCE_BRANCH" ]]; then
             echo "Error: Unable to determine source branch."
