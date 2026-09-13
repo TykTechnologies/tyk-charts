@@ -10,8 +10,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: mdcb-{{ include "tyk-mdcb.fullname" . }}
-  minReplicas: {{ .Values.mdcb.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.mdcb.autoscaling.maxReplicas }}
+  minReplicas: {{ default 1 .Values.mdcb.autoscaling.minReplicas }}
+  maxReplicas: {{ default 100 .Values.mdcb.autoscaling.maxReplicas }}
   metrics:
     {{- if .Values.mdcb.autoscaling.targetCPUUtilizationPercentage }}
     - type: Resource
@@ -31,4 +31,11 @@ spec:
           averageUtilization: {{ .Values.mdcb.autoscaling.targetMemoryUtilizationPercentage }}
           {{ end }}
     {{- end }}
+{{- with .Values.mdcb.autoscaling.autoscalingTemplate }}
+{{ toYaml . | indent 4}}
+{{- end}}
+{{- with .Values.mdcb.autoscaling.behavior }}
+  behavior:
+{{ toYaml . | indent 4}}
+{{- end}}
 {{- end }}
