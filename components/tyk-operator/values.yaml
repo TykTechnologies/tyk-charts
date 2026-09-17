@@ -17,7 +17,7 @@ envVars:
 image:
   repository: tykio/tyk-operator
   pullPolicy: IfNotPresent
-  tag: "v1.4.2"
+  tag: "v1.4.1"
 # specify imagePullSecrets for ServiceAccount
 imagePullSecrets: []
 nameOverride: ""
@@ -48,30 +48,19 @@ annotations: {}
 podAnnotations: {}
 podSecurityContext:
   allowPrivilegeEscalation: false
-# managerPodSecurityContext holds pod-level security attributes for the controller-manager pod.
-# All fields from PodSecurityContext object can be added here. The default reproduces what the
-# chart previously hardcoded, so rendered output is unchanged.
-# To let the cluster inject defaults (e.g. OpenShift SCC), set `enabled: false` — the entire
-# pod-level `securityContext` block is then omitted from the rendered manifest. Setting
-# `managerPodSecurityContext: {}` is NOT sufficient because Helm deep-merges defaults back in.
-# NOTE: `podSecurityContext` above is a pre-existing key that no template reads, and it carries
-# `allowPrivilegeEscalation`, which is a container-level field not valid on PodSecurityContext.
-# It is left untouched rather than reused so that wiring it up cannot emit an invalid field.
-managerPodSecurityContext:
-  enabled: true
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
   runAsNonRoot: true
-# securityContext holds container-level security attributes for the controller-manager container.
-# All fields from SecurityContext object can be added here. Unset by default, so no container
-# `securityContext` block is rendered. Set `enabled: false` to keep it omitted after adding fields.
-securityContext: {}
 resources: {}
 nodeSelector: {}
 # tolerations for manager pod assignment
 tolerations: {}
 # affinity for manager pod assignment
 affinity: {}
-# priorityClassName for manager pod assignment
-priorityClassName: ""
 hostNetwork: false
 # rbac specifies necessary resources for kube-rbac-proxy container
 rbac:
@@ -88,13 +77,27 @@ rbac:
 # These metrics can be scraped by Prometheus Operator, by deploying ServiceMonitor resource.
 serviceMonitor: false
 webhooks:
+  # Disable to run controller-side validation only. The chart then omits all
+  # admission/TLS resources and sets ENABLE_WEBHOOKS=false.
   enabled: true
   # identifies the port on which webhooks are handled
   port: 9443
+  # annotations are applied to both admission configurations. When cert-manager
+  # is disabled, use these to configure an external CA injector.
+  # governanceFailurePolicy controls what happens to TykOasApiDefinition
+  # create/update requests when the governance preflight cannot run — both
+  # when the webhook itself is unreachable (ValidatingWebhookConfiguration
+  # failurePolicy) and when the webhook cannot reach the Dashboard sandbox
+  # (mirrored in-pod via GOVERNANCE_WEBHOOK_FAILURE_POLICY).
+  #   Ignore (default): admit the object; the reconciler records the real
+  #                     compliance state on the next reconcile.
+  #   Fail:             reject the object until governance can evaluate it.
+  governanceFailurePolicy: Ignore
   annotations: {}
   tls:
+    # When false, pre-create secretName and arrange CA injection externally.
     useCertManager: true
-    # The name of the secret which should contain the TLS certificate you want to use with the webhook
+    # The Secret cert-manager creates, or the pre-existing TLS Secret to mount.
     secretName: webhook-server-cert
     # certificatesMountPath corresponds to the mount path of the secret.
     certificatesMountPath: "/tmp/k8s-webhook-server/serving-certs"
