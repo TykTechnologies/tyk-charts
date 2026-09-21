@@ -106,13 +106,27 @@ spec:
         image: "{{ .Values.global.imageRegistry }}{{ .Values.gateway.initContainers.setupDirectories.repository }}:{{ .Values.gateway.initContainers.setupDirectories.tag }}"
         command: ['sh','-c','mkdir -p apps middleware policies && touch policies/policies.json']
         workingDir: /mnt/tyk-gateway
-        {{- $initSc := .Values.gateway.initContainers.setupDirectories.securityContext }}
-        {{- $mainSc := .Values.gateway.containerSecurityContext }}
+        {{- $initSc := .Values.gateway.initContainers.setupDirectories.securityContext | default dict }}
+        {{- $mainSc := .Values.gateway.containerSecurityContext | default dict }}
+        {{- $podSc := .Values.gateway.securityContext | default dict }}
         {{- $initOn := and $initSc (or (not (hasKey ($initSc | default dict) "enabled")) $initSc.enabled) }}
         {{- $mainOn := and $mainSc (or (not (hasKey ($mainSc | default dict) "enabled")) $mainSc.enabled) }}
+        {{- $podOn := and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) }}
         {{- if and $initOn (gt (len (omit $initSc "enabled")) 0) }}
+        {{- /* Resolve only the UID through init -> main -> pod -> image UID default;
+              the init block keeps its independently configured hardening fields. */ -}}
+        {{- $effectiveInitSc := deepCopy (omit $initSc "enabled") }}
+        {{- if not (and (hasKey $effectiveInitSc "runAsUser") (ne (get $effectiveInitSc "runAsUser") nil)) }}
+        {{- $runAsUser := 65532 }}
+        {{- if and $mainOn (hasKey $mainSc "runAsUser") (ne (get $mainSc "runAsUser") nil) }}
+        {{- $runAsUser = get $mainSc "runAsUser" }}
+        {{- else if and $podOn (hasKey $podSc "runAsUser") (ne (get $podSc "runAsUser") nil) }}
+        {{- $runAsUser = get $podSc "runAsUser" }}
+        {{- end }}
+        {{- $_ := set $effectiveInitSc "runAsUser" $runAsUser }}
+        {{- end }}
         securityContext:
-        {{- toYaml (omit $initSc "enabled") | nindent 12 }}
+        {{- toYaml $effectiveInitSc | nindent 12 }}
         {{- else if and $mainOn (gt (len (omit $mainSc "enabled")) 0) }}
         securityContext:
         {{- toYaml (omit $mainSc "enabled") | nindent 12 }}
