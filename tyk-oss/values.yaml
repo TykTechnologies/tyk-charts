@@ -295,7 +295,7 @@ tyk-gateway:
       # Must be a non-root image (numeric USER) while securityContext defaults set
       # runAsNonRoot without runAsUser: v5.9.1 runs as root (User 0) and fails kubelet
       # admission with CreateContainerConfigError. v5.13.1 runs as User 65532.
-      tag: v5.13.1
+      tag: v5.15.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -679,7 +679,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v1.4.2"
+    tag: "v1.5.0"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -796,7 +796,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.16.0
+      tag: v1.17.0
 
       # image pull policy
       pullPolicy: IfNotPresent

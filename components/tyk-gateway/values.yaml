@@ -78,24 +78,24 @@ global:
     # sslInsecureSkipVerify: true
 
     # The Volume mount path
-    # Default value: /tls 
-    # certificatesMountPath: "/tls"  
+    # Default value: /tls
+    # certificatesMountPath: "/tls"
 
     # Path to the CA file.
-    # caFile: "/tls/ca.crt"  
+    # caFile: "/tls/ca.crt"
 
     # Path to the cert file.
-    # certFile: "/tls/redis.crt"  
+    # certFile: "/tls/redis.crt"
 
     # Path to the key file.
     # keyFile: "/tls/redis.key"
 
     # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
-    # Default value: gw-tls-secret 
+    # Default value: gw-tls-secret
     # secretName: "gw-tls-secret"
 
     # Name of the volume where the secret will be mounted
-    # Default value: gw-tls-secret-volume 
+    # Default value: gw-tls-secret-volume
     # volumeName: "gw-tls-secret-volume"
 
     # Maximum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
@@ -320,7 +320,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.13.1
+    tag: v5.15.0
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
@@ -394,7 +394,7 @@ gateway:
     annotations: {}
 
     # Name for the service Port
-    portName: ""    
+    portName: ""
 
   control:
     # If enabled, exposes control port of the gateway
@@ -416,7 +416,7 @@ gateway:
     annotations: {}
 
     # control ingress
-    ingress: 
+    ingress:
       # if enabled, creates an ingress resource for the gateway control
       enabled: false
 
@@ -432,7 +432,7 @@ gateway:
           paths:
             - path: /
               pathType: ImplementationSpecific
-                
+
       # tls configuration for ingress
       #  - secretName: chart-example-tls
       #    hosts:
@@ -725,7 +725,7 @@ gateway:
   # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
   # If a service account is to be used for Tyk Gateway, it should be manually created
   serviceAccountName: ""
-  # allowInsecureConfigs can be set to disable Dashboard message signature verification. 
+  # allowInsecureConfigs can be set to disable Dashboard message signature verification.
   # When set to true, public_key_path can be ignored.
   # It is used to set TYK_GW_ALLOWINSECURECONFIGS
   allowInsecureConfigs: true

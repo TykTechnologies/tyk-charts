@@ -339,7 +339,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway-ee
 
       # image tag for Tyk Gateway
-      tag: v5.13.1
+      tag: v5.15.0
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -751,7 +751,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v1.4.2"
+    tag: "v1.5.0"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -868,7 +868,7 @@ tyk-pump:
       repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
-      tag: v1.16.0
+      tag: v1.17.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -1480,7 +1480,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.13.1
+      tag: v5.15.0
 
       # image pull policy
       pullPolicy: Always
@@ -1746,7 +1746,7 @@ tyk-mdcb:
       # image repository for Tyk MDCB
       repository: tykio/tyk-mdcb-docker
       # image tag for Tyk MDCB
-      tag: v2.12.0
+      tag: v2.13.0
       # image pull policy
       pullPolicy: IfNotPresent
 
@@ -1982,7 +1982,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.18.0
+    tag: v1.19.0
     # image pull policy
     pullPolicy: Always
 
