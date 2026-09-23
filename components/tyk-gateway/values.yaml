@@ -320,7 +320,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.15.0
+    tag: v5.13.2
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
