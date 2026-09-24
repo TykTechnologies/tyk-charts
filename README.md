@@ -208,3 +208,4 @@ not help here, because it covers the Kubernetes wait and Helm never gets that fa
 **An install times out on a first run.** The gateway image is large, and kind keeps its image
 cache inside the node container. `kind delete cluster` discards that cache, so every fresh
 cluster downloads the images again. Raise `--timeout` on a slow connection.
+
