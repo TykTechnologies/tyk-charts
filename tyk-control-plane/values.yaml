@@ -800,6 +800,19 @@ tyk-operator:
   # NOTE: unused/dead key — no template reads it.
   podSecurityContext:
     allowPrivilegeEscalation: false
+  # managerPodSecurityContext controls the pod-level securityContext of the
+  # controller-manager pod. To let the cluster (e.g. OpenShift SCC) assign
+  # UID/GID instead, set `enabled: false` — the whole block is then omitted
+  # from the rendered manifest. `managerPodSecurityContext: {}` is NOT
+  # sufficient because Helm deep-merges these defaults back in.
+  managerPodSecurityContext:
+    enabled: true
+    runAsNonRoot: true
+  # securityContext for the controller-manager container. All fields from the
+  # SecurityContext object can be added here. Empty by default; set fields to
+  # opt in, or set `enabled: false` to force-omit the block despite other
+  # fields being set.
+  securityContext: {}
   resources: {}
   nodeSelector: {}
   # tolerations for tyk-operator-manager pod assignment

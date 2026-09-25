@@ -411,9 +411,10 @@ spec:
         resources:
 {{- toYaml . | nindent 10 }}
 {{- end }}
-{{- with .Values.securityContext }}
+{{- $containerSc := .Values.securityContext | default dict }}
+{{- if and $containerSc (or (not (hasKey $containerSc "enabled")) $containerSc.enabled) (gt (len (omit $containerSc "enabled")) 0) }}
         securityContext:
-{{- toYaml . | nindent 10 }}
+{{- toYaml (omit $containerSc "enabled") | nindent 10 }}
 {{- end }}
 {{- if or .Values.webhooks.enabled .Values.extraVolumeMounts }}
         volumeMounts:
@@ -431,8 +432,14 @@ spec:
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
 {{- end }}
+{{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+{{- end }}
+{{- $podSc := .Values.managerPodSecurityContext | default dict }}
+{{- if and $podSc (or (not (hasKey $podSc "enabled")) $podSc.enabled) (gt (len (omit $podSc "enabled")) 0) }}
       securityContext:
-        runAsNonRoot: true
+{{- toYaml (omit $podSc "enabled") | nindent 8 }}
+{{- end }}
       serviceAccountName: {{ include "tyk-operator-helm.fullname" . }}-controller-manager
       terminationGracePeriodSeconds: 10
 {{- if or .Values.webhooks.enabled .Values.extraVolumes }}
