@@ -32,6 +32,7 @@ jobs:
     # linter feedback on the PR. Without it the step fails with
     # "Resource not accessible by integration" and hides the real linter error.
     permissions:
+      id-token: write       # Assume the ECR role that pulls the linter image
       contents: read
       pull-requests: write
     steps:
