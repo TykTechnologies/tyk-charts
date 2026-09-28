@@ -133,7 +133,7 @@ global:
   # If postgres pump is in use, please set the connection details of Postgres in the below field.
   postgres:
     # host corresponds to the host name of postgres
-    host: tyk-postgres-postgresql.tyk.svc
+    # host: tyk-postgres-postgresql.tyk.svc
     # port corresponds to the port of postgres
     port: 5432
     # user corresponds to the user of postgres
@@ -446,8 +446,8 @@ pump:
   livenessProbe: {}
 
   # readinessProbe:
-    # initialDelaySeconds: 10
-    # periodSeconds: 10
-    # timeoutSeconds: 3
-    # failureThreshold: 3
+  # initialDelaySeconds: 10
+  # periodSeconds: 10
+  # timeoutSeconds: 3
+  # failureThreshold: 3
   readinessProbe: {}
