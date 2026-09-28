@@ -103,6 +103,7 @@ webhooks:
   #   Fail:             reject the object until governance can evaluate it.
   governanceFailurePolicy: Ignore
   annotations: {}
+  namespaceSelector: {}
   tls:
     # When false, pre-create secretName and arrange CA injection externally.
     useCertManager: true
