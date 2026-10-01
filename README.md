@@ -33,7 +33,7 @@ Helm umbrella chart (chart of charts) is an easy and really flexible way of inst
 * [tyk-bootstrap](./components/tyk-bootstrap)
 
 ### Tyk Operator
-The Tyk Operator chart is in [`components/tyk-operator`](./components/tyk-operator) and is published as `tyk-helm/tyk-operator`. Its CRDs are in [`tyk-operator-crds`](./tyk-operator-crds). The [tyk-operator](https://github.com/TykTechnologies/tyk-operator) repository is archived. To install Tyk Operator, see [Install Tyk Operator](https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator).
+The Tyk Operator chart is in [components/tyk-operator](./components/tyk-operator) and is published as `tyk-helm/tyk-operator`. Its CRDs are in [tyk-operator-crds](./tyk-operator-crds). The [tyk-operator](https://github.com/TykTechnologies/tyk-operator) repository is archived. To install Tyk Operator, see [Install Tyk Operator](https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator).
 
 ## External Dependencies - Redis and MongoDB/PostgreSQL
 - Redis is required for all of the Tyk installations it must be installed in the cluster or reachable from inside K8s.
