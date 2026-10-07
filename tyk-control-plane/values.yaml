@@ -1812,6 +1812,7 @@ tyk-mdcb:
       #     policies:
       #       - type: Percent
       #         value: 100
+      #         periodSeconds: 15
 
     # extraContainers is a list of containers to be added to the pod
     # - name: sidecar
