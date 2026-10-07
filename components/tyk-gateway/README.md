@@ -59,10 +59,12 @@ The `runAsUser: 1000` defaults have been removed from `gateway.securityContext` 
 Security Context Constraint. `runAsNonRoot: true` and `fsGroup` are retained, so kubelet now relies on the
 image's `USER` directive.
 
-The `setupDirectories` init container is the exception: it still pins
-`gateway.initContainers.setupDirectories.securityContext.runAsUser: 65532`, because `busybox` has no `USER`
-directive of its own and 65532 matches the gateway image's UID, so the directories it creates under
-`/mnt/tyk-gateway` stay writable by the gateway. Override or disable that block separately on OpenShift.
+The `setupDirectories` init container is the exception: because `busybox` has no `USER` directive of its own,
+the chart gives it a concrete UID. The UID is resolved from
+`gateway.initContainers.setupDirectories.securityContext.runAsUser`, then
+`gateway.containerSecurityContext.runAsUser`, then `gateway.securityContext.runAsUser`, and finally defaults to
+`65532` to match the gateway image. This keeps directories under `/mnt/tyk-gateway` writable after upgrades that
+retain an older gateway UID with `--reuse-values`. Override or disable the init block separately on OpenShift.
 
 If you pin `gateway.image.tag` to a version whose image has no numeric `USER` — for example `v5.9.1`, which runs
 as `USER 0` — pods will fail admission on upgrade with `CreateContainerConfigError: container has runAsNonRoot
@@ -149,6 +151,54 @@ gateway:
             type: AverageValue
             averageValue: 10000m
 ```
+
+### Graceful shutdown and rolling updates
+
+For zero-downtime rollouts and scale-downs (for example when running behind an AWS ALB/NLB with
+`target-type: ip` and pod readiness gates), you can tune how the Gateway pods terminate and how the
+workload is updated:
+
+- `gateway.terminationGracePeriodSeconds` — how long (in seconds) Kubernetes waits for a pod to shut
+  down gracefully before sending `SIGKILL`. Unset by default, so the Kubernetes default of `30s`
+  applies. When you configure graceful shutdown, set this greater than the sum of the Gateway's
+  `graceful_shutdown_delay_seconds` and `graceful_shutdown_timeout_duration`.
+- `gateway.lifecycle` — container lifecycle hooks (`preStop` / `postStart`). A `preStop` sleep keeps a
+  terminating pod alive while the load balancer deregisters the target and drains in-flight connections.
+- `gateway.strategy` — the update strategy. `type` defaults to `RollingUpdate`; you can override
+  `rollingUpdate.maxSurge` and `rollingUpdate.maxUnavailable` (setting `maxUnavailable: 0` is useful for
+  zero-downtime deployments with readiness gates). For `kind: StatefulSet`, `maxSurge` is not applicable
+  and is omitted.
+
+```yaml
+gateway:
+  terminationGracePeriodSeconds: 60
+  lifecycle:
+    preStop:
+      sleep:
+        seconds: 40    # sleep action requires Kubernetes >= 1.29 (GA in 1.30)
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+```
+
+The Gateway's own shutdown timings (`graceful_shutdown_delay_seconds`,
+`graceful_shutdown_timeout_duration`) can be set via `gateway.extraEnvs`.
+
+> **Note on lifecycle hook handlers:** recent Tyk Gateway images are minimal and do not ship a shell or
+> coreutils, so `exec` handlers such as `["/bin/sh", "-c", "sleep 40"]` or `["/bin/sleep", "40"]` will
+> fail with an executable-not-found error. Use the native `sleep` handler shown above (Kubernetes 1.29+,
+> GA in 1.30) instead — for connection draining it needs no shell and no network access.
+>
+> Two security points to keep in mind if you deviate from that:
+>
+> - An `exec` handler runs commands inside the container with the same permissions as the Gateway
+>   process, so any command should be carefully reviewed before rollout.
+> - An `httpGet` handler issues a request from inside the pod's network namespace, so it can reach
+>   in-cluster services and cloud metadata endpoints that are not exposed externally. If you use one,
+>   point it at a trusted endpoint on the Gateway itself, and make sure the URL neither returns
+>   sensitive data nor triggers a side effect.
 
 #### Enabling TLS
 We have provided an easy way of enabling TLS via the `global.tls.gateway` flag. Setting this value to true will

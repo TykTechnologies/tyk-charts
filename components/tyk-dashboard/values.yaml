@@ -122,11 +122,11 @@ global:
     # caFile: "/etc/certs/ca.crt"
 
     # The Volume mount path
-    # Default value: /etc/certs 
-    # certificatesMountPath: "/etc/certs"    
+    # Default value: /etc/certs
+    # certificatesMountPath: "/etc/certs"
 
     # Path to the cert file.
-    # certFile: "/etc/certs/redis.crt"  
+    # certFile: "/etc/certs/redis.crt"
 
     # Path to the key file.
     # keyFile: "/etc/certs/redis.key"
@@ -140,11 +140,11 @@ global:
     # tlsMinVersion: "1.2"
 
     # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
-    # Default value: db-tls-secret 
+    # Default value: db-tls-secret
     # secretName: "db-tls-secret"
 
     # Name of the volume where the secret will be mounted
-    # Default value: db-tls-secret-volume 
+    # Default value: db-tls-secret-volume
     # volumeName: "db-tls-secret-volume"
 
     # The enableCluster value will allow you to indicate to Tyk whether you are
@@ -296,13 +296,28 @@ dashboard:
   enableHashedKeysListing: true
   # Enable support for users with the same email for multiple organisations
   # It is used to set TYK_DB_ENABLEMULTIORGUSERS
-  enableMultiOrgUsers: true 
+  enableMultiOrgUsers: true
   # This is a security feature that allows you to prevent the admin user from viewing the access token of a user.
-  # It is used to set TYK_DB_SECURITY_FORBIDADMINVIEWACCESSTOKEN  
+  # It is used to set TYK_DB_SECURITY_FORBIDADMINVIEWACCESSTOKEN
   forbidAdminViewAccessToken: true
   # This is a security feature that allows you to prevent the admin user from resetting the access token of a user.
-  # It is used to set TYK_DB_SECURITY_FORBIDADMINRESETACCESSTOKEN  
+  # It is used to set TYK_DB_SECURITY_FORBIDADMINRESETACCESSTOKEN
   forbidAdminResetAccessToken: true
+  # log is used to configure the log system events
+  log:
+    # level sets the log verbosity. Valid values are error, warn, info and debug.
+    # It is used to set TYK_DB_LOGLEVEL, which requires Tyk Dashboard v5.14.0 or later.
+    # On earlier versions TYK_DB_LOGLEVEL is ignored; set the system-wide TYK_LOGLEVEL
+    # via dashboard.extraEnvs instead, for example:
+    #   extraEnvs:
+    #     - name: TYK_LOGLEVEL
+    #       value: "debug"
+    # Note that TYK_LOGLEVEL takes precedence over TYK_DB_LOGLEVEL when both are set.
+    level: "info"
+    # format sets the log format. Valid values are default and json.
+    # It is used to set TYK_DB_LOGFORMAT, which requires Tyk Dashboard v5.12.0 or later.
+    # Earlier versions accept the variable but continue to emit logfmt output.
+    format: "default"
   # Configuration for Audit logs
   auditLogs:
     # Enables audit logging.
@@ -340,6 +355,36 @@ dashboard:
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
 
+  # autoscaling configuration for the Dashboard Deployment
+  autoscaling: {}
+  #  enabled: true
+  #  minReplicas: 1
+  #  maxReplicas: 3
+  #  averageCpuUtilization: 60
+  #  averageMemoryUtilization: null
+  #  autoscalingTemplate:
+  #   Custom or additional autoscaling metrics
+  #   ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-custom-metrics
+  #    - type: Pods
+  #      pods:
+  #        metric:
+  #          name: nginx_ingress_controller_nginx_process_requests_total
+  #        target:
+  #          type: AverageValue
+  #          averageValue: 10000m
+  #  behavior:
+  #    scaleDown:
+  #      stabilizationWindowSeconds: 300
+  #      policies:
+  #        - type: Percent
+  #          value: 100
+  #          periodSeconds: 15
+  #    scaleUp:
+  #      stabilizationWindowSeconds: 0
+  #      policies:
+  #        - type: Percent
+  #          value: 100
+
   # annotations be added to the Deployment / Statefulset of Tyk Dashboard
   annotations: {}
 
@@ -360,7 +405,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.13.1
+    tag: v5.13.2
 
     # image pull policy
     pullPolicy: Always
@@ -428,7 +473,7 @@ dashboard:
     # annotations corresponds to the annotations which will be added into Tyk Dashboard Service.
     annotations: {}
     # The name given to the service port
-    portName: ""    
+    portName: ""
 
   # We usually recommend not to specify default resources and to leave this
   # as a conscious choice for the user. This also increases the chances of charts to

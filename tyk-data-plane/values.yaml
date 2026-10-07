@@ -285,7 +285,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway-ee
 
       # image tag for Tyk Gateway
-      tag: v5.13.1
+      tag: v5.13.2
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -305,9 +305,9 @@ tyk-gateway:
         #   cpu: 100m
         #   memory: 128Mi
         # securityContext for the setup-directories init container. Nothing is set here, so the
-        # effective default comes from the tyk-gateway component chart: `runAsUser: 65532`, plus
-        # runAsNonRoot / readOnlyRootFilesystem / dropped capabilities. A pinned runAsUser is one of
-        # the two things OpenShift rejects — the UID must come from the namespace's allocated range.
+        # component chart supplies the hardening fields and resolves runAsUser from the init block,
+        # gateway.containerSecurityContext, gateway.securityContext, then 65532. A pinned runAsUser
+        # is one of the two things OpenShift rejects — the UID must come from the namespace's range.
         # Setting `enabled: false` here drops the init container's own block and falls back to
         # gateway.containerSecurityContext (which pins no UID); set `enabled: false` there too and the
         # init container gets no securityContext at all. `securityContext: {}` is NOT sufficient in
@@ -398,6 +398,38 @@ tyk-gateway:
       #    hosts:
       #      - chart-example.local
       tls: []
+
+    # terminationGracePeriodSeconds sets how long (in seconds) the pod may take to
+    # shut down gracefully before being forcibly killed (SIGKILL). When unset,
+    # Kubernetes applies its default of 30s. A value of 0 is treated as unset (the
+    # chart does not configure immediate termination); use a positive value.
+    # terminationGracePeriodSeconds: 30
+
+    # lifecycle defines container lifecycle hooks (preStop / postStart) for the gateway
+    # container. Empty by default (not rendered). Example preStop drain hook:
+    # NOTE: Gateway images do not include a shell, so 'exec' handlers such as
+    # ["/bin/sh","-c","sleep 40"] will fail. Prefer the native 'sleep' handler below,
+    # which needs no shell and no network access.
+    # Security: an 'exec' handler runs commands with the gateway's permissions, and an
+    # 'httpGet' handler sends a request from inside the pod network, so it can reach
+    # in-cluster services and cloud metadata endpoints. If you use one, target a trusted
+    # endpoint that returns no sensitive data and has no side effects.
+    # lifecycle:
+    #   preStop:
+    #     sleep:
+    #       seconds: 40    # sleep action requires Kubernetes >= 1.29 (GA in 1.30)
+    lifecycle: {}
+
+    # strategy configures the update strategy for the gateway workload.
+    # When unset, the chart's historical defaults apply: type RollingUpdate with
+    # maxSurge: 2 and maxUnavailable: 1 (maxSurge is omitted for kind: StatefulSet).
+    # Override rollingUpdate.maxSurge / rollingUpdate.maxUnavailable as needed
+    # (e.g. maxUnavailable: 0 for zero-downtime rollouts), or set type: Recreate.
+    strategy: {}
+    #   type: RollingUpdate
+    #   rollingUpdate:
+    #     maxSurge: 2
+    #     maxUnavailable: 0
 
     # PodDisruptionBudget configuration
     pdb:
@@ -709,7 +741,7 @@ tyk-pump:
       repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
-      tag: v1.16.0
+      tag: v1.17.0
 
       # image pull policy
       pullPolicy: IfNotPresent

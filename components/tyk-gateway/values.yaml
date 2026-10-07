@@ -78,24 +78,24 @@ global:
     # sslInsecureSkipVerify: true
 
     # The Volume mount path
-    # Default value: /tls 
-    # certificatesMountPath: "/tls"  
+    # Default value: /tls
+    # certificatesMountPath: "/tls"
 
     # Path to the CA file.
-    # caFile: "/tls/ca.crt"  
+    # caFile: "/tls/ca.crt"
 
     # Path to the cert file.
-    # certFile: "/tls/redis.crt"  
+    # certFile: "/tls/redis.crt"
 
     # Path to the key file.
     # keyFile: "/tls/redis.key"
 
     # Name of the tls secret. A secret needs to be created for this manually using the name as specified here
-    # Default value: gw-tls-secret 
+    # Default value: gw-tls-secret
     # secretName: "gw-tls-secret"
 
     # Name of the volume where the secret will be mounted
-    # Default value: gw-tls-secret-volume 
+    # Default value: gw-tls-secret-volume
     # volumeName: "gw-tls-secret-volume"
 
     # Maximum supported TLS version. Valid values are TLS 1.0, 1.1, 1.2, 1.3.
@@ -239,6 +239,38 @@ gateway:
   # replicaCount specifies number of replicas to be created if kind is Deployment.
   replicaCount: 1
 
+  # terminationGracePeriodSeconds sets how long (in seconds) the pod may take to
+  # shut down gracefully before being forcibly killed (SIGKILL). When unset,
+  # Kubernetes applies its default of 30s. A value of 0 is treated as unset (the
+  # chart does not configure immediate termination); use a positive value.
+  # terminationGracePeriodSeconds: 30
+
+  # lifecycle defines container lifecycle hooks (preStop / postStart) for the gateway
+  # container. Empty by default (not rendered). Example preStop drain hook:
+  # NOTE: Gateway images do not include a shell, so 'exec' handlers such as
+  # ["/bin/sh","-c","sleep 40"] will fail. Prefer the native 'sleep' handler below,
+  # which needs no shell and no network access.
+  # Security: an 'exec' handler runs commands with the gateway's permissions, and an
+  # 'httpGet' handler sends a request from inside the pod network, so it can reach
+  # in-cluster services and cloud metadata endpoints. If you use one, target a trusted
+  # endpoint that returns no sensitive data and has no side effects.
+  # lifecycle:
+  #   preStop:
+  #     sleep:
+  #       seconds: 40    # sleep action requires Kubernetes >= 1.29 (GA in 1.30)
+  lifecycle: {}
+
+  # strategy configures the update strategy for the gateway workload.
+  # When unset, the chart's historical defaults apply: type RollingUpdate with
+  # maxSurge: 2 and maxUnavailable: 1 (maxSurge is omitted for kind: StatefulSet).
+  # Override rollingUpdate.maxSurge / rollingUpdate.maxUnavailable as needed
+  # (e.g. maxUnavailable: 0 for zero-downtime rollouts), or set type: Recreate.
+  strategy: {}
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     maxSurge: 2
+  #     maxUnavailable: 0
+
   # PodDisruptionBudget configuration
   pdb:
     enabled: false
@@ -288,7 +320,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.13.1
+    tag: v5.13.2
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
@@ -299,8 +331,11 @@ gateway:
       repository: busybox
       tag: 1.32
       resources: {}
-      # securityContext for the init container. Default sets runAsUser: 65532 explicitly
-      # for two reasons:
+      # securityContext for the init container. The template resolves runAsUser from the
+      # first configured value in this order: this block, gateway.containerSecurityContext,
+      # gateway.securityContext, then 65532. This keeps upgrades from older chart versions
+      # aligned with a retained gateway UID while preserving 65532 as the fresh-install default.
+      # A concrete UID is required for two reasons:
       #   1. busybox has no USER directive, so with the main container's `runAsNonRoot: true`
       #      inherited kubelet would reject the init container at admission with
       #      "container has runAsNonRoot and image will run as root".
@@ -308,16 +343,15 @@ gateway:
       #      the init container in /mnt/tyk-gateway are owned by the same UID that the main
       #      gateway container runs as — letting the gateway write API definitions, plugin
       #      bundles, etc. without UID/GID mismatches.
-      # To let the cluster (e.g. OpenShift SCC) inject UID/GID instead of pinning them,
-      # set `enabled: false` here. Note this does NOT omit the block outright: the template
-      # falls back to `gateway.containerSecurityContext` (which pins no UID), which is what
-      # lets the SCC assign one. To omit the init container `securityContext` entirely, set
-      # `enabled: false` on BOTH this block and `gateway.containerSecurityContext`.
+      # Set runAsUser here to override the inherited/default UID. To let the cluster (e.g.
+      # OpenShift SCC) inject UID/GID instead, set `enabled: false` here. Note this does NOT
+      # omit the block outright: the template falls back to `gateway.containerSecurityContext`,
+      # which is what lets the SCC assign one. To omit the init container `securityContext`
+      # entirely, set `enabled: false` on BOTH this block and `gateway.containerSecurityContext`.
       # Setting `securityContext: {}` is NOT sufficient because Helm deep-merges these
       # defaults back in.
       securityContext:
         enabled: true
-        runAsUser: 65532
         runAsNonRoot: true
         allowPrivilegeEscalation: false
         privileged: false
@@ -360,7 +394,7 @@ gateway:
     annotations: {}
 
     # Name for the service Port
-    portName: ""    
+    portName: ""
 
   control:
     # If enabled, exposes control port of the gateway
@@ -382,7 +416,7 @@ gateway:
     annotations: {}
 
     # control ingress
-    ingress: 
+    ingress:
       # if enabled, creates an ingress resource for the gateway control
       enabled: false
 
@@ -398,7 +432,7 @@ gateway:
           paths:
             - path: /
               pathType: ImplementationSpecific
-                
+
       # tls configuration for ingress
       #  - secretName: chart-example-tls
       #    hosts:
@@ -691,7 +725,7 @@ gateway:
   # serviceAccountName field indicates the name of the Service Account that is going to be used by the Pods.
   # If a service account is to be used for Tyk Gateway, it should be manually created
   serviceAccountName: ""
-  # allowInsecureConfigs can be set to disable Dashboard message signature verification. 
+  # allowInsecureConfigs can be set to disable Dashboard message signature verification.
   # When set to true, public_key_path can be ignored.
   # It is used to set TYK_GW_ALLOWINSECURECONFIGS
   allowInsecureConfigs: true

@@ -1,0 +1,41 @@
+{{- /* `default dict` guards a bare `autoscaling:` key, which Helm merges as nil. Reads below run only when enabled is truthy, so the map exists by then. */ -}}
+{{- if (default dict .Values.dashboard.autoscaling).enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dashboard-{{ include "tyk-dashboard.fullname" . }}
+  labels:
+    app: dashboard-{{ include "tyk-dashboard.fullname" . }}
+    chart: {{ include "tyk-dashboard.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dashboard-{{ include "tyk-dashboard.fullname" . }}
+  minReplicas: {{ default 1 .Values.dashboard.autoscaling.minReplicas }}
+  maxReplicas: {{ default 3 .Values.dashboard.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ default 60 .Values.dashboard.autoscaling.averageCpuUtilization }}
+{{- if .Values.dashboard.autoscaling.averageMemoryUtilization }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.dashboard.autoscaling.averageMemoryUtilization }}
+{{- end }}
+{{- with .Values.dashboard.autoscaling.autoscalingTemplate }}
+{{ toYaml . | indent 4}}
+{{- end}}
+{{- with .Values.dashboard.autoscaling.behavior }}
+  behavior:
+{{ toYaml . | indent 4}}
+{{- end}}
+{{- end }}

@@ -339,7 +339,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway-ee
 
       # image tag for Tyk Gateway
-      tag: v5.13.1
+      tag: v5.13.2
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -359,9 +359,9 @@ tyk-gateway:
         #   cpu: 100m
         #   memory: 128Mi
         # securityContext for the setup-directories init container. Nothing is set here, so the
-        # effective default comes from the tyk-gateway component chart: `runAsUser: 65532`, plus
-        # runAsNonRoot / readOnlyRootFilesystem / dropped capabilities. A pinned runAsUser is one of
-        # the two things OpenShift rejects — the UID must come from the namespace's allocated range.
+        # component chart supplies the hardening fields and resolves runAsUser from the init block,
+        # gateway.containerSecurityContext, gateway.securityContext, then 65532. A pinned runAsUser
+        # is one of the two things OpenShift rejects — the UID must come from the namespace's range.
         # Setting `enabled: false` here drops the init container's own block and falls back to
         # gateway.containerSecurityContext (which pins no UID); set `enabled: false` there too and the
         # init container gets no securityContext at all. `securityContext: {}` is NOT sufficient in
@@ -429,6 +429,38 @@ tyk-gateway:
       #    hosts:
       #      - chart-example.local
       tls: []
+
+    # terminationGracePeriodSeconds sets how long (in seconds) the pod may take to
+    # shut down gracefully before being forcibly killed (SIGKILL). When unset,
+    # Kubernetes applies its default of 30s. A value of 0 is treated as unset (the
+    # chart does not configure immediate termination); use a positive value.
+    # terminationGracePeriodSeconds: 30
+
+    # lifecycle defines container lifecycle hooks (preStop / postStart) for the gateway
+    # container. Empty by default (not rendered). Example preStop drain hook:
+    # NOTE: Gateway images do not include a shell, so 'exec' handlers such as
+    # ["/bin/sh","-c","sleep 40"] will fail. Prefer the native 'sleep' handler below,
+    # which needs no shell and no network access.
+    # Security: an 'exec' handler runs commands with the gateway's permissions, and an
+    # 'httpGet' handler sends a request from inside the pod network, so it can reach
+    # in-cluster services and cloud metadata endpoints. If you use one, target a trusted
+    # endpoint that returns no sensitive data and has no side effects.
+    # lifecycle:
+    #   preStop:
+    #     sleep:
+    #       seconds: 40    # sleep action requires Kubernetes >= 1.29 (GA in 1.30)
+    lifecycle: {}
+
+    # strategy configures the update strategy for the gateway workload.
+    # When unset, the chart's historical defaults apply: type RollingUpdate with
+    # maxSurge: 2 and maxUnavailable: 1 (maxSurge is omitted for kind: StatefulSet).
+    # Override rollingUpdate.maxSurge / rollingUpdate.maxUnavailable as needed
+    # (e.g. maxUnavailable: 0 for zero-downtime rollouts), or set type: Recreate.
+    strategy: {}
+    #   type: RollingUpdate
+    #   rollingUpdate:
+    #     maxSurge: 2
+    #     maxUnavailable: 0
 
     # PodDisruptionBudget configuration
     pdb:
@@ -719,7 +751,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v1.4.2"
+    tag: "v1.5.0"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -768,6 +800,19 @@ tyk-operator:
   # NOTE: unused/dead key — no template reads it.
   podSecurityContext:
     allowPrivilegeEscalation: false
+  # managerPodSecurityContext controls the pod-level securityContext of the
+  # controller-manager pod. To let the cluster (e.g. OpenShift SCC) assign
+  # UID/GID instead, set `enabled: false` — the whole block is then omitted
+  # from the rendered manifest. `managerPodSecurityContext: {}` is NOT
+  # sufficient because Helm deep-merges these defaults back in.
+  managerPodSecurityContext:
+    enabled: true
+    runAsNonRoot: true
+  # securityContext for the controller-manager container. All fields from the
+  # SecurityContext object can be added here. Empty by default; set fields to
+  # opt in, or set `enabled: false` to force-omit the block despite other
+  # fields being set.
+  securityContext: {}
   resources: {}
   nodeSelector: {}
   # tolerations for tyk-operator-manager pod assignment
@@ -836,7 +881,7 @@ tyk-pump:
       repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
-      tag: v1.16.0
+      tag: v1.17.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -1349,6 +1394,21 @@ tyk-dashboard:
     # This is a security feature that allows you to prevent the admin user from resetting the access token of a user.
     # It is used to set TYK_DB_SECURITY_FORBIDADMINRESETACCESSTOKEN
     forbidAdminResetAccessToken: true
+    # log is used to configure the log system events
+    log:
+      # level sets the log verbosity. Valid values are error, warn, info and debug.
+      # It is used to set TYK_DB_LOGLEVEL, which requires Tyk Dashboard v5.14.0 or later.
+      # On earlier versions TYK_DB_LOGLEVEL is ignored; set the system-wide TYK_LOGLEVEL
+      # via dashboard.extraEnvs instead, for example:
+      #   extraEnvs:
+      #     - name: TYK_LOGLEVEL
+      #       value: "debug"
+      # Note that TYK_LOGLEVEL takes precedence over TYK_DB_LOGLEVEL when both are set.
+      level: "info"
+      # format sets the log format. Valid values are default and json.
+      # It is used to set TYK_DB_LOGFORMAT, which requires Tyk Dashboard v5.12.0 or later.
+      # Earlier versions accept the variable but continue to emit logfmt output.
+      format: "default"
     # Configuration for Audit logs
     auditLogs:
       # Enables audit logging.
@@ -1386,6 +1446,36 @@ tyk-dashboard:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
+    # autoscaling configuration for the Dashboard Deployment
+    autoscaling: {}
+    #  enabled: true
+    #  minReplicas: 1
+    #  maxReplicas: 3
+    #  averageCpuUtilization: 60
+    #  averageMemoryUtilization: null
+    #  autoscalingTemplate:
+    #   Custom or additional autoscaling metrics
+    #   ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-custom-metrics
+    #    - type: Pods
+    #      pods:
+    #        metric:
+    #          name: nginx_ingress_controller_nginx_process_requests_total
+    #        target:
+    #          type: AverageValue
+    #          averageValue: 10000m
+    #  behavior:
+    #    scaleDown:
+    #      stabilizationWindowSeconds: 300
+    #      policies:
+    #        - type: Percent
+    #          value: 100
+    #          periodSeconds: 15
+    #    scaleUp:
+    #      stabilizationWindowSeconds: 0
+    #      policies:
+    #        - type: Percent
+    #          value: 100
+
     # podAnnotations is annotations to be added to Tyk Dashboard pod.
     # It takes key-value pairs.
     # There are no required annotation field for Tyk Dashboard.
@@ -1403,7 +1493,7 @@ tyk-dashboard:
       repository: tykio/tyk-dashboard
 
       # tag for Tyk Dashboard
-      tag: v5.13.1
+      tag: v5.13.2
 
       # image pull policy
       pullPolicy: Always
@@ -1669,7 +1759,7 @@ tyk-mdcb:
       # image repository for Tyk MDCB
       repository: tykio/tyk-mdcb-docker
       # image tag for Tyk MDCB
-      tag: v2.12.0
+      tag: v2.13.0
       # image pull policy
       pullPolicy: IfNotPresent
 
@@ -1930,7 +2020,7 @@ tyk-dev-portal:
     repository: tykio/portal
 
     # Developer portal < v1.2 is not supported
-    tag: v1.18.0
+    tag: v1.19.0
     # image pull policy
     pullPolicy: Always
 

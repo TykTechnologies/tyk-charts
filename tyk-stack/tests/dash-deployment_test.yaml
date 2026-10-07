@@ -58,3 +58,68 @@ tests:
       content:
         name: TYK_DB_TYKAPI_PORT
         value: "1234"
+- it: validate default log level and format env vars
+  values:
+  - ../values.yaml
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_LOGLEVEL
+        value: "info"
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_LOGFORMAT
+        value: "default"
+- it: validate custom log level and format env vars
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.log.level: "debug"
+    tyk-dashboard.dashboard.log.format: "json"
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_LOGLEVEL
+        value: "debug"
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_DB_LOGFORMAT
+        value: "json"
+- it: omits log env vars when log values are empty so the Dashboard config file wins
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.log.level: ""
+    tyk-dashboard.dashboard.log.format: ""
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - notContains:
+      path: spec.template.spec.containers[0].env
+      any: true
+      content:
+        name: TYK_DB_LOGLEVEL
+   - notContains:
+      path: spec.template.spec.containers[0].env
+      any: true
+      content:
+        name: TYK_DB_LOGFORMAT
+- it: allows TYK_LOGLEVEL override via extraEnvs for Dashboards older than v5.14.0
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.extraEnvs:
+    - name: TYK_LOGLEVEL
+      value: "debug"
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: TYK_LOGLEVEL
+        value: "debug"
