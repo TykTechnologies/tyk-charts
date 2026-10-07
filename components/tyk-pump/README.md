@@ -279,3 +279,27 @@ pump:
             type: AverageValue
             averageValue: 10000m
 ```
+
+You can also tune how quickly the autoscaler scales up and down using `pump.autoscaling.behavior`, which is passed
+through as-is to the HPA's [`spec.behavior`](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#configurable-scaling-behavior).
+A `scaleDown.stabilizationWindowSeconds` keeps replicas around through short drops in load and prevents flapping:
+
+```yaml
+pump:
+  autoscaling:
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 15
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 15
+```
+
+Every scaling policy requires `periodSeconds` (greater than zero); the API server rejects the HPA without it.

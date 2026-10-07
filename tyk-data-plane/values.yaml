@@ -727,6 +727,7 @@ tyk-pump:
     # autoscaling configuration for the Pump Deployment
     autoscaling: {}
     #  enabled: true
+    #  NOTE: utilization targets require pump.resources.requests to be set
     #  minReplicas: 1
     #  maxReplicas: 3
     #  averageCpuUtilization: 60
@@ -753,6 +754,7 @@ tyk-pump:
     #      policies:
     #        - type: Percent
     #          value: 100
+    #          periodSeconds: 15
 
     # podAnnotations is annotations to be added to Tyk Pump pod.
     # It takes key-value pairs.
