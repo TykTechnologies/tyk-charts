@@ -144,6 +144,10 @@ tests:
               periodSeconds: 15
         scaleUp:
           stabilizationWindowSeconds: 0
+          policies:
+            - type: Percent
+              value: 100
+              periodSeconds: 15
     template: charts/tyk-pump/templates/hpa.yaml
     asserts:
       - equal:
@@ -154,6 +158,12 @@ tests:
           value: 0
       - equal:
           path: spec.behavior.scaleDown.policies[0]
+          value:
+            type: Percent
+            value: 100
+            periodSeconds: 15
+      - equal:
+          path: spec.behavior.scaleUp.policies[0]
           value:
             type: Percent
             value: 100
