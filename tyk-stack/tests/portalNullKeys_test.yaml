@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Umbrella-level guard for TT-17018: the dev portal StatefulSet and the dashboard
+# Deployment must not render literal `null` for empty keys. Same defect and same GitOps
+# path as the bootstrap Jobs — ArgoCD diff churn plus strict-schema validation failures.
+suite: Portal and dashboard workloads render no null keys (umbrella)
+templates:
+  - charts/tyk-dev-portal/templates/statefulset-enterprise-portal.yaml
+  - charts/tyk-dev-portal/templates/secrets.yaml
+  - charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  - charts/tyk-dashboard/templates/secrets.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+  - it: portal StatefulSet omits updateStrategy, pod annotations, volumes and storageClassName
+    values:
+      - ../values.yaml
+    set:
+      global.components.devPortal: true
+    template: charts/tyk-dev-portal/templates/statefulset-enterprise-portal.yaml
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - notExists:
+          path: spec.updateStrategy
+      - notExists:
+          path: spec.template.metadata.annotations
+      - notExists:
+          path: spec.template.spec.volumes
+      - notExists:
+          path: spec.volumeClaimTemplates[0].spec.storageClassName
+      - exists:
+          path: spec.template.metadata.labels
+
+  - it: portal pod annotations still render when set
+    values:
+      - ../values.yaml
+    set:
+      global.components.devPortal: true
+      tyk-dev-portal.podAnnotations:
+        prometheus.io/scrape: "true"
+    template: charts/tyk-dev-portal/templates/statefulset-enterprise-portal.yaml
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations["prometheus.io/scrape"]
+          value: "true"
+
+  - it: dashboard Deployment omits volumes and volumeMounts at defaults
+    values:
+      - ../values.yaml
+    template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes
+      - notExists:
+          path: spec.template.spec.containers[0].volumeMounts

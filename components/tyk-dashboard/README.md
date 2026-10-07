@@ -52,6 +52,31 @@ This removes all the Kubernetes components associated with the chart and deletes
 helm upgrade tyk-dashboard tyk-helm/tyk-dashboard -n tyk
 ```
 
+*Note: pinned image tags and `runAsUser`*
+
+The `runAsUser: 1000` defaults have been removed from `dashboard.securityContext` (pod level) and
+`dashboard.containerSecurityContext` (container level) so that platforms such as OpenShift can assign a UID via
+a Security Context Constraint. `runAsNonRoot: true` and `fsGroup` are retained, so kubelet now relies on the
+image's `USER` directive.
+
+The `init-analytics-conf` init container is the exception: it pins
+`dashboard.initContainers.initAnalyticsConf.securityContext.runAsUser: 1000`, because `busybox` has no `USER`
+directive of its own and `runAsNonRoot: true` without a `runAsUser` fails admission with
+`CreateContainerConfigError: container has runAsNonRoot and image will run as root`. That container only renders
+for `dashboard.image.tag` values `<= 5.0.2`. Set
+`dashboard.initContainers.initAnalyticsConf.securityContext.enabled: false` to omit the block entirely on
+OpenShift; `securityContext: {}` will not work, because Helm deep-merges the chart defaults back in.
+
+If you pin `dashboard.image.tag` to a version whose image has no numeric `USER`, the *main* dashboard container
+will also fail admission for the same reason. The dashboard image gained a numeric `USER` (65532) in **v5.5.0**;
+every tag up to and including `v5.4.0` has no `USER` directive and runs as root. Note that this threshold is
+unrelated to the `<= 5.0.2` condition above, which only controls whether the init container renders — tags
+between `v5.0.3` and `v5.4.0` render no init container yet still fail on the main container. Check yours with
+`crane config <image> | jq -r '.config.User'` before upgrading. Either move to a tag with a numeric `USER` (the
+chart default is `tykio/tyk-dashboard:v5.13.1`, `USER 65532`), set an explicit
+`dashboard.containerSecurityContext.runAsUser`, or set `dashboard.containerSecurityContext.enabled: false` to
+omit the block entirely and let the cluster decide.
+
 ## Configuration
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). 
 To get all configurable options with detailed comments:
@@ -136,3 +161,66 @@ follow these steps to enable TLS:
 Starting from Tyk v3.0 TIB has been added as a built-in feature of the Tyk Dashboard. You no longer have to setup a separated instance of the service to make it work with the Dashboard.
 
 User can enable in-built TIB simply by setting `tib.enabled` to true.
+
+#### Enable autoscaling
+
+This chart allows for easy configuration of autoscaling parameters. To simply enable autoscaling
+it's enough to add `--set dashboard.autoscaling.enabled=true`. That will enable `Horizontal Pod Autoscaler` resource with
+default parameters (avg. CPU load at 60%, scaling between 1 and 3 instances).
+To customize those values you can add `--set dashboard.autoscaling.averageCpuUtilization=75` or use `values.yaml` file:
+
+> **Note:** the built-in CPU and memory rules scale on *utilization*, which Kubernetes computes as a
+> percentage of a pod's resource **requests**. `dashboard.resources` is empty by default, so enabling
+> autoscaling on its own produces an HPA whose target reads `<unknown>` and which never scales the
+> Deployment. Set `dashboard.resources.requests` alongside it, as below.
+
+```yaml
+dashboard:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 30
+  # Required for the utilization-based rules above: the HPA measures CPU and memory usage
+  # as a percentage of these requests. Size them for your own workload.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+```
+
+When autoscaling is enabled the Deployment stops declaring `spec.replicas`, handing the replica count
+to the HPA so that `helm upgrade` and GitOps reconciles no longer fight it. That has a one-off cost when
+switching an **existing** release that runs more than one replica: Helm removes the `replicas` field, the
+API server falls back to its default of `1`, and the Deployment scales down until the HPA reconciles and
+scales it back up. To keep capacity across the switch, set `minReplicas` to the `replicaCount` you are
+migrating from:
+
+```yaml
+dashboard:
+  replicaCount: 5   # what the release runs today
+  autoscaling:
+    enabled: true
+    minReplicas: 5  # HPA holds at least this many, so the switch does not drop to 1
+    maxReplicas: 30
+```
+
+The same applies in reverse: turning autoscaling back off makes the Deployment declare
+`dashboard.replicaCount` again (default `1`), so update it to whatever the HPA had settled on before
+disabling.
+
+Built-in rules include `dashboard.autoscaling.averageCpuUtilization` for CPU utilization (set by default at 60%) and
+`dashboard.autoscaling.averageMemoryUtilization` for memory (disabled by default).
+In addition to that you can define rules for custom metrics using `dashboard.autoscaling.autoscalingTemplate` list:
+
+```yaml
+dashboard:
+  autoscaling:
+    autoscalingTemplate:
+      - type: Pods
+        pods:
+          metric:
+            name: nginx_ingress_controller_nginx_process_requests_total
+          target:
+            type: AverageValue
+            averageValue: 10000m
+```

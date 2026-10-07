@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Umbrella-level regression guard for TT-17018: the dashboard's init-analytics-conf init
+# container (rendered only for image tags <= 5.0.2) must carry an explicit runAsUser.
+# Without it, `runAsNonRoot: true` against busybox (no USER directive) is rejected by
+# kubelet at admission with
+#   CreateContainerConfigError: container has runAsNonRoot and image will run as root
+#
+# The component-level suite covers the empty-block and override cases; this file exists so
+# the failure is caught on the chart customers actually install.
+#
+# NOTE: the chart's semver regex rejects a leading `v`, so use `5.0.1`, not `v5.0.1`.
+suite: Dashboard init container securityContext (umbrella)
+templates:
+  - charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  - charts/tyk-dashboard/templates/secrets.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+  - it: legacy dashboard tag renders the init container with runAsUser at defaults
+    values:
+      - ../values.yaml
+    set:
+      tyk-dashboard.dashboard.image.tag: 5.0.1
+    template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: init-analytics-conf
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 1000
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext.enabled
+
+  - it: init securityContext.enabled=false omits the block for SCC-managed clusters
+    values:
+      - ../values.yaml
+    set:
+      tyk-dashboard.dashboard.image.tag: 5.0.1
+      tyk-dashboard.dashboard.initContainers.initAnalyticsConf.securityContext.enabled: false
+    template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: init-analytics-conf
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext
+
+  - it: dropping runAsUser from containerSecurityContext no longer affects the init container
+    values:
+      - ../values.yaml
+    set:
+      tyk-dashboard.dashboard.image.tag: 5.0.1
+      tyk-dashboard.dashboard.containerSecurityContext.enabled: false
+    template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 1000

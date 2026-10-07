@@ -1,0 +1,99 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Locks the scoped `enabled` flag on the Tyk Operator securityContext blocks
+# (TT-17018, propagating the gateway pattern from c99bc03).
+#
+# Before this change the controller-manager pod securityContext was hardcoded to
+# `runAsNonRoot: true` with no value hook at all, so OpenShift users had no way
+# to let the SCC allocate UID/GID. `managerPodSecurityContext` defaults reproduce
+# the old rendered output exactly — the first test is the no-op guard for that.
+#
+# NOTE: components/tyk-operator/templates/all.yaml is synchronised with the
+# tyk-operator repo (see .github/workflows/move_crd_values_to_operator.yaml), so
+# an operator-side regeneration can silently revert the template guard. This
+# suite is the tripwire for that.
+suite: Tyk Operator securityContext enabled flag
+templates:
+  - charts/tyk-operator/templates/all.yaml
+release:
+  name: tyk-stack
+  namespace: test
+set:
+  global.components.operator: true
+tests:
+  - it: defaults render the pre-existing pod securityContext and nothing else
+    values:
+      - ../values.yaml
+    set:
+      global.components.operator: true
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext
+          value:
+            runAsNonRoot: true
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  - it: managerPodSecurityContext.enabled=false omits the pod-level block
+    values:
+      - ../values.yaml
+    set:
+      global.components.operator: true
+      tyk-operator.managerPodSecurityContext.enabled: false
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+
+  - it: container securityContext renders fields without leaking enabled
+    values:
+      - ../values.yaml
+    set:
+      global.components.operator: true
+      tyk-operator.securityContext.runAsNonRoot: true
+      tyk-operator.securityContext.allowPrivilegeEscalation: false
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.enabled
+
+  - it: container securityContext.enabled=false omits the block despite set fields
+    values:
+      - ../values.yaml
+    set:
+      global.components.operator: true
+      tyk-operator.securityContext.runAsNonRoot: true
+      tyk-operator.securityContext.enabled: false
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  - it: enabled=false on both blocks strips every operator securityContext
+    values:
+      - ../values.yaml
+    set:
+      global.components.operator: true
+      tyk-operator.managerPodSecurityContext.enabled: false
+      tyk-operator.securityContext.runAsNonRoot: true
+      tyk-operator.securityContext.enabled: false
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext

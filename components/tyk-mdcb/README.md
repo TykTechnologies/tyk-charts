@@ -125,3 +125,21 @@ The health check port for Tyk MDCB can be configurable via `.Values.mdcb.probes.
 
 It also defines the path for liveness and readiness probes.
 It is used to set TYK_MDCB_HEALTHCHECKPORT
+
+#### Security contexts
+
+Both `.Values.mdcb.podSecurityContext` and `.Values.mdcb.containerSecurityContext` are empty by default, and no
+`securityContext` block is rendered at all. Add fields to either to have them applied.
+
+To keep a block omitted after adding fields — for example so that OpenShift's SCC can allocate UID/GID — set
+`enabled: false` on it. Setting the block to `{}` does not work, because Helm deep-merges the chart defaults back in.
+
+```yaml
+mdcb:
+  podSecurityContext:
+    enabled: false
+  containerSecurityContext:
+    enabled: false
+```
+
+Each block is scoped independently, and the `enabled` key itself is never rendered into the manifest.

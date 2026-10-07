@@ -33,12 +33,18 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "tyk-mdcb.serviceAccountName" . }}
+      {{- $podSc := .Values.mdcb.podSecurityContext }}
+      {{- if and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) (gt (len (omit $podSc "enabled")) 0) }}
       securityContext:
-        {{- toYaml .Values.mdcb.podSecurityContext | nindent 8 }}
+        {{- toYaml (omit $podSc "enabled") | nindent 8 }}
+      {{- end }}
       containers:
         - name: mdcb-{{ .Chart.Name }}
+          {{- $csc := .Values.mdcb.containerSecurityContext }}
+          {{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) (gt (len (omit $csc "enabled")) 0) }}
           securityContext:
-            {{- toYaml .Values.mdcb.containerSecurityContext | nindent 12 }}
+            {{- toYaml (omit $csc "enabled") | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.global.imageRegistry }}{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
           imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
           command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_mdcb.conf"]

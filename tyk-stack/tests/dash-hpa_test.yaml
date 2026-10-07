@@ -1,0 +1,213 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Test Dashboard HPA
+templates:
+  - charts/tyk-dashboard/templates/hpa.yaml
+  - charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  - charts/tyk-dashboard/templates/secrets.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+- it: renders no HPA when autoscaling is unset (default)
+  values:
+  - ../values.yaml
+  template: charts/tyk-dashboard/templates/hpa.yaml
+  asserts:
+   - hasDocuments:
+      count: 0
+
+- it: renders no HPA when autoscaling is explicitly disabled
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.autoscaling.enabled: false
+  template: charts/tyk-dashboard/templates/hpa.yaml
+  asserts:
+   - hasDocuments:
+      count: 0
+
+- it: renders an HPA with default min/max/cpu when enabled
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.autoscaling.enabled: true
+  template: charts/tyk-dashboard/templates/hpa.yaml
+  asserts:
+   - hasDocuments:
+      count: 1
+   - equal:
+      path: spec.minReplicas
+      value: 1
+   - equal:
+      path: spec.maxReplicas
+      value: 3
+   - equal:
+      path: spec.metrics[0]
+      value:
+        type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 60
+   - lengthEqual:
+      path: spec.metrics
+      count: 1
+   - equal:
+      path: spec.scaleTargetRef
+      value:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: dashboard-tyk-stack-tyk-dashboard
+
+- it: respects custom minReplicas, maxReplicas and averageCpuUtilization
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.autoscaling.enabled: true
+    tyk-dashboard.dashboard.autoscaling.minReplicas: 3
+    tyk-dashboard.dashboard.autoscaling.maxReplicas: 30
+    tyk-dashboard.dashboard.autoscaling.averageCpuUtilization: 75
+  template: charts/tyk-dashboard/templates/hpa.yaml
+  asserts:
+   - equal:
+      path: spec.minReplicas
+      value: 3
+   - equal:
+      path: spec.maxReplicas
+      value: 30
+   - equal:
+      path: spec.metrics[0].resource.target.averageUtilization
+      value: 75
+
+- it: adds a memory metric when averageMemoryUtilization is set
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.autoscaling.enabled: true
+    tyk-dashboard.dashboard.autoscaling.averageMemoryUtilization: 70
+  template: charts/tyk-dashboard/templates/hpa.yaml
+  asserts:
+   - lengthEqual:
+      path: spec.metrics
+      count: 2
+   - equal:
+      path: spec.metrics[1]
+      value:
+        type: Resource
+        resource:
+          name: memory
+          target:
+            type: Utilization
+            averageUtilization: 70
+
+- it: scaleTargetRef name matches the rendered Dashboard Deployment name
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.autoscaling.enabled: true
+  template: charts/tyk-dashboard/templates/hpa.yaml
+  asserts:
+   - equal:
+      path: spec.scaleTargetRef.name
+      value: dashboard-tyk-stack-tyk-dashboard
+
+- it: rendered Dashboard Deployment name matches what the HPA targets
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.autoscaling.enabled: true
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - equal:
+      path: metadata.name
+      value: dashboard-tyk-stack-tyk-dashboard
+
+- it: appends a custom metric from autoscalingTemplate
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.autoscaling.enabled: true
+    tyk-dashboard.dashboard.autoscaling.autoscalingTemplate:
+      - type: Pods
+        pods:
+          metric:
+            name: nginx_ingress_controller_nginx_process_requests_total
+          target:
+            type: AverageValue
+            averageValue: 10000m
+  template: charts/tyk-dashboard/templates/hpa.yaml
+  asserts:
+   - lengthEqual:
+      path: spec.metrics
+      count: 2
+   - equal:
+      path: spec.metrics[1]
+      value:
+        type: Pods
+        pods:
+          metric:
+            name: nginx_ingress_controller_nginx_process_requests_total
+          target:
+            type: AverageValue
+            averageValue: 10000m
+
+- it: sets a custom scaleDown/scaleUp behavior block
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.autoscaling.enabled: true
+    tyk-dashboard.dashboard.autoscaling.behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 15
+      scaleUp:
+        stabilizationWindowSeconds: 0
+  template: charts/tyk-dashboard/templates/hpa.yaml
+  asserts:
+   - equal:
+      path: spec.behavior.scaleDown.stabilizationWindowSeconds
+      value: 300
+   - equal:
+      path: spec.behavior.scaleUp.stabilizationWindowSeconds
+      value: 0
+   - equal:
+      path: spec.behavior.scaleDown.policies[0]
+      value:
+        type: Percent
+        value: 100
+        periodSeconds: 15
+
+# Deployment must NOT hardcode replicas when autoscaling is enabled, otherwise every
+# helm upgrade / GitOps reconcile fights the HPA. Matches the Gateway/MDCB pattern.
+- it: Deployment sets replicas when autoscaling is disabled (default)
+  values:
+  - ../values.yaml
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - equal:
+      path: spec.replicas
+      value: 1
+
+- it: Deployment omits replicas when autoscaling is enabled (HPA owns replica count)
+  values:
+  - ../values.yaml
+  set:
+    tyk-dashboard.dashboard.autoscaling.enabled: true
+  template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  asserts:
+   - notExists:
+      path: spec.replicas
+
+# NOT COVERED HERE: a bare `autoscaling:` key (no body) in a user values file. Helm deletes a key
+# whose value is an explicit null during the merge, leaving .Values.dashboard.autoscaling nil
+# rather than the empty map defaulted in values.yaml. Both hpa.yaml and deployment-dashboard.yaml
+# dereference that key, so an unguarded read takes out the core Deployment, not just the optional
+# HPA — hence the `default dict` guards in both. helm-unittest cannot express the case: both its
+# `set:` and its values-file merge drop the null and keep the default table ("cannot overwrite
+# table with non table"), so such a test would pass with or without the guards. Verify by hand:
+#   printf 'dashboard:\n  autoscaling:\n' > /tmp/null.yaml
+#   helm template t components/tyk-dashboard -f /tmp/null.yaml

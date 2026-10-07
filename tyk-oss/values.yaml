@@ -211,6 +211,38 @@ tyk-gateway:
     # replicaCount specifies number of replicas to be created if kind is Deployment.
     replicaCount: 1
 
+    # terminationGracePeriodSeconds sets how long (in seconds) the pod may take to
+    # shut down gracefully before being forcibly killed (SIGKILL). When unset,
+    # Kubernetes applies its default of 30s. A value of 0 is treated as unset (the
+    # chart does not configure immediate termination); use a positive value.
+    # terminationGracePeriodSeconds: 30
+
+    # lifecycle defines container lifecycle hooks (preStop / postStart) for the gateway
+    # container. Empty by default (not rendered). Example preStop drain hook:
+    # NOTE: Gateway images do not include a shell, so 'exec' handlers such as
+    # ["/bin/sh","-c","sleep 40"] will fail. Prefer the native 'sleep' handler below,
+    # which needs no shell and no network access.
+    # Security: an 'exec' handler runs commands with the gateway's permissions, and an
+    # 'httpGet' handler sends a request from inside the pod network, so it can reach
+    # in-cluster services and cloud metadata endpoints. If you use one, target a trusted
+    # endpoint that returns no sensitive data and has no side effects.
+    # lifecycle:
+    #   preStop:
+    #     sleep:
+    #       seconds: 40    # sleep action requires Kubernetes >= 1.29 (GA in 1.30)
+    lifecycle: {}
+
+    # strategy configures the update strategy for the gateway workload.
+    # When unset, the chart's historical defaults apply: type RollingUpdate with
+    # maxSurge: 2 and maxUnavailable: 1 (maxSurge is omitted for kind: StatefulSet).
+    # Override rollingUpdate.maxSurge / rollingUpdate.maxUnavailable as needed
+    # (e.g. maxUnavailable: 0 for zero-downtime rollouts), or set type: Recreate.
+    strategy: {}
+    #   type: RollingUpdate
+    #   rollingUpdate:
+    #     maxSurge: 2
+    #     maxUnavailable: 0
+
     # PodDisruptionBudget configuration
     pdb:
       enabled: false
@@ -260,7 +292,10 @@ tyk-gateway:
       repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
       # image tag for Tyk Gateway
-      tag: v5.9.1
+      # Must be a non-root image (numeric USER) while securityContext defaults set
+      # runAsNonRoot without runAsUser: v5.9.1 runs as root (User 0) and fails kubelet
+      # admission with CreateContainerConfigError. v5.13.1 runs as User 65532.
+      tag: v5.13.2
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -279,6 +314,16 @@ tyk-gateway:
         # requests:
         #   cpu: 100m
         #   memory: 128Mi
+        # securityContext for the setup-directories init container. Nothing is set here, so the
+        # component chart supplies the hardening fields and resolves runAsUser from the init block,
+        # gateway.containerSecurityContext, gateway.securityContext, then 65532. A pinned runAsUser
+        # is one of the two things OpenShift rejects — the UID must come from the namespace's range.
+        # Setting `enabled: false` here drops the init container's own block and falls back to
+        # gateway.containerSecurityContext (which pins no UID); set `enabled: false` there too and the
+        # init container gets no securityContext at all. `securityContext: {}` is NOT sufficient in
+        # either case, because Helm deep-merges the component chart defaults back in.
+        # securityContext:
+        #   enabled: false
 
     # image pull secrets to use when pulling images from repository
     imagePullSecrets: []
@@ -418,15 +463,20 @@ tyk-gateway:
     startupProbe: {}
 
     # securityContext values for gateway pod. All fields from PodSecurityContext object can be added here.
+    # The effective default is larger than what is listed here: the tyk-gateway component chart also
+    # supplies `fsGroup: 2000`, which Helm deep-merges in. fsGroup is one of the two things OpenShift
+    # rejects (it must come from the namespace's allocated range), so to let the SCC assign it set
+    # `enabled: false` here — the whole block is then omitted from the manifest. `securityContext: {}`
+    # is NOT sufficient (Helm deep-merges the component chart defaults back in).
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext values for gateway container. All fields from SecurityContext object can be added here.
+    # To let the cluster inject defaults (e.g. OpenShift SCC), set `enabled: false` here — the whole block
+    # is then omitted from the manifest. `containerSecurityContext: {}` is NOT sufficient (Helm deep-merges
+    # the component chart defaults back in).
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -629,7 +679,7 @@ tyk-operator:
     # image pull policy
     pullPolicy: IfNotPresent
     # image tag for Tyk Operator
-    tag: "v1.4.2"
+    tag: "v1.5.0"
   # number for replicas for Tyk Operator deployment.
   replicaCount: 1
   # imagePullSecrets specify imagePullSecrets for ServiceAccount
@@ -675,8 +725,22 @@ tyk-operator:
   podAnnotations: {}
   # podLabels specifies labels to be added in operator Pod
   podLabels: {}
+  # NOTE: unused/dead key — no template reads it.
   podSecurityContext:
     allowPrivilegeEscalation: false
+  # managerPodSecurityContext controls the pod-level securityContext of the
+  # controller-manager pod. To let the cluster (e.g. OpenShift SCC) assign
+  # UID/GID instead, set `enabled: false` — the whole block is then omitted
+  # from the rendered manifest. `managerPodSecurityContext: {}` is NOT
+  # sufficient because Helm deep-merges these defaults back in.
+  managerPodSecurityContext:
+    enabled: true
+    runAsNonRoot: true
+  # securityContext for the controller-manager container. All fields from the
+  # SecurityContext object can be added here. Empty by default; set fields to
+  # opt in, or set `enabled: false` to force-omit the block despite other
+  # fields being set.
+  securityContext: {}
   resources: {}
   nodeSelector: {}
   # tolerations for tyk-operator-manager pod assignment
@@ -776,7 +840,7 @@ tyk-pump:
       repository: docker.tyk.io/tyk-pump/tyk-pump
 
       # tag for Tyk pump
-      tag: v1.16.0
+      tag: v1.17.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -908,15 +972,20 @@ tyk-pump:
     resources: {}
 
     # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
+    # The effective default is larger than what is listed here: the tyk-pump component chart also
+    # supplies `fsGroup: 2000`, which Helm deep-merges in. fsGroup is one of the two things OpenShift
+    # rejects (it must come from the namespace's allocated range), so to let the SCC assign it set
+    # `enabled: false` here — the whole block is then omitted from the manifest. `securityContext: {}`
+    # is NOT sufficient (Helm deep-merges the component chart defaults back in).
     securityContext:
-      runAsUser: 1000
-      fsGroup: 2000
       runAsNonRoot: true
 
     # containerSecurityContext values for pump container. All fields from SecurityContext object can be added here.
+    # To let the cluster inject defaults (e.g. OpenShift SCC), set `enabled: false` here — the whole block
+    # is then omitted from the manifest. `containerSecurityContext: {}` is NOT sufficient (Helm deep-merges
+    # the component chart defaults back in).
     containerSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
       allowPrivilegeEscalation: false
       privileged: false
       readOnlyRootFilesystem: true
@@ -993,14 +1062,23 @@ tests:
   #  memory: 128Mi
 
   # securityContext holds pod-level security attributes for Tyk tests pod. All fields from PodSecurityContext object can be added here.
+  # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block
+  # is then omitted from the manifest. `securityContext: {}` is NOT sufficient (Helm deep-merges defaults).
   securityContext:
+    enabled: true
     runAsUser: 1000
-    fsGroup: 2000
     runAsNonRoot: true
   # containerSecurityContext holds container-level security attributes for Tyk tests pod. All fields from SecurityContext object can be added here.
+  # runAsUser is set explicitly because the test image (default: zalbiraw/alpine-curl-jq) has no
+  # USER directive — kubelet would otherwise reject the pod with "container has runAsNonRoot and
+  # image will run as root" → CreateContainerConfigError. On OpenShift, runAsUser 1000 is outside the
+  # namespace UID range, so `helm test` needs `enabled: false` on both blocks — the SCC assigns the UID.
+  # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block is
+  # then omitted from the manifest. `containerSecurityContext: {}` is NOT sufficient (Helm deep-merges defaults).
   containerSecurityContext:
-    runAsNonRoot: true
+    enabled: true
     runAsUser: 1000
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     privileged: false
     readOnlyRootFilesystem: true

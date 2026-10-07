@@ -1,0 +1,98 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Same defect class as the bootstrap Job fix (TT-17018), on the dev portal's own workload.
+# At defaults (kind: StatefulSet) these keys rendered as literal `null`, causing ArgoCD
+# diff churn and failing strict schema validators:
+#   * spec.updateStrategy                                    -> null
+#   * spec.template.metadata.annotations                     -> null
+#   * spec.template.spec.volumes                             -> null
+#   * spec.volumeClaimTemplates[0].spec.storageClassName     -> null
+#
+# All four are now omitted when empty. Behaviour is unchanged: an omitted updateStrategy
+# defaults to RollingUpdate exactly as a null one did, and an omitted storageClassName
+# selects the cluster default StorageClass exactly as a null one did.
+suite: Dev portal workload renders no null keys
+templates:
+  - templates/statefulset-enterprise-portal.yaml
+  - templates/secrets.yaml
+release:
+  name: tyk-dev-portal
+  namespace: test
+tests:
+  - it: StatefulSet defaults omit every empty key rather than rendering null
+    template: templates/statefulset-enterprise-portal.yaml
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - notExists:
+          path: spec.updateStrategy
+      - notExists:
+          path: spec.template.metadata.annotations
+      - notExists:
+          path: spec.template.spec.volumes
+      - notExists:
+          path: spec.volumeClaimTemplates[0].spec.storageClassName
+      # the keys that must still be there
+      - equal:
+          path: spec.serviceName
+          value: dev-portal-svc-tyk-dev-portal
+      - exists:
+          path: spec.template.metadata.labels
+      - contains:
+          path: spec.volumeClaimTemplates[0].spec.accessModes
+          content: ReadWriteOnce
+
+  - it: podAnnotations still render when set
+    template: templates/statefulset-enterprise-portal.yaml
+    set:
+      podAnnotations:
+        prometheus.io/scrape: "true"
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations["prometheus.io/scrape"]
+          value: "true"
+
+  - it: storageClass still renders when set
+    template: templates/statefulset-enterprise-portal.yaml
+    set:
+      storage.persistence.storageClass: gp3
+    asserts:
+      - equal:
+          path: spec.volumeClaimTemplates[0].spec.storageClassName
+          value: gp3
+
+  - it: extraVolumes still render when set
+    template: templates/statefulset-enterprise-portal.yaml
+    set:
+      extraVolumes:
+        - name: extra
+          emptyDir: {}
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].name
+          value: extra
+
+  - it: kind=Deployment keeps its RollingUpdate strategy and mounts an existing PVC
+    template: templates/statefulset-enterprise-portal.yaml
+    set:
+      kind: Deployment
+      storage.persistence.mountExistingPVC: my-existing-pvc
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.strategy.type
+          value: RollingUpdate
+      - notExists:
+          path: spec.serviceName
+      - equal:
+          path: spec.template.spec.volumes[0].persistentVolumeClaim.claimName
+          value: my-existing-pvc
+
+  - it: kind=Deployment without an existing PVC omits volumes rather than rendering null
+    template: templates/statefulset-enterprise-portal.yaml
+    set:
+      kind: Deployment
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes

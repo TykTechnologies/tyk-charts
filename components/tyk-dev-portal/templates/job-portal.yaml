@@ -7,16 +7,26 @@ metadata:
     app: {{ include "tyk-dev-portal.fullname" . }}
     chart: {{ include "tyk-dev-portal.chart" . }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}  
+    heritage: {{ .Release.Service }}
 spec:
   template:
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
+      {{- $podSc := .Values.bootstrapJob.securityContext }}
+      {{- if and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) (gt (len (omit $podSc "enabled")) 0) }}
+      securityContext:
+      {{- toYaml (omit $podSc "enabled") | nindent 8 }}
+      {{- end }}
       containers:
       - name: bootstrap-portal
         image: {{ .Values.global.imageRegistry }}{{ .Values.bootstrapJob.image.repository }}:{{ .Values.bootstrapJob.image.tag }}
+        {{- $csc := .Values.bootstrapJob.containerSecurityContext }}
+        {{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) (gt (len (omit $csc "enabled")) 0) }}
+        securityContext:
+        {{- toYaml (omit $csc "enabled") | nindent 10 }}
+        {{- end }}
         env:
         - name: ADMIN_EMAIL
           {{ if .Values.global.adminUser.useSecretName }}
@@ -39,12 +49,12 @@ spec:
         - name: FIRSTNAME
           value: "{{ .Values.global.adminUser.firstName }}"
         - name: LASTNAME
-          value: "{{ .Values.global.adminUser.lastName }}"                    
+          value: "{{ .Values.global.adminUser.lastName }}"
         - name: SERVICE_NAME
           value: "dev-portal-svc-{{ include "tyk-dev-portal.fullname" . }}.{{ .Release.Namespace }}.svc"
         - name: PORT
           value: "{{ .Values.containerPort }}"
-        command: 
+        command:
           - sh
           - -c
           - |

@@ -1,0 +1,82 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Same defect class as the bootstrap Job fix (TT-17018): keys emitted unconditionally with
+# conditional contents render as literal `null`, which causes ArgoCD diff churn and fails
+# strict schema validators. On the dashboard Deployment at defaults these were:
+#   * spec.template.spec.volumes                       -> null
+#   * spec.template.spec.containers[0].volumeMounts    -> null
+# Both keys are now wrapped, not just their contents.
+suite: Dashboard Deployment renders no null keys
+templates:
+  - templates/deployment-dashboard.yaml
+  - templates/secrets.yaml
+release:
+  name: tyk-dashboard
+  namespace: test
+tests:
+  - it: defaults omit volumes and volumeMounts rather than rendering null
+    template: templates/deployment-dashboard.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes
+      - notExists:
+          path: spec.template.spec.containers[0].volumeMounts
+
+  - it: legacy image tag still mounts the analytics-conf emptyDir
+    template: templates/deployment-dashboard.yaml
+    set:
+      dashboard.image.tag: 5.0.1
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].name
+          value: analytics-conf
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].mountPath
+          value: /etc/tyk-dashboard
+      - equal:
+          path: spec.template.spec.initContainers[0].volumeMounts[0].name
+          value: analytics-conf
+
+  - it: tls enabled still mounts the dashboard certificate secret
+    template: templates/deployment-dashboard.yaml
+    set:
+      global.tls.dashboard: true
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].secret.secretName
+          value: tyk-default-tls-secret
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].name
+          value: tyk-default-tls-secret
+
+  - it: redis TLS still mounts the redis certificate secret
+    template: templates/deployment-dashboard.yaml
+    set:
+      global.redis.useSSL: true
+      global.redis.secretName: redis-certs-secret
+      global.redis.volumeName: redis-certs
+      global.redis.certificatesMountPath: /etc/redis-certs
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].name
+          value: redis-certs
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].mountPath
+          value: /etc/redis-certs
+
+  - it: extraVolumes/extraVolumeMounts alone are enough to emit the keys
+    template: templates/deployment-dashboard.yaml
+    set:
+      dashboard.extraVolumes:
+        - name: extra
+          emptyDir: {}
+      dashboard.extraVolumeMounts:
+        - name: extra
+          mountPath: /extra
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].name
+          value: extra
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].mountPath
+          value: /extra

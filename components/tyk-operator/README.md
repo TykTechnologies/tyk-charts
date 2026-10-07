@@ -14,7 +14,9 @@ helm repo update
 Before installing Tyk Operator ensure you follow this guide and complete all 
 steps from it, otherwise Tyk Operator won't function properly: [https://github.com/TykTechnologies/tyk-operator/blob/master/docs/installation/installation.md#tyk-operator-installation](https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator/)
 
-**_NOTE_:** cert-manager is required as described [here](https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator/#step-2-installing-cert-manager). If you haven't installed `cert-manager` yet, you can install it as follows:
+**_NOTE_:** cert-manager is required for the default admission-webhook mode as
+described [here](https://tyk.io/docs/tyk-stack/tyk-operator/installing-tyk-operator/#step-2-installing-cert-manager).
+If you haven't installed `cert-manager` yet, you can install it as follows:
 
 ```bash
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.yaml
@@ -27,6 +29,17 @@ you can install Tyk Operator as follows:
 ```bash
 helm install tyk-operator tyk-charts/tyk-operator
 ```
+
+Admission webhooks are enabled by default. To run without them:
+
+```bash
+helm install tyk-operator tyk-charts/tyk-operator --set webhooks.enabled=false
+```
+
+Disabled mode sets `ENABLE_WEBHOOKS=false` and omits the webhook Service,
+admission configurations, cert-manager Certificate/Issuer, container port, TLS
+mount, and TLS volume. Controller-side validation remains active for the CRDs
+that support this mode. cert-manager is not required when webhooks are disabled.
 
 By default, it will install the latest stable release of Tyk Operator.
 

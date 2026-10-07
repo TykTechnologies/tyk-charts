@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Guards the empty-block case of the scoped `enabled` escape hatch (TT-17018) on the
+# dashboard: an `enabled: true` with every other field nulled out must not emit a bare
+# `securityContext: {}`. That is what the (gt (len (omit ... "enabled")) 0) clause in
+# deployment-dashboard.yaml is for.
+#
+# Lives here rather than in tyk-stack/tests/securityContextEnabledDashPump_test.yaml
+# because nulling a value only takes effect at chart level under the helm-unittest
+# version CI pins. See the note in that suite for the full explanation.
+suite: Dashboard securityContext empty-block guard
+templates:
+  - templates/deployment-dashboard.yaml
+  - templates/secrets.yaml
+release:
+  name: tyk-dashboard
+  namespace: test
+tests:
+  - it: enabled=true alone never renders a bare empty securityContext
+    set:
+      dashboard.securityContext:
+        enabled: true
+        fsGroup: null
+        runAsNonRoot: null
+    template: templates/deployment-dashboard.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext

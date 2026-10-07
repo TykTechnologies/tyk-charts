@@ -1,0 +1,152 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Umbrella-level lock for the second round of TT-17018 bootstrap fixes. The
+# authoritative component suites live in components/tyk-bootstrap/tests/; the
+# tyk-stack mirror of this file is the one CI gates on
+# (.github/workflows/unit-tests.yaml only runs `helm unittest ./tyk-stack`).
+# This file keeps tyk-control-plane honest for anyone running the full matrix.
+#
+# Covered:
+#   * RBAC trio: `annotations:` key omitted (not null) under disableHelmHooks
+#   * user annotation values quoted (integer sync-wave -> the string "-1")
+#   * pre-delete Job pod template: real labels, no null annotations
+#   * securityContext `enabled` sentinel never leaks into a rendered manifest
+suite: Bootstrap RBAC and pod metadata render no nulls
+templates:
+  - charts/tyk-bootstrap/templates/bootstrap-serviceaccount.yml
+  - charts/tyk-bootstrap/templates/bootstrap-role.yml
+  - charts/tyk-bootstrap/templates/bootstrap-role-binding.yml
+  - charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+  - charts/tyk-bootstrap/templates/bootstrap-pre-delete.yaml
+release:
+  name: tyk-control-plane
+  namespace: test
+tests:
+  - it: RBAC trio, disableHelmHooks=true + no rbacAnnotations -> annotations key absent
+    values:
+      - ../values.yaml
+    set:
+      global.components.bootstrap: true
+      tyk-bootstrap.bootstrap.disableHelmHooks: true
+    asserts:
+      - notExists:
+          path: metadata.annotations
+        template: charts/tyk-bootstrap/templates/bootstrap-serviceaccount.yml
+      - notExists:
+          path: metadata.annotations
+        template: charts/tyk-bootstrap/templates/bootstrap-role.yml
+      - notExists:
+          path: metadata.annotations
+        template: charts/tyk-bootstrap/templates/bootstrap-role-binding.yml
+
+  - it: RBAC trio, disableHelmHooks=true + rbacAnnotations set -> annotations present
+    values:
+      - ../values.yaml
+    set:
+      global.components.bootstrap: true
+      tyk-bootstrap.bootstrap.disableHelmHooks: true
+      tyk-bootstrap.bootstrap.rbacAnnotations.sampleAnnotation: enabled
+    asserts:
+      - equal:
+          path: metadata.annotations.sampleAnnotation
+          value: enabled
+        template: charts/tyk-bootstrap/templates/bootstrap-serviceaccount.yml
+      - equal:
+          path: metadata.annotations.sampleAnnotation
+          value: enabled
+        template: charts/tyk-bootstrap/templates/bootstrap-role.yml
+      - equal:
+          path: metadata.annotations.sampleAnnotation
+          value: enabled
+        template: charts/tyk-bootstrap/templates/bootstrap-role-binding.yml
+
+  - it: RBAC trio, defaults -> helm hook annotations unchanged
+    values:
+      - ../values.yaml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-install
+        template: charts/tyk-bootstrap/templates/bootstrap-serviceaccount.yml
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "-10"
+        template: charts/tyk-bootstrap/templates/bootstrap-role.yml
+      - equal:
+          path: metadata.annotations["helm.sh/hook-delete-policy"]
+          value: before-hook-creation
+        template: charts/tyk-bootstrap/templates/bootstrap-role-binding.yml
+
+  - it: RBAC trio, integer sync-wave annotation -> rendered as the string "-1"
+    values:
+      - ../values.yaml
+    set:
+      global.components.bootstrap: true
+      tyk-bootstrap.bootstrap.disableHelmHooks: true
+      tyk-bootstrap.bootstrap.rbacAnnotations:
+        argocd.argoproj.io/sync-wave: -1
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"
+        template: charts/tyk-bootstrap/templates/bootstrap-serviceaccount.yml
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"
+        template: charts/tyk-bootstrap/templates/bootstrap-role.yml
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"
+        template: charts/tyk-bootstrap/templates/bootstrap-role-binding.yml
+
+  - it: pre-delete Job, defaults -> no null pod annotations, real pod labels
+    values:
+      - ../values.yaml
+    set:
+      global.components.bootstrap: true
+    template: charts/tyk-bootstrap/templates/bootstrap-pre-delete.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+      - notExists:
+          path: spec.template.metadata.annotations
+      - exists:
+          path: spec.template.metadata.labels
+      - equal:
+          path: spec.template.metadata.labels["tyk.tyk.io/k8s-bootstrap"]
+          value: tyk-k8s-bootstrap-pre-delete
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/instance"]
+          value: tyk-control-plane
+
+  - it: securityContext enabled sentinel never leaks into the rendered manifest
+    values:
+      - ../values.yaml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
+        template: charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.enabled
+        template: charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
+        template: charts/tyk-bootstrap/templates/bootstrap-pre-delete.yaml
+
+  - it: securityContext enabled=false omits both blocks
+    values:
+      - ../values.yaml
+    set:
+      global.components.bootstrap: true
+      tyk-bootstrap.bootstrap.securityContext.enabled: false
+      tyk-bootstrap.bootstrap.containerSecurityContext.enabled: false
+    template: charts/tyk-bootstrap/templates/bootstrap-pre-install.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext

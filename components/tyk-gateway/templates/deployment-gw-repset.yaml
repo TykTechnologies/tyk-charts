@@ -21,16 +21,35 @@ spec:
 {{- else }}
   updateStrategy:
 {{- end }}
-{{- if ((.Values.gateway.strategy).type) }}
-    type: {{ .Values.gateway.strategy.type }}
-{{- else }}
+{{- /*
+  Update strategy.
+
+  The rollingUpdate block is rendered when the effective type is RollingUpdate and
+  either the type was left unset (the chart's own default) or the user supplied a
+  rollingUpdate configuration. Setting only strategy.type therefore renders the type
+  on its own, matching the behaviour of earlier chart versions.
+
+  Whenever the block is rendered, the chart defaults (maxSurge 2 / maxUnavailable 1)
+  are applied per field, so overriding one field keeps the chart default for the other.
+  hasKey is used rather than default so that an explicit 0 is preserved.
+  maxSurge is only valid for a Deployment; a StatefulSet updateStrategy omits it.
+*/ -}}
+{{- $strategy := .Values.gateway.strategy | default dict }}
+{{- $ru := $strategy.rollingUpdate | default dict }}
+{{- $typeExplicit := $strategy.type }}
+{{- $type := $typeExplicit | default "RollingUpdate" }}
+{{- $isRollingUpdate := eq $type "RollingUpdate" }}
+{{- $renderRollingUpdate := and $isRollingUpdate (or (not $typeExplicit) $strategy.rollingUpdate) }}
+{{- if not $typeExplicit }}
     # indicate which strategy we want for rolling update
-    type: RollingUpdate
+{{- end }}
+    type: {{ $type }}
+{{- if $renderRollingUpdate }}
     rollingUpdate:
 {{- if eq .Values.gateway.kind "Deployment" }}
-      maxSurge: 2
+      maxSurge: {{ if hasKey $ru "maxSurge" }}{{ $ru.maxSurge }}{{ else }}2{{ end }}
 {{- end }}
-      maxUnavailable: 1
+      maxUnavailable: {{ if hasKey $ru "maxUnavailable" }}{{ $ru.maxUnavailable }}{{ else }}1{{ end }}
 {{- end }}
   selector:
     matchLabels:
@@ -54,9 +73,12 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}        
     spec:
+    {{- if .Values.gateway.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.gateway.terminationGracePeriodSeconds }}
+    {{- end }}
     {{- if .Values.gateway.serviceAccountName }}
       serviceAccountName: "{{ .Values.gateway.serviceAccountName }}"
-    {{- end }}    
+    {{- end }}
 {{- if .Values.gateway.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.gateway.nodeSelector | indent 8 }}
@@ -84,10 +106,31 @@ spec:
         image: "{{ .Values.global.imageRegistry }}{{ .Values.gateway.initContainers.setupDirectories.repository }}:{{ .Values.gateway.initContainers.setupDirectories.tag }}"
         command: ['sh','-c','mkdir -p apps middleware policies && touch policies/policies.json']
         workingDir: /mnt/tyk-gateway
-        {{- if .Values.gateway.containerSecurityContext }}
+        {{- $initSc := .Values.gateway.initContainers.setupDirectories.securityContext | default dict }}
+        {{- $mainSc := .Values.gateway.containerSecurityContext | default dict }}
+        {{- $podSc := .Values.gateway.securityContext | default dict }}
+        {{- $initOn := and $initSc (or (not (hasKey ($initSc | default dict) "enabled")) $initSc.enabled) }}
+        {{- $mainOn := and $mainSc (or (not (hasKey ($mainSc | default dict) "enabled")) $mainSc.enabled) }}
+        {{- $podOn := and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) }}
+        {{- if and $initOn (gt (len (omit $initSc "enabled")) 0) }}
+        {{- /* Resolve only the UID through init -> main -> pod -> image UID default;
+              the init block keeps its independently configured hardening fields. */ -}}
+        {{- $effectiveInitSc := deepCopy (omit $initSc "enabled") }}
+        {{- if not (and (hasKey $effectiveInitSc "runAsUser") (ne (get $effectiveInitSc "runAsUser") nil)) }}
+        {{- $runAsUser := 65532 }}
+        {{- if and $mainOn (hasKey $mainSc "runAsUser") (ne (get $mainSc "runAsUser") nil) }}
+        {{- $runAsUser = get $mainSc "runAsUser" }}
+        {{- else if and $podOn (hasKey $podSc "runAsUser") (ne (get $podSc "runAsUser") nil) }}
+        {{- $runAsUser = get $podSc "runAsUser" }}
+        {{- end }}
+        {{- $_ := set $effectiveInitSc "runAsUser" $runAsUser }}
+        {{- end }}
         securityContext:
-        {{- toYaml .Values.gateway.containerSecurityContext | nindent 12 }}
-        {{- end }}      
+        {{- toYaml $effectiveInitSc | nindent 12 }}
+        {{- else if and $mainOn (gt (len (omit $mainSc "enabled")) 0) }}
+        securityContext:
+        {{- toYaml (omit $mainSc "enabled") | nindent 12 }}
+        {{- end }}
         resources:
         {{- toYaml .Values.gateway.initContainers.setupDirectories.resources | nindent 12 }}
         volumeMounts:
@@ -97,9 +140,10 @@ spec:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.global.imageRegistry }}{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
-        {{- if .Values.gateway.containerSecurityContext }}
+        {{- $csc := .Values.gateway.containerSecurityContext }}
+        {{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) (gt (len (omit $csc "enabled")) 0) }}
         securityContext:
-        {{- toYaml .Values.gateway.containerSecurityContext | nindent 12 }}
+        {{- toYaml (omit $csc "enabled") | nindent 12 }}
         {{- end }}
         env:
           - name: TYK_GW_LISTENPORT
@@ -300,7 +344,14 @@ spec:
             value: "{{ .Values.global.remoteControlPlane.groupID}}"
             {{ end }}
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
+            {{ if .Values.global.remoteControlPlane.connectionStringSecretName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.global.remoteControlPlane.connectionStringSecretName }}
+                key: {{ .Values.global.remoteControlPlane.connectionStringSecretKey | default "connectionString" }}
+            {{ else }}
             value: "{{ .Values.global.remoteControlPlane.connectionString }}"
+            {{ end }}
           - name: TYK_GW_SLAVEOPTIONS_USESSL
             value: "{{ .Values.global.remoteControlPlane.useSSL}}"
           - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
@@ -449,6 +500,10 @@ spec:
           {{- if .Values.gateway.extraVolumeMounts }}
           {{- include "tyk-gateway.tplvalues.render" (dict "value" .Values.gateway.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
+        {{- with .Values.gateway.lifecycle }}
+        lifecycle:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         livenessProbe:
           {{- if .Values.gateway.livenessProbe }}
           {{- toYaml .Values.gateway.livenessProbe | nindent 10}}
@@ -489,9 +544,10 @@ spec:
       {{- with .Values.gateway.extraContainers }}
       {{- include "tyk-gateway.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
       {{- end }}
-      {{- if .Values.gateway.securityContext }}
+      {{- $podSc := .Values.gateway.securityContext }}
+      {{- if and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) (gt (len (omit $podSc "enabled")) 0) }}
       securityContext:
-      {{- toYaml .Values.gateway.securityContext | nindent 10 }}
+      {{- toYaml (omit $podSc "enabled") | nindent 10 }}
       {{- end }}
       volumes:
         - name: tyk-scratch

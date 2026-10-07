@@ -1,0 +1,190 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Locks the TT-17018 fix for the bootstrap RBAC trio (ServiceAccount, Role,
+# RoleBinding). All three shared a byte-identical metadata block that emitted the
+# `annotations:` key unconditionally with the hook guard nested inside it, so with
+# disableHelmHooks=true and the default empty rbacAnnotations the key rendered as a
+# bare `annotations:` -> YAML null. ArgoCD reports that as a diff and strict schema
+# validators reject it.
+#
+# Regression guarded:
+#   * metadata.annotations -> null when hooks are stripped and rbacAnnotations empty
+#   * user-supplied rbacAnnotations values rendered unquoted (an integer sync-wave
+#     is rejected by the API server: metadata.annotations is map[string]string)
+suite: Bootstrap RBAC metadata renders no null annotations
+templates:
+  - templates/bootstrap-serviceaccount.yml
+  - templates/bootstrap-role.yml
+  - templates/bootstrap-role-binding.yml
+release:
+  name: tyk-bootstrap
+  namespace: test
+tests:
+  # ---------- annotations key omitted entirely ----------
+  - it: serviceaccount, disableHelmHooks=true + empty rbacAnnotations -> annotations key absent
+    template: templates/bootstrap-serviceaccount.yml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - notExists:
+          path: metadata.annotations
+
+  - it: role, disableHelmHooks=true + empty rbacAnnotations -> annotations key absent
+    template: templates/bootstrap-role.yml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - notExists:
+          path: metadata.annotations
+
+  - it: rolebinding, disableHelmHooks=true + empty rbacAnnotations -> annotations key absent
+    template: templates/bootstrap-role-binding.yml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - notExists:
+          path: metadata.annotations
+
+  # ---------- annotations present when rbacAnnotations is set ----------
+  - it: serviceaccount, disableHelmHooks=true + rbacAnnotations -> annotations present, hooks absent
+    template: templates/bootstrap-serviceaccount.yml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+      bootstrap.rbacAnnotations.sampleAnnotation: enabled
+    asserts:
+      - equal:
+          path: metadata.annotations.sampleAnnotation
+          value: enabled
+      - notExists:
+          path: metadata.annotations["helm.sh/hook"]
+
+  - it: role, disableHelmHooks=true + rbacAnnotations -> annotations present, hooks absent
+    template: templates/bootstrap-role.yml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+      bootstrap.rbacAnnotations.sampleAnnotation: enabled
+    asserts:
+      - equal:
+          path: metadata.annotations.sampleAnnotation
+          value: enabled
+      - notExists:
+          path: metadata.annotations["helm.sh/hook"]
+
+  - it: rolebinding, disableHelmHooks=true + rbacAnnotations -> annotations present, hooks absent
+    template: templates/bootstrap-role-binding.yml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+      bootstrap.rbacAnnotations.sampleAnnotation: enabled
+    asserts:
+      - equal:
+          path: metadata.annotations.sampleAnnotation
+          value: enabled
+      - notExists:
+          path: metadata.annotations["helm.sh/hook"]
+
+  # ---------- hook annotations unchanged at defaults ----------
+  - it: serviceaccount, defaults -> helm hook annotations intact
+    template: templates/bootstrap-serviceaccount.yml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-install
+      - equal:
+          path: metadata.annotations["helm.sh/hook-delete-policy"]
+          value: before-hook-creation
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "-10"
+
+  - it: role, defaults -> helm hook annotations intact
+    template: templates/bootstrap-role.yml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-install
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "-10"
+
+  - it: rolebinding, defaults -> helm hook annotations intact
+    template: templates/bootstrap-role-binding.yml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-install
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "-10"
+
+  # ---------- rbacAnnotations coexist with hook annotations ----------
+  - it: role, hooks enabled + rbacAnnotations -> both sets rendered
+    template: templates/bootstrap-role.yml
+    set:
+      global.components.bootstrap: true
+      bootstrap.rbacAnnotations.sampleAnnotation: enabled
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-install
+      - equal:
+          path: metadata.annotations.sampleAnnotation
+          value: enabled
+
+  # ---------- integer values must be quoted into strings ----------
+  # metadata.annotations is map[string]string; an unquoted `sync-wave: -1` renders
+  # as a YAML integer and the API server rejects the object.
+  - it: serviceaccount, integer rbacAnnotation value -> quoted as a string
+    template: templates/bootstrap-serviceaccount.yml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+      bootstrap.rbacAnnotations:
+        argocd.argoproj.io/sync-wave: -1
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"
+      - isKind:
+          of: ServiceAccount
+
+  - it: role, integer rbacAnnotation value -> quoted as a string
+    template: templates/bootstrap-role.yml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+      bootstrap.rbacAnnotations:
+        argocd.argoproj.io/sync-wave: -1
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"
+
+  - it: rolebinding, integer rbacAnnotation value -> quoted as a string
+    template: templates/bootstrap-role-binding.yml
+    set:
+      global.components.bootstrap: true
+      bootstrap.disableHelmHooks: true
+      bootstrap.rbacAnnotations:
+        argocd.argoproj.io/sync-wave: -1
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "-1"

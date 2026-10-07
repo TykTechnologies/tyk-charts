@@ -17,7 +17,7 @@ envVars:
 image:
   repository: tykio/tyk-operator
   pullPolicy: IfNotPresent
-  tag: "v1.4.2"
+  tag: "v1.5.0"
 # specify imagePullSecrets for ServiceAccount
 imagePullSecrets: []
 nameOverride: ""
@@ -46,14 +46,30 @@ metricsPort: 8080
 secureMetrics: true
 annotations: {}
 podAnnotations: {}
+# NOTE: unused/dead key — no template reads it.
 podSecurityContext:
   allowPrivilegeEscalation: false
+# managerPodSecurityContext controls the pod-level securityContext of the
+# controller-manager pod. To let the cluster (e.g. OpenShift SCC) assign
+# UID/GID instead, set `enabled: false` — the whole block is then omitted
+# from the rendered manifest. Setting `managerPodSecurityContext: {}` is NOT
+# sufficient because Helm deep-merges these defaults back in.
+managerPodSecurityContext:
+  enabled: true
+  runAsNonRoot: true
+# securityContext for the controller-manager container. All fields from the
+# SecurityContext object can be added here. Empty by default; set fields to
+# opt in, or set `enabled: false` to force-omit the block despite other
+# fields being set.
+securityContext: {}
 resources: {}
 nodeSelector: {}
 # tolerations for manager pod assignment
 tolerations: {}
 # affinity for manager pod assignment
 affinity: {}
+# priorityClassName for controller-manager pod assignment
+priorityClassName: ""
 hostNetwork: false
 # rbac specifies necessary resources for kube-rbac-proxy container
 rbac:
@@ -70,13 +86,27 @@ rbac:
 # These metrics can be scraped by Prometheus Operator, by deploying ServiceMonitor resource.
 serviceMonitor: false
 webhooks:
+  # Disable to run controller-side validation only. The chart then omits all
+  # admission/TLS resources and sets ENABLE_WEBHOOKS=false.
   enabled: true
   # identifies the port on which webhooks are handled
   port: 9443
+  # annotations are applied to both admission configurations. When cert-manager
+  # is disabled, use these to configure an external CA injector.
+  # governanceFailurePolicy controls what happens to TykOasApiDefinition
+  # create/update requests when the governance preflight cannot run — both
+  # when the webhook itself is unreachable (ValidatingWebhookConfiguration
+  # failurePolicy) and when the webhook cannot reach the Dashboard sandbox
+  # (mirrored in-pod via GOVERNANCE_WEBHOOK_FAILURE_POLICY).
+  #   Ignore (default): admit the object; the reconciler records the real
+  #                     compliance state on the next reconcile.
+  #   Fail:             reject the object until governance can evaluate it.
+  governanceFailurePolicy: Ignore
   annotations: {}
   tls:
+    # When false, pre-create secretName and arrange CA injection externally.
     useCertManager: true
-    # The name of the secret which should contain the TLS certificate you want to use with the webhook
+    # The Secret cert-manager creates, or the pre-existing TLS Secret to mount.
     secretName: webhook-server-cert
     # certificatesMountPath corresponds to the mount path of the secret.
     certificatesMountPath: "/tmp/k8s-webhook-server/serving-certs"

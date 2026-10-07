@@ -1,0 +1,101 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Same defect class as the bootstrap Job fix (TT-17018) and the dashboard/portal
+# suites: keys emitted unconditionally with conditional contents render as literal
+# `null`, which causes ArgoCD diff churn and fails strict schema validators. On the
+# pump Deployment at defaults these were:
+#   * spec.template.spec.volumes                       -> null
+#   * spec.template.spec.containers[0].volumeMounts    -> null
+# Both keys are now wrapped, not just their contents. The pump has exactly two
+# contributors per key — extraVolumes/extraVolumeMounts and the redis TLS cert
+# volume — so each is asserted on its own and then together.
+suite: Pump Deployment renders no null keys
+templates:
+  - templates/deployment-pmp.yaml
+  - templates/secrets.yaml
+release:
+  name: tyk-pump
+  namespace: test
+tests:
+  - it: defaults omit volumes and volumeMounts rather than rendering null
+    template: templates/deployment-pmp.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes
+      - notExists:
+          path: spec.template.spec.containers[0].volumeMounts
+
+  - it: extraVolumes/extraVolumeMounts alone are enough to emit the keys
+    template: templates/deployment-pmp.yaml
+    set:
+      pump.extraVolumes:
+        - name: extra
+          emptyDir: {}
+      pump.extraVolumeMounts:
+        - name: extra
+          mountPath: /extra
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].name
+          value: extra
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].mountPath
+          value: /extra
+
+  - it: redis TLS alone still mounts the redis certificate secret
+    template: templates/deployment-pmp.yaml
+    set:
+      global.redis.useSSL: true
+      global.redis.secretName: redis-certs-secret
+      global.redis.volumeName: redis-certs
+      global.redis.certificatesMountPath: /etc/redis-certs
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].name
+          value: redis-certs
+      - equal:
+          path: spec.template.spec.volumes[0].secret.secretName
+          value: redis-certs-secret
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].name
+          value: redis-certs
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].mountPath
+          value: /etc/redis-certs
+
+  - it: both contributors together render every entry
+    template: templates/deployment-pmp.yaml
+    set:
+      global.redis.useSSL: true
+      global.redis.secretName: redis-certs-secret
+      global.redis.volumeName: redis-certs
+      global.redis.certificatesMountPath: /etc/redis-certs
+      pump.extraVolumes:
+        - name: extra
+          emptyDir: {}
+      pump.extraVolumeMounts:
+        - name: extra
+          mountPath: /extra
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.volumes
+          count: 2
+      - lengthEqual:
+          path: spec.template.spec.containers[0].volumeMounts
+          count: 2
+      - equal:
+          path: spec.template.spec.volumes[1].name
+          value: redis-certs
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[1].name
+          value: redis-certs
+
+  - it: redis TLS without a volumeName does not resurrect the keys
+    template: templates/deployment-pmp.yaml
+    set:
+      global.redis.useSSL: true
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes
+      - notExists:
+          path: spec.template.spec.containers[0].volumeMounts

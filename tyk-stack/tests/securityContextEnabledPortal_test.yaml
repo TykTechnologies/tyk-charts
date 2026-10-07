@@ -1,0 +1,139 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Locks the scoped `enabled` flag on every Dev Portal securityContext block
+# (TT-17018, propagating the gateway pattern from c99bc03).
+#
+# Two failure modes are guarded here:
+#   1. `enabled` leaking into the rendered manifest. It is not a k8s field, so
+#      kubectl apply (strict fieldValidation since 1.25) and ArgoCD reject the
+#      manifest with `unknown field "...securityContext.enabled"`.
+#   2. A bare `securityContext: {}` rendering when a block holds only `enabled`.
+#      The bootstrap Job blocks default to exactly that, so the length guard in
+#      the template is what keeps the Job byte-identical to before.
+#
+# Defaults must stay unchanged: fsGroup 2000 on the StatefulSet is what makes
+# the storage PVC and S3-credential mount writable by the non-root portal user.
+suite: Dev Portal securityContext enabled flag
+templates:
+  - charts/tyk-dev-portal/templates/statefulset-enterprise-portal.yaml
+  - charts/tyk-dev-portal/templates/job-portal.yaml
+release:
+  name: tyk-stack
+  namespace: test
+set:
+  global.components.devPortal: true
+tests:
+  - it: defaults are unchanged and the enabled key never reaches the StatefulSet
+    values:
+      - ../values.yaml
+    set:
+      global.components.devPortal: true
+    template: charts/tyk-dev-portal/templates/statefulset-enterprise-portal.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 2000
+      - equal:
+          path: spec.template.spec.securityContext.runAsNonRoot
+          value: true
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.enabled
+
+  - it: pod securityContext.enabled=false omits the whole pod-level block
+    values:
+      - ../values.yaml
+    set:
+      global.components.devPortal: true
+      tyk-dev-portal.securityContext.enabled: false
+    template: charts/tyk-dev-portal/templates/statefulset-enterprise-portal.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      # container block is independently scoped and must survive
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+
+  - it: containerSecurityContext.enabled=false omits the whole container block
+    values:
+      - ../values.yaml
+    set:
+      global.components.devPortal: true
+      tyk-dev-portal.containerSecurityContext.enabled: false
+    template: charts/tyk-dev-portal/templates/statefulset-enterprise-portal.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 2000
+
+  - it: enabled=false on both blocks strips every portal securityContext
+    values:
+      - ../values.yaml
+    set:
+      global.components.devPortal: true
+      tyk-dev-portal.securityContext.enabled: false
+      tyk-dev-portal.containerSecurityContext.enabled: false
+    template: charts/tyk-dev-portal/templates/statefulset-enterprise-portal.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  - it: bootstrap Job renders no securityContext at defaults (blocks hold only enabled)
+    values:
+      - ../values.yaml
+    set:
+      global.components.devPortal: true
+      global.components.bootstrap: true
+    template: charts/tyk-dev-portal/templates/job-portal.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  - it: bootstrap Job renders real fields without the enabled key
+    values:
+      - ../values.yaml
+    set:
+      global.components.devPortal: true
+      global.components.bootstrap: true
+      tyk-dev-portal.bootstrapJob.securityContext.fsGroup: 2000
+      tyk-dev-portal.bootstrapJob.containerSecurityContext.runAsNonRoot: true
+    template: charts/tyk-dev-portal/templates/job-portal.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 2000
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.enabled
+
+  - it: bootstrap Job enabled=false wins over explicitly set fields
+    values:
+      - ../values.yaml
+    set:
+      global.components.devPortal: true
+      global.components.bootstrap: true
+      tyk-dev-portal.bootstrapJob.securityContext.fsGroup: 2000
+      tyk-dev-portal.bootstrapJob.securityContext.enabled: false
+      tyk-dev-portal.bootstrapJob.containerSecurityContext.runAsNonRoot: true
+      tyk-dev-portal.bootstrapJob.containerSecurityContext.enabled: false
+    template: charts/tyk-dev-portal/templates/job-portal.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext

@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Locks the bootstrap.disableHelmHooks contract introduced in TT-17018.
+# GitOps controllers (ArgoCD, Flux) cannot drive Helm hooks, so the pre-delete
+# Job must render either as a Helm hook OR be entirely suppressed.
+#
+# Guards components/tyk-bootstrap/templates/bootstrap-pre-delete.yaml against a
+# regression that re-introduces the Job when disableHelmHooks=true.
+suite: Bootstrap pre-delete Job disableHelmHooks suppression
+templates:
+  - charts/tyk-bootstrap/templates/bootstrap-pre-delete.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+  - it: renders the Job with Helm hook annotations when disableHelmHooks is false (default)
+    values:
+      - ../values.yaml
+    set:
+      global.components.bootstrap: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Job
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-delete
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "0"
+      - equal:
+          path: metadata.annotations["helm.sh/hook-delete-policy"]
+          value: before-hook-creation,hook-succeeded
+
+  - it: suppresses the entire Job when disableHelmHooks is true
+    values:
+      - ../values.yaml
+    set:
+      global.components.bootstrap: true
+      tyk-bootstrap.bootstrap.disableHelmHooks: true
+    asserts:
+      - hasDocuments:
+          count: 0

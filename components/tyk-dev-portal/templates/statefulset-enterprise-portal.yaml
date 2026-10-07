@@ -15,9 +15,7 @@ spec:
   {{- if eq .Values.kind "StatefulSet"}}
   serviceName: dev-portal-svc-{{ include "tyk-dev-portal.fullname" . }}
   {{- end }}
-  {{- if eq .Values.kind "StatefulSet"}}
-  updateStrategy:
-  {{- else }}
+  {{- if ne .Values.kind "StatefulSet" }}
   strategy:
     # indicate which strategy we want for rolling update
     type: RollingUpdate
@@ -30,10 +28,10 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
       annotations:
-        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-        {{- end }}
+      {{- end }}
       labels:
         app: {{ include "tyk-dev-portal.fullname" . }}
         release: {{ .Release.Name }}
@@ -66,9 +64,10 @@ spec:
       - image: "{{ .Values.global.imageRegistry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: dev-portal-{{ .Chart.Name }}
-        {{- if .Values.containerSecurityContext }}
+        {{- $csc := .Values.containerSecurityContext }}
+        {{- if and $csc (or (not (hasKey ($csc | default dict) "enabled")) $csc.enabled) (gt (len (omit $csc "enabled")) 0) }}
         securityContext:
-        {{- toYaml .Values.containerSecurityContext | nindent 10 }}
+        {{- toYaml (omit $csc "enabled") | nindent 10 }}
         {{- end}}
         env:
           - name: PORTAL_LICENSEKEY
@@ -125,21 +124,29 @@ spec:
           - name: PORTAL_S3_AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
-                {{ if .Values.useSecretName }}
+                {{ if .Values.storage.s3.secretRef.name }}
+                name: {{ .Values.storage.s3.secretRef.name }}
+                key: {{ .Values.storage.s3.secretRef.accessKeyIdKey | default "DevPortalAwsAccessKeyId" | quote }}
+                {{ else if .Values.useSecretName }}
                 name: {{ .Values.useSecretName }}
+                key: "DevPortalAwsAccessKeyId"
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
-                {{ end }}
                 key: "DevPortalAwsAccessKeyId"
+                {{ end }}
           - name: PORTAL_S3_AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                {{ if .Values.useSecretName }}
+                {{ if .Values.storage.s3.secretRef.name }}
+                name: {{ .Values.storage.s3.secretRef.name }}
+                key: {{ .Values.storage.s3.secretRef.secretAccessKeyKey | default "DevPortalAwsSecretAccessKey" | quote }}
+                {{ else if .Values.useSecretName }}
                 name: {{ .Values.useSecretName }}
+                key: "DevPortalAwsSecretAccessKey"
                 {{ else }}
                 name: secrets-{{ include "tyk-dev-portal.fullname" . }}
-                {{ end }}
                 key: "DevPortalAwsSecretAccessKey"
+                {{ end }}
           - name: PORTAL_S3_REGION
             value: "{{ .Values.storage.s3.region }}"
           - name: PORTAL_S3_ENDPOINT
@@ -163,10 +170,7 @@ spec:
           - name: TYK_URL
             value: {{ include "tyk-dev-portal.dashboardUrl" . | quote }}
         {{- if .Values.extraEnvs }}
-        {{- range $env := .Values.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
+        {{- include "tyk-dev-portal.tplvalues.render" ( dict "value" .Values.extraEnvs "context" $ ) | nindent 10 }}
         {{- end }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
@@ -232,8 +236,10 @@ spec:
       {{- with .Values.extraContainers }}
       {{- include "tyk-dev-portal.tplvalues.render" (dict "value" . "context" $) | nindent 6 }}
       {{- end }}
+      {{- $existingPVCVol := and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
+      {{- if or $existingPVCVol .Values.extraVolumes }}
       volumes:
-      {{- if and (eq .Values.kind "Deployment") .Values.storage.persistence.mountExistingPVC }}
+      {{- if $existingPVCVol }}
       - name: dev-portal-pvc-{{ include "tyk-dev-portal.fullname" . }}
         persistentVolumeClaim:
           claimName: {{ .Values.storage.persistence.mountExistingPVC }}
@@ -241,10 +247,12 @@ spec:
       {{- if .Values.extraVolumes }}
       {{- include "tyk-dev-portal.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 6 }}
       {{- end }}
+      {{- end }}
 
-      {{- if .Values.securityContext }}
+      {{- $podSc := .Values.securityContext }}
+      {{- if and $podSc (or (not (hasKey ($podSc | default dict) "enabled")) $podSc.enabled) (gt (len (omit $podSc "enabled")) 0) }}
       securityContext:
-      {{- toYaml .Values.securityContext | nindent 8 }}
+      {{- toYaml (omit $podSc "enabled") | nindent 8 }}
       {{- end}}
   {{ if and (eq .Values.kind "StatefulSet") }}
   volumeClaimTemplates:
@@ -267,7 +275,9 @@ spec:
       {{- range .Values.storage.persistence.accessModes }}
         - {{ . | quote }}
       {{- end }}
-      storageClassName: {{ .Values.storage.persistence.storageClass }}
+      {{- with .Values.storage.persistence.storageClass }}
+      storageClassName: {{ . }}
+      {{- end }}
       resources:
         requests:
           storage: {{ .Values.storage.persistence.size | quote }}

@@ -1,0 +1,208 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# Locks the scoped `enabled` escape hatch on the dashboard and pump
+# securityContext blocks (TT-17018), mirroring the gateway behaviour covered by
+# initContainerSecurityContext_test.yaml.
+#
+#   - enabled: false omits the whole block so the cluster (OpenShift SCC,
+#     kyverno, ...) can allocate UID/GID. `securityContext: {}` cannot work,
+#     Helm deep-merges the chart defaults back in.
+#   - the `enabled` sentinel itself must never reach the rendered manifest:
+#     it is not a PodSecurityContext/SecurityContext field, so kubectl apply
+#     and ArgoCD reject it under strict field validation.
+#   - fsGroup: 2000 must survive at defaults (regression guard for aac23c3).
+#   - pump.extraContainers used to be nested inside the pod securityContext
+#     conditional, so sidecars silently vanished whenever securityContext was
+#     falsy. enabled=false makes that path reachable, hence the sidecar test.
+suite: Dashboard and pump securityContext enabled flag
+templates:
+  - charts/tyk-dashboard/templates/deployment-dashboard.yaml
+  - charts/tyk-dashboard/templates/secrets.yaml
+  - charts/tyk-pump/templates/deployment-pmp.yaml
+  - charts/tyk-pump/templates/secrets.yaml
+release:
+  name: tyk-stack
+  namespace: test
+tests:
+  # ---------------------------------------------------------------- defaults
+  - it: dashboard renders fsGroup 2000 and no enabled key at defaults
+    values:
+      - ../values.yaml
+    template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 2000
+      - equal:
+          path: spec.template.spec.securityContext.runAsNonRoot
+          value: true
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.enabled
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+
+  - it: dashboard init container renders no enabled key at defaults
+    values:
+      - ../values.yaml
+    set:
+      # the init-analytics-conf init container only renders for tags <= 5.0.2
+      tyk-dashboard.dashboard.image.tag: 5.0.2
+    template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: init-analytics-conf
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext.enabled
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+      # GAP 3 regression guard: runAsNonRoot without runAsUser is an admission failure
+      # against busybox, which has no USER directive of its own.
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 1000
+
+  - it: pump renders fsGroup 2000 and no enabled key at defaults
+    values:
+      - ../values.yaml
+    template: charts/tyk-pump/templates/deployment-pmp.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 2000
+      - equal:
+          path: spec.template.spec.securityContext.runAsNonRoot
+          value: true
+      - notExists:
+          path: spec.template.spec.securityContext.enabled
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.enabled
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+
+  # ------------------------------------------------------------ enabled=false
+  - it: dashboard enabled=false strips pod and container securityContext
+    values:
+      - ../values.yaml
+    set:
+      tyk-dashboard.dashboard.securityContext.enabled: false
+      tyk-dashboard.dashboard.containerSecurityContext.enabled: false
+    template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  # The init-analytics-conf container now has its own
+  # dashboard.initContainers.initAnalyticsConf.securityContext block (TT-17018), so
+  # disabling the main container block no longer strips it. It MUST keep an explicit
+  # runAsUser: busybox has no USER directive, and runAsNonRoot without runAsUser is
+  # rejected by kubelet at admission. The init block has its own enabled flag for opt-out.
+  - it: dashboard containerSecurityContext enabled=false leaves the init container block intact
+    values:
+      - ../values.yaml
+    set:
+      tyk-dashboard.dashboard.image.tag: 5.0.2
+      tyk-dashboard.dashboard.containerSecurityContext.enabled: false
+    template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: init-analytics-conf
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsUser
+          value: 1000
+
+  - it: dashboard init securityContext enabled=false strips the init container block
+    values:
+      - ../values.yaml
+    set:
+      tyk-dashboard.dashboard.image.tag: 5.0.2
+      tyk-dashboard.dashboard.initContainers.initAnalyticsConf.securityContext.enabled: false
+    template: charts/tyk-dashboard/templates/deployment-dashboard.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: init-analytics-conf
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext
+
+  - it: pump enabled=false strips pod and container securityContext
+    values:
+      - ../values.yaml
+    set:
+      tyk-pump.pump.securityContext.enabled: false
+      tyk-pump.pump.containerSecurityContext.enabled: false
+    template: charts/tyk-pump/templates/deployment-pmp.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext
+
+  # ------------------------------------------------- enabled=true, empty block
+  # The empty-block guard — `enabled: true` with every other key nulled out, which must
+  # not emit a bare `securityContext: {}` — is NOT tested here. It lives in:
+  #   components/tyk-dashboard/tests/dashboardSecurityContextEmpty_test.yaml
+  #   components/tyk-pump/tests/pumpSecurityContextEmpty_test.yaml
+  #
+  # Reason: helm-unittest v0.7.2 (pinned in .github/workflows/unit-tests.yaml) bundles an
+  # older Helm library that drops null deletion markers during *subchart* coalescing. A
+  # null set on any tyk-dashboard.* / tyk-pump.* key here is silently restored from the
+  # subchart's own defaults, so fsGroup: 2000 survives and the assert fails. Every form
+  # is affected — dotted paths, nested mappings, and nulling the whole block — so this is
+  # not a matter of `set:` syntax. At chart level (the component suites above) nulls work
+  # correctly on v0.7.2, which is why the cases moved there.
+  #
+  # This is a plugin limitation, NOT real Helm behaviour. Do not conclude from this that
+  # umbrella-level nulling is broken for users: verified against Helm 3.18.4,
+  #   helm template … --set-json 'tyk-dashboard.dashboard.securityContext.fsGroup=null'
+  # deletes the key cleanly on the umbrella chart. Once the CI pin moves off v0.7.2 these
+  # cases can move back here if desired.
+
+  # ----------------------------------------------- extraContainers regression
+  - it: pump extraContainers renders when securityContext is enabled (default)
+    values:
+      - ../values.yaml
+    set:
+      tyk-pump.pump.extraContainers:
+        - name: sidecar
+          image: busybox:1.36
+    template: charts/tyk-pump/templates/deployment-pmp.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[1].name
+          value: sidecar
+      - exists:
+          path: spec.template.spec.securityContext
+
+  - it: pump extraContainers still renders when securityContext.enabled=false
+    values:
+      - ../values.yaml
+    set:
+      tyk-pump.pump.securityContext.enabled: false
+      tyk-pump.pump.extraContainers:
+        - name: sidecar
+          image: busybox:1.36
+    template: charts/tyk-pump/templates/deployment-pmp.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[1].name
+          value: sidecar
+      - equal:
+          path: spec.template.spec.containers[1].image
+          value: busybox:1.36
+      - notExists:
+          path: spec.template.spec.securityContext
+
+  # The "securityContext emptied out entirely" variant of this regression lives in
+  # components/tyk-pump/tests/pumpSecurityContextEmpty_test.yaml, for the subchart
+  # coalescing reason noted above.

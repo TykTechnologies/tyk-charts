@@ -28,7 +28,11 @@ jobs:
     needs: [dep-guard]
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
+    # pull-requests: write is required for the action's sticky-comment step to post
+    # linter feedback on the PR. Without it the step fails with
+    # "Resource not accessible by integration" and hides the real linter error.
     permissions:
+      id-token: write       # Assume the ECR role that pulls the linter image
       contents: read
       pull-requests: write
     steps:
