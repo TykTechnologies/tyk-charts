@@ -12,7 +12,9 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  {{- if not .Values.pump.autoscaling.enabled }}
   replicas: {{ .Values.pump.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app: pump-{{ include "tyk-pump.fullname" . }}
