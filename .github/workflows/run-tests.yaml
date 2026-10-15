@@ -68,7 +68,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        k8s_version: ["v1.26.13", "v1.27.10","v1.28.6","v1.29.4","v1.30.0"]
+        k8s_version: ["v1.30.13", "v1.31.14", "v1.32.11", "v1.33.12", "v1.34.11", "v1.35.8", "v1.36.4"]
     steps:
       - name: Git Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
@@ -190,7 +190,7 @@ jobs:
         uses: helm/kind-action@99576bfa6ddf9a8e612d83b513da5a75875caced  # v1.9.0
         with:
           # TODO: Pin kindest/node image to digest
-          node_image: "kindest/node:v1.30.0"
+          node_image: "kindest/node:v1.35.8"
 
       - name: Install helm
         uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4  # v4
@@ -314,13 +314,13 @@ jobs:
       # OpenShift performs simply does not happen here. Swapping this for MicroShift is the one
       # change that would turn this into a genuine OpenShift test.
       #
-      # Pinned to a single k8s version rather than the 5-way matrix the sibling smoke-tests job
+      # Pinned to a single k8s version rather than the 7-way matrix the sibling smoke-tests job
       # uses: this exercises a values path, not a version-compatibility surface.
       - name: Create Kind Cluster
         uses: helm/kind-action@99576bfa6ddf9a8e612d83b513da5a75875caced  # v1.9.0
         with:
           # TODO: Pin kindest/node image to digest
-          node_image: "kindest/node:v1.30.0"
+          node_image: "kindest/node:v1.35.8"
 
       - name: Install helm
         uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4  # v4
@@ -429,7 +429,7 @@ jobs:
         uses: helm/kind-action@99576bfa6ddf9a8e612d83b513da5a75875caced  # v1.9.0
         with:
           # TODO: Pin kindest/node image to digest
-          node_image: "kindest/node:v1.34.0"
+          node_image: "kindest/node:v1.36.4"
 
       - name: Deploy OSS and Dependencies
         id: deploy-oss
