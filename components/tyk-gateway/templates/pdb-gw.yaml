@@ -1,7 +1,4 @@
 {{- if and .Values.gateway.pdb .Values.gateway.pdb.enabled }}
-{{- if and .Values.gateway.pdb.minAvailable .Values.gateway.pdb.maxUnavailable }}
-{{- print "If gateway.pdb.minAvailable and gateway.pdb.maxUnavailable are set at the same time, minAvailable takes precedence." }}
-{{- end }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:

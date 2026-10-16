@@ -1,0 +1,18 @@
+suite: gateway PodDisruptionBudget
+templates:
+  - templates/pdb-gw.yaml
+tests:
+  - it: renders a valid PDB when both thresholds are set
+    template: templates/pdb-gw.yaml
+    set:
+      gateway.pdb.enabled: true
+      gateway.pdb.minAvailable: 1
+      gateway.pdb.maxUnavailable: 2
+    asserts:
+      - isKind:
+          of: PodDisruptionBudget
+      - equal:
+          path: spec.minAvailable
+          value: 1
+      - notExists:
+          path: spec.maxUnavailable
