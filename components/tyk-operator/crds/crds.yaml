@@ -3,7 +3,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE)/$(CERTIFICATE_NAME)
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: apidefinitions.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -1072,6 +1072,55 @@ spec:
                       when `true` a request to http://foo.bar/baz/ will be retained.
                       when `false` a request to http://foo.bar/baz/ will be matched to http://foo.bar/baz
                     type: boolean
+                  dns_discovery:
+                    description: |-
+                      DNSDiscovery enables dynamic discovery of upstream pods by DNS, so the
+                      gateway resolves and load balances the upstream hosts at request time.
+                      It applies to h2c (gRPC) upstreams only; the gateway ignores it for
+                      any other target scheme. EnableLoadBalancing must be set to true in
+                      order to take advantage of this feature, and service_discovery cannot
+                      be combined with it. It requires gateway and dashboard builds with
+                      dns_discovery support; no released Tyk version carries it yet, and
+                      builds without it silently drop the field.
+                    properties:
+                      connection_draining:
+                        description: |-
+                          ConnectionDraining controls the behaviour when an address is no
+                          longer returned by the DNS resolver. Disabled by default.
+                        properties:
+                          enabled:
+                            description: |-
+                              Enabled maintains connections for the timeout period after they are
+                              no longer returned by the DNS resolver. Default: false. When disabled,
+                              connections close once idle.
+                            type: boolean
+                          timeout:
+                            description: |-
+                              Timeout is how long connections to a removed address stay open, as a
+                              human-readable duration string. Default: 30s when enabled.
+                            type: string
+                        required:
+                        - enabled
+                        type: object
+                      enabled:
+                        description: Enabled determines if DNS discovery is active.
+                        type: boolean
+                      refresh_interval:
+                        description: |-
+                          RefreshInterval is how often the hostname is resolved, as a
+                          human-readable duration string (for example 45s). Defaults to 30s,
+                          minimum 5s.
+                        type: string
+                      stale_ttl:
+                        description: |-
+                          StaleTTL is how long the last known good addresses keep being used if
+                          the resolver becomes unreachable, as a human-readable duration string
+                          (for example 300s). Empty or 0 means that known addresses will
+                          continue to be used until a lookup succeeds.
+                        type: string
+                    required:
+                    - enabled
+                    type: object
                   enable_load_balancing:
                     description: |-
                       EnableLoadBalancing enables Tyk's round-robin loadbalancer. Tyk will ignore the TargetURL field, and rely on
@@ -2378,7 +2427,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: apidescriptions.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -2751,7 +2800,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: operatorcontexts.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -2789,6 +2838,42 @@ spec:
           spec:
             description: OperatorContextSpec defines the desired state of OperatorContext
             properties:
+              dataPlane:
+                description: |-
+                  DataPlane binds this context to a data plane group (environment).
+                  Gateway API mode only; read on Gateway-level contexts, ignored on
+                  class-level ones.
+                properties:
+                  serviceRef:
+                    description: |-
+                      ServiceRef is the k8s Service fronting this environment's data
+                      plane gateways, in this object's own namespace (the type carries
+                      no namespace, so cross-namespace is impossible). Gateway status
+                      addresses and listener port validation derive from it, so a data
+                      plane without its Service is not functional.
+                    properties:
+                      name:
+                        default: ""
+                        description: |-
+                          Name of the referent.
+                          This field is effectively required, but due to backwards compatibility is
+                          allowed to be empty. Instances of this type with an empty value here are
+                          almost certainly wrong.
+                          More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        type: string
+                    type: object
+                    x-kubernetes-map-type: atomic
+                  tags:
+                    description: |-
+                      Tags are the segment tags of this environment, stamped into
+                      server.gatewayTags of every synthesized API.
+                    items:
+                      type: string
+                    minItems: 1
+                    type: array
+                required:
+                - serviceRef
+                type: object
               env:
                 description: |-
                   Env is the values of the admin api endpoint that the operator will use to
@@ -2991,7 +3076,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: portalapicatalogues.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -3414,7 +3499,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: portalconfigs.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -3706,7 +3791,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE)/$(CERTIFICATE_NAME)
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: securitypolicies.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -3785,6 +3870,91 @@ spec:
                         description: AccessSpec defines what URLS a user has access
                           to and what methods are enabled
                         properties:
+                          conditions:
+                            description: Conditions further restrict the matched URL.
+                              Every condition must be satisfied.
+                            items:
+                              description: AccessCondition mirrors the Gateway's access
+                                condition wire format.
+                              properties:
+                                "on":
+                                  description: On controls whether all or any configured
+                                    options must match.
+                                  type: string
+                                options:
+                                  description: Options matches request attributes
+                                    using regular expressions.
+                                  properties:
+                                    header_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    path_part_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    payload_matches:
+                                      properties:
+                                        match_rx:
+                                          type: string
+                                        reverse:
+                                          type: boolean
+                                      required:
+                                      - match_rx
+                                      type: object
+                                    query_val_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    request_context_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    session_meta_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                  type: object
+                              required:
+                              - "on"
+                              - options
+                              type: object
+                            type: array
                           methods:
                             items:
                               type: string
@@ -3988,13 +4158,15 @@ spec:
                       default: ApiDefinition
                       description: |-
                         Kind represents the kind of the linked API Definition resource.
-                        It can be either "ApiDefinition" or "TykOasApiDefinition" (case sensitive way).
+                        It can be "ApiDefinition", "TykOasApiDefinition", "TykStreamsApiDefinition",
+                        "TykMcpProxyDefinition" or "HTTPRoute" (case sensitive way).
                         By default, Kind is set to "ApiDefinition".
                       enum:
                       - ApiDefinition
                       - TykOasApiDefinition
                       - TykStreamsApiDefinition
                       - TykMcpProxyDefinition
+                      - HTTPRoute
                       type: string
                     limit:
                       description: APILimit stores quota and rate limit on ACL level
@@ -4235,6 +4407,91 @@ spec:
                         description: AccessSpec defines what URLS a user has access
                           to and what methods are enabled
                         properties:
+                          conditions:
+                            description: Conditions further restrict the matched URL.
+                              Every condition must be satisfied.
+                            items:
+                              description: AccessCondition mirrors the Gateway's access
+                                condition wire format.
+                              properties:
+                                "on":
+                                  description: On controls whether all or any configured
+                                    options must match.
+                                  type: string
+                                options:
+                                  description: Options matches request attributes
+                                    using regular expressions.
+                                  properties:
+                                    header_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    path_part_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    payload_matches:
+                                      properties:
+                                        match_rx:
+                                          type: string
+                                        reverse:
+                                          type: boolean
+                                      required:
+                                      - match_rx
+                                      type: object
+                                    query_val_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    request_context_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    session_meta_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                  type: object
+                              required:
+                              - "on"
+                              - options
+                              type: object
+                            type: array
                           methods:
                             items:
                               type: string
@@ -4438,13 +4695,15 @@ spec:
                       default: ApiDefinition
                       description: |-
                         Kind represents the kind of the linked API Definition resource.
-                        It can be either "ApiDefinition" or "TykOasApiDefinition" (case sensitive way).
+                        It can be "ApiDefinition", "TykOasApiDefinition", "TykStreamsApiDefinition",
+                        "TykMcpProxyDefinition" or "HTTPRoute" (case sensitive way).
                         By default, Kind is set to "ApiDefinition".
                       enum:
                       - ApiDefinition
                       - TykOasApiDefinition
                       - TykStreamsApiDefinition
                       - TykMcpProxyDefinition
+                      - HTTPRoute
                       type: string
                     limit:
                       description: APILimit stores quota and rate limit on ACL level
@@ -4811,6 +5070,7 @@ spec:
                       - TykOasApiDefinition
                       - TykStreamsApiDefinition
                       - TykMcpProxyDefinition
+                      - HTTPRoute
                       type: string
                     name:
                       description: k8s resource name
@@ -4839,7 +5099,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: subgraphs.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -4905,7 +5165,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: supergraphs.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -4978,7 +5238,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: tykcertificates.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -5143,7 +5403,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: tykidentityprofiles.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -5433,7 +5693,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: tykmcpproxydefinitions.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -5608,7 +5868,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: tykoasapidefinitions.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -5648,6 +5908,9 @@ spec:
     - jsonPath: .status.governancePreflight.status
       name: PreflightStatus
       type: string
+    - jsonPath: .status.attachment.name
+      name: AttachedTo
+      type: string
     name: v1alpha1
     schema:
       openAPIV3Schema:
@@ -5672,7 +5935,16 @@ spec:
           metadata:
             type: object
           spec:
-            description: TykOasApiDefinitionSpec defines the desired state of TykOasApiDefinition
+            description: |-
+              TykOasApiDefinitionSpec defines the desired state of TykOasApiDefinition
+
+              The transition rule below fixes the mode at creation. Adding targetRefs
+              to a CR that already owns a Dashboard API would have to delete that API
+              and drop its finalizer mid-reconcile, on an object whose spec no longer
+              describes what it owns. Delete-and-recreate routes the same outcome
+              through reconcileDelete, which is already written and already tested.
+              Changing the CONTENTS of targetRefs stays legal, so retargeting one
+              route to another is an ordinary edit.
             properties:
               categories:
                 description: |-
@@ -5891,12 +6163,57 @@ spec:
                 required:
                 - enabled
                 type: object
+              targetRefs:
+                description: |-
+                  TargetRefs attaches this CR to a Kubernetes Gateway API object
+                  (HTTPRoute or Gateway) as a GEP-713 policy. When set, the CR runs
+                  in attachment mode and the routing fields of the attached OAS
+                  document are ignored.
+                items:
+                  description: |-
+                    LocalPolicyTargetReference identifies an API object to apply a direct or
+                    inherited policy to. This should be used as part of Policy resources
+                    that can target Gateway API resources. For more information on how this
+                    policy attachment model works, and a sample Policy resource, refer to
+                    the policy attachment documentation for Gateway API.
+                  properties:
+                    group:
+                      description: Group is the group of the target resource.
+                      maxLength: 253
+                      pattern: ^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+                      type: string
+                    kind:
+                      description: Kind is kind of the target resource.
+                      maxLength: 63
+                      minLength: 1
+                      pattern: ^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$
+                      type: string
+                    name:
+                      description: Name is the name of the target resource.
+                      maxLength: 253
+                      minLength: 1
+                      type: string
+                  required:
+                  - group
+                  - kind
+                  - name
+                  type: object
+                maxItems: 1
+                type: array
+                x-kubernetes-validations:
+                - message: targetRefs must name group gateway.networking.k8s.io and
+                    kind HTTPRoute or Gateway
+                  rule: self.all(t, t.group == 'gateway.networking.k8s.io' && (t.kind
+                    == 'HTTPRoute' || t.kind == 'Gateway'))
               tykOAS:
                 description: TykOAS provides storage information about Tyk OAS
                 properties:
                   configmapRef:
-                    description: ConfigmapRef provides information of configmap in
-                      which Tyk OAS is stored
+                    description: |-
+                      ConfigmapRef points at the ConfigMap storing the Tyk OAS document.
+                      Required in standalone mode. Nil in Gateway API attachment mode
+                      (targetRefs set): the document is rendered from the attached
+                      object instead.
                     properties:
                       keyName:
                         description: KeyName is the key of configmap in which Tyk
@@ -5915,8 +6232,6 @@ spec:
                     - keyName
                     - name
                     type: object
-                required:
-                - configmapRef
                 type: object
               upstreamRequestSigning:
                 description: |-
@@ -6041,9 +6356,50 @@ spec:
             required:
             - tykOAS
             type: object
+            x-kubernetes-validations:
+            - message: targetRefs cannot be added or removed after creation; delete
+                and recreate the TykOasApiDefinition to change between standalone
+                and attachment mode
+              rule: (has(self.targetRefs) && size(self.targetRefs) > 0) == (has(oldSelf.targetRefs)
+                && size(oldSelf.targetRefs) > 0)
+            - message: 'tykOAS.configmapRef is required when targetRefs is set: the
+                attached document is the base layer the route merges'
+              rule: '!(has(self.targetRefs) && size(self.targetRefs) > 0) || has(self.tykOAS.configmapRef)'
+            - message: 'versioning cannot be combined with targetRefs: a versioned
+                API has its own identity scheme that collides with the ids the route
+                synthesizes'
+              rule: '!(has(self.targetRefs) && size(self.targetRefs) > 0) || !has(self.versioning)'
           status:
             description: TykOasApiDefinitionStatus defines the observed state of TykOasApiDefinition
             properties:
+              attachment:
+                description: |-
+                  Attachment reports the Gateway API objects this CR supplies the
+                  base document for. It is set only in attachment mode, where the CR
+                  owns no API of its own: the route that targets it writes one API
+                  per path group, and every other status field here stays empty
+                  because nothing was synced. The shape mirrors spec.targetRefs, a
+                  list, so lifting the one-target cap later needs no status schema
+                  change.
+                items:
+                  description: |-
+                    AttachmentStatus identifies the object a TykOasApiDefinition is
+                    attached to.
+                  properties:
+                    kind:
+                      description: Kind is HTTPRoute or Gateway.
+                      type: string
+                    name:
+                      description: |-
+                        Name is the target's name. A LocalPolicyTargetReference carries no
+                        namespace, so the target always lives beside this CR.
+                      type: string
+                  required:
+                  - kind
+                  - name
+                  type: object
+                type: array
+                x-kubernetes-list-type: atomic
               certificatePinning:
                 description: |-
                   PinnedPublicKeys shows Tyk IDs of the all pinned public keys for each domain
@@ -6064,6 +6420,77 @@ spec:
                   - publicKeys
                   type: object
                 type: array
+              conditions:
+                description: "Conditions is the shared condition list for this CR.\n\nEntries
+                  are keyed by Type, so several writers coexist as long as\neach owns
+                  its own types - meta.SetStatusCondition replaces the entry\nwith
+                  a matching Type and leaves every other entry alone. Two writers\nsharing
+                  one Type is the failure mode: they would overwrite each\nother every
+                  reconcile and the object would flap.\n\nTypes in use, and who owns
+                  them:\n\n\tAccepted - the attachment layer (reconcileAttached).
+                  Reports\n\t           whether this CR is the effective base layer
+                  for its\n\t           target. Set only in attachment mode; a standalone
+                  CR has\n\t           no Accepted condition, because nothing accepts
+                  it.\n\nAnything added later - a Synced condition for the Dashboard
+                  write,\nsay - takes a new Type and must not reuse Accepted."
+                items:
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        lastTransitionTime is the last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        message is a human readable message indicating details about the transition.
+                        This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        observedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    reason:
+                      description: |-
+                        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                        Producers of specific condition types may define expected values and meanings for this field,
+                        and whether the values are considered a guaranteed API.
+                        The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
               domain:
                 description: |-
                   DomainStatus shows Tyk IDs of the certificates used for a particular domain
@@ -6253,7 +6680,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: tykoauthclients.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -6488,7 +6915,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: tykrulesets.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -6685,7 +7112,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: tyksessions.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -6765,6 +7192,91 @@ spec:
                         description: AccessSpec defines what URLS a user has access
                           to and what methods are enabled
                         properties:
+                          conditions:
+                            description: Conditions further restrict the matched URL.
+                              Every condition must be satisfied.
+                            items:
+                              description: AccessCondition mirrors the Gateway's access
+                                condition wire format.
+                              properties:
+                                "on":
+                                  description: On controls whether all or any configured
+                                    options must match.
+                                  type: string
+                                options:
+                                  description: Options matches request attributes
+                                    using regular expressions.
+                                  properties:
+                                    header_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    path_part_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    payload_matches:
+                                      properties:
+                                        match_rx:
+                                          type: string
+                                        reverse:
+                                          type: boolean
+                                      required:
+                                      - match_rx
+                                      type: object
+                                    query_val_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    request_context_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                    session_meta_matches:
+                                      additionalProperties:
+                                        properties:
+                                          match_rx:
+                                            type: string
+                                          reverse:
+                                            type: boolean
+                                        required:
+                                        - match_rx
+                                        type: object
+                                      type: object
+                                  type: object
+                              required:
+                              - "on"
+                              - options
+                              type: object
+                            type: array
                           methods:
                             items:
                               type: string
@@ -6968,13 +7480,15 @@ spec:
                       default: ApiDefinition
                       description: |-
                         Kind represents the kind of the linked API Definition resource.
-                        It can be either "ApiDefinition" or "TykOasApiDefinition" (case sensitive way).
+                        It can be "ApiDefinition", "TykOasApiDefinition", "TykStreamsApiDefinition",
+                        "TykMcpProxyDefinition" or "HTTPRoute" (case sensitive way).
                         By default, Kind is set to "ApiDefinition".
                       enum:
                       - ApiDefinition
                       - TykOasApiDefinition
                       - TykStreamsApiDefinition
                       - TykMcpProxyDefinition
+                      - HTTPRoute
                       type: string
                     limit:
                       description: APILimit stores quota and rate limit on ACL level
@@ -7419,7 +7933,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: tykstreamsapidefinitions.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -7595,7 +8109,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: tykusergroups.tyk.tyk.io
 spec:
   group: tyk.tyk.io
@@ -7755,7 +8269,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.22.0
   name: tykwebhooks.tyk.tyk.io
 spec:
   group: tyk.tyk.io
