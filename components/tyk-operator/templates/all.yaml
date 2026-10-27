@@ -74,6 +74,15 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - namespaces
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
   - secrets
   verbs:
   - create
@@ -90,6 +99,50 @@ rules:
   - create
   - get
   - list
+  - update
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - gateway.networking.k8s.io
+  resources:
+  - gatewayclasses
+  - httproutes
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - gateway.networking.k8s.io
+  resources:
+  - gatewayclasses/status
+  - gateways/status
+  - httproutes/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - gateway.networking.k8s.io
+  resources:
+  - gateways
+  - referencegrants
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - gateway.networking.k8s.io
+  resources:
+  - httproutes/finalizers
+  verbs:
   - update
 - apiGroups:
   - networking.k8s.io
@@ -372,6 +425,7 @@ spec:
         - --webhook-port={{ .Values.webhooks.port | default .Values.webhookPort }}
 {{- end }}
         - --metrics-secure={{ .Values.secureMetrics }}
+        - --enable-gateway-api={{ .Values.enableGatewayAPI | default false }}
         command:
         - /manager
         env:
@@ -411,10 +465,9 @@ spec:
         resources:
 {{- toYaml . | nindent 10 }}
 {{- end }}
-{{- $containerSc := .Values.securityContext | default dict }}
-{{- if and $containerSc (or (not (hasKey $containerSc "enabled")) $containerSc.enabled) (gt (len (omit $containerSc "enabled")) 0) }}
+{{- with .Values.securityContext }}
         securityContext:
-{{- toYaml (omit $containerSc "enabled") | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 {{- if or .Values.webhooks.enabled .Values.extraVolumeMounts }}
         volumeMounts:
@@ -432,14 +485,8 @@ spec:
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
 {{- end }}
-{{- if .Values.priorityClassName }}
-      priorityClassName: {{ .Values.priorityClassName | quote }}
-{{- end }}
-{{- $podSc := .Values.managerPodSecurityContext | default dict }}
-{{- if and $podSc (or (not (hasKey $podSc "enabled")) $podSc.enabled) (gt (len (omit $podSc "enabled")) 0) }}
       securityContext:
-{{- toYaml (omit $podSc "enabled") | nindent 8 }}
-{{- end }}
+        runAsNonRoot: true
       serviceAccountName: {{ include "tyk-operator-helm.fullname" . }}-controller-manager
       terminationGracePeriodSeconds: 10
 {{- if or .Values.webhooks.enabled .Values.extraVolumes }}
@@ -627,6 +674,27 @@ webhooks:
     service:
       name: {{ include "tyk-operator-helm.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
+      path: /validate-tyk-tyk-io-v1alpha1-tykoasapidefinition
+  failurePolicy: {{ .Values.webhooks.governanceFailurePolicy | default "Ignore" }}
+  name: vtykoasapidefinition.kb.io
+  rules:
+  - apiGroups:
+    - tyk.tyk.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - tykoasapidefinitions
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "tyk-operator-helm.fullname" . }}-webhook-service
+      namespace: {{ .Release.Namespace }}
       path: /validate-tyk-tyk-io-v1alpha1-tykoauthclient
   failurePolicy: Fail
   name: vtykoauthclient.kb.io
@@ -703,27 +771,6 @@ webhooks:
     - UPDATE
     resources:
     - tykwebhooks
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: {{ include "tyk-operator-helm.fullname" . }}-webhook-service
-      namespace: {{ .Release.Namespace }}
-      path: /validate-tyk-tyk-io-v1alpha1-tykoasapidefinition
-  failurePolicy: {{ .Values.webhooks.governanceFailurePolicy | default "Ignore" }}
-  name: vtykoasapidefinition.kb.io
-  rules:
-  - apiGroups:
-    - tyk.tyk.io
-    apiVersions:
-    - v1alpha1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - tykoasapidefinitions
   sideEffects: None
 
 {{- end }}
