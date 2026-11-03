@@ -379,24 +379,24 @@ tyk-gateway:
         repository: busybox
         tag: 1.32
         resources: {}
-        # If you do want to specify resources, uncomment the following
-        # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-        # limits:
-        #   cpu: 100m
-        #   memory: 128Mi
-        # requests:
-        #   cpu: 100m
-        #   memory: 128Mi
-        # securityContext for the setup-directories init container. Nothing is set here, so the
-        # component chart supplies the hardening fields and resolves runAsUser from the init block,
-        # gateway.containerSecurityContext, gateway.securityContext, then 65532. A pinned runAsUser
-        # is one of the two things OpenShift rejects — the UID must come from the namespace's range.
-        # Setting `enabled: false` here drops the init container's own block and falls back to
-        # gateway.containerSecurityContext (which pins no UID); set `enabled: false` there too and the
-        # init container gets no securityContext at all. `securityContext: {}` is NOT sufficient in
-        # either case, because Helm deep-merges the component chart defaults back in.
-        # securityContext:
-        #   enabled: false
+          # If you do want to specify resources, uncomment the following
+          # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+          # limits:
+          #   cpu: 100m
+          #   memory: 128Mi
+          # requests:
+          #   cpu: 100m
+          #   memory: 128Mi
+          # securityContext for the setup-directories init container. Nothing is set here, so the
+          # component chart supplies the hardening fields and resolves runAsUser from the init block,
+          # gateway.containerSecurityContext, gateway.securityContext, then 65532. A pinned runAsUser
+          # is one of the two things OpenShift rejects — the UID must come from the namespace's range.
+          # Setting `enabled: false` here drops the init container's own block and falls back to
+          # gateway.containerSecurityContext (which pins no UID); set `enabled: false` there too and the
+          # init container gets no securityContext at all. `securityContext: {}` is NOT sufficient in
+          # either case, because Helm deep-merges the component chart defaults back in.
+          # securityContext:
+          #   enabled: false
 
     # image pull secrets to use when pulling images from repository
     imagePullSecrets: []
@@ -458,10 +458,10 @@ tyk-gateway:
               pathType: ImplementationSpecific
 
       # tls configuration for ingress
-      #  - secretName: chart-example-tls
-      #    hosts:
-      #      - chart-example.local
       tls: []
+        # - secretName: chart-example-tls
+        #   hosts:
+        #     - chart-example.local
 
     # terminationGracePeriodSeconds sets how long (in seconds) the pod may take to
     # shut down gracefully before being forcibly killed (SIGKILL). When unset,
@@ -509,13 +509,13 @@ tyk-gateway:
     # run on environments with little resources, such as Minikube. If you do
     # want to specify resources, uncomment the following lines, adjust them
     # as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
     resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
 
     # livenessProbe values for gateway pod. All fields from PodLivenessProbe object can be added here.
     # If set to empty or nil, the default health check on /health will be performed.
@@ -693,14 +693,14 @@ tyk-gateway:
       xffDepth: 1
 
     # extraContainers is a list of containers to be added to the pod
-    # - name: sidecar
-    #   image: sidecar:latest
     extraContainers: []
+      # - name: sidecar
+      #   image: sidecar:latest
 
     # extraEnvs is used to set gateway env variables
-    # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
-    #   value: "true"
     extraEnvs: []
+      # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
+      #   value: "true"
 
     # extraVolumes is a list of volumes to be added to the pod
     # extraVolumes:
@@ -1068,13 +1068,13 @@ tyk-pump:
     # run on environments with little resources, such as Minikube. If you do
     # want to specify resources, uncomment the following lines, adjust them
     # as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
     resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
 
     # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
     # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block
@@ -1109,14 +1109,14 @@ tyk-pump:
     priorityClassName: ""
 
     # extraContainers is a list of containers to be added to the pod
-    # - name: sidecar
-    #   image: sidecar:latest
     extraContainers: []
+      # - name: sidecar
+      #   image: sidecar:latest
 
     # extraEnvs is used to set environment variables in pump container
-    # - name: TYK_PMP_PURGEDELAY
-    #   value: 30
     extraEnvs: []
+      # - name: TYK_PMP_PURGEDELAY
+      #   value: 30
 
     # extraVolumes is a list of volumes to be added to the pod
     # extraVolumes:
@@ -1199,9 +1199,9 @@ tyk-bootstrap:
         backoffLimit: 1
 
         # extraEnvs is used to set extra environment variables to pre-install job.
-        # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
-        #   value: "yourlicense"
         extraEnvs: []
+          # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
+          #   value: "yourlicense"
 
       # postInstall configures post-install Helm hook
       postInstall:
@@ -1221,9 +1221,9 @@ tyk-bootstrap:
         backoffLimit: 1
 
         # extraEnvs is used to set extra environment variables to post-install job.
-        # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
-        #   value: "burak"
         extraEnvs: []
+          # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
+          #   value: "burak"
 
       # preDelete configures pre-delete Helm hook
       preDelete:
@@ -1248,9 +1248,9 @@ tyk-bootstrap:
         backoffLimit: 1
 
         # extraEnvs is used to set extra environment variables to pre-delete job.
-        # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
-        #   value: "tyk-operator-conf"
         extraEnvs: []
+          # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
+          #   value: "tyk-operator-conf"
 
     org:
       # The name for your organization inside Tyk
@@ -1561,14 +1561,13 @@ tyk-dashboard:
     # run on environments with little resources, such as Minikube. If you do
     # want to specify resources, uncomment the following lines, adjust them
     # as necessary, and remove the curly braces after 'resources:'.
-    #  resources:
-    #   limits:
-    #    cpu: 100m
-    #    memory: 128Mi
-    #   requests:
-    #    cpu: 100m
-    #    memory: 128Mi
     resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
 
     # securityContext holds pod-level security attributes for Tyk Dashboard pod. All fields from PodSecurityContext object can be added here.
     # To let the cluster assign UIDs/GIDs (e.g. OpenShift SCC), set `enabled: false` here — the whole block
@@ -1616,14 +1615,14 @@ tyk-dashboard:
     priorityClassName: ""
 
     # extraContainers is a list of containers to be added to the pod
-    # - name: sidecar
-    #   image: sidecar:latest
     extraContainers: []
+      # - name: sidecar
+      #   image: sidecar:latest
 
     # extraEnvs is used to set extra environment variables to Tyk Dashboard pod.
-    # - name: TYK_DB_PAGESIZE
-    #   value: "10"
     extraEnvs: []
+      # - name: TYK_DB_PAGESIZE
+      #   value: "10"
 
     # extraVolumes is a list of volumes to be added to the pod
     # extraVolumes:
@@ -1839,14 +1838,14 @@ tyk-dev-portal:
   priorityClassName: ""
 
   # extraContainers is a list of containers to be added to the pod
-  # - name: sidecar
-  #   image: sidecar:latest
   extraContainers: []
+    # - name: sidecar
+    #   image: sidecar:latest
 
   # extraEnvs is used to set extra environment variables to Tyk Developer Portal pod.
-  # - name: PORTAL_REFRESHINTERVAL
-  #   value: "10"
   extraEnvs: []
+    # - name: PORTAL_REFRESHINTERVAL
+    #   value: "10"
   # extraVolumes is a list of volumes to be added to the pod
   # extraVolumes:
   #   - name: ca-certs
