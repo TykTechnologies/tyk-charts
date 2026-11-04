@@ -66,6 +66,8 @@ nodeSelector: {}
 tolerations: {}
 # affinity for manager pod assignment
 affinity: {}
+# podLabels specifies labels to be added in operator Pod
+podLabels: {}
 hostNetwork: false
 # rbac specifies necessary resources for kube-rbac-proxy container
 rbac:
