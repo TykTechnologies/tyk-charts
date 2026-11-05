@@ -19,6 +19,6 @@ dependencies:
   version: 5.4.1
 - name: tyk-operator
   repository: file://../components/tyk-operator
-  version: 1.5.0
-digest: sha256:27209138b6d359c880658fcad81d28930c44fd9bbb2cff6dc7cf35d8714acd40
-generated: "2026-09-25T15:11:45.908878+02:00"
+  version: 1.6.0
+digest: sha256:9b3f2e4411a1f47a2d665651710fd8df9b20ab725bdeac216b28d07f46a703a6
+generated: "2026-11-05T23:59:37.19788+01:00"
