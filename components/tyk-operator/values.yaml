@@ -5,6 +5,10 @@ replicaCount: 1
 # reconciles Gateway API resources (GatewayClass, Gateway, HTTPRoute).
 # Set this to true only when the Gateway API CRDs are installed in the
 # cluster; without the flag the operator sets up no Gateway API watches.
+# To turn it off after using it, delete the HTTPRoutes, Gateways and
+# GatewayClasses the operator manages while the flag is still on, so it
+# can remove the Tyk APIs and finalizers it added. With the flag off,
+# nothing removes them.
 enableGatewayAPI: false
 # loads environment variables to the operator.
 envFrom:
