@@ -53,6 +53,28 @@ jobs:
         with:
           version: v3.3.0
 
+      # Umbrella charts pin each file:// component to an exact version. If a
+      # component's version changes without the pins (as an operator release
+      # sync does), every helm dependency update fails with a vague error.
+      - name: Check umbrella charts pin the in-repo component versions
+        run: |
+          status=0
+          for umbrella in tyk-*/Chart.yaml; do
+            while read -r name version repo; do
+              component="$(dirname "$umbrella")/${repo#file://}"
+              actual="$(awk '/^version:/ {print $2; exit}' "$component/Chart.yaml")"
+              if [ "$version" != "$actual" ]; then
+                echo "::error file=$umbrella::$name is pinned to $version but $component/Chart.yaml is $actual"
+                status=1
+              fi
+            done < <(awk '
+              /^  - name: / { name = $3 }
+              /^    version: / { version = $2 }
+              /^    repository: file:\/\// { print name, version, $2 }
+            ' "$umbrella")
+          done
+          exit $status
+
       - name: Add dependencies
         run: helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
 
