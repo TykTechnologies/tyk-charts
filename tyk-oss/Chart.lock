@@ -8,5 +8,5 @@ dependencies:
 - name: tyk-operator
   repository: file://../components/tyk-operator
   version: 1.6.0
-digest: sha256:21358eb4a21b81b6da99b65f44669afab2009b97ff2205a9e23cbea7930c7cc2
-generated: "2026-10-28T15:10:10.976728642Z"
+digest: sha256:f2d24112a9134858a739426a4021522938548800d7cac8e52b7cca1fa648b02e
+generated: "2026-11-05T23:59:30.698057+01:00"

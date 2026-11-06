@@ -98,9 +98,9 @@ bootstrap:
         tag: v2.2.0
 
       # extraEnvs is used to set extra environment variables to pre-install job.
-      # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
-      #   value: "yourlicense"
       extraEnvs: []
+        # - name: TYK_K8SBOOTSTRAP_TYK_DASHBOARDLICENSE
+        #   value: "yourlicense"
 
     # postInstall configures post-install Helm hook
     postInstall:
@@ -116,9 +116,9 @@ bootstrap:
         tag: v2.2.0
 
       # extraEnvs is used to set extra environment variables to post-install job.
-      # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
-      #   value: "burak"
       extraEnvs: []
+        # - name: TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
+        #   value: "burak"
 
     # preDelete configures pre-delete Helm hook
     preDelete:
@@ -139,9 +139,9 @@ bootstrap:
         tag: v2.2.0
 
       # extraEnvs is used to set extra environment variables to pre-delete job.
-      # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
-      #   value: "tyk-operator-conf"
       extraEnvs: []
+        # - name: TYK_K8SBOOTSTRAP_OPERATORKUBERNETESSECRETNAME
+        #   value: "tyk-operator-conf"
 
   org:
     # The name for your organization inside Tyk
