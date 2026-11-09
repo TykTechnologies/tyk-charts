@@ -132,17 +132,41 @@ database:
 ```
 
 
+### Other Configurations and Production Hardening
 
-### Other Configurations
+Other [Enterprise Portal configurations](https://tyk.io/docs/tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration) can be set by using environment variables with the `extraEnvs` field.
 
-Other [Enterprise Portal configurations](https://tyk.io/docs/tyk-stack/tyk-developer-portal/enterprise-developer-portal/install-tyk-enterprise-portal/configuration) can be set by using environment variables with `extraEnvs` fields, e.g.:
+In production deployments, you should use `extraEnvs` to inject secrets sourced from Kubernetes Secrets using `valueFrom.secretKeyRef`:
 
 ```yaml
 extraEnvs:
-  - name: PORTAL_LOG_LEVEL
-    value: debug
+  - name: PORTAL_API_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: tyk-portal-secrets
+        key: portalApiSecret
+  - name: PORTAL_JWTSIGNINGKEY
+    valueFrom:
+      secretKeyRef:
+        name: tyk-portal-secrets
+        key: jwtSigningKey
+  - name: PORTAL_SESSION_KEY
+    valueFrom:
+      secretKeyRef:
+        name: tyk-portal-secrets
+        key: sessionKey
+  - name: PORTAL_WEBHOOKS_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: tyk-portal-secrets
+        key: webhooksSecret
 ```
 
+Key secrets to configure for production hardening:
+* **`PORTAL_API_SECRET`**: API secret for SSO integration with Tyk Identity Broker (TIB). Must not be omitted or left empty in production, as an empty secret permits unauthenticated SSO requests.
+* **`PORTAL_JWTSIGNINGKEY`**: Secret key used to sign and verify JWTs issued by the portal. Overrides the default `"secret-jwt-signing-key"` to prevent JWT forgery.
+* **`PORTAL_SESSION_KEY`**: A shared 32-byte encryption key for session cookies. When running multiple replicas (`replicaCount > 1`), this key **must** be explicitly configured and shared across pods; otherwise, each pod generates a separate random key, causing session decryption failures across replicas.
+* **`PORTAL_WEBHOOKS_SECRET`**: Global secret key used to sign all outgoing webhook requests.
 ### Security contexts on OpenShift
 
 The portal pins `securityContext.fsGroup: 2000` so that the storage PVC and any S3-credential mount are writable by
@@ -185,10 +209,26 @@ where the secret should contain a key called `DevPortalLicense`.
 
 ### Tyk Developer Enterprise Portal Admin Password
 
-In order to refer Tyk Developer Enterprise Portal's admin password through Kubernetes secret, 
-please use `global.adminUser.useSecretName`, where the secret should contain a key called `adminUserPassword`.
+By default, the Developer Portal admin password is set to `123456` in `values.yaml`. **Do NOT use the default password in production.**
 
-### Tyk Developer Enterprise Portal Database Connection String
+In order to refer Tyk Developer Enterprise Portal's admin credentials through a Kubernetes secret, 
+please use `global.adminUser.useSecretName`:
+
+```yaml
+global:
+  adminUser:
+    useSecretName: "portal-admin-secret"
+```
+
+The referenced Kubernetes secret can contain the following keys:
+- `adminUserPassword`: sets the Developer Portal admin password (`.global.adminUser.password`)
+- `adminUserEmail`: sets the Developer Portal admin email (`.global.adminUser.email`)
+
+Alternatively, configure a strong custom password directly in `global.adminUser.password`.
+
+### Production Portal Secrets via extraEnvs
+
+To configure sensitive portal settings without committing them in plain text, use `extraEnvs` referencing a Kubernetes Secret via `valueFrom.secretKeyRef` (such as `PORTAL_API_SECRET`, `PORTAL_JWTSIGNINGKEY`, and `PORTAL_SESSION_KEY`). See [Other Configurations and Production Hardening](#other-configurations-and-production-hardening) for details.
 
 In order to refer Tyk Enterprise Portal connection string to the selected database through Kubernetes secret,
 please use `useSecretName`, where the secret should contain a key called 
