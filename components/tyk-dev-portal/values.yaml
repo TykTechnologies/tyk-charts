@@ -16,8 +16,6 @@ global:
     # email of Developer Portal admin
     email: default@example.com
     # password of Developer Portal admin
-    # WARNING: Do NOT use this default password in production! Either change it here or provide
-    # it via a Kubernetes secret using .global.adminUser.useSecretName above.
     password: 123456
     # firstname of Developer Portal admin
     firstName: "admin"
@@ -270,10 +268,10 @@ extraContainers: []
 # Production Hardening Secrets:
 # For production deployments, it is strongly recommended to configure the following secrets via extraEnvs
 # referencing a Kubernetes Secret:
-# - PORTAL_API_SECRET: API secret for SSO integration with Tyk Identity Broker (TIB).
-#   Do NOT omit or leave empty in production, as doing so permits unauthenticated SSO access.
-# - PORTAL_JWTSIGNINGKEY: Secret key used to sign and verify JWTs issued by the portal.
-#   Defaults in code to "secret-jwt-signing-key" and MUST be overridden in production to prevent JWT forgery.
+# - PORTAL_API_SECRET: Shared secret required in production to secure SSO communication with Tyk Identity Broker (TIB).
+#   Must not be left unconfigured or empty.
+# - PORTAL_JWTSIGNINGKEY: Required secret used to sign and verify JSON Web Tokens (JWTs).
+#   Must be configured with a unique, cryptographically secure random key before production deployment.
 # - PORTAL_SESSION_KEY: Persistent 32-byte cookie session encryption key.
 #   Critical for multi-replica/HA deployments (replicaCount > 1) so that all pods can decrypt
 #   each other's session cookies across replicas or restarts.

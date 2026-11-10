@@ -163,8 +163,9 @@ extraEnvs:
 ```
 
 Key secrets to configure for production hardening:
-* **`PORTAL_API_SECRET`**: API secret for SSO integration with Tyk Identity Broker (TIB). Must not be omitted or left empty in production, as an empty secret permits unauthenticated SSO requests.
-* **`PORTAL_JWTSIGNINGKEY`**: Secret key used to sign and verify JWTs issued by the portal. Overrides the default `"secret-jwt-signing-key"` to prevent JWT forgery.
+
+* **`PORTAL_API_SECRET`**: Shared secret required in production to secure SSO communication with Tyk Identity Broker (TIB). Must not be left unconfigured or empty.
+* **`PORTAL_JWTSIGNINGKEY`**: Required secret used to sign and verify JSON Web Tokens (JWTs). Must be configured with a unique, cryptographically secure random key before production deployment.
 * **`PORTAL_SESSION_KEY`**: A shared 32-byte encryption key for session cookies. When running multiple replicas (`replicaCount > 1`), this key **must** be explicitly configured and shared across pods; otherwise, each pod generates a separate random key, causing session decryption failures across replicas.
 * **`PORTAL_WEBHOOKS_SECRET`**: Global secret key used to sign all outgoing webhook requests.
 ### Security contexts on OpenShift
@@ -206,13 +207,9 @@ This section describes how to use Kubernetes secrets to declare confidential fie
 
 In order to refer Tyk Developer Enterprise Portal license through Kubernetes secret, please use `useSecretName`, 
 where the secret should contain a key called `DevPortalLicense`.
+### Tyk Developer Enterprise Portal Admin Credentials
 
-### Tyk Developer Enterprise Portal Admin Password
-
-By default, the Developer Portal admin password is set to `123456` in `values.yaml`. **Do NOT use the default password in production.**
-
-In order to refer Tyk Developer Enterprise Portal's admin credentials through a Kubernetes secret, 
-please use `global.adminUser.useSecretName`:
+To supply administrator credentials securely via a Kubernetes Secret instead of storing plaintext values, use `global.adminUser.useSecretName`:
 
 ```yaml
 global:
@@ -224,7 +221,7 @@ The referenced Kubernetes secret can contain the following keys:
 - `adminUserPassword`: sets the Developer Portal admin password (`.global.adminUser.password`)
 - `adminUserEmail`: sets the Developer Portal admin email (`.global.adminUser.email`)
 
-Alternatively, configure a strong custom password directly in `global.adminUser.password`.
+Alternatively, supply administrator credentials directly in `global.adminUser.password`.
 
 ### Production Portal Secrets via extraEnvs
 
