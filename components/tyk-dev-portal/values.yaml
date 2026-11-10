@@ -128,7 +128,7 @@ image:
   # image repository for Tyk Developer Portal.
   repository: tykio/portal
   # Developer portal < v1.2 is not supported
-  tag: v1.19.0
+  tag: v1.20.0
   # image pull policy
   pullPolicy: Always
 
@@ -258,20 +258,20 @@ affinity: {}
 priorityClassName: ""
 
 # extraContainers is a list of containers to be added to the pod
-# - name: sidecar
-#   image: sidecar:latest
 extraContainers: []
+  # - name: sidecar
+  #   image: sidecar:latest
 
 # extraEnvs is used to set extra environment variables to Tyk Developer Portal pod.
 # Supports full Kubernetes env var syntax including valueFrom (secretKeyRef, configMapKeyRef).
-# - name: PORTAL_REFRESHINTERVAL
-#   value: "10"
-# - name: PORTAL_API_SECRET
-#   valueFrom:
-#     secretKeyRef:
-#       name: my-secret
-#       key: apiSecret
 extraEnvs: []
+  # - name: PORTAL_REFRESHINTERVAL
+  #   value: "10"
+  # - name: PORTAL_API_SECRET
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: my-secret
+  #       key: apiSecret
 
 # extraVolumes is a list of volumes to be added to the pod
 # extraVolumes:

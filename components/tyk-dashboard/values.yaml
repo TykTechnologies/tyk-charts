@@ -405,7 +405,7 @@ dashboard:
     repository: tykio/tyk-dashboard
 
     # tag for Tyk Dashboard
-    tag: v5.13.2
+    tag: v5.13.5
 
     # image pull policy
     pullPolicy: Always
@@ -480,14 +480,13 @@ dashboard:
   # run on environments with little resources, such as Minikube. If you do
   # want to specify resources, uncomment the following lines, adjust them
   # as necessary, and remove the curly braces after 'resources:'.
-  #  resources:
-  #   limits:
-  #    cpu: 100m
-  #    memory: 128Mi
-  #   requests:
-  #    cpu: 100m
-  #    memory: 128Mi
   resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
 
   # securityContext holds pod-level security attributes for Tyk Dashboard pod. All fields from PodSecurityContext object can be added here.
   # Note: runAsUser is not set by default to allow platforms like OpenShift to assign UIDs automatically
@@ -530,14 +529,14 @@ dashboard:
   priorityClassName: ""
 
   # extraContainers is a list of containers to be added to the pod
-  # - name: sidecar
-  #   image: sidecar:latest
   extraContainers: []
+    # - name: sidecar
+    #   image: sidecar:latest
 
   # extraEnvs is used to set extra environment variables to Tyk Dashboard pod.
-  # - name: TYK_DB_PAGESIZE
-  #   value: "10"
   extraEnvs: []
+    # - name: TYK_DB_PAGESIZE
+    #   value: "10"
 
   # extraVolumes is a list of volumes to be added to the pod
   # extraVolumes:

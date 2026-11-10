@@ -261,7 +261,7 @@ mdcb:
     # image repository for Tyk MDCB
     repository: tykio/tyk-mdcb-docker
     # image tag for Tyk MDCB
-    tag: v2.13.0
+    tag: v2.14.0
     # image pull policy
     pullPolicy: IfNotPresent
 
@@ -369,16 +369,16 @@ mdcb:
     #      - chart-example.local
 
   resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
 
   # autoscaling configuration
   autoscaling:
@@ -414,9 +414,9 @@ mdcb:
     #         periodSeconds: 15
 
   # extraContainers is a list of containers to be added to the pod
-  # - name: sidecar
-  #   image: sidecar:latest
   extraContainers: []
+    # - name: sidecar
+    #   image: sidecar:latest
 
   extraEnvs: []
 

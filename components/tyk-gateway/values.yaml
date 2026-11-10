@@ -320,7 +320,7 @@ gateway:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
 
     # image tag for Tyk Gateway
-    tag: v5.13.2
+    tag: v5.13.5
 
     # image pull policy for Tyk Gateway
     pullPolicy: IfNotPresent
@@ -434,10 +434,10 @@ gateway:
               pathType: ImplementationSpecific
 
       # tls configuration for ingress
-      #  - secretName: chart-example-tls
-      #    hosts:
-      #      - chart-example-different-domain-possible.local
       tls: []
+        # - secretName: chart-example-tls
+        #   hosts:
+        #     - chart-example-different-domain-possible.local
 
   # Creates an ingress object in k8s. Will require an ingress-controller and
   # annotation to that ingress controller.
@@ -459,10 +459,10 @@ gateway:
             pathType: ImplementationSpecific
 
     # tls configuration for ingress
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
     tls: []
+      # - secretName: chart-example-tls
+      #   hosts:
+      #     - chart-example.local
 
   # hashKeyFunction specifies hashing function used in Tyk Gateway.
   # It is used to set TYK_GW_HASHKEYFUNCTION
@@ -482,13 +482,13 @@ gateway:
   # run on environments with little resources, such as Minikube. If you do
   # want to specify resources, uncomment the following lines, adjust them
   # as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
   resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
 
   # livenessProbe values for gateway pod. All fields from PodLivenessProbe object can be added here.
   # If set to empty or nil, the default health check on /health will be performed.
@@ -577,14 +577,14 @@ gateway:
   priorityClassName: ""
 
   # extraContainers is a list of containers to be added to the pod
-  # - name: sidecar
-  #   image: sidecar:latest
   extraContainers: []
+    # - name: sidecar
+    #   image: sidecar:latest
 
   # extraEnvs is used to set gateway env variables
-  # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
-  #   value: "true"
   extraEnvs: []
+    # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
+    #   value: "true"
 
   # extraVolumes is a list of volumes to be added to the pod
   # extraVolumes:

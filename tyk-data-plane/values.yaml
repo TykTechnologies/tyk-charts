@@ -285,7 +285,7 @@ tyk-gateway:
       repository: tykio/tyk-gateway-ee
 
       # image tag for Tyk Gateway
-      tag: v5.13.2
+      tag: v5.13.5
 
       # image pull policy for Tyk Gateway
       pullPolicy: IfNotPresent
@@ -296,24 +296,24 @@ tyk-gateway:
         repository: busybox
         tag: 1.32
         resources: {}
-        # If you do want to specify resources, uncomment the following
-        # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-        # limits:
-        #   cpu: 100m
-        #   memory: 128Mi
-        # requests:
-        #   cpu: 100m
-        #   memory: 128Mi
-        # securityContext for the setup-directories init container. Nothing is set here, so the
-        # component chart supplies the hardening fields and resolves runAsUser from the init block,
-        # gateway.containerSecurityContext, gateway.securityContext, then 65532. A pinned runAsUser
-        # is one of the two things OpenShift rejects — the UID must come from the namespace's range.
-        # Setting `enabled: false` here drops the init container's own block and falls back to
-        # gateway.containerSecurityContext (which pins no UID); set `enabled: false` there too and the
-        # init container gets no securityContext at all. `securityContext: {}` is NOT sufficient in
-        # either case, because Helm deep-merges the component chart defaults back in.
-        # securityContext:
-        #   enabled: false
+          # If you do want to specify resources, uncomment the following
+          # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+          # limits:
+          #   cpu: 100m
+          #   memory: 128Mi
+          # requests:
+          #   cpu: 100m
+          #   memory: 128Mi
+          # securityContext for the setup-directories init container. Nothing is set here, so the
+          # component chart supplies the hardening fields and resolves runAsUser from the init block,
+          # gateway.containerSecurityContext, gateway.securityContext, then 65532. A pinned runAsUser
+          # is one of the two things OpenShift rejects — the UID must come from the namespace's range.
+          # Setting `enabled: false` here drops the init container's own block and falls back to
+          # gateway.containerSecurityContext (which pins no UID); set `enabled: false` there too and the
+          # init container gets no securityContext at all. `securityContext: {}` is NOT sufficient in
+          # either case, because Helm deep-merges the component chart defaults back in.
+          # securityContext:
+          #   enabled: false
 
     # image pull secrets to use when pulling images from repository
     imagePullSecrets: []
@@ -369,10 +369,10 @@ tyk-gateway:
                 pathType: ImplementationSpecific
 
         # tls configuration for ingress
-        #  - secretName: chart-example-tls
-        #    hosts:
-        #      - chart-example-different-domain-possible.local
         tls: []
+          # - secretName: chart-example-tls
+          #   hosts:
+          #     - chart-example-different-domain-possible.local
 
     # Creates an ingress object in k8s. Will require an ingress-controller and
     # annotation to that ingress controller.
@@ -394,10 +394,10 @@ tyk-gateway:
               pathType: ImplementationSpecific
 
       # tls configuration for ingress
-      #  - secretName: chart-example-tls
-      #    hosts:
-      #      - chart-example.local
       tls: []
+        # - secretName: chart-example-tls
+        #   hosts:
+        #     - chart-example.local
 
     # terminationGracePeriodSeconds sets how long (in seconds) the pod may take to
     # shut down gracefully before being forcibly killed (SIGKILL). When unset,
@@ -445,13 +445,13 @@ tyk-gateway:
     # run on environments with little resources, such as Minikube. If you do
     # want to specify resources, uncomment the following lines, adjust them
     # as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
     resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
 
     # livenessProbe values for gateway pod. All fields from PodLivenessProbe object can be added here.
     # If set to empty or nil, the default health check on /health will be performed.
@@ -535,14 +535,14 @@ tyk-gateway:
     priorityClassName: ""
 
     # extraContainers is a list of containers to be added to the pod
-    # - name: sidecar
-    #   image: sidecar:latest
     extraContainers: []
+      # - name: sidecar
+      #   image: sidecar:latest
 
     # extraEnvs is used to set gateway env variables
-    # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
-    #   value: "true"
     extraEnvs: []
+      # - name: TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY
+      #   value: "true"
 
     # Sharding gateway allows you to selectively load APIs to specific gateways.
     # Also be sure to match API segmentation tags with the tags selected below.
@@ -773,7 +773,7 @@ tyk-pump:
       repository: tykio/tyk-pump-docker-pub
 
       # tag for Tyk pump
-      tag: v1.17.0
+      tag: v1.18.0
 
       # image pull policy
       pullPolicy: IfNotPresent
@@ -920,13 +920,13 @@ tyk-pump:
     # run on environments with little resources, such as Minikube. If you do
     # want to specify resources, uncomment the following lines, adjust them
     # as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
     resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
 
     # securityContext values for pump pod. All fields from PodSecurityContext object can be added here.
     # The effective default is larger than what is listed here: the tyk-pump component chart also
@@ -965,14 +965,14 @@ tyk-pump:
     priorityClassName: ""
 
     # extraContainers is a list of containers to be added to the pod
-    # - name: sidecar
-    #   image: sidecar:latest
     extraContainers: []
+      # - name: sidecar
+      #   image: sidecar:latest
 
     # extraEnvs is used to set environment variables in pump container
-    # - name: TYK_PMP_PURGEDELAY
-    #   value: 30
     extraEnvs: []
+      # - name: TYK_PMP_PURGEDELAY
+      #   value: 30
 
     # extraVolumes is a list of volumes to be added to the pod
     # extraVolumes:
