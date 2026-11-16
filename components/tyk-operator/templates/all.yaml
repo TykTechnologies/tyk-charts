@@ -416,6 +416,9 @@ spec:
 {{- end }}
       labels:
         control-plane: tyk-operator-controller-manager
+{{- with .Values.podLabels }}
+{{- toYaml . | nindent 8 }}
+{{- end }}
     spec:
       containers:
       - args:
@@ -441,7 +444,7 @@ spec:
         envFrom:
 {{- toYaml . | nindent 10 }}
 {{- end }}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ .Values.global.imageRegistry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         livenessProbe:
           httpGet:
@@ -486,6 +489,14 @@ spec:
 {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{- toYaml . | nindent 8 }}
+{{- end }}
+{{- with .Values.affinity }}
+      affinity:
+{{- toYaml . | nindent 8 }}
 {{- end }}
 {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName | quote }}

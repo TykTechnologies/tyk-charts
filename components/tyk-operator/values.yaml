@@ -77,6 +77,8 @@ nodeSelector: {}
 tolerations: {}
 # affinity for manager pod assignment
 affinity: {}
+# podLabels specifies labels to be added in operator Pod
+podLabels: {}
 # priorityClassName for controller-manager pod assignment
 priorityClassName: ""
 hostNetwork: false
