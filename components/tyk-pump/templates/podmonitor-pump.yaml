@@ -14,5 +14,13 @@ spec:
       app: pump-{{ include "tyk-pump.fullname" . }}
   podMetricsEndpoints:
     - port: tyk-pump-port
+      {{- with .Values.pump.prometheusPump.prometheusOperator.relabelings }}
+      relabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pump.prometheusPump.prometheusOperator.metricRelabelings }}
+      metricRelabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{ end }}
 {{ end }}

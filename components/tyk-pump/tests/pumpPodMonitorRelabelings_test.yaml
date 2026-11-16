@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# The pump PodMonitor takes relabelings and metricRelabelings for its scrape
+# endpoint (TT-12004). Neither key is rendered unless it is set, so an existing
+# PodMonitor is unchanged.
+suite: Pump PodMonitor relabelings
+templates:
+  - templates/podmonitor-pump.yaml
+release:
+  name: tyk-pump
+  namespace: test
+tests:
+  - it: renders neither key by default
+    set:
+      pump.backend:
+        - prometheus
+      pump.prometheusPump.prometheusOperator.enabled: true
+    asserts:
+      - isKind:
+          of: PodMonitor
+      - equal:
+          path: spec.podMetricsEndpoints
+          value:
+            - port: tyk-pump-port
+
+  - it: renders metricRelabelings and relabelings on the endpoint
+    set:
+      pump.backend:
+        - prometheus
+      pump.prometheusPump.prometheusOperator.enabled: true
+      pump.prometheusPump.prometheusOperator.relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: node
+      pump.prometheusPump.prometheusOperator.metricRelabelings:
+        - sourceLabels: [time_stamp]
+          targetLabel: timestamp
+        - action: labeldrop
+          regex: api_key
+    asserts:
+      - equal:
+          path: spec.podMetricsEndpoints
+          value:
+            - port: tyk-pump-port
+              relabelings:
+                - sourceLabels: [__meta_kubernetes_pod_node_name]
+                  targetLabel: node
+              metricRelabelings:
+                - sourceLabels: [time_stamp]
+                  targetLabel: timestamp
+                - action: labeldrop
+                  regex: api_key
+
+  - it: renders no PodMonitor when the operator is off
+    set:
+      pump.backend:
+        - prometheus
+      pump.prometheusPump.prometheusOperator.metricRelabelings:
+        - action: labeldrop
+          regex: api_key
+    asserts:
+      - hasDocuments:
+          count: 0
