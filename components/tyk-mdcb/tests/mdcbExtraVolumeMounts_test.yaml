@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+#
+# mdcb.extraVolumeMounts used to be rendered two spaces to the left of the other
+# volumeMounts entries, so setting it made the Deployment invalid YAML
+# ("did not find expected key") and the chart could not be installed.
+suite: MDCB extraVolumeMounts
+templates:
+  - templates/deployment-mdcb.yaml
+  - templates/secret-mdcb.yaml
+release:
+  name: tyk-mdcb
+  namespace: test
+tests:
+  - it: renders extraVolumeMounts after the config mount
+    set:
+      mdcb.extraVolumes:
+        - name: controlplane-tls
+          secret:
+            secretName: controlplane-tls
+      mdcb.extraVolumeMounts:
+        - name: controlplane-tls
+          mountPath: /tmp/controlplane-tls
+          readOnly: true
+    template: templates/deployment-mdcb.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: mdcb-conf
+            mountPath: /etc/tyk-sink
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: controlplane-tls
+            mountPath: /tmp/controlplane-tls
+            readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: controlplane-tls
+            secret:
+              secretName: controlplane-tls
+
+  - it: renders only the config mount by default
+    template: templates/deployment-mdcb.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts
+          value:
+            - name: mdcb-conf
+              mountPath: /etc/tyk-sink
