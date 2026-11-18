@@ -93,6 +93,19 @@ Add `prometheus` to `pump.backend`, and add connection details for prometheus un
 We also support monitoring using Prometheus Operator. All you have to do is set `pump.prometheusPump.prometheusOperator.enabled` to true.
 This will create a PodMonitor resource for your Pump instance.
 
+To rewrite labels, set `pump.prometheusPump.prometheusOperator.relabelings` (applied to the target before the scrape)
+or `pump.prometheusPump.prometheusOperator.metricRelabelings` (applied to the scraped samples), for example:
+
+```yaml
+pump:
+  prometheusPump:
+    prometheusOperator:
+      enabled: true
+      metricRelabelings:
+        - action: labeldrop
+          regex: api_key
+```
+
 #### Mongo Pump
 If you are using the MongoDB pumps in the `tyk-oss` installation you will require MongoDB installed for that as well.
 
