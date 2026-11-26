@@ -38,12 +38,12 @@ jobs:
       contents: read
     steps:
       - name: Git Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
         with:
           python-version: '3.x'
           check-latest: true
@@ -93,16 +93,16 @@ jobs:
         k8s_version: ["v1.30.13", "v1.31.14", "v1.32.11", "v1.33.12", "v1.34.11", "v1.35.8", "v1.36.4"]
     steps:
       - name: Git Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
       - name: Create Kind Cluster
-        uses: helm/kind-action@99576bfa6ddf9a8e612d83b513da5a75875caced  # v1.9.0
+        uses: helm/kind-action@ea822c7bf1874f08e5a491df991c228edffc3376  # v1.15.2
         with:
           # TODO: Pin kindest/node image to digest
           node_image: "kindest/node:${{ matrix.k8s_version }}"
 
       - name: Install helm
-        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4  # v4
+        uses: azure/setup-helm@2f5e7bc67f1f9972ab16657bb795f36d8f04de0e  # v5.1.0
 
       - name: Deploy Tyk OSS and Dependencies
         id: smoke-deploy-oss
@@ -206,16 +206,16 @@ jobs:
       contents: read
     steps:
       - name: Git Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
       - name: Create Kind Cluster
-        uses: helm/kind-action@99576bfa6ddf9a8e612d83b513da5a75875caced  # v1.9.0
+        uses: helm/kind-action@ea822c7bf1874f08e5a491df991c228edffc3376  # v1.15.2
         with:
           # TODO: Pin kindest/node image to digest
           node_image: "kindest/node:v1.35.8"
 
       - name: Install helm
-        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4  # v4
+        uses: azure/setup-helm@2f5e7bc67f1f9972ab16657bb795f36d8f04de0e  # v5.1.0
 
       - name: Install Tyk OSS 5.3.0 and dependencies
         run: |
@@ -329,7 +329,7 @@ jobs:
       contents: read
     steps:
       - name: Git Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
       # Plain kind — this is the ceiling on how OpenShift-like this job can be. A vanilla k8s
       # cluster has no SecurityContextConstraints controller, so the UID/GID injection that
@@ -339,13 +339,13 @@ jobs:
       # Pinned to a single k8s version rather than the 7-way matrix the sibling smoke-tests job
       # uses: this exercises a values path, not a version-compatibility surface.
       - name: Create Kind Cluster
-        uses: helm/kind-action@99576bfa6ddf9a8e612d83b513da5a75875caced  # v1.9.0
+        uses: helm/kind-action@ea822c7bf1874f08e5a491df991c228edffc3376  # v1.15.2
         with:
           # TODO: Pin kindest/node image to digest
           node_image: "kindest/node:v1.35.8"
 
       - name: Install helm
-        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4  # v4
+        uses: azure/setup-helm@2f5e7bc67f1f9972ab16657bb795f36d8f04de0e  # v5.1.0
 
       # The OpenShift-shaped install: every securityContext block omitted, cluster left to fill in
       # the blanks. On OpenShift the SCC would; on kind nothing does, and the pods run with
@@ -440,15 +440,15 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Set up Helm
-        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4  # v4
+        uses: azure/setup-helm@2f5e7bc67f1f9972ab16657bb795f36d8f04de0e  # v5.1.0
 
       - name: Create kind cluster
-        uses: helm/kind-action@99576bfa6ddf9a8e612d83b513da5a75875caced  # v1.9.0
+        uses: helm/kind-action@ea822c7bf1874f08e5a491df991c228edffc3376  # v1.15.2
         with:
           # TODO: Pin kindest/node image to digest
           node_image: "kindest/node:v1.36.4"
