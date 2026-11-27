@@ -4656,6 +4656,11 @@ spec:
                       claimName:
                         description: ClaimName contains the claim name.
                         type: string
+                      claims:
+                        description: Claims contains the list of claims.
+                        items:
+                          type: string
+                        type: array
                       scopeToPolicyMapping:
                         description: ScopeToPolicyMapping contains the mappings of
                           scopes to policy IDs.
