@@ -1051,6 +1051,15 @@ tyk-pump:
         #   kubectl describe prometheuses.monitoring.coreos.com <PROMETHEUS_POD>
         podMonitorSelector:
           release: prometheus-stack
+        # relabelings are applied to the scrape target before the scrape, and
+        # metricRelabelings to the scraped samples before they are stored (for example
+        # to rename or drop a label). Both take a list of Prometheus Operator
+        # RelabelConfig and are left out of the PodMonitor when empty.
+        # metricRelabelings:
+        #   - action: labeldrop
+        #     regex: api_key
+        relabelings: []
+        metricRelabelings: []
 
     # sqlGraphPump configures values to be used to configure tyk sql graph pump.
     sqlGraphPump:
