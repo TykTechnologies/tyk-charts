@@ -86,9 +86,9 @@ spec:
 
             - name: mdcb-conf
               mountPath: /etc/tyk-sink
-              {{- if .Values.mdcb.extraVolumeMounts }}
-              {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraVolumeMounts "context" $) | nindent 10 }}
-              {{- end }}
+            {{- if .Values.mdcb.extraVolumeMounts }}
+            {{- include "mdcb.tplvalues.render" (dict "value" .Values.mdcb.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
           env:
             {{- $version := regexReplaceAll "^v" .Values.mdcb.image.tag "" }}
             {{- if  semverCompare ">=2.6.0" $version }}
